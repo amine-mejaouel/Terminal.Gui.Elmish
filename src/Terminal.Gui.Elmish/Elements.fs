@@ -403,13 +403,11 @@ type BorderElement(props:IProperty list) =
 
     let setProps (element: Border) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "border.colorScheme" |> Option.iter (fun v -> element.ColorScheme <- v )
         props |> Interop.getValue<LineStyle> "border.lineStyle" |> Option.iter (fun v -> element.LineStyle <- v )
         props |> Interop.getValue<BorderSettings> "border.settings" |> Option.iter (fun v -> element.Settings <- v )
 
     let removeProps (element:Border) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "border.colorScheme" |> Option.iter (fun _ -> element.ColorScheme <- Unchecked.defaultof<_>)
         props |> Interop.getValue<LineStyle> "border.lineStyle" |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Interop.getValue<BorderSettings> "border.settings" |> Option.iter (fun _ -> element.Settings <- Unchecked.defaultof<_>)
 
@@ -421,7 +419,7 @@ type BorderElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Border()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -429,7 +427,7 @@ type BorderElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -439,18 +437,18 @@ type BorderElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Border
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Button

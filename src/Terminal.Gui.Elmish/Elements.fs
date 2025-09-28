@@ -462,6 +462,7 @@ type ButtonElement(props:IProperty list) =
         props |> Interop.getValue<bool> "button.noDecorations" |> Option.iter (fun v -> element.NoDecorations <- v )
         props |> Interop.getValue<bool> "button.noPadding" |> Option.iter (fun v -> element.NoPadding <- v )
         props |> Interop.getValue<string> "button.text" |> Option.iter (fun v -> element.Text <- v )
+        // Events
         props |> Interop.getValue<bool> "button.wantContinuousButtonPressed" |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v )
 
     let removeProps (element:Button) props =
@@ -471,6 +472,7 @@ type ButtonElement(props:IProperty list) =
         props |> Interop.getValue<bool> "button.noDecorations" |> Option.iter (fun _ -> element.NoDecorations <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "button.noPadding" |> Option.iter (fun _ -> element.NoPadding <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "button.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
+        // Events
         props |> Interop.getValue<bool> "button.wantContinuousButtonPressed" |> Option.iter (fun _ -> element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
 
     override _.name = $"Button"
@@ -481,7 +483,7 @@ type ButtonElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Button()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -489,7 +491,7 @@ type ButtonElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -499,18 +501,18 @@ type ButtonElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Button
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // CheckBox
@@ -522,18 +524,20 @@ type CheckBoxElement(props:IProperty list) =
         props |> Interop.getValue<bool> "checkBox.allowCheckStateNone" |> Option.iter (fun v -> element.AllowCheckStateNone <- v )
         props |> Interop.getValue<CheckState> "checkBox.checkedState" |> Option.iter (fun v -> element.CheckedState <- v )
         props |> Interop.getValue<Rune> "checkBox.hotKeySpecifier" |> Option.iter (fun v -> element.HotKeySpecifier <- v )
+        props |> Interop.getValue<bool> "checkBox.radioStyle" |> Option.iter (fun v -> element.RadioStyle <- v )
         props |> Interop.getValue<string> "checkBox.text" |> Option.iter (fun v -> element.Text <- v )
         // Events
-        props |> Interop.getValue<CancelEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanging @> v element)
+        props |> Interop.getValue<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanging @> v element)
 
     let removeProps (element:CheckBox) props =
         // Properties
         props |> Interop.getValue<bool> "checkBox.allowCheckStateNone" |> Option.iter (fun _ -> element.AllowCheckStateNone <- Unchecked.defaultof<_>)
         props |> Interop.getValue<CheckState> "checkBox.checkedState" |> Option.iter (fun _ -> element.CheckedState <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Rune> "checkBox.hotKeySpecifier" |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "checkBox.radioStyle" |> Option.iter (fun _ -> element.RadioStyle <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "checkBox.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<CancelEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CheckedStateChanging @> element)
+        props |> Interop.getValue<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CheckedStateChanging @> element)
 
     override _.name = $"CheckBox"
 
@@ -543,7 +547,7 @@ type CheckBoxElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new CheckBox()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -551,7 +555,7 @@ type CheckBoxElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -561,18 +565,18 @@ type CheckBoxElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> CheckBox
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // ColorPicker

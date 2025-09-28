@@ -1878,7 +1878,7 @@ type ProgressBarElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new ProgressBar()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1886,7 +1886,7 @@ type ProgressBarElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1896,18 +1896,18 @@ type ProgressBarElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> ProgressBar
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // RadioGroup
@@ -1916,21 +1916,27 @@ type RadioGroupElement(props:IProperty list) =
 
     let setProps (element: RadioGroup) props =
         // Properties
+        props |> Interop.getValue<bool> "radioGroup.assignHotKeysToRadioLabels" |> Option.iter (fun v -> element.AssignHotKeysToRadioLabels <- v )
+        props |> Interop.getValue<Int32> "radioGroup.cursor" |> Option.iter (fun v -> element.Cursor <- v )
+        props |> Interop.getValue<bool> "radioGroup.doubleClickAccepts" |> Option.iter (fun v -> element.DoubleClickAccepts <- v )
         props |> Interop.getValue<Int32> "radioGroup.horizontalSpace" |> Option.iter (fun v -> element.HorizontalSpace <- v )
         props |> Interop.getValue<Orientation> "radioGroup.orientation" |> Option.iter (fun v -> element.Orientation <- v )
         props |> Interop.getValue<string list> "radioGroup.radioLabels" |> Option.iter (fun v -> element.RadioLabels <- v |> List.toArray)
         props |> Interop.getValue<Int32> "radioGroup.selectedItem" |> Option.iter (fun v -> element.SelectedItem <- v )
         // Events
-        props |> Interop.getValue<Orientation->unit> "radioGroup.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.CurrentValue) element)
+        props |> Interop.getValue<Orientation->unit> "radioGroup.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
         props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "radioGroup.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
         props |> Interop.getValue<SelectedItemChangedArgs->unit> "radioGroup.selectedItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
     let removeProps (element:RadioGroup) props =
         // Properties
-        props |> Interop.getValue<Int32> "radioGroup.horizontalSpace" |> Option.iter (fun _ -> element.HorizontalSpace <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Orientation> "radioGroup.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "radioGroup.assignHotKeysToRadioLabels" |> Option.iter (fun _ -> element.AssignHotKeysToRadioLabels <- Unchecked.defaultof<_> )
+        props |> Interop.getValue<Int32> "radioGroup.cursor" |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_> )
+        props |> Interop.getValue<bool> "radioGroup.doubleClickAccepts" |> Option.iter (fun _ -> element.DoubleClickAccepts <- Unchecked.defaultof<_> )
+        props |> Interop.getValue<Int32> "radioGroup.horizontalSpace" |> Option.iter (fun _ -> element.HorizontalSpace <- Unchecked.defaultof<_> )
+        props |> Interop.getValue<Orientation> "radioGroup.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_> )
         props |> Interop.getValue<string list> "radioGroup.radioLabels" |> Option.iter (fun _ -> element.RadioLabels <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Int32> "radioGroup.selectedItem" |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "radioGroup.selectedItem" |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_> )
         // Events
         props |> Interop.getValue<Orientation->unit> "radioGroup.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
         props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "radioGroup.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
@@ -1944,7 +1950,7 @@ type RadioGroupElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new RadioGroup()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1952,7 +1958,7 @@ type RadioGroupElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1962,18 +1968,18 @@ type RadioGroupElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> RadioGroup
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // SaveDialog

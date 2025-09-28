@@ -3162,7 +3162,7 @@ type TreeViewElement<'a when 'a : not struct>(props:IProperty list) =
         // Properties
         props |> Interop.getValue<bool> "treeView`1.allowLetterBasedNavigation" |> Option.iter (fun v -> element.AllowLetterBasedNavigation <- v )
         props |> Interop.getValue<AspectGetterDelegate<'a>> "treeView`1.aspectGetter" |> Option.iter (fun v -> element.AspectGetter <- v )
-        props |> Interop.getValue<Func<'a,ColorScheme>> "treeView`1.colorGetter" |> Option.iter (fun v -> element.ColorGetter <- v )
+        props |> Interop.getValue<Func<'a,Scheme>> "treeView`1.colorGetter" |> Option.iter (fun v -> element.ColorGetter <- v )
         props |> Interop.getValue<Int32> "treeView`1.maxDepth" |> Option.iter (fun v -> element.MaxDepth <- v )
         props |> Interop.getValue<bool> "treeView`1.multiSelect" |> Option.iter (fun v -> element.MultiSelect <- v )
         props |> Interop.getValue<MouseFlags option> "treeView`1.objectActivationButton" |> Option.iter (fun v -> element.ObjectActivationButton <- v  |> Option.toNullable)
@@ -3181,7 +3181,7 @@ type TreeViewElement<'a when 'a : not struct>(props:IProperty list) =
         // Properties
         props |> Interop.getValue<bool> "treeView`1.allowLetterBasedNavigation" |> Option.iter (fun _ -> element.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
         props |> Interop.getValue<AspectGetterDelegate<'a>> "treeView`1.aspectGetter" |> Option.iter (fun _ -> element.AspectGetter <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Func<'a,ColorScheme>> "treeView`1.colorGetter" |> Option.iter (fun _ -> element.ColorGetter <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Func<'a,Scheme>> "treeView`1.colorGetter" |> Option.iter (fun _ -> element.ColorGetter <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "treeView`1.maxDepth" |> Option.iter (fun _ -> element.MaxDepth <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "treeView`1.multiSelect" |> Option.iter (fun _ -> element.MultiSelect <- Unchecked.defaultof<_>)
         props |> Interop.getValue<MouseFlags option> "treeView`1.objectActivationButton" |> Option.iter (fun _ -> element.ObjectActivationButton <- Unchecked.defaultof<_>)
@@ -3204,7 +3204,7 @@ type TreeViewElement<'a when 'a : not struct>(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TreeView<'a>()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3212,7 +3212,7 @@ type TreeViewElement<'a when 'a : not struct>(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3222,18 +3222,18 @@ type TreeViewElement<'a when 'a : not struct>(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TreeView<'a>
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TreeView

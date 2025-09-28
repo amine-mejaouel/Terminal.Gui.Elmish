@@ -255,7 +255,7 @@ module ViewElement =
             (nameA = "DimAbsolute" && nameB = "DimAbsolute") ||
             (nameA <> "DimAbsolute" && nameB <> "DimAbsolute")
 
-            
+
         let positionX = props |> Interop.getValue<Pos> "view.x"      |> Option.map (fun v -> isPosCompatible view.X v) |> Option.defaultValue true
         let positionY = props |> Interop.getValue<Pos> "view.y"      |> Option.map (fun v -> isPosCompatible view.Y v) |> Option.defaultValue true
         let width = props |> Interop.getValue<Dim> "view.width"      |> Option.map (fun v -> isDimCompatible view.Width v) |> Option.defaultValue true
@@ -274,13 +274,14 @@ module ViewElement =
             heightNotRemoved
         ]
         |> List.forall id
-    
+
 // Adornment
 type AdornmentElement(props:IProperty list) =
     inherit TerminalElement(props)
 
     let setProps (element: Adornment) props =
         // Properties
+        props |> Interop.getValue<ViewDiagnosticFlags> "adornment.diagnostics" |> Option.iter (fun v -> element.Diagnostics <- v )
         props |> Interop.getValue<bool> "adornment.superViewRendersLineCanvas" |> Option.iter (fun v -> element.SuperViewRendersLineCanvas <- v )
         props |> Interop.getValue<Thickness> "adornment.thickness" |> Option.iter (fun v -> element.Thickness <- v )
         props |> Interop.getValue<Rectangle> "adornment.viewport" |> Option.iter (fun v -> element.Viewport <- v )
@@ -289,6 +290,7 @@ type AdornmentElement(props:IProperty list) =
 
     let removeProps (element:Adornment) props =
         // Properties
+        props |> Interop.getValue<ViewDiagnosticFlags> "adornment.diagnostics" |> Option.iter (fun _ -> element.Diagnostics <- Unchecked.defaultof<_> )
         props |> Interop.getValue<bool> "adornment.superViewRendersLineCanvas" |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Thickness> "adornment.thickness" |> Option.iter (fun _ -> element.Thickness <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Rectangle> "adornment.viewport" |> Option.iter (fun _ -> element.Viewport <- Unchecked.defaultof<_>)
@@ -303,7 +305,7 @@ type AdornmentElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Adornment()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -311,7 +313,7 @@ type AdornmentElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -321,18 +323,18 @@ type AdornmentElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Adornment
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Bar

@@ -1594,25 +1594,6 @@ type MenuBarv2Element(props:IProperty list) =
         setProps element changedProps
         this.element <- prevElement
 
-    override this.canUpdate prevElement oldProps =
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
-        let canUpdateElement =
-            true
-
-        canUpdateView && canUpdateElement
-
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> MenuBarv2
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        ViewElement.setProps prevElement changedProps
-        setProps element changedProps
-        this.element <- prevElement
-
 
 
 // Menuv2
@@ -3260,7 +3241,7 @@ type WindowElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Window()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3268,7 +3249,7 @@ type WindowElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3278,18 +3259,18 @@ type WindowElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Window
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Wizard
@@ -3328,7 +3309,7 @@ type WizardElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Wizard()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3336,7 +3317,7 @@ type WizardElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3346,18 +3327,18 @@ type WizardElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Wizard
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // WizardStep
@@ -3384,7 +3365,7 @@ type WizardStepElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new WizardStep()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3392,7 +3373,7 @@ type WizardStepElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3402,17 +3383,17 @@ type WizardStepElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> WizardStep
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 

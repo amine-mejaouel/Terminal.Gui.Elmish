@@ -1214,7 +1214,7 @@ type LabelElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Label()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1222,7 +1222,7 @@ type LabelElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1232,18 +1232,18 @@ type LabelElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Label
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // LegendAnnotation
@@ -1266,7 +1266,7 @@ type LegendAnnotationElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new LegendAnnotation()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1274,7 +1274,7 @@ type LegendAnnotationElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1284,18 +1284,18 @@ type LegendAnnotationElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> LegendAnnotation
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Line
@@ -1306,7 +1306,7 @@ type LineElement(props:IProperty list) =
         // Properties
         props |> Interop.getValue<Orientation> "line.orientation" |> Option.iter (fun v -> element.Orientation <- v )
         // Events
-        props |> Interop.getValue<Orientation->unit> "line.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.CurrentValue) element)
+        props |> Interop.getValue<Orientation->unit> "line.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
         props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "line.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     let removeProps (element:Line) props =
@@ -1324,7 +1324,7 @@ type LineElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Line()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1332,7 +1332,7 @@ type LineElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1342,18 +1342,18 @@ type LineElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Line
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // LineView
@@ -1382,7 +1382,7 @@ type LineViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new LineView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1390,7 +1390,7 @@ type LineViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1400,18 +1400,18 @@ type LineViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> LineView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // ListView
@@ -1454,7 +1454,7 @@ type ListViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new ListView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1462,7 +1462,7 @@ type ListViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1472,18 +1472,18 @@ type ListViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> ListView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Margin
@@ -1492,12 +1492,10 @@ type MarginElement(props:IProperty list) =
 
     let setProps (element: Margin) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "margin.colorScheme" |> Option.iter (fun v -> element.ColorScheme <- v )
         props |> Interop.getValue<ShadowStyle> "margin.shadowStyle" |> Option.iter (fun v -> element.ShadowStyle <- v )
 
     let removeProps (element:Margin) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "margin.colorScheme" |> Option.iter (fun _ -> element.ColorScheme <- Unchecked.defaultof<_>)
         props |> Interop.getValue<ShadowStyle> "margin.shadowStyle" |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
     override _.name = $"Margin"
@@ -1508,7 +1506,7 @@ type MarginElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Margin()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1516,7 +1514,7 @@ type MarginElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1526,18 +1524,18 @@ type MarginElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Margin
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // MenuBar

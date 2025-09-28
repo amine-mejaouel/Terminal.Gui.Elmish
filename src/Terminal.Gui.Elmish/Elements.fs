@@ -2821,7 +2821,7 @@ type TextValidateFieldElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TextValidateField()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2829,7 +2829,7 @@ type TextValidateFieldElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2839,18 +2839,18 @@ type TextValidateFieldElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TextValidateField
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TextView
@@ -2862,60 +2862,65 @@ type TextViewElement(props:IProperty list) =
         props |> Interop.getValue<bool> "textView.allowsReturn" |> Option.iter (fun v -> element.AllowsReturn <- v )
         props |> Interop.getValue<bool> "textView.allowsTab" |> Option.iter (fun v -> element.AllowsTab <- v )
         props |> Interop.getValue<Point> "textView.cursorPosition" |> Option.iter (fun v -> element.CursorPosition <- v )
-        props |> Interop.getValue<bool> "textView.inheritsPreviousColorScheme" |> Option.iter (fun v -> element.InheritsPreviousColorScheme <- v )
+        props |> Interop.getValue<bool> "textView.inheritsPreviousAttribute" |> Option.iter (fun v -> element.InheritsPreviousAttribute <- v )
         props |> Interop.getValue<bool> "textView.isDirty" |> Option.iter (fun v -> element.IsDirty <- v )
+        props |> Interop.getValue<bool> "textView.isSelecting" |> Option.iter (fun v -> element.IsSelecting <- v )
         props |> Interop.getValue<Int32> "textView.leftColumn" |> Option.iter (fun v -> element.LeftColumn <- v )
         props |> Interop.getValue<bool> "textView.multiline" |> Option.iter (fun v -> element.Multiline <- v )
         props |> Interop.getValue<bool> "textView.readOnly" |> Option.iter (fun v -> element.ReadOnly <- v )
-        props |> Interop.getValue<bool> "textView.selecting" |> Option.iter (fun v -> element.Selecting <- v )
         props |> Interop.getValue<Int32> "textView.selectionStartColumn" |> Option.iter (fun v -> element.SelectionStartColumn <- v )
         props |> Interop.getValue<Int32> "textView.selectionStartRow" |> Option.iter (fun v -> element.SelectionStartRow <- v )
+        props |> Interop.getValue<bool> "textView.selectWordOnlyOnDoubleClick" |> Option.iter (fun v -> element.SelectWordOnlyOnDoubleClick <- v )
         props |> Interop.getValue<Int32> "textView.tabWidth" |> Option.iter (fun v -> element.TabWidth <- v )
         props |> Interop.getValue<string> "textView.text" |> Option.iter (fun v -> element.Text <- v )
         props |> Interop.getValue<Int32> "textView.topRow" |> Option.iter (fun v -> element.TopRow <- v )
         props |> Interop.getValue<bool> "textView.used" |> Option.iter (fun v -> element.Used <- v )
+        props |> Interop.getValue<bool> "textView.useSameRuneTypeForWords" |> Option.iter (fun v -> element.UseSameRuneTypeForWords <- v )
         props |> Interop.getValue<bool> "textView.wordWrap" |> Option.iter (fun v -> element.WordWrap <- v )
         // Events
         props |> Interop.getValue<ContentsChangedEventArgs->unit> "textView.contentsChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ContentsChanged @> v element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawNormalColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawNormalColor @> v element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawReadOnlyColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawReadOnlyColor @> v element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawSelectionColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawSelectionColor @> v element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawUsedColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawUsedColor @> v element)
-        props |> Interop.getValue<PointEventArgs->unit> "textView.unwrappedCursorPosition" |> Option.iter (fun v -> Interop.setEventHandler <@ element.UnwrappedCursorPosition @> v element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawNormalColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawNormalColor @> v element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawReadOnlyColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawReadOnlyColor @> v element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawSelectionColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawSelectionColor @> v element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawUsedColor" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DrawUsedColor @> v element)
+        props |> Interop.getValue<Point->unit> "textView.unwrappedCursorPosition" |> Option.iter (fun v -> Interop.setEventHandler <@ element.UnwrappedCursorPosition @> v element)
 
             // Additional properties
         props |> Interop.getValue<string->unit> "textView.textChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ContentsChanged @> (fun _ -> v element.Text) element)
-            
+
 
     let removeProps (element:TextView) props =
         // Properties
         props |> Interop.getValue<bool> "textView.allowsReturn" |> Option.iter (fun _ -> element.AllowsReturn <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.allowsTab" |> Option.iter (fun _ -> element.AllowsTab <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Point> "textView.cursorPosition" |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "textView.inheritsPreviousColorScheme" |> Option.iter (fun _ -> element.InheritsPreviousColorScheme <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textView.inheritsPreviousAttribute" |> Option.iter (fun _ -> element.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.isDirty" |> Option.iter (fun _ -> element.IsDirty <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textView.isSelecting" |> Option.iter (fun _ -> element.IsSelecting <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.leftColumn" |> Option.iter (fun _ -> element.LeftColumn <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.multiline" |> Option.iter (fun _ -> element.Multiline <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.selecting" |> Option.iter (fun _ -> element.Selecting <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.selectionStartColumn" |> Option.iter (fun _ -> element.SelectionStartColumn <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.selectionStartRow" |> Option.iter (fun _ -> element.SelectionStartRow <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textView.selectWordOnlyOnDoubleClick" |> Option.iter (fun _ -> element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.tabWidth" |> Option.iter (fun _ -> element.TabWidth <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "textView.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.topRow" |> Option.iter (fun _ -> element.TopRow <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.used" |> Option.iter (fun _ -> element.Used <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textView.useSameRuneTypeForWords" |> Option.iter (fun _ -> element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.wordWrap" |> Option.iter (fun _ -> element.WordWrap <- Unchecked.defaultof<_>)
         // Events
         props |> Interop.getValue<ContentsChangedEventArgs->unit> "textView.contentsChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ContentsChanged @> element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawNormalColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawNormalColor @> element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawReadOnlyColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawReadOnlyColor @> element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawSelectionColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawSelectionColor @> element)
-        props |> Interop.getValue<RuneCellEventArgs->unit> "textView.drawUsedColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawUsedColor @> element)
-        props |> Interop.getValue<PointEventArgs->unit> "textView.unwrappedCursorPosition" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.UnwrappedCursorPosition @> element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawNormalColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawNormalColor @> element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawReadOnlyColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawReadOnlyColor @> element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawSelectionColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawSelectionColor @> element)
+        props |> Interop.getValue<CellEventArgs->unit> "textView.drawUsedColor" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawUsedColor @> element)
+        props |> Interop.getValue<Point->unit> "textView.unwrappedCursorPosition" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.UnwrappedCursorPosition @> element)
 
             // Additional properties
         props |> Interop.getValue<string->unit> "textView.textChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ContentsChanged @> element)
-            
+
 
     override _.name = $"TextView"
 
@@ -2925,7 +2930,7 @@ type TextViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TextView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2933,7 +2938,7 @@ type TextViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2943,18 +2948,18 @@ type TextViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TextView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TileView
@@ -2985,7 +2990,7 @@ type TileViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TileView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)

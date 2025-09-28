@@ -2002,7 +2002,7 @@ type SaveDialogElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new SaveDialog()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2010,7 +2010,7 @@ type SaveDialogElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2020,49 +2020,53 @@ type SaveDialogElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> SaveDialog
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
 
 
-// ScrollBarView
-type ScrollBarViewElement(props:IProperty list) =
+
+// ScrollBar
+type ScrollBarElement(props:IProperty list) =
     inherit TerminalElement(props)
 
-    let setProps (element: ScrollBarView) props =
+    let setProps (element: ScrollBar) props =
         // Properties
-        props |> Interop.getValue<bool> "scrollBarView.autoHideScrollBars" |> Option.iter (fun v -> element.AutoHideScrollBars <- v )
-        props |> Interop.getValue<bool> "scrollBarView.isVertical" |> Option.iter (fun v -> element.IsVertical <- v )
-        props |> Interop.getValue<bool> "scrollBarView.keepContentAlwaysInViewport" |> Option.iter (fun v -> element.KeepContentAlwaysInViewport <- v )
-        props |> Interop.getValue<ScrollBarView> "scrollBarView.otherScrollBarView" |> Option.iter (fun v -> element.OtherScrollBarView <- v )
-        props |> Interop.getValue<Int32> "scrollBarView.position" |> Option.iter (fun v -> element.Position <- v )
-        props |> Interop.getValue<bool> "scrollBarView.showScrollIndicator" |> Option.iter (fun v -> element.ShowScrollIndicator <- v )
-        props |> Interop.getValue<Int32> "scrollBarView.size" |> Option.iter (fun v -> element.Size <- v )
+        props |> Interop.getValue<bool> "scrollBar.autoShow" |> Option.iter (fun v -> element.AutoShow <- v )
+        props |> Interop.getValue<Int32> "scrollBar.increment" |> Option.iter (fun v -> element.Increment <- v )
+        props |> Interop.getValue<Orientation> "scrollBar.orientation" |> Option.iter (fun v -> element.Orientation <- v )
+        props |> Interop.getValue<Int32> "scrollBar.position" |> Option.iter (fun v -> element.Position <- v )
+        props |> Interop.getValue<Int32> "scrollBar.scrollableContentSize" |> Option.iter (fun v -> element.ScrollableContentSize <- v )
+        props |> Interop.getValue<Int32> "scrollBar.visibleContentSize" |> Option.iter (fun v -> element.VisibleContentSize <- v )
         // Events
-        props |> Interop.getValue<unit->unit> "scrollBarView.changedPosition" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ChangedPosition @> (fun _ -> v()) element)
+        props |> Interop.getValue<Orientation->unit> "scrollBar.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "scrollBar.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollBar.scrollableContentSizeChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ScrollableContentSizeChanged @> v element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollBar.sliderPositionChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SliderPositionChanged @> v element)
 
-    let removeProps (element:ScrollBarView) props =
+    let removeProps (element:ScrollBar) props =
         // Properties
-        props |> Interop.getValue<bool> "scrollBarView.autoHideScrollBars" |> Option.iter (fun _ -> element.AutoHideScrollBars <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollBarView.isVertical" |> Option.iter (fun _ -> element.IsVertical <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollBarView.keepContentAlwaysInViewport" |> Option.iter (fun _ -> element.KeepContentAlwaysInViewport <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<ScrollBarView> "scrollBarView.otherScrollBarView" |> Option.iter (fun _ -> element.OtherScrollBarView <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Int32> "scrollBarView.position" |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollBarView.showScrollIndicator" |> Option.iter (fun _ -> element.ShowScrollIndicator <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Int32> "scrollBarView.size" |> Option.iter (fun _ -> element.Size <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "scrollBar.autoShow" |> Option.iter (fun _ -> element.AutoShow <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollBar.increment" |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Orientation> "scrollBar.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollBar.position" |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollBar.scrollableContentSize" |> Option.iter (fun _ -> element.ScrollableContentSize <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollBar.visibleContentSize" |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<unit->unit> "scrollBarView.changedPosition" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ChangedPosition @> element)
+        props |> Interop.getValue<Orientation->unit> "scrollBar.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "scrollBar.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollBar.scrollableContentSizeChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ScrollableContentSizeChanged @> element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollBar.sliderPositionChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SliderPositionChanged @> element)
 
-    override _.name = $"ScrollBarView"
+    override _.name = $"ScrollBar"
 
 
     override this.create parent =
@@ -2070,15 +2074,15 @@ type ScrollBarViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
 
-        let el = new ScrollBarView()
+
+        let el = new ScrollBar()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2088,41 +2092,53 @@ type ScrollBarViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
-        let element = prevElement :?> ScrollBarView
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> ScrollBar
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
 
 
-// ScrollView
-type ScrollViewElement(props:IProperty list) =
+
+// ScrollSlider
+type ScrollSliderElement(props:IProperty list) =
     inherit TerminalElement(props)
 
-    let setProps (element: ScrollView) props =
+    let setProps (element: ScrollSlider) props =
         // Properties
-        props |> Interop.getValue<bool> "scrollView.autoHideScrollBars" |> Option.iter (fun v -> element.AutoHideScrollBars <- v )
-        props |> Interop.getValue<Point> "scrollView.contentOffset" |> Option.iter (fun v -> element.ContentOffset <- v )
-        props |> Interop.getValue<bool> "scrollView.keepContentAlwaysInViewport" |> Option.iter (fun v -> element.KeepContentAlwaysInViewport <- v )
-        props |> Interop.getValue<bool> "scrollView.showHorizontalScrollIndicator" |> Option.iter (fun v -> element.ShowHorizontalScrollIndicator <- v )
-        props |> Interop.getValue<bool> "scrollView.showVerticalScrollIndicator" |> Option.iter (fun v -> element.ShowVerticalScrollIndicator <- v )
+        props |> Interop.getValue<Orientation> "scrollSlider.orientation" |> Option.iter (fun v -> element.Orientation <- v )
+        props |> Interop.getValue<Int32> "scrollSlider.position" |> Option.iter (fun v -> element.Position <- v )
+        props |> Interop.getValue<Int32> "scrollSlider.size" |> Option.iter (fun v -> element.Size <- v )
+        props |> Interop.getValue<Int32> "scrollSlider.sliderPadding" |> Option.iter (fun v -> element.SliderPadding <- v )
+        props |> Interop.getValue<Int32> "scrollSlider.visibleContentSize" |> Option.iter (fun v -> element.VisibleContentSize <- v )
+        // Events
+        props |> Interop.getValue<Orientation->unit> "scrollSlider.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "scrollSlider.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollSlider.positionChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.PositionChanged @> v element)
+        props |> Interop.getValue<CancelEventArgs<Int32>->unit> "scrollSlider.positionChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.PositionChanging @> v element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollSlider.scrolled" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Scrolled @> v element)
 
-    let removeProps (element:ScrollView) props =
+    let removeProps (element: ScrollSlider) props =
         // Properties
-        props |> Interop.getValue<bool> "scrollView.autoHideScrollBars" |> Option.iter (fun _ -> element.AutoHideScrollBars <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Point> "scrollView.contentOffset" |> Option.iter (fun _ -> element.ContentOffset <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollView.keepContentAlwaysInViewport" |> Option.iter (fun _ -> element.KeepContentAlwaysInViewport <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollView.showHorizontalScrollIndicator" |> Option.iter (fun _ -> element.ShowHorizontalScrollIndicator <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "scrollView.showVerticalScrollIndicator" |> Option.iter (fun _ -> element.ShowVerticalScrollIndicator <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Orientation> "scrollSlider.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollSlider.position" |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollSlider.size" |> Option.iter (fun _ -> element.Size <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollSlider.sliderPadding" |> Option.iter (fun _ -> element.SliderPadding <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "scrollSlider.visibleContentSize" |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
+        // Events
+        props |> Interop.getValue<Orientation->unit> "scrollSlider.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "scrollSlider.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollSlider.positionChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.PositionChanged @> element)
+        props |> Interop.getValue<CancelEventArgs<Int32>->unit> "scrollSlider.positionChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.PositionChanging @> element)
+        props |> Interop.getValue<EventArgs<Int32>->unit> "scrollSlider.scrolled" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Scrolled @> element)
 
-    override _.name = $"ScrollView"
+    override _.name = $"ScrollSlider"
 
 
     override this.create parent =
@@ -2130,15 +2146,15 @@ type ScrollViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
 
-        let el = new ScrollView()
+
+        let el = new ScrollSlider()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2148,18 +2164,18 @@ type ScrollViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
-        let element = prevElement :?> ScrollView
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> ScrollSlider
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Shortcut

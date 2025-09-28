@@ -585,17 +585,17 @@ type ColorPickerElement(props:IProperty list) =
 
     let setProps (element: ColorPicker) props =
         // Properties
-        props |> Interop.getValue<Color> "colorPicker.selectedColor" |> Option.iter (fun v -> element.SelectedColor <- v )
+        props |> Interop.getValue<Terminal.Gui.Drawing.Color> "colorPicker.selectedColor" |> Option.iter (fun v -> element.SelectedColor <- v )
         props |> Interop.getValue<ColorPickerStyle> "colorPicker.style" |> Option.iter (fun v -> element.Style <- v )
         // Events
-        props |> Interop.getValue<ColorEventArgs->unit> "colorPicker.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
+        props |> Interop.getValue<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
     let removeProps (element:ColorPicker) props =
         // Properties
-        props |> Interop.getValue<Color> "colorPicker.selectedColor" |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Terminal.Gui.Drawing.Color> "colorPicker.selectedColor" |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
         props |> Interop.getValue<ColorPickerStyle> "colorPicker.style" |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<ColorEventArgs->unit> "colorPicker.colorChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ColorChanged @> element)
+        props |> Interop.getValue<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker.colorChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ColorChanged @> element)
 
     override _.name = $"ColorPicker"
 
@@ -605,7 +605,7 @@ type ColorPickerElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new ColorPicker()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -613,7 +613,7 @@ type ColorPickerElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -623,18 +623,18 @@ type ColorPickerElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> ColorPicker
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // ColorPicker16
@@ -646,18 +646,18 @@ type ColorPicker16Element(props:IProperty list) =
         props |> Interop.getValue<Int32> "colorPicker16.boxHeight" |> Option.iter (fun v -> element.BoxHeight <- v )
         props |> Interop.getValue<Int32> "colorPicker16.boxWidth" |> Option.iter (fun v -> element.BoxWidth <- v )
         props |> Interop.getValue<Point> "colorPicker16.cursor" |> Option.iter (fun v -> element.Cursor <- v )
-        props |> Interop.getValue<ColorName> "colorPicker16.selectedColor" |> Option.iter (fun v -> element.SelectedColor <- v )
+        props |> Interop.getValue<ColorName16> "colorPicker16.selectedColor" |> Option.iter (fun v -> element.SelectedColor <- v )
         // Events
-        props |> Interop.getValue<ColorEventArgs->unit> "colorPicker16.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
+        props |> Interop.getValue<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker16.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
     let removeProps (element:ColorPicker16) props =
         // Properties
         props |> Interop.getValue<Int32> "colorPicker16.boxHeight" |> Option.iter (fun _ -> element.BoxHeight <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "colorPicker16.boxWidth" |> Option.iter (fun _ -> element.BoxWidth <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Point> "colorPicker16.cursor" |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<ColorName> "colorPicker16.selectedColor" |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<ColorName16> "colorPicker16.selectedColor" |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<ColorEventArgs->unit> "colorPicker16.colorChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ColorChanged @> element)
+        props |> Interop.getValue<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker16.colorChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ColorChanged @> element)
 
     override _.name = $"ColorPicker16"
 
@@ -667,7 +667,7 @@ type ColorPicker16Element(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new ColorPicker16()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -675,7 +675,7 @@ type ColorPicker16Element(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -685,18 +685,18 @@ type ColorPicker16Element(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> ColorPicker16
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // ComboBox
@@ -705,7 +705,6 @@ type ComboBoxElement(props:IProperty list) =
 
     let setProps (element: ComboBox) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "comboBox.colorScheme" |> Option.iter (fun v -> element.ColorScheme <- v )
         props |> Interop.getValue<bool> "comboBox.hideDropdownListOnClick" |> Option.iter (fun v -> element.HideDropdownListOnClick <- v )
         props |> Interop.getValue<bool> "comboBox.readOnly" |> Option.iter (fun v -> element.ReadOnly <- v )
         props |> Interop.getValue<string> "comboBox.searchText" |> Option.iter (fun v -> element.SearchText <- v )
@@ -720,7 +719,7 @@ type ComboBoxElement(props:IProperty list) =
 
     let removeProps (element:ComboBox) props =
         // Properties
-        props |> Interop.getValue<ColorScheme> "comboBox.colorScheme" |> Option.iter (fun _ -> element.ColorScheme <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Scheme> "comboBox.colorScheme" |> Option.iter (fun _ -> element.SetScheme(Unchecked.defaultof<_>) |> ignore)
         props |> Interop.getValue<bool> "comboBox.hideDropdownListOnClick" |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "comboBox.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "comboBox.searchText" |> Option.iter (fun _ -> element.SearchText <- Unchecked.defaultof<_>)
@@ -741,7 +740,7 @@ type ComboBoxElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new ComboBox()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -749,7 +748,7 @@ type ComboBoxElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -759,18 +758,18 @@ type ComboBoxElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> ComboBox
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // DateField
@@ -801,7 +800,7 @@ type DateFieldElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new DateField()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -809,7 +808,7 @@ type DateFieldElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -819,18 +818,18 @@ type DateFieldElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> DateField
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // DatePicker
@@ -855,7 +854,7 @@ type DatePickerElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new DatePicker()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -863,7 +862,7 @@ type DatePickerElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -873,18 +872,18 @@ type DatePickerElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> DatePicker
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Dialog
@@ -911,7 +910,7 @@ type DialogElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Dialog()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -919,7 +918,7 @@ type DialogElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -929,18 +928,18 @@ type DialogElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Dialog
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // FileDialog
@@ -979,7 +978,7 @@ type FileDialogElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new FileDialog()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -987,7 +986,7 @@ type FileDialogElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -997,18 +996,18 @@ type FileDialogElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> FileDialog
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // FrameView
@@ -1031,7 +1030,7 @@ type FrameViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new FrameView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1039,7 +1038,7 @@ type FrameViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1049,18 +1048,18 @@ type FrameViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> FrameView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // GraphView
@@ -1072,7 +1071,7 @@ type GraphViewElement(props:IProperty list) =
         props |> Interop.getValue<HorizontalAxis> "graphView.axisX" |> Option.iter (fun v -> element.AxisX <- v )
         props |> Interop.getValue<VerticalAxis> "graphView.axisY" |> Option.iter (fun v -> element.AxisY <- v )
         props |> Interop.getValue<PointF> "graphView.cellSize" |> Option.iter (fun v -> element.CellSize <- v )
-        props |> Interop.getValue<Attribute option> "graphView.graphColor" |> Option.iter (fun v -> element.GraphColor <- v  |> Option.toNullable)
+        props |> Interop.getValue<Terminal.Gui.Drawing.Attribute option> "graphView.graphColor" |> Option.iter (fun v -> element.GraphColor <- v  |> Option.toNullable)
         props |> Interop.getValue<int> "graphView.marginBottom" |> Option.iter (fun v -> element.MarginBottom <- (v |> uint32))
         props |> Interop.getValue<int> "graphView.marginLeft" |> Option.iter (fun v -> element.MarginLeft <- (v |> uint32))
         props |> Interop.getValue<PointF> "graphView.scrollOffset" |> Option.iter (fun v -> element.ScrollOffset <- v )
@@ -1082,7 +1081,7 @@ type GraphViewElement(props:IProperty list) =
         props |> Interop.getValue<HorizontalAxis> "graphView.axisX" |> Option.iter (fun _ -> element.AxisX <- Unchecked.defaultof<_>)
         props |> Interop.getValue<VerticalAxis> "graphView.axisY" |> Option.iter (fun _ -> element.AxisY <- Unchecked.defaultof<_>)
         props |> Interop.getValue<PointF> "graphView.cellSize" |> Option.iter (fun _ -> element.CellSize <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Attribute option> "graphView.graphColor" |> Option.iter (fun _ -> element.GraphColor <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Terminal.Gui.Drawing.Attribute option> "graphView.graphColor" |> Option.iter (fun _ -> element.GraphColor <- Unchecked.defaultof<_>)
         props |> Interop.getValue<int> "graphView.marginBottom" |> Option.iter (fun _ -> element.MarginBottom <- Unchecked.defaultof<_>)
         props |> Interop.getValue<int> "graphView.marginLeft" |> Option.iter (fun _ -> element.MarginLeft <- Unchecked.defaultof<_>)
         props |> Interop.getValue<PointF> "graphView.scrollOffset" |> Option.iter (fun _ -> element.ScrollOffset <- Unchecked.defaultof<_>)
@@ -1095,7 +1094,7 @@ type GraphViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new GraphView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1103,7 +1102,7 @@ type GraphViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1113,18 +1112,18 @@ type GraphViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> GraphView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // HexView
@@ -1133,8 +1132,10 @@ type HexViewElement(props:IProperty list) =
 
     let setProps (element: HexView) props =
         // Properties
-        props |> Interop.getValue<bool> "hexView.allowEdits" |> Option.iter (fun v -> element.AllowEdits <- v )
-        props |> Interop.getValue<Int64> "hexView.displayStart" |> Option.iter (fun v -> element.DisplayStart <- v )
+        props |> Interop.getValue<int64> "hexView.address" |> Option.iter (fun v -> element.Address <- v )
+        props |> Interop.getValue<int> "hexView.addressWidth" |> Option.iter (fun v -> element.AddressWidth <- v )
+        props |> Interop.getValue<int> "hexView.allowEdits" |> Option.iter (fun v -> element.BytesPerLine <- v )
+        props |> Interop.getValue<bool> "hexView.readOnly" |> Option.iter (fun v -> element.ReadOnly <- v )
         props |> Interop.getValue<Stream> "hexView.source" |> Option.iter (fun v -> element.Source <- v )
         // Events
         props |> Interop.getValue<HexViewEditEventArgs->unit> "hexView.edited" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Edited @> v element)
@@ -1142,8 +1143,10 @@ type HexViewElement(props:IProperty list) =
 
     let removeProps (element:HexView) props =
         // Properties
-        props |> Interop.getValue<bool> "hexView.allowEdits" |> Option.iter (fun _ -> element.AllowEdits <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Int64> "hexView.displayStart" |> Option.iter (fun _ -> element.DisplayStart <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<int64> "hexView.address" |> Option.iter (fun _ -> element.Address <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<int> "hexView.addressWidth" |> Option.iter (fun _ -> element.AddressWidth <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<int> "hexView.allowEdits" |> Option.iter (fun _ -> element.BytesPerLine <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "hexView.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Stream> "hexView.source" |> Option.iter (fun _ -> element.Source <- Unchecked.defaultof<_>)
         // Events
         props |> Interop.getValue<HexViewEditEventArgs->unit> "hexView.edited" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Edited @> element)
@@ -1157,7 +1160,7 @@ type HexViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new HexView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1165,7 +1168,7 @@ type HexViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1175,18 +1178,18 @@ type HexViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> HexView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Label

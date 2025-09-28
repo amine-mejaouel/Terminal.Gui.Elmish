@@ -1686,9 +1686,9 @@ type NumericUpDownElement<'a>(props:IProperty list) =
         props |> Interop.getValue<'a> "numericUpDown`1.increment" |> Option.iter (fun v -> element.Increment <- v )
         props |> Interop.getValue<'a> "numericUpDown`1.value" |> Option.iter (fun v -> element.Value <- v )
         // Events
-        props |> Interop.getValue<string->unit> "numericUpDown`1.formatChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.FormatChanged @> (fun arg -> v arg.CurrentValue) element)
-        props |> Interop.getValue<'a->unit> "numericUpDown`1.incrementChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.IncrementChanged @> (fun arg -> v arg.CurrentValue) element)
-        props |> Interop.getValue<'a->unit> "numericUpDown`1.valueChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanged @> (fun arg -> v arg.CurrentValue) element)
+        props |> Interop.getValue<string->unit> "numericUpDown`1.formatChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.FormatChanged @> (fun arg -> v arg.Value) element)
+        props |> Interop.getValue<'a->unit> "numericUpDown`1.incrementChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.IncrementChanged @> (fun arg -> v arg.Value) element)
+        props |> Interop.getValue<'a->unit> "numericUpDown`1.valueChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanged @> (fun arg -> v arg.Value) element)
         props |> Interop.getValue<CancelEventArgs<'a>->unit> "numericUpDown`1.valueChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanging @> v element)
 
     let removeProps (element:NumericUpDown<'a>) props =
@@ -1710,7 +1710,7 @@ type NumericUpDownElement<'a>(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new NumericUpDown<'a>()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1718,7 +1718,7 @@ type NumericUpDownElement<'a>(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1728,18 +1728,18 @@ type NumericUpDownElement<'a>(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> NumericUpDown<'a>
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // NumericUpDown

@@ -2731,29 +2731,33 @@ type TextFieldElement(props:IProperty list) =
         // Properties
         props |> Interop.getValue<IAutocomplete> "textField.autocomplete" |> Option.iter (fun v -> element.Autocomplete <- v )
         props |> Interop.getValue<string> "textField.caption" |> Option.iter (fun v -> element.Caption <- v )
-        props |> Interop.getValue<Color> "textField.captionColor" |> Option.iter (fun v -> element.CaptionColor <- v )
+        props |> Interop.getValue<Terminal.Gui.Drawing.Color> "textField.captionColor" |> Option.iter (fun v -> element.CaptionColor <- v )
         props |> Interop.getValue<Int32> "textField.cursorPosition" |> Option.iter (fun v -> element.CursorPosition <- v )
         props |> Interop.getValue<bool> "textField.readOnly" |> Option.iter (fun v -> element.ReadOnly <- v )
         props |> Interop.getValue<bool> "textField.secret" |> Option.iter (fun v -> element.Secret <- v )
         props |> Interop.getValue<Int32> "textField.selectedStart" |> Option.iter (fun v -> element.SelectedStart <- v )
+        props |> Interop.getValue<bool> "textField.selectWordOnlyOnDoubleClick" |> Option.iter (fun v -> element.SelectWordOnlyOnDoubleClick <- v )
         props |> Interop.getValue<string> "textField.text" |> Option.iter (fun v -> element.Text <- v )
         props |> Interop.getValue<bool> "textField.used" |> Option.iter (fun v -> element.Used <- v )
+        props |> Interop.getValue<bool> "textField.useSameRuneTypeForWords" |> Option.iter (fun v -> element.UseSameRuneTypeForWords <- v )
         // Events
-        props |> Interop.getValue<CancelEventArgs<string>->unit> "textField.textChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.TextChanging @> v element)
+        props |> Interop.getValue<ResultEventArgs<string>->unit> "textField.textChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.TextChanging @> v element)
 
     let removeProps (element:TextField) props =
         // Properties
         props |> Interop.getValue<IAutocomplete> "textField.autocomplete" |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "textField.caption" |> Option.iter (fun _ -> element.Caption <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Color> "textField.captionColor" |> Option.iter (fun _ -> element.CaptionColor <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Terminal.Gui.Drawing.Color> "textField.captionColor" |> Option.iter (fun _ -> element.CaptionColor <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textField.cursorPosition" |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textField.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textField.secret" |> Option.iter (fun _ -> element.Secret <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textField.selectedStart" |> Option.iter (fun _ -> element.SelectedStart <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textField.selectWordOnlyOnDoubleClick" |> Option.iter (fun _ -> element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "textField.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textField.used" |> Option.iter (fun _ -> element.Used <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "textField.useSameRuneTypeForWords" |> Option.iter (fun _ -> element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<CancelEventArgs<string>->unit> "textField.textChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.TextChanging @> element)
+        props |> Interop.getValue<ResultEventArgs<string>->unit> "textField.textChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.TextChanging @> element)
 
     override _.name = $"TextField"
 
@@ -2763,7 +2767,7 @@ type TextFieldElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TextField()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2771,7 +2775,7 @@ type TextFieldElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2781,18 +2785,18 @@ type TextFieldElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TextField
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TextValidateField

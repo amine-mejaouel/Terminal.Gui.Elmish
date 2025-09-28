@@ -346,8 +346,8 @@ type BarElement(props:IProperty list) =
         props |> Interop.getValue<AlignmentModes> "bar.alignmentModes" |> Option.iter (fun v -> element.AlignmentModes <- v )
         props |> Interop.getValue<Orientation> "bar.orientation" |> Option.iter (fun v -> element.Orientation <- v )
         // Events
-        props |> Interop.getValue<Orientation->unit> "bar.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.CurrentValue) element)
-        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "bar.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
+        props |> Interop.getValue<Orientation->unit> "bar.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+        props |> Interop.getValue<App.CancelEventArgs<Orientation>->unit> "bar.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     let removeProps (element:Bar) props =
         // Properties
@@ -355,7 +355,7 @@ type BarElement(props:IProperty list) =
         props |> Interop.getValue<Orientation> "bar.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         // Events
         props |> Interop.getValue<Orientation->unit> "bar.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-        props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "bar.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        props |> Interop.getValue<App.CancelEventArgs<Orientation>->unit> "bar.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
 
     override _.name = $"Bar"
 
@@ -365,7 +365,7 @@ type BarElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Bar()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -373,7 +373,7 @@ type BarElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -383,18 +383,18 @@ type BarElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Bar
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Border

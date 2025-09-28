@@ -2998,7 +2998,7 @@ type TileViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3008,18 +3008,18 @@ type TileViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TileView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TimeField
@@ -3050,7 +3050,7 @@ type TimeFieldElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TimeField()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3058,7 +3058,7 @@ type TimeFieldElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3068,18 +3068,18 @@ type TimeFieldElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TimeField
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Toplevel
@@ -3088,15 +3088,10 @@ type ToplevelElement(props:IProperty list) =
 
     let setProps (element: Toplevel) props =
         // Properties
-        props |> Interop.getValue<bool> "toplevel.isOverlappedContainer" |> Option.iter (fun v -> element.IsOverlappedContainer <- v )
         props |> Interop.getValue<bool> "toplevel.modal" |> Option.iter (fun v -> element.Modal <- v )
         props |> Interop.getValue<bool> "toplevel.running" |> Option.iter (fun v -> element.Running <- v )
         // Events
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.activate" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Activate @> v element)
-        props |> Interop.getValue<unit->unit> "toplevel.allChildClosed" |> Option.iter (fun v -> Interop.setEventHandler <@ element.AllChildClosed @> (fun _ -> v()) element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childClosed" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ChildClosed @> v element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childLoaded" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ChildLoaded @> v element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childUnloaded" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ChildUnloaded @> v element)
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.closed" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Closed @> v element)
         props |> Interop.getValue<ToplevelClosingEventArgs->unit> "toplevel.closing" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Closing @> v element)
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.deactivate" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Deactivate @> v element)
@@ -3107,15 +3102,10 @@ type ToplevelElement(props:IProperty list) =
 
     let removeProps (element:Toplevel) props =
         // Properties
-        props |> Interop.getValue<bool> "toplevel.isOverlappedContainer" |> Option.iter (fun _ -> element.IsOverlappedContainer <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "toplevel.modal" |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "toplevel.running" |> Option.iter (fun _ -> element.Running <- Unchecked.defaultof<_>)
         // Events
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.activate" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Activate @> element)
-        props |> Interop.getValue<unit->unit> "toplevel.allChildClosed" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.AllChildClosed @> element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childClosed" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ChildClosed @> element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childLoaded" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ChildLoaded @> element)
-        props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.childUnloaded" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ChildUnloaded @> element)
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.closed" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Closed @> element)
         props |> Interop.getValue<ToplevelClosingEventArgs->unit> "toplevel.closing" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Closing @> element)
         props |> Interop.getValue<ToplevelEventArgs->unit> "toplevel.deactivate" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Deactivate @> element)
@@ -3132,7 +3122,7 @@ type ToplevelElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Toplevel()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -3140,7 +3130,7 @@ type ToplevelElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -3150,18 +3140,18 @@ type ToplevelElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Toplevel
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TreeView<'a when 'a : not struct>

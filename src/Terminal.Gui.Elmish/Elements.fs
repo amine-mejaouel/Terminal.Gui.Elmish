@@ -1539,36 +1539,22 @@ type MarginElement(props:IProperty list) =
 
 
 // MenuBar
-type MenuBarElement(props:IProperty list) =
+type MenuBarv2Element(props:IProperty list) =
     inherit TerminalElement(props)
 
-    let setProps (element: MenuBar) props =
+    let setProps (element: MenuBarv2) props =
         // Properties
-        props |> Interop.getValue<Key> "menuBar.key" |> Option.iter (fun v -> element.Key <- v )
-        props |> Interop.getValue<MenuBarItem list> "menuBar.menus" |> Option.iter (fun v -> element.Menus <- v |> List.toArray)
-        props |> Interop.getValue<LineStyle> "menuBar.menusBorderStyle" |> Option.iter (fun v -> element.MenusBorderStyle <- v )
-        props |> Interop.getValue<bool> "menuBar.useKeysUpDownAsKeysLeftRight" |> Option.iter (fun v -> element.UseKeysUpDownAsKeysLeftRight <- v )
-        props |> Interop.getValue<bool> "menuBar.useSubMenusSingleFrame" |> Option.iter (fun v -> element.UseSubMenusSingleFrame <- v )
-        props |> Interop.getValue<bool> "menuBar.visible" |> Option.iter (fun v -> element.Visible <- v )
+        props |> Interop.getValue<Key> "menuBarv2.key" |> Option.iter (fun v -> element.Key <- v )
+        props |> Interop.getValue<MenuBarItemv2 list> "menuBarv2.menus" |> Option.iter (fun v -> element.Menus <- v |> List.toArray)
         // Events
-        props |> Interop.getValue<unit->unit> "menuBar.menuAllClosed" |> Option.iter (fun v -> Interop.setEventHandler <@ element.MenuAllClosed @> (fun _ -> v()) element)
-        props |> Interop.getValue<MenuClosingEventArgs->unit> "menuBar.menuClosing" |> Option.iter (fun v -> Interop.setEventHandler <@ element.MenuClosing @> v element)
-        props |> Interop.getValue<MenuOpenedEventArgs->unit> "menuBar.menuOpened" |> Option.iter (fun v -> Interop.setEventHandler <@ element.MenuOpened @> v element)
-        props |> Interop.getValue<MenuOpeningEventArgs->unit> "menuBar.menuOpening" |> Option.iter (fun v -> Interop.setEventHandler <@ element.MenuOpening @> v element)
+        props |> Interop.getValue<KeyChangedEventArgs->unit> "menuBarv2.keyChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
-    let removeProps (element:MenuBar) props =
+    let removeProps (element:MenuBarv2) props =
         // Properties
-        props |> Interop.getValue<Key> "menuBar.key" |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<MenuBarItem list> "menuBar.menus" |> Option.iter (fun _ -> element.Menus <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<LineStyle> "menuBar.menusBorderStyle" |> Option.iter (fun _ -> element.MenusBorderStyle <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "menuBar.useKeysUpDownAsKeysLeftRight" |> Option.iter (fun _ -> element.UseKeysUpDownAsKeysLeftRight <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "menuBar.useSubMenusSingleFrame" |> Option.iter (fun _ -> element.UseSubMenusSingleFrame <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "menuBar.visible" |> Option.iter (fun _ -> element.Visible <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Key> "menuBarv2.key" |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<MenuBarItemv2 list> "menuBarv2.menus" |> Option.iter (fun _ -> element.Menus <- Unchecked.defaultof<_>)
         // Events
-        props |> Interop.getValue<unit->unit> "menuBar.menuAllClosed" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MenuAllClosed @> element)
-        props |> Interop.getValue<MenuClosingEventArgs->unit> "menuBar.menuClosing" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MenuClosing @> element)
-        props |> Interop.getValue<MenuOpenedEventArgs->unit> "menuBar.menuOpened" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MenuOpened @> element)
-        props |> Interop.getValue<MenuOpeningEventArgs->unit> "menuBar.menuOpening" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MenuOpening @> element)
+        props |> Interop.getValue<KeyChangedEventArgs->unit> "menuBarv2.keyChanged" |> Option.iter (fun v -> Interop.removeEventHandler <@ element.KeyChanged @> element)
 
     override _.name = $"MenuBar"
 
@@ -1578,59 +1564,7 @@ type MenuBarElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
 
-        let el = new MenuBar()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        ViewElement.setProps el props
-        setProps el props
-        props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
-        
-
-
-    override this.canUpdate prevElement oldProps =
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
-        let canUpdateElement =
-            true
-
-        canUpdateView && canUpdateElement
-        
-
-
-    override this.update prevElement oldProps = 
-        let element = prevElement :?> MenuBar
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        ViewElement.setProps prevElement changedProps
-        setProps element changedProps
-        this.element <- prevElement    
-        
-
-
-// MenuBarv2
-type MenuBarv2Element(props:IProperty list) =
-    inherit TerminalElement(props)
-
-    let setProps (element: MenuBarv2) props =
-        // No properties or events MenuBarv2
-        ()
-
-    let removeProps (element:MenuBarv2) props =
-        // No properties or events MenuBarv2
-        ()
-
-    override _.name = $"MenuBarv2"
-
-
-    override this.create parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-        
 
         let el = new MenuBarv2()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1638,7 +1572,7 @@ type MenuBarv2Element(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1648,18 +1582,37 @@ type MenuBarv2Element(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> MenuBarv2
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
+    override this.canUpdate prevElement oldProps =
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
+        let canUpdateElement =
+            true
+
+        canUpdateView && canUpdateElement
+
+
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> MenuBarv2
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        ViewElement.removeProps prevElement removedProps
+        removeProps element removedProps
+        ViewElement.setProps prevElement changedProps
+        setProps element changedProps
+        this.element <- prevElement
+
 
 
 // Menuv2

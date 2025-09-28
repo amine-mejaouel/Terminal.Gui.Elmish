@@ -2356,7 +2356,7 @@ type SliderElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Slider()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2364,7 +2364,7 @@ type SliderElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2374,18 +2374,18 @@ type SliderElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Slider
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // SpinnerView
@@ -2418,7 +2418,7 @@ type SpinnerViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new SpinnerView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2426,7 +2426,7 @@ type SpinnerViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2436,18 +2436,18 @@ type SpinnerViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> SpinnerView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // StatusBar
@@ -2470,7 +2470,7 @@ type StatusBarElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new StatusBar()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2478,7 +2478,7 @@ type StatusBarElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2488,18 +2488,18 @@ type StatusBarElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> StatusBar
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Tab
@@ -2512,7 +2512,7 @@ type TabElement(props:IProperty list) =
 
         props
         |> Interop.getValue<TerminalElement> "tab.view"
-        |> Option.iter (fun v -> 
+        |> Option.iter (fun v ->
             v.create (Some element)
             element.View <- v.element
         )
@@ -2530,7 +2530,7 @@ type TabElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Tab()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2538,7 +2538,7 @@ type TabElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2548,18 +2548,18 @@ type TabElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Tab
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TabView
@@ -2582,10 +2582,10 @@ type TabViewElement(props:IProperty list) =
             |> List.iter (fun tabItems ->
                 tabItems.create (Some element)
                 element.AddTab ((tabItems.element :?> Tab), false)
-                
+
                 )
             )
-            
+
 
     let removeProps (element:TabView) props =
         // Properties
@@ -2605,7 +2605,7 @@ type TabViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TabView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2613,7 +2613,7 @@ type TabViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2623,18 +2623,18 @@ type TabViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TabView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TableView
@@ -2644,7 +2644,7 @@ type TableViewElement(props:IProperty list) =
     let setProps (element: TableView) props =
         // Properties
         props |> Interop.getValue<KeyCode> "tableView.cellActivationKey" |> Option.iter (fun v -> element.CellActivationKey <- v )
-        props |> Interop.getValue<CollectionNavigatorBase> "tableView.collectionNavigator" |> Option.iter (fun v -> element.CollectionNavigator <- v )
+        props |> Interop.getValue<ICollectionNavigator> "tableView.collectionNavigator" |> Option.iter (fun v -> element.CollectionNavigator <- v )
         props |> Interop.getValue<Int32> "tableView.columnOffset" |> Option.iter (fun v -> element.ColumnOffset <- v )
         props |> Interop.getValue<bool> "tableView.fullRowSelect" |> Option.iter (fun v -> element.FullRowSelect <- v )
         props |> Interop.getValue<Int32> "tableView.maxCellWidth" |> Option.iter (fun v -> element.MaxCellWidth <- v )
@@ -2665,7 +2665,7 @@ type TableViewElement(props:IProperty list) =
     let removeProps (element:TableView) props =
         // Properties
         props |> Interop.getValue<KeyCode> "tableView.cellActivationKey" |> Option.iter (fun _ -> element.CellActivationKey <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<CollectionNavigatorBase> "tableView.collectionNavigator" |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<ICollectionNavigator> "tableView.collectionNavigator" |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "tableView.columnOffset" |> Option.iter (fun _ -> element.ColumnOffset <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "tableView.fullRowSelect" |> Option.iter (fun _ -> element.FullRowSelect <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "tableView.maxCellWidth" |> Option.iter (fun _ -> element.MaxCellWidth <- Unchecked.defaultof<_>)
@@ -2691,7 +2691,7 @@ type TableViewElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new TableView()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2699,7 +2699,7 @@ type TableViewElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2709,18 +2709,18 @@ type TableViewElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> TableView
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // TextField

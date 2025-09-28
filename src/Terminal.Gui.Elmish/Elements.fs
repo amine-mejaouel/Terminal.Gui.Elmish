@@ -1766,7 +1766,7 @@ type OpenDialogElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new OpenDialog()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1774,7 +1774,7 @@ type OpenDialogElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1784,18 +1784,18 @@ type OpenDialogElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> OpenDialog
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Padding
@@ -1803,12 +1803,10 @@ type PaddingElement(props:IProperty list) =
     inherit TerminalElement(props)
 
     let setProps (element: Padding) props =
-        // Properties
-        props |> Interop.getValue<ColorScheme> "padding.colorScheme" |> Option.iter (fun v -> element.ColorScheme <- v )
+        ()
 
     let removeProps (element:Padding) props =
-        // Properties
-        props |> Interop.getValue<ColorScheme> "padding.colorScheme" |> Option.iter (fun _ -> element.ColorScheme <- Unchecked.defaultof<_>)
+        ()
 
     override _.name = $"Padding"
 
@@ -1818,7 +1816,7 @@ type PaddingElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Padding()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -1826,7 +1824,7 @@ type PaddingElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -1836,18 +1834,18 @@ type PaddingElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Padding
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // ProgressBar

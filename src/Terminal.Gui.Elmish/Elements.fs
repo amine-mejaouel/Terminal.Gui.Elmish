@@ -2186,28 +2186,26 @@ type ShortcutElement(props:IProperty list) =
         // Properties
         props |> Interop.getValue<Action> "shortcut.action" |> Option.iter (fun v -> element.Action <- v )
         props |> Interop.getValue<AlignmentModes> "shortcut.alignmentModes" |> Option.iter (fun v -> element.AlignmentModes <- v )
-        props |> Interop.getValue<ColorScheme> "shortcut.colorScheme" |> Option.iter (fun v -> element.ColorScheme <- v )
+        props |> Interop.getValue<bool> "shortcut.forceFocusColors" |> Option.iter (fun v -> element.ForceFocusColors <- v )
         props |> Interop.getValue<string> "shortcut.helpText" |> Option.iter (fun v -> element.HelpText <- v )
-        props |> Interop.getValue<Key> "shortcut.key" |> Option.iter (fun v -> element.Key <- v )
-        props |> Interop.getValue<KeyBindingScope> "shortcut.keyBindingScope" |> Option.iter (fun v -> element.KeyBindingScope <- v )
-        props |> Interop.getValue<Int32> "shortcut.minimumKeyTextSize" |> Option.iter (fun v -> element.MinimumKeyTextSize <- v )
-        props |> Interop.getValue<Orientation> "shortcut.orientation" |> Option.iter (fun v -> element.Orientation <- v )
         props |> Interop.getValue<string> "shortcut.text" |> Option.iter (fun v -> element.Text <- v )
+        props |> Interop.getValue<bool> "shortcut.bindKeyToApplication" |> Option.iter (fun v -> element.BindKeyToApplication <- v )
+        props |> Interop.getValue<Key> "shortcut.key" |> Option.iter (fun v -> element.Key <- v )
+        props |> Interop.getValue<Int32> "shortcut.minimumKeyTextSize" |> Option.iter (fun v -> element.MinimumKeyTextSize <- v )
         // Events
-        props |> Interop.getValue<Orientation->unit> "shortcut.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.CurrentValue) element)
+        props |> Interop.getValue<Orientation->unit> "shortcut.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
         props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "shortcut.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     let removeProps (element:Shortcut) props =
         // Properties
         props |> Interop.getValue<Action> "shortcut.action" |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
         props |> Interop.getValue<AlignmentModes> "shortcut.alignmentModes" |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<ColorScheme> "shortcut.colorScheme" |> Option.iter (fun _ -> element.ColorScheme <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "shortcut.forceFocusColors" |> Option.iter (fun _ -> element.ForceFocusColors <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "shortcut.helpText" |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Key> "shortcut.key" |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<KeyBindingScope> "shortcut.keyBindingScope" |> Option.iter (fun _ -> element.KeyBindingScope <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Int32> "shortcut.minimumKeyTextSize" |> Option.iter (fun _ -> element.MinimumKeyTextSize <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<Orientation> "shortcut.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "shortcut.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<bool> "shortcut.bindKeyToApplication" |> Option.iter (fun _ -> element.BindKeyToApplication <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Key> "shortcut.key" |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<Int32> "shortcut.minimumKeyTextSize" |> Option.iter (fun _ -> element.MinimumKeyTextSize <- Unchecked.defaultof<_>)
         // Events
         props |> Interop.getValue<Orientation->unit> "shortcut.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
         props |> Interop.getValue<CancelEventArgs<Orientation>->unit> "shortcut.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
@@ -2220,7 +2218,7 @@ type ShortcutElement(props:IProperty list) =
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
         this.parent <- parent
-        
+
 
         let el = new Shortcut()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
@@ -2228,7 +2226,7 @@ type ShortcutElement(props:IProperty list) =
         setProps el props
         props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
         this.element <- el
-        
+
 
 
     override this.canUpdate prevElement oldProps =
@@ -2238,18 +2236,18 @@ type ShortcutElement(props:IProperty list) =
             true
 
         canUpdateView && canUpdateElement
-        
 
 
-    override this.update prevElement oldProps = 
+
+    override this.update prevElement oldProps =
         let element = prevElement :?> Shortcut
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
-        
+        this.element <- prevElement
+
 
 
 // Slider<'a>

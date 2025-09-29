@@ -43,18 +43,11 @@ type TerminalElement (props:IProperty list) =
     abstract name: string
 
 
-
-open System
-open System.Text
 open System.Drawing
-open System.ComponentModel
 open System.Collections.ObjectModel
 open System.IO
-open System.Collections.Generic
 open System.Collections.Specialized
 open System.Globalization
-open Terminal.Gui.Elmish
-open Terminal.Gui
 
 module ViewElement =
 
@@ -719,7 +712,6 @@ type ComboBoxElement(props:IProperty list) =
 
     let removeProps (element:ComboBox) props =
         // Properties
-        props |> Interop.getValue<Scheme> "comboBox.colorScheme" |> Option.iter (fun _ -> element.SetScheme(Unchecked.defaultof<_>) |> ignore)
         props |> Interop.getValue<bool> "comboBox.hideDropdownListOnClick" |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "comboBox.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
         props |> Interop.getValue<string> "comboBox.searchText" |> Option.iter (fun _ -> element.SearchText <- Unchecked.defaultof<_>)

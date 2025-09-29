@@ -4,12 +4,14 @@ open System.Linq.Expressions
 open System.Text
 open System
 open Terminal.Gui
+open Terminal.Gui.Drawing
+open Terminal.Gui.ViewBase
 
 module internal EventHelpers =
 
     open System.Reflection
-    
-    type Expr = 
+
+    type Expr =
         static member Quote(e:Expression<System.Func<_, _>>) = e
         static member Quote(e:Expression<System.Action<_>>) = e
 
@@ -18,14 +20,14 @@ module internal EventHelpers =
         //if eventInfo |> isNull then
         //    []
         //else
-        
+
         let field = o.GetType().GetField(eventName, BindingFlags.Instance ||| BindingFlags.NonPublic ||| BindingFlags.Instance ||| BindingFlags.FlattenHierarchy)
         let baseField = o.GetType().BaseType.GetField(eventName, BindingFlags.Instance ||| BindingFlags.NonPublic ||| BindingFlags.Instance ||| BindingFlags.FlattenHierarchy)
-        let eventDelegate = 
-            if field |> isNull |> not then 
-                field.GetValue(o) :?> MulticastDelegate 
-            elif baseField |> isNull |> not then 
-                baseField.GetValue(o) :?> MulticastDelegate 
+        let eventDelegate =
+            if field |> isNull |> not then
+                field.GetValue(o) :?> MulticastDelegate
+            elif baseField |> isNull |> not then
+                baseField.GetValue(o) :?> MulticastDelegate
             else null
         if (eventDelegate |> isNull) then
             []
@@ -39,16 +41,16 @@ module internal EventHelpers =
         else
             let field = o.GetType().GetField(eventName, BindingFlags.Instance ||| BindingFlags.NonPublic)
             let baseField = o.GetType().BaseType.GetField(eventName, BindingFlags.Instance ||| BindingFlags.NonPublic ||| BindingFlags.Instance ||| BindingFlags.FlattenHierarchy)
-            let eventDelegate = 
-                if field |> isNull |> not then 
-                    field.GetValue(o) :?> MulticastDelegate 
-                elif baseField |> isNull |> not then 
-                    baseField.GetValue(o) :?> MulticastDelegate 
+            let eventDelegate =
+                if field |> isNull |> not then
+                    field.GetValue(o) :?> MulticastDelegate
+                elif baseField |> isNull |> not then
+                    baseField.GetValue(o) :?> MulticastDelegate
                 else null
             if (eventDelegate |> isNull) then
                 ()
             else
-            
+
                 eventDelegate.GetInvocationList() |> Array.iter (fun d -> eventInfo.RemoveEventHandler(o, d))
 
     let addEventDelegates (eventName:string) (delegates:Delegate list) (o:obj) =
@@ -73,7 +75,7 @@ module Interop =
         |> Seq.cast<KeyValue>
         |> Seq.tryFind (function | KeyValue (pname,_) -> name = pname)
         |> Option.map (function | KeyValue (_,value) -> value :?> 'a)
-        
+
     let inline checkValueGeneric<'a, 'b when 'b :> IProperty> (name: string) (props: 'b list) =
         props
         |> Seq.cast<KeyValue>
@@ -86,7 +88,7 @@ module Interop =
         |> Option.defaultValue defaultValue
 
     let inline mkprop (name:string) (data:obj) : IProperty = KeyValue (name, data)
-    
+
     let inline checkValue<'a> name props = checkValueGeneric<'a, IProperty> name props |> Option.defaultValue false
     let inline getValue<'a> name props = getValueGeneric<'a, IProperty> name props
     let inline getValueDefault<'a> name defaultVal (props:IProperty list) = getValueDefaultGeneric<'a, IProperty> name defaultVal props
@@ -106,19 +108,19 @@ module Interop =
     let getTabItemValue<'a> name (props: ITabItemProperty list) = getValueGeneric<'a, ITabItemProperty> name props
 
     let inline mkstyle (name:string) (data:obj) : IStyle= KeyValue (name, data)
-    
+
     let inline styleExists name (styles:IStyle list) =
         styles
         |> Seq.cast<KeyValue>
         |> Seq.exists (function | KeyValue (pname,_) -> name = pname)
-    
+
     let inline getStyle<'a> name (styles:IStyle list) =
         styles
         |> Seq.cast<KeyValue>
         |> Seq.tryFind (function | KeyValue (pname,_) -> name = pname)
         |> Option.map (function | KeyValue (_,value) -> value :?> 'a)
-    
-    
+
+
     let inline getStyleDefault<'a> name defaultVal (styles:IStyle list) =
         styles
         |> Seq.cast<KeyValue>
@@ -129,7 +131,7 @@ module Interop =
 
     let filterProps (oldprops:IProperty list) (newprops:IProperty list) =
         let get (KeyValue (a,b)) = (a,b)
-        let changedProps = 
+        let changedProps =
             ([],newprops)
             ||> List.fold (fun resultProps newProp ->
                 let kv = newProp :?> KeyValue
@@ -139,7 +141,7 @@ module Interop =
                 | None ->
                     resultProps @ [ newProp ]
                 //| Some oldValue when name = "menubar" ->
-                //    let oldValue = (oldValue :?> MenuBarElement) 
+                //    let oldValue = (oldValue :?> MenuBarElement)
                 //    let newValue = (newValue :?> MenuBarElement)
                 //    resultProps
                 | Some oldValue when name = "children" ->
@@ -161,7 +163,7 @@ module Interop =
                     resultProps
                 | false ->
                     resultProps @ [ oldProp ]
-                
+
             )
         (changedProps, removedProps)
 
@@ -175,7 +177,7 @@ module Interop =
 
 
     let rec getParent (view:View) =
-        view.SuperView 
+        view.SuperView
         |> Option.ofObj
         |> Option.bind (fun p ->
             if p.GetType().Name.Contains("Content") then
@@ -184,7 +186,7 @@ module Interop =
                 Some p
         )
 
-    let cloneColorScheme (scheme:ColorScheme) =
+    let cloneColorScheme (scheme:Scheme) =
         let disabled = scheme.Disabled
         let focus = scheme.Focus
         let hotFocus = scheme.HotFocus
@@ -195,23 +197,23 @@ module Interop =
         let colorHotFocus = Attribute(&hotFocus)
         let colorHotNormal = Attribute(&hotNormal)
         let colorNormal = Attribute(&normal)
-        ColorScheme(Disabled=colorDisabled,Focus=colorFocus,HotFocus=colorHotFocus,HotNormal=colorHotNormal,Normal=colorNormal)
+        Scheme(Disabled=colorDisabled,Focus=colorFocus,HotFocus=colorHotFocus,HotNormal=colorHotNormal,Normal=colorNormal)
 
-    
+
 
     let removeEventHandlerIfNecessary evName element =
         let eventDel = EventHelpers.getEventDelegates evName element
         if (eventDel.Length > 0) then
             EventHelpers.clearEventDelegates evName element
-            
+
     open Microsoft.FSharp.Quotations
     open Microsoft.FSharp.Quotations.Patterns
     open Microsoft.FSharp.Quotations.DerivedPatterns
     open FSharp.Linq.RuntimeHelpers
-    
-    
+
+
     /// Get the property name from an event expression
-    /// i don'T like it, it's unnecessary complicated to get the name as sting from this particualr expression 
+    /// i don'T like it, it's unnecessary complicated to get the name as sting from this particualr expression
     let private getPropNameFromEvent (eventExpr: Expr<IEvent<'a,'b>>) =
         match eventExpr with
         | Call (a, mi, expr) ->
@@ -229,7 +231,7 @@ module Interop =
             else
                 None
         | _ -> None
-    
+
     /// Set an event handler for an event on an element and remove the previous handler
     let setEventHandler (eventExpr: Expr<IEvent<'a,'b>>) (eventHandler:'b->unit) element  =
         let evName = getPropNameFromEvent eventExpr
@@ -241,8 +243,8 @@ module Interop =
                 EventHelpers.clearEventDelegates evName element
             let event = unbox<IEvent<'a,'b>>(LeafExpressionConverter.EvaluateQuotation eventExpr)
             event.Add(eventHandler)
-        
-        
+
+
     let removeEventHandler (eventExpr: Expr<IEvent<'a,'b>>) element =
         let evName = getPropNameFromEvent eventExpr
         match evName with
@@ -251,11 +253,11 @@ module Interop =
             let eventDel = EventHelpers.getEventDelegates evName element
             if (eventDel.Length > 0) then
                 EventHelpers.clearEventDelegates evName element
-            
-        
-        
-        
-        
+
+
+
+
+
     /// Set an event handler for an event on an element and remove the previous handler
     let setEventHandlerExpr (eventExpr: Expression<Func<_,IEvent<'a,'b>>>) eventHandler element =
         let evName =
@@ -264,18 +266,18 @@ module Interop =
                 let property = (me.Object :?> MemberExpression)
                 property.Member.Name
             | _ -> raise (ArgumentException("Invalid event expression"))
-            
+
         let eventDel = EventHelpers.getEventDelegates evName element
         if (eventDel.Length > 0) then
             EventHelpers.clearEventDelegates evName element
-            
+
         let event = eventExpr.Compile()
         let e = event.Invoke() // :?> IEvent<'a,'b>
         e.Add(eventHandler)
-            
-        
-        
-    
+
+
+
+
 [<RequireQualifiedAccess>]
 module internal Checker =
 

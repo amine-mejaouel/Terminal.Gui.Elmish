@@ -2873,7 +2873,6 @@ type TextViewElement(props:IProperty list) =
         props |> Interop.getValue<Int32> "textView.leftColumn" |> Option.iter (fun _ -> element.LeftColumn <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.multiline" |> Option.iter (fun _ -> element.Multiline <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.readOnly" |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<bool> "textView.selecting" |> Option.iter (fun _ -> element.Selecting <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.selectionStartColumn" |> Option.iter (fun _ -> element.SelectionStartColumn <- Unchecked.defaultof<_>)
         props |> Interop.getValue<Int32> "textView.selectionStartRow" |> Option.iter (fun _ -> element.SelectionStartRow <- Unchecked.defaultof<_>)
         props |> Interop.getValue<bool> "textView.selectWordOnlyOnDoubleClick" |> Option.iter (fun _ -> element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)

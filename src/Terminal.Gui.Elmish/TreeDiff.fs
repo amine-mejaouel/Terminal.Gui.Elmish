@@ -2,35 +2,35 @@
 
 module Differ =
 
-    open Terminal.Gui
+    open Terminal.Gui.ViewBase
     open Terminal.Gui.Elmish.Elements
     open System.Linq
 
     //traverse Tree and get the Name of ever child
     let rec disposeTree (tree:View) =
-        match tree.Subviews.ToArray() with
+        match tree.SubViews.ToArray() with
         | [||] ->
             tree.Dispose()
             System.Diagnostics.Trace.WriteLine ($"{tree.GetType().Name} disposed!")
             ()
         | _ ->
-            tree.Subviews
+            tree.SubViews
             |> Seq.iter (fun e -> disposeTree e)
             ()
-        
-    
+
+
     let (|OnlyPropsChanged|_|) (ve1:TerminalElement,ve2:TerminalElement) =
         let cve1 = ve1.children |> List.map (fun e -> e.name) |> List.sort
         let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
-        
+
         if cve1 = cve2 then Some () else None
 
     let (|ChildsDifferent|_|) (ve1:TerminalElement,ve2:TerminalElement) =
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
-        
+
         let cve1 = ve1.children |> List.map (fun e -> e.name) |> List.sort
         let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
         if cve1 <> cve2 then Some () else None
@@ -39,8 +39,8 @@ module Differ =
     let rec initializeTree (parent:View option) (tree:TerminalElement) =
         tree.create parent
         tree.children |> List.iter (fun e -> initializeTree (Some tree.element) e)
-        
-            
+
+
 
 
 
@@ -61,7 +61,7 @@ module Differ =
                 let parent = rootTree.element |> Interop.getParent
                 parent |> Option.iter (fun p -> p.Remove rootTree.element |> ignore)
                 disposeTree rootTree.element
-                rootTree.element.RemoveAll()
+                rootTree.element.RemoveAll() |> ignore
                 rootTree.element.Dispose()
                 #if DEBUG
                 System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
@@ -89,7 +89,7 @@ module Differ =
             let groupedNewType = sortedNewChildren |> List.map (fun v -> v.name) |> List.distinct
             let allTypes = groupedRootType @ groupedNewType |> List.distinct
 
-        
+
             allTypes
             |> List.iter (fun et ->
                 let rootElements = sortedRootChildren |> List.filter (fun e -> e.name = et)
@@ -102,14 +102,14 @@ module Differ =
                         else
                             // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                             // don't know
-                            if rootTree.element.Subviews.Count = 0 then
+                            if rootTree.element.SubViews.Count = 0 then
                                 rootTree.element.CanFocus <- true
                             let newElem = initializeTree (Some rootTree.element) ne
                             newElem
                         #if DEBUG
                             System.Diagnostics.Trace.WriteLine ($"child {ne.name} created ()!")
                         #endif
-                
+
                     )
                 else
                     rootElements
@@ -124,7 +124,7 @@ module Differ =
                             System.Diagnostics.Trace.WriteLine ($"child {re.name} removed and disposed!")
                         #endif
                             ()
-                    
+
                     )
             )
         | _ ->

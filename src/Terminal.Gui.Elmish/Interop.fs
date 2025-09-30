@@ -129,14 +129,14 @@ module Interop =
         |> Option.defaultValue defaultVal
 
 
-    let filterProps (oldprops:IProperty list) (newprops:IProperty list) =
+    let filterProps (oldProps:IProperty list) (newProps:IProperty list) =
         let get (KeyValue (a,b)) = (a,b)
         let changedProps =
-            ([],newprops)
+            ([],newProps)
             ||> List.fold (fun resultProps newProp ->
                 let kv = newProp :?> KeyValue
                 let (name,newValue) = kv |> get
-                let oldValue = oldprops |> getValue name
+                let oldValue = oldProps |> getValue name
                 match oldValue with
                 | None ->
                     resultProps @ [ newProp ]
@@ -153,11 +153,11 @@ module Interop =
             )
 
         let removedProps =
-            ([],oldprops)
+            ([],oldProps)
             ||> List.fold (fun resultProps oldProp ->
                 let op = oldProp :?> KeyValue
                 let (name,_) = op |> get
-                let newProp = newprops |> valueExists name
+                let newProp = newProps |> valueExists name
                 match newProp with
                 | true ->
                     resultProps

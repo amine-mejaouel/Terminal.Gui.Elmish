@@ -1530,6 +1530,59 @@ type MarginElement(props:IProperty list) =
 
 
 
+// MenuBarItemv2
+type MenuBarItemv2Element(props: IProperty list) =
+    inherit TerminalElement(props)
+
+    let setProps (element: MenuBarItemv2) props =
+        // Properties
+        props |> Interop.getValue<PopoverMenu> "menuBarItemv2.popoverMenu" |> Option.iter (fun v -> element.PopoverMenu <- v )
+        props |> Interop.getValue<bool> "menuBarItemv2.popoverMenuOpen" |> Option.iter (fun v -> element.PopoverMenuOpen <- v )
+        // Events
+        props |> Interop.getValue<bool->unit> "menuv2.popoverMenuOpenChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
+
+    let removeProps (element: MenuBarItemv2) props =
+        // Properties
+        props |> Interop.getValue<PopoverMenu> "menuBarItemv2.popoverMenu" |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_> )
+        props |> Interop.getValue<bool> "menuBarItemv2.popoverMenuOpen" |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_> )
+        // Events
+        props |> Interop.getValue<bool->unit> "menuv2.popoverMenuOpenChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.PopoverMenuOpenChanged @> element)
+
+    override this.name = "MenuBarItemv2"
+
+    override this.create(parent) =
+        #if DEBUG
+        Diagnostics.Trace.WriteLine $"{this.name} created!"
+        #endif
+        this.parent <- parent
+
+
+        let el = new MenuBarItemv2()
+        parent |> Option.iter (fun p -> p.Add el |> ignore)
+        ViewElement.setProps el props
+        setProps el props
+        props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
+        this.element <- el
+
+    override this.canUpdate prevElement oldProps =
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
+        let canUpdateElement =
+            true
+
+        canUpdateView && canUpdateElement
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> MenuBarItemv2
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        ViewElement.removeProps prevElement removedProps
+        removeProps element removedProps
+        ViewElement.setProps prevElement changedProps
+        setProps element changedProps
+        this.element <- prevElement
+
+
+
 // MenuBar
 type MenuBarv2Element(props:IProperty list) =
     inherit TerminalElement(props)
@@ -1537,14 +1590,20 @@ type MenuBarv2Element(props:IProperty list) =
     let setProps (element: MenuBarv2) props =
         // Properties
         props |> Interop.getValue<Key> "menuBarv2.key" |> Option.iter (fun v -> element.Key <- v )
-        props |> Interop.getValue<MenuBarItemv2 list> "menuBarv2.menus" |> Option.iter (fun v -> element.Menus <- v |> List.toArray)
+
+        // NOTE: No need to handle `Menus: MenuBarItemv2Element list` property here,
+        //       as it already registered as "children" property
+
         // Events
         props |> Interop.getValue<KeyChangedEventArgs->unit> "menuBarv2.keyChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     let removeProps (element:MenuBarv2) props =
         // Properties
         props |> Interop.getValue<Key> "menuBarv2.key" |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<MenuBarItemv2 list> "menuBarv2.menus" |> Option.iter (fun _ -> element.Menus <- Unchecked.defaultof<_>)
+
+        // NOTE: No need to handle `Menus: MenuBarItemv2Element list` property here,
+        //       as it already registered as "children" property
+
         // Events
         props |> Interop.getValue<KeyChangedEventArgs->unit> "menuBarv2.keyChanged" |> Option.iter (fun v -> Interop.removeEventHandler <@ element.KeyChanged @> element)
 
@@ -1555,9 +1614,8 @@ type MenuBarv2Element(props:IProperty list) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
+
         this.parent <- parent
-
-
         let el = new MenuBarv2()
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
@@ -1585,7 +1643,6 @@ type MenuBarv2Element(props:IProperty list) =
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
         this.element <- prevElement
-
 
 
 // Menuv2

@@ -18,7 +18,6 @@ module Differ =
             |> Seq.iter (fun e -> disposeTree e)
             ()
 
-
     let (|OnlyPropsChanged|_|) (ve1:TerminalElement,ve2:TerminalElement) =
         let cve1 = ve1.children |> List.map (fun e -> e.name) |> List.sort
         let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
@@ -35,14 +34,9 @@ module Differ =
         let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
         if cve1 <> cve2 then Some () else None
 
-
     let rec initializeTree (parent:View option) (tree:TerminalElement) =
         tree.create parent
         tree.children |> List.iter (fun e -> initializeTree (Some tree.element) e)
-
-
-
-
 
     let rec update (rootTree:TerminalElement) (newTree:TerminalElement) =
         match rootTree, newTree with

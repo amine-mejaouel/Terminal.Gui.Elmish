@@ -395,15 +395,15 @@ type margin =
     // Properties
     static member inline shadowStyle (value:ShadowStyle) = Interop.mkprop "margin.shadowStyle" value
 
-// MenuBar
+// MenuBarV2
 type menuBarV2 =
     // Properties
     static member inline key (value:Key) = Interop.mkprop "menuBarv2.key" value
-    static member inline menus (value:MenuBarItemv2 list) = Interop.mkprop "menuBarv2.menus" value
+    static member inline menus (value:MenuBarItemv2Element list) = Interop.mkprop "children" (value |> List.map (fun v -> v :> TerminalElement))
     // Events
     static member inline keyChanged (handler:KeyChangedEventArgs->unit) = Interop.mkprop "menuBarv2.keyChanged" handler
 
-type MenuV2 =
+type menuV2 =
     // Properties
     static member inline selectedMenuItem (value: MenuItemv2 list) = Interop.mkprop "menuv2.selectedMenuItem" value
     static member inline superMenuItem (value: MenuItemv2 list) = Interop.mkprop "menuv2.superMenuItem" value

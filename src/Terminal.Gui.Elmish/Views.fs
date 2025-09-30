@@ -9,15 +9,9 @@
 namespace Terminal.Gui.Elmish
 
 open System
-open System.ComponentModel
-open System.Linq.Expressions
-open System.Text
-open System.Linq
-open Terminal.Gui
 open Terminal.Gui.App
 open Terminal.Gui.Elmish
 open Terminal.Gui.Elmish.Elements
-open Terminal.Gui.Elmish.EventHelpers
 open Terminal.Gui.Views
 
 type View =
@@ -339,6 +333,9 @@ type View =
             prop.title title
         ]
         Menuv2Element(props) :> TerminalElement
+
+    static member inline menuBarItemv2 (props:IProperty list) =
+        MenuBarItemv2Element(props)
 
     /// <seealso cref="Terminal.Gui.NumericUpDown"/>
     static member inline numericUpDown (props:IProperty list) = NumericUpDownElement(props) :> TerminalElement
@@ -707,8 +704,6 @@ type View =
 
 
 module Dialogs =
-    open System
-
     let showWizard (wizard:Wizard) =
         Application.Run(wizard)
         wizard.Dispose()

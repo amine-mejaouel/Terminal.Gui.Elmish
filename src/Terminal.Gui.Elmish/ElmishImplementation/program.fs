@@ -30,6 +30,9 @@ type Program<'arg, 'model, 'msg, 'view> = private {
 [<RequireQualifiedAccess>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Program =
+    let mutable unitTestMode = false
+    let mutable (topView: Terminal.Gui.ViewBase.View option) = None
+
     /// Typical program, new commands are produced by `init` and `update` along with the new state.
     let mkProgram
         (init : 'arg -> 'model * Cmd<'msg>)
@@ -131,7 +134,9 @@ module Program =
     /// arg: argument to pass to the init() function.
     /// program: program created with 'mkSimple' or 'mkProgram'.
     let runWith (arg: 'arg) (program: Program<'arg, 'model, 'msg, 'view>) =
-        Application.Init()
+        if not unitTestMode then
+            Application.Init()
+
         let (model,cmd) = program.init arg
         let rb = RingBuffer 10
         let mutable reentered = false
@@ -160,7 +165,8 @@ module Program =
                             Differ.update currentState nextTreeState
                             currentTreeState <- Some nextTreeState
 
-                        Application.Invoke(fun () -> ())
+                        if not unitTestMode then
+                            Application.Invoke(fun () -> ())
 
                         //Application.MainLoop.Invoke(fun () ->
                         //    match currentTreeState with
@@ -218,9 +224,12 @@ module Program =
                 // topProp.SetValue(null,te)
                 //Application.Begin(te) |> ignore
 
-                Application.Run(te) |> ignore
-                te.Dispose()
-                Application.Shutdown()
+                if not unitTestMode then
+                    Application.Run(te)
+                    te.Dispose()
+                    Application.Shutdown()
+                else
+                    topView <- (Some topElement)
             | _ ->
                 failwith("first element must be a toplevel!")
 

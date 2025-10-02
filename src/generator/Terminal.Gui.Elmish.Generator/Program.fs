@@ -11,4 +11,4 @@ open System.Diagnostics;
 
 Console.WriteLine("console");
 
-Console.ReadLine();
+Console.ReadLine() |> ignore

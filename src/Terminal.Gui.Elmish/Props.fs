@@ -396,12 +396,21 @@ type margin =
     static member inline shadowStyle (value:ShadowStyle) = Interop.mkprop "margin.shadowStyle" value
 
 // MenuBarV2
-type menuBarV2 =
+type menuBarv2 =
     // Properties
     static member inline key (value:Key) = Interop.mkprop "menuBarv2.key" value
     static member inline menus (value:MenuBarItemv2Element list) = Interop.mkprop "children" (value |> List.map (fun v -> v :> TerminalElement))
     // Events
     static member inline keyChanged (handler:KeyChangedEventArgs->unit) = Interop.mkprop "menuBarv2.keyChanged" handler
+
+type menuBarItemv2 =
+    static member inline popoverMenu (value:PopoverMenuElement) = Interop.mkprop "menuBarItemv2.popoverMenu.element" (value :> TerminalElement)
+
+type popoverMenu =
+    static member inline popoverMenuOpen (value:bool) = Interop.mkprop "menuBarItemv2.popoverMenuOpen" value
+    static member inline popoverMenuKey (value:Key) = Interop.mkprop "popoverMenu.key" value
+    static member inline popoverMenuRoot (value:View) = Interop.mkprop "popoverMenu.root" value
+
 
 type menuV2 =
     // Properties

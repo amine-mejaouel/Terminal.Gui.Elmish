@@ -295,19 +295,6 @@ type View =
         ]
         MarginElement(props) :> TerminalElement
 
-    /// <seealso cref="Terminal.Gui.MenuBar"/>
-    static member inline menuBar (props:IProperty list) = MenuBarv2Element(props) :> TerminalElement
-    static member inline menuBar (children:TerminalElement list) =
-        let props = [ prop.children children ]
-        MenuBarv2Element(props) :> TerminalElement
-    static member inline menuBar (x:int, y:int, title: string) =
-        let props = [
-            prop.position.x.absolute x
-            prop.position.y.absolute y
-            prop.title title
-        ]
-        MenuBarv2Element(props) :> TerminalElement
-
     /// <seealso cref="Terminal.Gui.MenuBarv2"/>
     static member inline menuBarv2 (props:IProperty list) = MenuBarv2Element(props) :> TerminalElement
     static member inline menuBarv2 (children:TerminalElement list) =
@@ -336,6 +323,12 @@ type View =
 
     static member inline menuBarItemv2 (props:IProperty list) =
         MenuBarItemv2Element(props)
+
+    static member inline popoverMenu (props:IProperty list) =
+        PopoverMenuElement(props)
+
+    static member inline menuItemv2 (props:IProperty list) =
+        MenuItemv2Element(props)
 
     /// <seealso cref="Terminal.Gui.NumericUpDown"/>
     static member inline numericUpDown (props:IProperty list) = NumericUpDownElement(props) :> TerminalElement

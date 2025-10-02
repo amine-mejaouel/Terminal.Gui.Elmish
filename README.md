@@ -8,7 +8,7 @@ An elmish wrapper around Miguel de Icaza's 'Gui.cs' https://github.com/migueldei
 
 # Major Changes
 
-I decided to rework the DSL to a Feliz-style. Thank you Zaid Ajaj (https://github.com/Zaid-Ajaj/Feliz) for that awesome idea! You can leverage now more the Intellisense of your IDE.  
+I decided to rework the DSL to a Feliz-style. Thank you Zaid Ajaj (https://github.com/Zaid-Ajaj/Feliz) for that awesome idea! You can leverage now more the Intellisense of your IDE.
 I also introduced a diffing mechanism, so that the elements are not recreated on every cycle. I try actually to update the current elements.
 
 This can be end up sometimes in some weird behavior or exceptions. I try to find all the quirks, but help me out and open an issue if you find something.
@@ -18,7 +18,7 @@ This can be end up sometimes in some weird behavior or exceptions. I try to find
 
 It's missing again!
 
-Almost all properties from the View-Elements should be available. Some events I extended. For example the Toggled-Event from a checkbox returns the old value in the event.  
+Almost all properties from the View-Elements should be available. Some events I extended. For example the Toggled-Event from a checkbox returns the old value in the event.
 I mapped the event to return both.
 
 
@@ -33,9 +33,9 @@ In the examples you find the old project, which I converted to the new DSL
 
 
 ```fs
-Program.mkProgram init update view  
+Program.mkProgram init update view
 |> Program.run
-    
+
 ```
 
 Some fable-elmish DSL:
@@ -94,11 +94,11 @@ let update (msg:Msg) (model:Model) =
         {model with IsSpinning = false}, Cmd.none
     | Spinned ->
         model, Commands.startSpinning model.IsSpinning
-        
+
 
 
 let view (model:Model) (dispatch:Msg->unit) =
-    View.page [
+    View.topLevel [
         page.menuBar [
             menubar.menus [
                 menu.menuBarItem [
@@ -127,18 +127,18 @@ let view (model:Model) (dispatch:Msg->unit) =
                 prop.alignment.center
                 prop.color (Color.BrightYellow, Color.Green)
                 label.text "'F#ncy' Counter!"
-            ] 
+            ]
 
             View.button [
                 prop.position.x.center
                 prop.position.y.absolute 5
                 label.text "Up"
                 button.onAccept (fun () -> dispatch Increment)
-            ] 
+            ]
 
             View.label [
                 let c = (model.Counter |> float) / 100.0
-                let x = (16.0 * Math.Cos(c)) |> int 
+                let x = (16.0 * Math.Cos(c)) |> int
                 let y = (8.0 * Math.Sin(c)) |> int
 
                 prop.position.x.absolute (x + 20)
@@ -146,7 +146,7 @@ let view (model:Model) (dispatch:Msg->unit) =
                 prop.alignment.center
                 prop.color (Color.Magenta, Color.BrightYellow)
                 label.text $"The Count of 'Fancyness' is {model.Counter}"
-            ] 
+            ]
 
 
             View.button [
@@ -154,21 +154,21 @@ let view (model:Model) (dispatch:Msg->unit) =
                 prop.position.y.absolute 7
                 label.text "Down"
                 button.onAccept (fun () -> dispatch Decrement)
-            ] 
+            ]
 
             View.button [
                 prop.position.x.center
                 prop.position.y.absolute 9
                 label.text "Start Spinning"
                 button.onAccept (fun () -> dispatch StartSpin)
-            ] 
+            ]
 
             View.button [
                 prop.position.x.center
                 prop.position.y.absolute 11
                 label.text "Stop Spinning"
                 button.onAccept (fun () -> dispatch StopSpin)
-            ] 
+            ]
 
             View.button [
                 prop.position.x.center
@@ -193,7 +193,7 @@ dotnet add package Terminal.Gui.Elmish
 
 # Referencing the underlying Element
 
-You can reference the underlying element. Also use this to influcence further setting when the element is created!  
+You can reference the underlying element. Also use this to influcence further setting when the element is created!
 
 use `prop.ref (fun view -> ...)`
 

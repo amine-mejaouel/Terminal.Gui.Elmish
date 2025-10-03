@@ -200,7 +200,7 @@ module Program =
 
         let startState = program.view model syncDispatch
 
-        Differ.initializeTree None startState
+        startState.initializeTree None
         currentTreeState <- Some startState
 
         match startState.element with

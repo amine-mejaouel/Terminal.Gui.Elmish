@@ -34,10 +34,6 @@ module Differ =
         let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
         if cve1 <> cve2 then Some () else None
 
-    let rec initializeTree (parent:View option) (tree:TerminalElement) =
-        tree.create parent
-        tree.children |> List.iter (fun e -> initializeTree (Some tree.element) e)
-
     let rec update (rootTree:TerminalElement) (newTree:TerminalElement) =
         match rootTree, newTree with
         | rt, nt when rt.name <> nt.name ->
@@ -47,7 +43,7 @@ module Differ =
         #if DEBUG
             System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
         #endif
-            initializeTree parent newTree
+            newTree.initializeTree parent
         | OnlyPropsChanged ->
             if newTree.canUpdate rootTree.element rootTree.properties then
                 newTree.update rootTree.element rootTree.properties
@@ -60,7 +56,7 @@ module Differ =
                 #if DEBUG
                 System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
                 #endif
-                initializeTree parent newTree
+                newTree.initializeTree parent
 
             let sortedRootChildren = rootTree.children |> List.sortBy (fun v -> v.name)
             let sortedNewChildren = newTree.children |> List.sortBy (fun v -> v.name)
@@ -75,7 +71,7 @@ module Differ =
             #if DEBUG
                 System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
             #endif
-                initializeTree parent newTree
+                newTree.initializeTree parent
 
             let sortedRootChildren = rootTree.children |> List.sortBy (fun v -> v.name)
             let sortedNewChildren = newTree.children |> List.sortBy (fun v -> v.name)
@@ -98,7 +94,7 @@ module Differ =
                             // don't know
                             if rootTree.element.SubViews.Count = 0 then
                                 rootTree.element.CanFocus <- true
-                            let newElem = initializeTree (Some rootTree.element) ne
+                            let newElem = ne.initializeTree (Some rootTree.element)
                             newElem
                         #if DEBUG
                             System.Diagnostics.Trace.WriteLine ($"child {ne.name} created ()!")

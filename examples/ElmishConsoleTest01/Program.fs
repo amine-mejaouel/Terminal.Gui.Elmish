@@ -88,17 +88,20 @@ let view (state: Model) (dispatch: Msg -> unit) =
             menuBarv2.menus [
                 View.menuBarItemv2 [
                     prop.title "MenuBarItem"
-                    // popoverMenu.popoverMenuOpen true
-                    menuBarItemv2.popoverMenu (
-                        View.popoverMenu [
-                            popoverMenu.popoverMenuRoot (
-                                new Menuv2([|
-                                    new MenuItemv2(Title="MenuItem a", Text="xx")
-                                    new MenuItemv2(Title="MenuItme b", Text="yy")
-                                |])
-                                )
+                    menuBarItemv2.popoverMenu [
+                        popoverMenu.popoverMenuRoot [
+                            prop.children [
+                                View.menuItemv2 [
+                                    prop.title "MenuItem 0"
+                                ]
+                                View.menuItemv2 [
+                                    prop.title "MenuItem 1"
+                                ]
+                            ]
                         ]
-                    )
+                    ]
+                ]
+            ]
                     //         // prop.children [
                     //                 // View.menu (
                     //                 //     "Sub Item 1",
@@ -115,8 +118,6 @@ let view (state: Model) (dispatch: Msg -> unit) =
                     //         // ]
                     //     ]
                     // )
-                ]
-            ]
         ]
 //         prop.children [
 //             View.window [

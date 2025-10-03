@@ -404,12 +404,12 @@ type menuBarv2 =
     static member inline keyChanged (handler:KeyChangedEventArgs->unit) = Interop.mkprop "menuBarv2.keyChanged" handler
 
 type menuBarItemv2 =
-    static member inline popoverMenu (value:PopoverMenuElement) = Interop.mkprop "menuBarItemv2.popoverMenu.element" (value :> TerminalElement)
+    static member inline popoverMenu (props:IProperty list) = Interop.mkprop "menuBarItemv2.popoverMenu.element" (PopoverMenuElement(props))
 
 type popoverMenu =
     static member inline popoverMenuOpen (value:bool) = Interop.mkprop "menuBarItemv2.popoverMenuOpen" value
     static member inline popoverMenuKey (value:Key) = Interop.mkprop "popoverMenu.key" value
-    static member inline popoverMenuRoot (value:View) = Interop.mkprop "popoverMenu.root" value
+    static member inline popoverMenuRoot (value:IProperty list) = Interop.mkprop "popoverMenu.root.element" (Menuv2Element(value))
 
 
 type menuV2 =

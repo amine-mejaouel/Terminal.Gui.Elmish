@@ -28,16 +28,26 @@ let ``Menu should be correctly set`` () =
                 menuBarv2.menus [
                     View.menuBarItemv2 [
                         prop.title "MenuBarItem"
-                        menuBarItemv2.popoverMenu (
-                            View.popoverMenu [
-                                popoverMenu.popoverMenuRoot (
-                                    new Menuv2([|
-                                        new MenuItemv2(Title="MenuItem 0")
-                                        new MenuItemv2(Title="MenuItem 1")
-                                    |])
-                                    )
+                        // TODO: following two subsequent lines could be merged into one
+                        menuBarItemv2.popoverMenu [
+                            // TODO: another way to represent things
+                            // View.Menuv2 precision should give us the type
+                            // TODO: Alternatively, maybe all properties like popoverMenu.root bellow
+                            // TODO: can contain a documentation referencing the time that we are waiting for
+                            // popoverMenu.root View.Menuv2 [
+
+                            //]
+                            popoverMenu.popoverMenuRoot [
+                                prop.children [
+                                    View.menuItemv2 [
+                                        prop.title "MenuItem 0"
+                                    ]
+                                    View.menuItemv2 [
+                                        prop.title "MenuItem 1"
+                                    ]
+                                ]
                             ]
-                        )
+                        ]
                     ]
                 ]
             ]

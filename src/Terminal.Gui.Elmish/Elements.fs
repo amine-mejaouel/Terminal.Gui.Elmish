@@ -42,6 +42,10 @@ type TerminalElement (props:IProperty list) =
     abstract canUpdate: prevElement:View -> oldProps:IProperty list -> bool
     abstract name: string
 
+    member this.initializeTree(parent: View option) =
+        this.create parent
+        this.children |> List.iter (fun e -> e.initializeTree (Some this.element))
+
 
 open System.Drawing
 open System.Collections.ObjectModel
@@ -1529,10 +1533,72 @@ type MarginElement(props:IProperty list) =
         this.element <- prevElement
 
 
+
+// Menuv2
+type Menuv2Element(props:IProperty list) =
+    inherit TerminalElement(props)
+
+    let setProps (element: Menuv2) props =
+        // Properties
+        props |> Interop.getValue<MenuItemv2> "menuv2.selectedMenuItem" |> Option.iter (fun v -> element.SelectedMenuItem <- v )
+        props |> Interop.getValue<MenuItemv2> "menuv2.superMenuItem" |> Option.iter (fun v -> element.SuperMenuItem <- v )
+        // Events
+        props |> Interop.getValue<CommandEventArgs->unit> "menuv2.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
+        props |> Interop.getValue<MenuItemv2->unit> "menuv2.selectedMenuItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
+
+    let removeProps (element:Menuv2) props =
+        // Properties
+        props |> Interop.getValue<MenuItemv2> "menuv2.selectedMenuItem" |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
+        props |> Interop.getValue<MenuItemv2> "menuv2.superMenuItem" |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
+        // Events
+        props |> Interop.getValue<CommandEventArgs->unit> "menuv2.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
+        props |> Interop.getValue<MenuItemv2->unit> "menuv2.selectedMenuItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
+        ()
+
+    override _.name = $"Menuv2"
+
+
+    override this.create parent =
+        #if DEBUG
+        Diagnostics.Trace.WriteLine $"{this.name} created!"
+        #endif
+        this.parent <- parent
+
+
+        let el = new Menuv2()
+        parent |> Option.iter (fun p -> p.Add el |> ignore)
+        ViewElement.setProps el props
+        setProps el props
+        props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
+        this.element <- el
+
+
+
+    override this.canUpdate prevElement oldProps =
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
+        let canUpdateElement =
+            true
+
+        canUpdateView && canUpdateElement
+
+
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> Menuv2
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        ViewElement.removeProps prevElement removedProps
+        removeProps element removedProps
+        ViewElement.setProps prevElement changedProps
+        setProps element changedProps
+        this.element <- prevElement
+
+
+
 type PopoverMenuElement(props: IProperty list) =
     inherit TerminalElement(props)
 
-    let setProps (element: PopoverMenu) props =
+    static let setProps (element: PopoverMenu) props =
         // Properties
         props |> Interop.getValue<Key> "popoverMenu.key" |> Option.iter (fun v -> element.Key <- v )
         props |> Interop.getValue<MouseFlags> "popoverMenu.mouseFlags" |> Option.iter (fun v -> element.MouseFlags <- v )
@@ -1558,8 +1624,19 @@ type PopoverMenuElement(props: IProperty list) =
         #endif
         this.parent <- parent
 
+        let menuv2Element =
+            props |> Interop.getValue<Menuv2Element> "popoverMenu.root.element"
+
+        menuv2Element |> Option.iter (fun element -> element.initializeTree None)
 
         let el = new PopoverMenu()
+
+        let props =
+            menuv2Element
+            |> Option.map (fun v -> Interop.mkprop "popoverMenu.root" v.element)
+            |> Option.map (fun prop -> prop::props)
+            |> Option.defaultValue props
+
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
         setProps el props
@@ -1584,11 +1661,12 @@ type PopoverMenuElement(props: IProperty list) =
         this.element <- prevElement
 
 
+
 // MenuBarItemv2
 type MenuBarItemv2Element(props: IProperty list) =
     inherit TerminalElement(props)
 
-    let setProps (element: MenuBarItemv2) props =
+    static let setProps (element: MenuBarItemv2) props =
         // Properties
         props |> Interop.getValue<PopoverMenu> "menuBarItemv2.popoverMenu" |> Option.iter (fun v -> element.PopoverMenu <- v )
         props |> Interop.getValue<bool> "menuBarItemv2.popoverMenuOpen" |> Option.iter (fun v -> element.PopoverMenuOpen <- v )
@@ -1613,13 +1691,13 @@ type MenuBarItemv2Element(props: IProperty list) =
 
         let el = new MenuBarItemv2()
 
-        // TODO AM: is it possible to get rid of this, using simple props without going through this special .element one
+        // TODO AM: Refactor this
         let popoverMenuElement =
             props
             |> Interop.getValue<PopoverMenuElement> "menuBarItemv2.popoverMenu.element"
 
         popoverMenuElement
-        |> Option.iter (fun v -> v.create (Some el))
+        |> Option.iter (fun v -> v.initializeTree (Some el))
 
         let props =
             popoverMenuElement
@@ -1649,7 +1727,6 @@ type MenuBarItemv2Element(props: IProperty list) =
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
         this.element <- prevElement
-
 
 // MenuBar
 type MenuBarv2Element(props:IProperty list) =
@@ -1707,66 +1784,6 @@ type MenuBarv2Element(props:IProperty list) =
 
     override this.update prevElement oldProps =
         let element = prevElement :?> MenuBarv2
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        ViewElement.setProps prevElement changedProps
-        setProps element changedProps
-        this.element <- prevElement
-
-
-// Menuv2
-type Menuv2Element(props:IProperty list) =
-    inherit TerminalElement(props)
-
-    let setProps (element: Menuv2) props =
-        // Properties
-        props |> Interop.getValue<MenuItemv2> "menuv2.selectedMenuItem" |> Option.iter (fun v -> element.SelectedMenuItem <- v )
-        props |> Interop.getValue<MenuItemv2> "menuv2.superMenuItem" |> Option.iter (fun v -> element.SuperMenuItem <- v )
-        // Events
-        props |> Interop.getValue<CommandEventArgs->unit> "menuv2.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
-        props |> Interop.getValue<MenuItemv2->unit> "menuv2.selectedMenuItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
-
-    let removeProps (element:Menuv2) props =
-        // Properties
-        props |> Interop.getValue<MenuItemv2> "menuv2.selectedMenuItem" |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
-        props |> Interop.getValue<MenuItemv2> "menuv2.superMenuItem" |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
-        // Events
-        props |> Interop.getValue<CommandEventArgs->unit> "menuv2.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
-        props |> Interop.getValue<MenuItemv2->unit> "menuv2.selectedMenuItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
-        ()
-
-    override _.name = $"Menuv2"
-
-
-    override this.create parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Menuv2()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        ViewElement.setProps el props
-        setProps el props
-        props |> Interop.getValue<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
-
-
-
-    override this.canUpdate prevElement oldProps =
-        let changedProps,removedProps = Interop.filterProps oldProps props
-        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
-        let canUpdateElement =
-            true
-
-        canUpdateView && canUpdateElement
-
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Menuv2
         let changedProps,removedProps = Interop.filterProps oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps

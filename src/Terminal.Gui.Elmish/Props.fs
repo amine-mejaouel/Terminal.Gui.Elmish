@@ -405,9 +405,9 @@ type menuBarv2 =
 
 type menuBarItemv2 =
     static member inline popoverMenu (props:IProperty list) = Interop.mkprop "menuBarItemv2.popoverMenu.element" (PopoverMenuElement(props))
+    static member inline popoverMenuOpen (value:bool) = Interop.mkprop "menuBarItemv2.popoverMenuOpen" value
 
 type popoverMenu =
-    static member inline popoverMenuOpen (value:bool) = Interop.mkprop "menuBarItemv2.popoverMenuOpen" value
     static member inline popoverMenuKey (value:Key) = Interop.mkprop "popoverMenu.key" value
     static member inline popoverMenuRoot (value:IProperty list) = Interop.mkprop "popoverMenu.root.element" (Menuv2Element(value))
 

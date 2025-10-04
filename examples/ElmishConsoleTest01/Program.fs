@@ -88,8 +88,8 @@ let view (state: Model) (dispatch: Msg -> unit) =
             menuBarv2.menus [
                 View.menuBarItemv2 [
                     prop.title "MenuBarItem"
-                    menuBarItemv2.popoverMenu [
-                        popoverMenu.root [
+                    menuBarItemv2.popoverMenu (View.popoverMenu [
+                        popoverMenu.root (View.menuv2 [
                             prop.children [
                                 View.menuItemv2 [
                                     prop.title "MenuItem 0"
@@ -98,8 +98,8 @@ let view (state: Model) (dispatch: Msg -> unit) =
                                     prop.title "MenuItem 1"
                                 ]
                             ]
-                        ]
-                    ]
+                        ])
+                    ])
                 ]
             ]
                     //         // prop.children [

@@ -309,7 +309,7 @@ type View =
         MenuBarv2Element(props) :> TerminalElement
 
     /// <seealso cref="Terminal.Gui.Menuv2"/>
-    static member inline menuv2 (props:IProperty list) = Menuv2Element(props) :> TerminalElement
+    static member inline menuv2 (props:IProperty list) = Menuv2Element(props)
     static member inline menuv2 (children:TerminalElement list) =
         let props = [ prop.children children ]
         Menuv2Element(props) :> TerminalElement

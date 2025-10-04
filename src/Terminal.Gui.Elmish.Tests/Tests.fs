@@ -33,7 +33,7 @@ let ``Menu should be correctly set`` () =
                             // TODO: another way to represent things
                             // View.Menuv2 precision should give us the type
                             // TODO: Alternatively, maybe all properties like popoverMenu.root bellow
-                            // TODO: can contain a documentation referencing the time that we are waiting for
+                            // TODO: can contain a documentation referencing the type that we are waiting for
                             // popoverMenu.root View.Menuv2 [
 
                             //]

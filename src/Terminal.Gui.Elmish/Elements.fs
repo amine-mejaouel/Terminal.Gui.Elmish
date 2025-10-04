@@ -46,6 +46,24 @@ type TerminalElement (props:IProperty list) =
         this.create parent
         this.children |> List.iter (fun e -> e.initializeTree (Some this.element))
 
+    static member unwrapElement elementProp parent prevProps =
+        let popoverMenuElement =
+            prevProps
+            |> Interop.getValue<TerminalElement> elementProp
+
+        popoverMenuElement
+        |> Option.iter (fun v -> v.initializeTree parent)
+
+        let viewProp = elementProp.Substring(0, elementProp.Length - (*".element".Length*) 8)
+
+        let props =
+            popoverMenuElement
+            |> Option.map (fun v -> Interop.mkprop viewProp v.element)
+            |> Option.map (fun prop -> prop::prevProps)
+            |> Option.defaultValue prevProps
+
+        props
+
 
 open System.Drawing
 open System.Collections.ObjectModel
@@ -1624,18 +1642,9 @@ type PopoverMenuElement(props: IProperty list) =
         #endif
         this.parent <- parent
 
-        let menuv2Element =
-            props |> Interop.getValue<Menuv2Element> "popoverMenu.root.element"
-
-        menuv2Element |> Option.iter (fun element -> element.initializeTree None)
-
         let el = new PopoverMenu()
 
-        let props =
-            menuv2Element
-            |> Option.map (fun v -> Interop.mkprop "popoverMenu.root" v.element)
-            |> Option.map (fun prop -> prop::props)
-            |> Option.defaultValue props
+        let props = TerminalElement.unwrapElement "popoverMenu.root.element" None props
 
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
@@ -1691,19 +1700,7 @@ type MenuBarItemv2Element(props: IProperty list) =
 
         let el = new MenuBarItemv2()
 
-        // TODO AM: Refactor this
-        let popoverMenuElement =
-            props
-            |> Interop.getValue<PopoverMenuElement> "menuBarItemv2.popoverMenu.element"
-
-        popoverMenuElement
-        |> Option.iter (fun v -> v.initializeTree (Some el))
-
-        let props =
-            popoverMenuElement
-            |> Option.map (fun v -> Interop.mkprop "menuBarItemv2.popoverMenu" v.element)
-            |> Option.map (fun prop -> prop::props)
-            |> Option.defaultValue props
+        let props = TerminalElement.unwrapElement "menuBarItemv2.popoverMenu.element" (Some el) props
 
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props

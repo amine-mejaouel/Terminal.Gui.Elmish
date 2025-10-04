@@ -89,7 +89,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
                 View.menuBarItemv2 [
                     prop.title "MenuBarItem"
                     menuBarItemv2.popoverMenu [
-                        popoverMenu.popoverMenuRoot [
+                        popoverMenu.root [
                             prop.children [
                                 View.menuItemv2 [
                                     prop.title "MenuItem 0"

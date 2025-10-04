@@ -28,16 +28,8 @@ let ``Menu should be correctly set`` () =
                 menuBarv2.menus [
                     View.menuBarItemv2 [
                         prop.title "MenuBarItem"
-                        // TODO: following two subsequent lines could be merged into one
                         menuBarItemv2.popoverMenu [
-                            // TODO: another way to represent things
-                            // View.Menuv2 precision should give us the type
-                            // TODO: Alternatively, maybe all properties like popoverMenu.root bellow
-                            // TODO: can contain a documentation referencing the type that we are waiting for
-                            // popoverMenu.root View.Menuv2 [
-
-                            //]
-                            popoverMenu.popoverMenuRoot [
+                            popoverMenu.root [
                                 prop.children [
                                     View.menuItemv2 [
                                         prop.title "MenuItem 0"

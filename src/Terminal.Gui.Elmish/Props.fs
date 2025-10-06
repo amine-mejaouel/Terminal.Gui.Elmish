@@ -407,6 +407,11 @@ type menuBarItemv2 =
     static member inline popoverMenu (value:PopoverMenuElement) = Interop.mkprop "menuBarItemv2.popoverMenu.element" value
     static member inline popoverMenuOpen (value:bool) = Interop.mkprop "menuBarItemv2.popoverMenuOpen" value
 
+type menuItemv2 =
+    static member inline command (value: Command) = Interop.mkprop "menuItemv2.command" value
+    static member inline submenu(value: Menuv2Element) = Interop.mkprop "menuItemv2.subMenu.element" value
+    static member inline accepted(value: CommandEventArgs -> unit) = Interop.mkprop "menuItemv2.accepted" value
+
 type popoverMenu =
     static member inline key (value:Key) = Interop.mkprop "popoverMenu.key" value
     static member inline root (value: Menuv2Element) = Interop.mkprop "popoverMenu.root.element" value

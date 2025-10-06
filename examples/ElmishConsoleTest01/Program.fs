@@ -85,21 +85,24 @@ let myColorScheme () =
 let view (state: Model) (dispatch: Msg -> unit) =
     View.topLevel [
         View.menuBarv2 [
-            menuBarv2.menus [
+            prop.menuBarv2.menus [
                 View.menuBarItemv2 [
-                    prop.title "MenuBarItem"
-                    menuBarItemv2.popoverMenu (View.popoverMenu [
-                        popoverMenu.root (View.menuv2 [
+                    prop.menuBarItemv2.title "MenuBarItem"
+                    prop.menuBarItemv2.popoverMenu (View.popoverMenu [
+                        prop.popoverMenu.root (View.menuv2 [
                             prop.children [
                                 View.menuItemv2 [
-                                    prop.title "MenuItem 0"
+                                    prop.menuItemv2.title "MenuItem 0"
                                 ]
                                 View.menuItemv2 [
-                                    prop.title "MenuItem with submenu"
-                                    menuItemv2.submenu (View.menuv2 [
+                                    prop.menuItemv2.title "MenuItem with submenu"
+                                    prop.menuItemv2.submenu (View.menuv2 [
                                         prop.children [
                                             View.menuItemv2 [
-                                                prop.title "MenuItem 1"
+                                                prop.menuItemv2.title "MenuItem 1"
+                                                prop.menuItemv2.action(fun _ ->
+                                                    Trace.WriteLine($"Sub menu 1 triggered")
+                                                )
                                             ]
                                         ]
                                     ])

@@ -31,7 +31,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.adornment.title title
         ]
         AdornmentElement(props) :> TerminalElement
 
@@ -44,7 +44,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.bar.title title
         ]
         BarElement(props) :> TerminalElement
 
@@ -57,7 +57,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.border.title title
         ]
         BorderElement(props) :> TerminalElement
 
@@ -70,7 +70,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.button.title title
         ]
         ButtonElement(props) :> TerminalElement
 
@@ -83,7 +83,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.checkBox.title title
         ]
         CheckBoxElement(props) :> TerminalElement
 
@@ -96,7 +96,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.colorPicker.title title
         ]
         ColorPickerElement(props) :> TerminalElement
 
@@ -109,7 +109,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.colorPicker16.title title
         ]
         ColorPicker16Element(props) :> TerminalElement
 
@@ -122,7 +122,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.comboBox.title title
         ]
         ComboBoxElement(props) :> TerminalElement
 
@@ -135,7 +135,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.dateField.title title
         ]
         DateFieldElement(props) :> TerminalElement
 
@@ -148,7 +148,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.datePicker.title title
         ]
         DatePickerElement(props) :> TerminalElement
 
@@ -161,7 +161,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.dialog.title title
         ]
         DialogElement(props) :> TerminalElement
 
@@ -174,7 +174,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.fileDialog.title title
         ]
         FileDialogElement(props) :> TerminalElement
 
@@ -187,7 +187,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.frameView.title title
         ]
         FrameViewElement(props) :> TerminalElement
 
@@ -200,7 +200,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.graphView.title title
         ]
         GraphViewElement(props) :> TerminalElement
 
@@ -213,7 +213,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.hexView.title title
         ]
         HexViewElement(props) :> TerminalElement
 
@@ -226,7 +226,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.label.title title
         ]
         LabelElement(props) :> TerminalElement
 
@@ -239,7 +239,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.legendAnnotation.title title
         ]
         LegendAnnotationElement(props) :> TerminalElement
 
@@ -252,7 +252,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.line.title title
         ]
         LineElement(props) :> TerminalElement
 
@@ -265,7 +265,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.lineView.title title
         ]
         LineViewElement(props) :> TerminalElement
 
@@ -278,7 +278,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.listView.title title
         ]
         ListViewElement(props) :> TerminalElement
 
@@ -291,7 +291,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.margin.title title
         ]
         MarginElement(props) :> TerminalElement
 
@@ -304,7 +304,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.menuBarv2.title title
         ]
         MenuBarv2Element(props) :> TerminalElement
 
@@ -317,7 +317,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.menuv2.title title
         ]
         Menuv2Element(props) :> TerminalElement
 
@@ -339,7 +339,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.numericUpDown.title title
         ]
         NumericUpDownElement(props) :> TerminalElement
 
@@ -352,7 +352,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.numericUpDown.title title
         ]
         NumericUpDownElement<'a>(props) :> TerminalElement
 
@@ -365,7 +365,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.openDialog.title title
         ]
         OpenDialogElement(props) :> TerminalElement
 
@@ -378,7 +378,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.padding.title title
         ]
         PaddingElement(props) :> TerminalElement
 
@@ -391,7 +391,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.progressBar.title title
         ]
         ProgressBarElement(props) :> TerminalElement
 
@@ -404,7 +404,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.radioGroup.title title
         ]
         RadioGroupElement(props) :> TerminalElement
 
@@ -417,7 +417,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.saveDialog.title title
         ]
         SaveDialogElement(props) :> TerminalElement
 
@@ -430,7 +430,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.scrollBar.title title
         ]
         ScrollBarElement(props) :> TerminalElement
 
@@ -443,7 +443,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.scrollSlider.title title
         ]
         ScrollSliderElement(props) :> TerminalElement
 
@@ -456,7 +456,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.shortcut.title title
         ]
         ShortcutElement(props) :> TerminalElement
 
@@ -469,7 +469,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.slider.title title
         ]
         SliderElement(props) :> TerminalElement
 
@@ -482,7 +482,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.slider.title title
         ]
         SliderElement<'a>(props) :> TerminalElement
 
@@ -495,7 +495,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.spinnerView.title title
         ]
         SpinnerViewElement(props) :> TerminalElement
 
@@ -508,7 +508,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.statusBar.title title
         ]
         StatusBarElement(props) :> TerminalElement
 
@@ -521,7 +521,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.tab.title title
         ]
         TabElement(props) :> TerminalElement
 
@@ -534,7 +534,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.tabView.title title
         ]
         TabViewElement(props) :> TerminalElement
 
@@ -547,7 +547,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.tableView.title title
         ]
         TableViewElement(props) :> TerminalElement
 
@@ -560,7 +560,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.textField.title title
         ]
         TextFieldElement(props) :> TerminalElement
 
@@ -573,7 +573,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.textValidateField.title title
         ]
         TextValidateFieldElement(props) :> TerminalElement
 
@@ -586,7 +586,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.textView.title title
         ]
         TextViewElement(props) :> TerminalElement
 
@@ -599,7 +599,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.tileView.title title
         ]
         TileViewElement(props) :> TerminalElement
 
@@ -612,7 +612,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.timeField.title title
         ]
         TimeFieldElement(props) :> TerminalElement
 
@@ -625,7 +625,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.toplevel.title title
         ]
         ToplevelElement(props) :> TerminalElement
 
@@ -638,7 +638,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.treeView.title title
         ]
         TreeViewElement(props) :> TerminalElement
 
@@ -651,7 +651,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.treeView.title title
         ]
         TreeViewElement<'a>(props) :> TerminalElement
 
@@ -664,7 +664,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.window.title title
         ]
         WindowElement(props) :> TerminalElement
 
@@ -677,7 +677,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.wizard.title title
         ]
         WizardElement(props) :> TerminalElement
 
@@ -690,7 +690,7 @@ type View =
         let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
-            prop.title title
+            prop.wizardStep.title title
         ]
         WizardStepElement(props) :> TerminalElement
 

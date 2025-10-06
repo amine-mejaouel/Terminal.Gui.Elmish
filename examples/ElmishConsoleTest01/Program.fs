@@ -95,7 +95,14 @@ let view (state: Model) (dispatch: Msg -> unit) =
                                     prop.title "MenuItem 0"
                                 ]
                                 View.menuItemv2 [
-                                    prop.title "MenuItem 1"
+                                    prop.title "MenuItem with submenu"
+                                    menuItemv2.submenu (View.menuv2 [
+                                        prop.children [
+                                            View.menuItemv2 [
+                                                prop.title "MenuItem 1"
+                                            ]
+                                        ]
+                                    ])
                                 ]
                             ]
                         ])

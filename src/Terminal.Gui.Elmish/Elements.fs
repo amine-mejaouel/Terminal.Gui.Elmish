@@ -1819,6 +1819,9 @@ type MenuItemv2Element(props:IProperty list) =
 
 
         let el = new MenuItemv2()
+
+        let props = TerminalElement.unwrapElement "menuItemv2.subMenu.element" (Some el) props
+
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         ViewElement.setProps el props
         setProps el props

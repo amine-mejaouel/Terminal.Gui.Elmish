@@ -364,7 +364,13 @@ type fileDialog() =
     // Events
     member inline _.filesSelected (handler:FilesSelectedEventArgs->unit) = Interop.mkprop "fileDialog.filesSelected" handler
 
+/// SaveDialog
+type saveDialog() =
+    inherit fileDialog()
+
 // FrameView
+type frameView() =
+    inherit view()
 // No properties or events FrameView
 
 // GraphView
@@ -403,6 +409,8 @@ type label() =
     member inline _.text (value:string) = Interop.mkprop "label.text" value
 
 // LegendAnnotation
+type legendAnnotation() =
+    inherit view()
 // No properties or events LegendAnnotation
 
 // Line
@@ -526,6 +534,10 @@ type openDialog() =
     // Properties
     member inline _.openMode (value:OpenMode) = Interop.mkprop "openDialog.openMode" value
 
+// Padding
+type padding() =
+    inherit adornment()
+
 // ProgressBar
 type progressBar() =
     inherit view()
@@ -632,6 +644,8 @@ type spinnerView() =
     member inline _.style (value:SpinnerStyle) = Interop.mkprop "spinnerView.style" value
 
 // StatusBar
+type statusBar() =
+    inherit bar()
 // No properties or events StatusBar
 
 // Tab
@@ -772,6 +786,8 @@ type treeView<'a when 'a : not struct>() =
 // No properties or events TreeView
 
 // Window
+type window() =
+    inherit toplevel()
 // No properties or events Window
 
 // Wizard
@@ -816,9 +832,12 @@ type prop =
     static member inline toplevel = toplevel()
     static member inline dialog = dialog()
     static member inline fileDialog = fileDialog()
+    static member inline saveDialog = saveDialog()
+    static member inline frameView = frameView()
     static member inline graphView = graphView()
     static member inline hexView = hexView()
     static member inline label = label()
+    static member inline legendAnnotation = legendAnnotation()
     static member inline line = line()
     static member inline lineView = lineView()
     static member inline listView = listView()
@@ -831,12 +850,14 @@ type prop =
     static member inline popoverMenu = popoverMenu()
     static member inline numericUpDown = numericUpDown()
     static member inline openDialog = openDialog()
+    static member inline padding = padding()
     static member inline progressBar = progressBar()
     static member inline radioGroup = radioGroup()
     static member inline scrollBar = scrollBar()
     static member inline scrollSlider = scrollSlider()
     static member inline slider = slider()
     static member inline spinnerView = spinnerView()
+    static member inline statusBar = statusBar()
     static member inline tab = tab()
     static member inline tabView = tabView()
     static member inline tableView = tableView()
@@ -845,5 +866,6 @@ type prop =
     static member inline tileView = tileView()
     static member inline timeField = timeField()
     static member inline treeView = treeView()
+    static member inline window = window()
     static member inline wizard = wizard()
     static member inline wizardStep = wizardStep()

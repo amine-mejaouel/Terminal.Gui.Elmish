@@ -84,33 +84,33 @@ let myColorScheme () =
 
 let view (state: Model) (dispatch: Msg -> unit) =
     View.topLevel [
-        View.menuBarv2 [
-            prop.menuBarv2.menus [
-                View.menuBarItemv2 [
-                    prop.menuBarItemv2.title "MenuBarItem"
-                    prop.menuBarItemv2.popoverMenu (View.popoverMenu [
-                        prop.popoverMenu.root (View.menuv2 [
-                            prop.children [
-                                View.menuItemv2 [
-                                    prop.menuItemv2.title "MenuItem 0"
-                                ]
-                                View.menuItemv2 [
-                                    prop.menuItemv2.title "MenuItem with submenu"
-                                    prop.menuItemv2.submenu (View.menuv2 [
-                                        prop.children [
-                                            View.menuItemv2 [
-                                                prop.menuItemv2.title "MenuItem 1"
-                                                prop.menuItemv2.action(fun _ ->
+        View.menuBarv2 (fun p ->
+            p.menus [
+                View.menuBarItemv2 (fun p ->
+                    p.title "MenuBarItem"
+                    p.popoverMenu (View.popoverMenu (fun p ->
+                        p.root (View.menuv2 (fun p ->
+                            p.children [
+                                View.menuItemv2 (fun p ->
+                                    p.title "MenuItem 0"
+                                )
+                                View.menuItemv2 (fun p ->
+                                    p.title "MenuItem with submenu"
+                                    p.submenu (View.menuv2 (fun p ->
+                                        p.children [
+                                            View.menuItemv2 (fun p ->
+                                                p.title "MenuItem 1"
+                                                p.action(fun _ ->
                                                     Trace.WriteLine($"Sub menu 1 triggered")
                                                 )
-                                            ]
+                                            )
                                         ]
-                                    ])
-                                ]
+                                    ))
+                                )
                             ]
-                        ])
-                    ])
-                ]
+                        ))
+                    ))
+                )
             ]
                     //         // prop.children [
                     //                 // View.menu (
@@ -128,7 +128,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
                     //         // ]
                     //     ]
                     // )
-        ]
+        )
 //         prop.children [
 //             View.window [
 //                 prop.position.x.absolute 0

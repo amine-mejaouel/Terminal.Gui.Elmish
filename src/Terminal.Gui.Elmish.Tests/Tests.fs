@@ -24,25 +24,25 @@ let render view =
 let ``Menu should be correctly set`` () =
     let view =
         View.topLevel [
-            View.menuBarv2 [
-                menuBarv2.menus [
-                    View.menuBarItemv2 [
-                        prop.title "MenuBarItem"
-                        menuBarItemv2.popoverMenu (View.popoverMenu [
-                            popoverMenu.root (View.menuv2 [
-                                prop.children [
-                                    View.menuItemv2 [
-                                        prop.title "MenuItem 0"
-                                    ]
-                                    View.menuItemv2 [
-                                        prop.title "MenuItem 1"
-                                    ]
+            View.menuBarv2 (fun p ->
+                p.menus [
+                    View.menuBarItemv2 (fun p ->
+                        p.title "MenuBarItem"
+                        p.popoverMenu (View.popoverMenu (fun p ->
+                            p.root (View.menuv2 (fun p ->
+                                p.children [
+                                    View.menuItemv2 (fun p ->
+                                        p.title "MenuItem 0"
+                                    )
+                                    View.menuItemv2 (fun p ->
+                                        p.title "MenuItem 1"
+                                    )
                                 ]
-                            ])
-                        ])
-                    ]
+                            ))
+                        ))
+                    )
                 ]
-            ]
+            )
         ]
 
     let view = view |> render

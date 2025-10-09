@@ -87,11 +87,8 @@ module Interop =
         |> getValueGeneric<'a, 'b> name
         |> Option.defaultValue defaultValue
 
-    let inline mkprop (name:string) (data:obj) : IProperty = KeyValue (name, data)
 
     let inline checkValue<'a> name props = checkValueGeneric<'a, IProperty> name props |> Option.defaultValue false
-    let inline getValue<'a> name props = getValueGeneric<'a, IProperty> name props
-    let inline getValueDefault<'a> name defaultVal (props:IProperty list) = getValueDefaultGeneric<'a, IProperty> name defaultVal props
 
     let inline mkMenuProp (name:string) (data:obj) : IMenuProperty = KeyValue (name, data)
     let inline getMenuValue<'a> name (props: IMenuProperty list) = getValueGeneric<'a, IMenuProperty> name props
@@ -129,42 +126,23 @@ module Interop =
         |> Option.defaultValue defaultVal
 
 
-    let filterProps (oldProps:IProperty list) (newProps:IProperty list) =
-        let get (KeyValue (a,b)) = (a,b)
+    // TODO: move maybe to Props ?
+    let filterProps (oldProps: Props) (newProps: Props) =
+
+        let remainingOldProps, removedProps =
+            oldProps |> Props.partition (fun kv -> newProps |> Props.keyExists kv.Key)
+
         let changedProps =
-            ([],newProps)
-            ||> List.fold (fun resultProps newProp ->
-                let kv = newProp :?> KeyValue
-                let (name,newValue) = kv |> get
-                let oldValue = oldProps |> getValue name
-                match oldValue with
-                | None ->
-                    resultProps @ [ newProp ]
-                //| Some oldValue when name = "menubar" ->
-                //    let oldValue = (oldValue :?> MenuBarElement)
-                //    let newValue = (newValue :?> MenuBarElement)
-                //    resultProps
-                | Some oldValue when name = "children" ->
-                    resultProps
-                | Some oldValue when oldValue = newValue ->
-                    resultProps
-                | Some _ ->
-                    resultProps @ [ newProp ]
+            newProps |> Props.filter (fun kv ->
+                match remainingOldProps |> Props.tryFind kv.Key with
+                | _ when kv.Value = "children" ->
+                    false
+                | Some v' when kv.Value = v' ->
+                    false
+                | _ ->
+                    true
             )
 
-        let removedProps =
-            ([],oldProps)
-            ||> List.fold (fun resultProps oldProp ->
-                let op = oldProp :?> KeyValue
-                let (name,_) = op |> get
-                let newProp = newProps |> valueExists name
-                match newProp with
-                | true ->
-                    resultProps
-                | false ->
-                    resultProps @ [ oldProp ]
-
-            )
         (changedProps, removedProps)
 
 

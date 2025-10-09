@@ -12,6 +12,7 @@ open System
 open Terminal.Gui.App
 open Terminal.Gui.Elmish
 open Terminal.Gui.Elmish.Elements
+open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type View =
@@ -31,9 +32,8 @@ type View =
         AdornmentElement(view.props |> Seq.toList) :> TerminalElement
     static member inline adornment (x:int, y:int, title: string) =
         let setProps = fun (p: adornment) ->
-            // TODO: check these usages and alike separately
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = adornment()
@@ -48,8 +48,8 @@ type View =
         BarElement(view.props |> Seq.toList) :> TerminalElement
     static member inline bar (x:int, y:int, title: string) =
         let setProps = fun (p: bar) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = bar()
@@ -64,8 +64,8 @@ type View =
         BorderElement(view.props |> Seq.toList) :> TerminalElement
     static member inline border (x:int, y:int, title: string) =
         let setProps = fun (p: border) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = border()
@@ -80,8 +80,8 @@ type View =
         ButtonElement(view.props |> Seq.toList) :> TerminalElement
     static member inline button (x:int, y:int, title: string) =
         let setProps = fun (p: button) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = button()
@@ -97,8 +97,8 @@ type View =
         CheckBoxElement(view.props |> Seq.toList) :> TerminalElement
     static member inline checkBox (x:int, y:int, title: string) =
         let setProps = fun (p: checkBox) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = checkBox()
@@ -113,8 +113,8 @@ type View =
         ColorPickerElement(view.props |> Seq.toList) :> TerminalElement
     static member inline colorPicker (x:int, y:int, title: string) =
         let setProps = fun (p: colorPicker) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = colorPicker()
@@ -129,8 +129,8 @@ type View =
         ColorPicker16Element(view.props |> Seq.toList) :> TerminalElement
     static member inline colorPicker16 (x:int, y:int, title: string) =
         let setProps = fun (p: colorPicker16) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = colorPicker16()
@@ -145,8 +145,8 @@ type View =
         ComboBoxElement(view.props |> Seq.toList) :> TerminalElement
     static member inline comboBox (x:int, y:int, title: string) =
         let setProps = fun (p: comboBox) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = comboBox()
@@ -161,8 +161,8 @@ type View =
         DateFieldElement(view.props |> Seq.toList) :> TerminalElement
     static member inline dateField (x:int, y:int, title: string) =
         let setProps = fun (p: dateField) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = dateField()
@@ -177,8 +177,8 @@ type View =
         DatePickerElement(view.props |> Seq.toList) :> TerminalElement
     static member inline datePicker (x:int, y:int, title: string) =
         let setProps = fun (p: datePicker) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = datePicker()
@@ -193,8 +193,8 @@ type View =
         DialogElement(view.props |> Seq.toList) :> TerminalElement
     static member inline dialog (x:int, y:int, title: string) =
         let setProps = fun (p: dialog) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = dialog()
@@ -209,8 +209,8 @@ type View =
         FileDialogElement(view.props |> Seq.toList) :> TerminalElement
     static member inline fileDialog (x:int, y:int, title: string) =
         let setProps = fun (p: fileDialog) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = fileDialog()
@@ -225,8 +225,8 @@ type View =
         FrameViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline frameView (x:int, y:int, title: string) =
         let setProps = fun (p: frameView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = frameView()
@@ -241,8 +241,8 @@ type View =
         GraphViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline graphView (x:int, y:int, title: string) =
         let setProps = fun (p: graphView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = graphView()
@@ -257,8 +257,8 @@ type View =
         HexViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline hexView (x:int, y:int, title: string) =
         let setProps = fun (p: hexView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = hexView()
@@ -273,8 +273,8 @@ type View =
         LabelElement(view.props |> Seq.toList) :> TerminalElement
     static member inline label (x:int, y:int, title: string) =
         let setProps = fun (p: label) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = label()
@@ -289,8 +289,8 @@ type View =
         LegendAnnotationElement(view.props |> Seq.toList) :> TerminalElement
     static member inline legendAnnotation (x:int, y:int, title: string) =
         let setProps = fun (p: legendAnnotation) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = legendAnnotation()
@@ -305,8 +305,8 @@ type View =
         LineElement(view.props |> Seq.toList) :> TerminalElement
     static member inline line (x:int, y:int, title: string) =
         let setProps = fun (p: line) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = line()
@@ -321,8 +321,8 @@ type View =
         LineViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline lineView (x:int, y:int, title: string) =
         let setProps = fun (p: lineView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = lineView()
@@ -337,8 +337,8 @@ type View =
         ListViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline listView (x:int, y:int, title: string) =
         let setProps = fun (p: listView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = listView()
@@ -353,8 +353,8 @@ type View =
         MarginElement(view.props |> Seq.toList) :> TerminalElement
     static member inline margin (x:int, y:int, title: string) =
         let setProps = fun (p: margin) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = margin()
@@ -373,8 +373,8 @@ type View =
         MenuBarv2Element(view.props |> Seq.toList) :> TerminalElement
     static member inline menuBarv2 (x:int, y:int, title: string) =
         let setProps = fun (p: menuBarv2) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = menuBarv2()
@@ -393,8 +393,8 @@ type View =
         Menuv2Element(view.props |> Seq.toList) :> TerminalElement
     static member inline menuv2 (x:int, y:int, title: string) =
         let setProps = fun (p: menuv2) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = menuv2()
@@ -427,8 +427,8 @@ type View =
         NumericUpDownElement(view.props |> Seq.toList) :> TerminalElement
     static member inline numericUpDown (x:int, y:int, title: string) =
         let setProps = fun (p: numericUpDown) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = numericUpDown()
@@ -443,8 +443,8 @@ type View =
         NumericUpDownElement<'a>(view.props |> Seq.toList) :> TerminalElement
     static member inline numericUpDown<'a> (x:int, y:int, title: string) =
         let setProps = fun (p: numericUpDown) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let props = numericUpDown()
@@ -459,8 +459,8 @@ type View =
         OpenDialogElement(view.props |> Seq.toList) :> TerminalElement
     static member inline openDialog (x:int, y:int, title: string) =
         let setProps = fun (p: openDialog) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = openDialog()
@@ -475,8 +475,8 @@ type View =
         PaddingElement(view.props |> Seq.toList) :> TerminalElement
     static member inline padding (x:int, y:int, title: string) =
         let setProps = fun (p: padding) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = padding()
@@ -491,8 +491,8 @@ type View =
         ProgressBarElement(view.props |> Seq.toList) :> TerminalElement
     static member inline progressBar (x:int, y:int, title: string) =
         let setProps = fun (p: progressBar) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = progressBar()
@@ -507,8 +507,8 @@ type View =
         RadioGroupElement(view.props |> Seq.toList) :> TerminalElement
     static member inline radioGroup (x:int, y:int, title: string) =
         let setProps = fun (p: radioGroup) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = radioGroup()
@@ -523,8 +523,8 @@ type View =
         SaveDialogElement(view.props |> Seq.toList) :> TerminalElement
     static member inline saveDialog (x:int, y:int, title: string) =
         let setProps = fun (p: saveDialog) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = saveDialog()
@@ -539,8 +539,8 @@ type View =
         ScrollBarElement(view.props |> Seq.toList) :> TerminalElement
     static member inline scrollBar (x:int, y:int, title: string) =
         let setProps = fun (p: scrollBar) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = scrollBar()
@@ -555,8 +555,8 @@ type View =
         ScrollSliderElement(view.props |> Seq.toList) :> TerminalElement
     static member inline scrollSlider (x:int, y:int, title: string) =
         let setProps = fun (p: scrollSlider) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = scrollSlider()
@@ -571,8 +571,8 @@ type View =
         ShortcutElement(view.props |> Seq.toList) :> TerminalElement
     static member inline shortcut (x:int, y:int, title: string) =
         let setProps = fun (p: shortcut) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = shortcut()
@@ -587,8 +587,8 @@ type View =
         SliderElement(view.props |> Seq.toList) :> TerminalElement
     static member inline slider (x:int, y:int, title: string) =
         let setProps = fun (p: slider) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = slider()
@@ -603,8 +603,8 @@ type View =
         SliderElement<'a>(view.props |> Seq.toList) :> TerminalElement
     static member inline slider<'a> (x:int, y:int, title: string) =
         let setProps = fun (p: slider) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let props = slider()
@@ -619,8 +619,8 @@ type View =
         SpinnerViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline spinnerView (x:int, y:int, title: string) =
         let setProps = fun (p: spinnerView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = spinnerView()
@@ -635,8 +635,8 @@ type View =
         StatusBarElement(view.props |> Seq.toList) :> TerminalElement
     static member inline statusBar (x:int, y:int, title: string) =
         let setProps = fun (p: statusBar) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = statusBar()
@@ -651,8 +651,8 @@ type View =
         TabElement(view.props |> Seq.toList) :> TerminalElement
     static member inline tab (x:int, y:int, title: string) =
         let setProps = fun (p: tab) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = tab()
@@ -667,8 +667,8 @@ type View =
         TabViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline tabView (x:int, y:int, title: string) =
         let setProps = fun (p: tabView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = tabView()
@@ -683,8 +683,8 @@ type View =
         TableViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline tableView (x:int, y:int, title: string) =
         let setProps = fun (p: tableView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = tableView()
@@ -699,8 +699,8 @@ type View =
         TextFieldElement(view.props |> Seq.toList) :> TerminalElement
     static member inline textField (x:int, y:int, title: string) =
         let setProps = fun (p: textField) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = textField()
@@ -715,8 +715,8 @@ type View =
         TextValidateFieldElement(view.props |> Seq.toList) :> TerminalElement
     static member inline textValidateField (x:int, y:int, title: string) =
         let setProps = fun (p: textValidateField) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = textValidateField()
@@ -731,8 +731,8 @@ type View =
         TextViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline textView (x:int, y:int, title: string) =
         let setProps = fun (p: textView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = textView()
@@ -747,8 +747,8 @@ type View =
         TileViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline tileView (x:int, y:int, title: string) =
         let setProps = fun (p: tileView) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = tileView()
@@ -763,8 +763,8 @@ type View =
         TimeFieldElement(view.props |> Seq.toList) :> TerminalElement
     static member inline timeField (x:int, y:int, title: string) =
         let setProps = fun (p: timeField) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = timeField()
@@ -779,8 +779,8 @@ type View =
         ToplevelElement(view.props |> Seq.toList) :> TerminalElement
     static member inline toplevel (x:int, y:int, title: string) =
         let setProps = fun (p: toplevel) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = toplevel()
@@ -795,8 +795,8 @@ type View =
         TreeViewElement(view.props |> Seq.toList) :> TerminalElement
     static member inline treeView (x:int, y:int, title: string) =
         let setProps = fun (p: treeView<_>) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = treeView()
@@ -811,8 +811,8 @@ type View =
         TreeViewElement<'a>(view.props |> Seq.toList) :> TerminalElement
     static member inline treeView<'a when 'a : not struct> (x:int, y:int, title: string) =
         let setProps = fun (p: treeView<_>) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let props = treeView()
@@ -827,8 +827,8 @@ type View =
         WindowElement(view.props |> Seq.toList) :> TerminalElement
     static member inline window (x:int, y:int, title: string) =
         let setProps = fun (p: window) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = window()
@@ -843,8 +843,8 @@ type View =
         WizardElement(view.props |> Seq.toList) :> TerminalElement
     static member inline wizard (x:int, y:int, title: string) =
         let setProps = fun (p: wizard) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = wizard()
@@ -859,8 +859,8 @@ type View =
         WizardStepElement(view.props |> Seq.toList) :> TerminalElement
     static member inline wizardStep (x:int, y:int, title: string) =
         let setProps = fun (p: wizardStep) ->
-            prop.position.x.absolute x |> ignore
-            prop.position.y.absolute y |> ignore
+            p.x (Pos.Absolute(x))
+            p.y (Pos.Absolute(y))
             p.title title
 
         let view = wizardStep()

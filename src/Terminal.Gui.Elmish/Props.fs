@@ -125,86 +125,86 @@ type view() =
     member inline this.visibleChanged (handler:unit->unit) = Interop.mkprop "view.visibleChanged" handler |> this.props.Add
     member inline this.visibleChanging (handler:unit->unit) = Interop.mkprop "view.visibleChanging" handler |> this.props.Add
 
-module prop =
-    module position =
-        type x =
-            static member inline absolute (position:int)                                        = Interop.mkprop "view.x" (Pos.Absolute(position))
-            static member inline align (alignment:Alignment, ?modes:AlignmentModes, ?groupId:int)
-                =
-                    let modes = defaultArg modes AlignmentModes.StartToEnd ||| AlignmentModes.AddSpaceBetweenItems
-                    let groupId = defaultArg groupId 0
-                    Interop.mkprop "view.x" (Pos.Align(alignment, modes, groupId))
-            static member inline anchorEnd                                                      = Interop.mkprop "view.x" (Pos.AnchorEnd())
-            static member inline anchorEndWithOffset (offset:int)                               = Interop.mkprop "view.x" (Pos.AnchorEnd(offset))
-            static member inline center                                                         = Interop.mkprop "view.x" (Pos.Center())
-            static member inline func (f:View -> int)                                           = Interop.mkprop "view.x" (Pos.Func(f))
-            static member inline percent (percent:int)                                          = Interop.mkprop "view.x" (Pos.Percent(percent))
-
-        type y =
-            static member inline absolute (position:int)                                        = Interop.mkprop "view.y" (Pos.Absolute(position))
-            static member inline align (alignment:Alignment, ?modes:AlignmentModes, ?groupId:int)
-                =
-                    let modes = defaultArg modes AlignmentModes.StartToEnd ||| AlignmentModes.AddSpaceBetweenItems
-                    let groupId = defaultArg groupId 0
-                    Interop.mkprop "view.y" (Pos.Align(alignment, modes, groupId))
-            static member inline anchorEnd                                                      = Interop.mkprop "view.y" (Pos.AnchorEnd())
-            static member inline anchorEndWithOffset (offset:int)                               = Interop.mkprop "view.y" (Pos.AnchorEnd(offset))
-            static member inline center                                                         = Interop.mkprop "view.y" (Pos.Center())
-            static member inline func (f:View -> int)                                           = Interop.mkprop "view.y" (Pos.Func(f))
-            static member inline percent (percent:int)                                          = Interop.mkprop "view.y" (Pos.Percent(percent))
-
-    type width =
-        static member inline absolute (size:int)                                                                    = Interop.mkprop "view.width" (Dim.Absolute(size))
-        static member inline auto (?style:DimAutoStyle, ?minimumContentDim:Dim, ?maximumContentDim:Dim)
-            =
-                let style = defaultArg style DimAutoStyle.Auto
-                let minimumContentDim = defaultArg minimumContentDim null
-                let maximumContentDim = defaultArg maximumContentDim null
-                Interop.mkprop "view.width" (Dim.Auto(style, minimumContentDim, maximumContentDim))
-        static member inline fill (margin:int)                                                                      = Interop.mkprop "view.width" (Dim.Fill(margin))
-        static member inline func (f:View->int)                                                                     = Interop.mkprop "view.width" (Dim.Func(f))
-        static member inline percent (percent:int, mode:DimPercentMode)                                             = Interop.mkprop "view.width" (Dim.Percent(percent, mode))
-        static member inline percent (percent:int)                                                                  = Interop.mkprop "view.width" (Dim.Percent(percent, DimPercentMode.ContentSize))
-
-    type height =
-        static member inline absolute (size:int)                                                                    = Interop.mkprop "view.height" (Dim.Absolute(size))
-        static member inline auto (?style:DimAutoStyle, ?minimumContentDim:Dim, ?maximumContentDim:Dim)
-            =
-                let style = defaultArg style DimAutoStyle.Auto
-                let minimumContentDim = defaultArg minimumContentDim null
-                let maximumContentDim = defaultArg maximumContentDim null
-                Interop.mkprop "view.height" (Dim.Auto(style, minimumContentDim, maximumContentDim))
-        static member inline fill (margin:int)                                                                      = Interop.mkprop "view.height" (Dim.Fill(margin))
-        static member inline func (f:View->int)                                                                     = Interop.mkprop "view.height" (Dim.Func(f))
-        static member inline percent (percent:int, mode:DimPercentMode)                                             = Interop.mkprop "view.height" (Dim.Percent(percent, mode))
-        static member inline percent (percent:int)                                                                  = Interop.mkprop "view.height" (Dim.Percent(percent, DimPercentMode.ContentSize))
-
-
-    type alignment =
-        static member inline center     =   Interop.mkprop "view.alignment" Alignment.Center
-        static member inline ``end``    =   Interop.mkprop "view.alignment" Alignment.End
-        static member inline start      =   Interop.mkprop "view.alignment" Alignment.Start
-        static member inline fill       =   Interop.mkprop "view.alignment" Alignment.Fill
-
-    type textDirection =
-        static member inline bottomTop_leftRight = Interop.mkprop "view.textDirection" TextDirection.BottomTop_LeftRight
-        static member inline bottomTop_rightLeft = Interop.mkprop "view.textDirection" TextDirection.BottomTop_RightLeft
-        static member inline leftRight_bottomTop = Interop.mkprop "view.textDirection" TextDirection.LeftRight_BottomTop
-        static member inline leftRight_topBottom = Interop.mkprop "view.textDirection" TextDirection.LeftRight_TopBottom
-        static member inline rightLeft_bottomTop = Interop.mkprop "view.textDirection" TextDirection.RightLeft_BottomTop
-        static member inline rightLeft_topBottom = Interop.mkprop "view.textDirection" TextDirection.RightLeft_TopBottom
-        static member inline topBottom_leftRight = Interop.mkprop "view.textDirection" TextDirection.TopBottom_LeftRight
-
-    type borderStyle =
-        static member inline double = Interop.mkprop    "view.borderStyle" LineStyle.Double
-        static member inline none = Interop.mkprop      "view.borderStyle" LineStyle.None
-        static member inline rounded = Interop.mkprop   "view.borderStyle" LineStyle.Rounded
-        static member inline single = Interop.mkprop    "view.borderStyle" LineStyle.Single
-
-    type shadowStyle =
-        static member inline none = Interop.mkprop          "view.shadowStyle" ShadowStyle.None
-        static member inline opaque = Interop.mkprop        "view.shadowStyle" ShadowStyle.Opaque
-        static member inline transparent = Interop.mkprop   "view.shadowStyle" ShadowStyle.Transparent
+// module prop =
+//     module position =
+//         type x =
+//             static member inline absolute (position:int)                                        = Interop.mkprop "view.x" (Pos.Absolute(position))
+//             static member inline align (alignment:Alignment, ?modes:AlignmentModes, ?groupId:int)
+//                 =
+//                     let modes = defaultArg modes AlignmentModes.StartToEnd ||| AlignmentModes.AddSpaceBetweenItems
+//                     let groupId = defaultArg groupId 0
+//                     Interop.mkprop "view.x" (Pos.Align(alignment, modes, groupId))
+//             static member inline anchorEnd                                                      = Interop.mkprop "view.x" (Pos.AnchorEnd())
+//             static member inline anchorEndWithOffset (offset:int)                               = Interop.mkprop "view.x" (Pos.AnchorEnd(offset))
+//             static member inline center                                                         = Interop.mkprop "view.x" (Pos.Center())
+//             static member inline func (f:View -> int)                                           = Interop.mkprop "view.x" (Pos.Func(f))
+//             static member inline percent (percent:int)                                          = Interop.mkprop "view.x" (Pos.Percent(percent))
+//
+//         type y =
+//             static member inline absolute (position:int)                                        = Interop.mkprop "view.y" (Pos.Absolute(position))
+//             static member inline align (alignment:Alignment, ?modes:AlignmentModes, ?groupId:int)
+//                 =
+//                     let modes = defaultArg modes AlignmentModes.StartToEnd ||| AlignmentModes.AddSpaceBetweenItems
+//                     let groupId = defaultArg groupId 0
+//                     Interop.mkprop "view.y" (Pos.Align(alignment, modes, groupId))
+//             static member inline anchorEnd                                                      = Interop.mkprop "view.y" (Pos.AnchorEnd())
+//             static member inline anchorEndWithOffset (offset:int)                               = Interop.mkprop "view.y" (Pos.AnchorEnd(offset))
+//             static member inline center                                                         = Interop.mkprop "view.y" (Pos.Center())
+//             static member inline func (f:View -> int)                                           = Interop.mkprop "view.y" (Pos.Func(f))
+//             static member inline percent (percent:int)                                          = Interop.mkprop "view.y" (Pos.Percent(percent))
+//
+//     type width =
+//         static member inline absolute (size:int)                                                                    = Interop.mkprop "view.width" (Dim.Absolute(size))
+//         static member inline auto (?style:DimAutoStyle, ?minimumContentDim:Dim, ?maximumContentDim:Dim)
+//             =
+//                 let style = defaultArg style DimAutoStyle.Auto
+//                 let minimumContentDim = defaultArg minimumContentDim null
+//                 let maximumContentDim = defaultArg maximumContentDim null
+//                 Interop.mkprop "view.width" (Dim.Auto(style, minimumContentDim, maximumContentDim))
+//         static member inline fill (margin:int)                                                                      = Interop.mkprop "view.width" (Dim.Fill(margin))
+//         static member inline func (f:View->int)                                                                     = Interop.mkprop "view.width" (Dim.Func(f))
+//         static member inline percent (percent:int, mode:DimPercentMode)                                             = Interop.mkprop "view.width" (Dim.Percent(percent, mode))
+//         static member inline percent (percent:int)                                                                  = Interop.mkprop "view.width" (Dim.Percent(percent, DimPercentMode.ContentSize))
+//
+//     type height =
+//         static member inline absolute (size:int)                                                                    = Interop.mkprop "view.height" (Dim.Absolute(size))
+//         static member inline auto (?style:DimAutoStyle, ?minimumContentDim:Dim, ?maximumContentDim:Dim)
+//             =
+//                 let style = defaultArg style DimAutoStyle.Auto
+//                 let minimumContentDim = defaultArg minimumContentDim null
+//                 let maximumContentDim = defaultArg maximumContentDim null
+//                 Interop.mkprop "view.height" (Dim.Auto(style, minimumContentDim, maximumContentDim))
+//         static member inline fill (margin:int)                                                                      = Interop.mkprop "view.height" (Dim.Fill(margin))
+//         static member inline func (f:View->int)                                                                     = Interop.mkprop "view.height" (Dim.Func(f))
+//         static member inline percent (percent:int, mode:DimPercentMode)                                             = Interop.mkprop "view.height" (Dim.Percent(percent, mode))
+//         static member inline percent (percent:int)                                                                  = Interop.mkprop "view.height" (Dim.Percent(percent, DimPercentMode.ContentSize))
+//
+//
+//     type alignment =
+//         static member inline center     =   Interop.mkprop "view.alignment" Alignment.Center
+//         static member inline ``end``    =   Interop.mkprop "view.alignment" Alignment.End
+//         static member inline start      =   Interop.mkprop "view.alignment" Alignment.Start
+//         static member inline fill       =   Interop.mkprop "view.alignment" Alignment.Fill
+//
+//     type textDirection =
+//         static member inline bottomTop_leftRight = Interop.mkprop "view.textDirection" TextDirection.BottomTop_LeftRight
+//         static member inline bottomTop_rightLeft = Interop.mkprop "view.textDirection" TextDirection.BottomTop_RightLeft
+//         static member inline leftRight_bottomTop = Interop.mkprop "view.textDirection" TextDirection.LeftRight_BottomTop
+//         static member inline leftRight_topBottom = Interop.mkprop "view.textDirection" TextDirection.LeftRight_TopBottom
+//         static member inline rightLeft_bottomTop = Interop.mkprop "view.textDirection" TextDirection.RightLeft_BottomTop
+//         static member inline rightLeft_topBottom = Interop.mkprop "view.textDirection" TextDirection.RightLeft_TopBottom
+//         static member inline topBottom_leftRight = Interop.mkprop "view.textDirection" TextDirection.TopBottom_LeftRight
+//
+//     type borderStyle =
+//         static member inline double = Interop.mkprop    "view.borderStyle" LineStyle.Double
+//         static member inline none = Interop.mkprop      "view.borderStyle" LineStyle.None
+//         static member inline rounded = Interop.mkprop   "view.borderStyle" LineStyle.Rounded
+//         static member inline single = Interop.mkprop    "view.borderStyle" LineStyle.Single
+//
+//     type shadowStyle =
+//         static member inline none = Interop.mkprop          "view.shadowStyle" ShadowStyle.None
+//         static member inline opaque = Interop.mkprop        "view.shadowStyle" ShadowStyle.Opaque
+//         static member inline transparent = Interop.mkprop   "view.shadowStyle" ShadowStyle.Transparent
 
 // Adornment
 type adornment() =

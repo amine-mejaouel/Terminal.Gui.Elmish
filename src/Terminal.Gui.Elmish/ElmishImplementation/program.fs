@@ -203,7 +203,7 @@ module Program =
         startState.initializeTree None
         currentTreeState <- Some startState
 
-        match startState.element with
+        match startState.view with
         | null ->
             failwith ("error state not initialized")
         | topElement ->

@@ -536,6 +536,11 @@ type View =
         setProps view
         OpenDialogElement(view.props) :> TerminalElement
 
+    static member inline optionSelector(set: optionSelector -> unit) =
+        let view = optionSelector()
+        set(view)
+        OptionSelectorElement(view.props) :> TerminalElement
+
     /// <seealso cref="Terminal.Gui.Padding"/>
     static member inline padding (set: padding -> unit) =
         let view = padding()

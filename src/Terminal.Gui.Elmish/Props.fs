@@ -8,6 +8,7 @@
 namespace Terminal.Gui.Elmish
 
 open System
+open System.Collections.Generic
 open System.Text
 open System.Drawing
 open System.ComponentModel
@@ -541,6 +542,20 @@ type openDialog() =
     inherit fileDialog()
     // Properties
     member inline this.openMode (value:OpenMode) = this.props.add "openDialog.openMode" value
+
+// OptionSelector
+type optionSelector() =
+    inherit view()
+    //Properties
+    member inline this.assignHotKeysToCheckBoxes (value:bool) = this.props.add "optionSelector.assignHotKeysToCheckBoxes" value
+    member inline this.orientation (value:Orientation) = this.props.add "optionSelector.orientation" value
+    member inline this.options (value:IReadOnlyList<string>) = this.props.add "optionSelector.options" value
+    member inline this.options (value:string list) = this.props.add "optionSelector.options" (value :> IReadOnlyList<string>)
+    member inline this.selectedItem (value:Int32) = this.props.add "optionSelector.selectedItem" value
+    // Events
+    member inline this.orientationChanged (value:Orientation->unit) = this.props.add "optionSelector.orientationChanged" value
+    member inline this.orientationChanging (value:CancelEventArgs<Orientation>->unit) = this.props.add "optionSelector.orientationChanging" value
+    member inline this.selectedItemChanged (value:SelectedItemChangedArgs->unit) = this.props.add "optionSelector.selectedItemChanged" value
 
 // Padding
 type padding() =

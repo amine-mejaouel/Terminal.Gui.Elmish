@@ -9,6 +9,7 @@
 namespace Terminal.Gui.Elmish.Elements
 
 open System
+open System.Collections.Generic
 open System.Collections.Specialized
 open System.Collections.ObjectModel
 open System.ComponentModel
@@ -2061,7 +2062,71 @@ type OpenDialogElement(props:Props) =
         this.setProps(element, changedProps)
         this.view <- prevElement
 
+// OptionSelector
+type OptionSelectorElement(props:Props) =
+    inherit TerminalElement(props)
 
+    let removeProps (element: OptionSelector) (props: Props) =
+        // Properties
+        props |> Props.tryFind<bool> "optionSelector.assignHotKeysToCheckBoxes" |> Option.iter (fun _ -> element.AssignHotKeysToCheckBoxes <- Unchecked.defaultof<_>)
+        // TODO: could be refactored into an IOrientation props handler
+        // Same could be done for other interfaces
+        props |> Props.tryFind<Orientation> "optionSelector.orientation" |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_> )
+        props |> Props.tryFind<IReadOnlyList<string>> "optionSelector.options" |> Option.iter (fun _ -> element.Options <- Unchecked.defaultof<_> )
+        props |> Props.tryFind<Int32> "optionSelector.selectedItem" |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_> )
+        // Events
+        props |> Props.tryFind<Orientation->unit> "optionSelector.orientationChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        props |> Props.tryFind<CancelEventArgs<Orientation>->unit> "optionSelector.orientationChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        props |> Props.tryFind<SelectedItemChangedArgs->unit> "optionSelector.selectedItemChangedArgs" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SelectedItemChanged @> element)
+
+    override _.name = $"OptionSelector"
+
+    member _.setProps (element: OptionSelector, props: Props) =
+        base.setProps(element, props)
+
+        // Properties
+        props |> Props.tryFind<bool> "optionSelector.assignHotKeysToCheckBoxes" |> Option.iter (fun v -> element.AssignHotKeysToCheckBoxes <- v)
+        props |> Props.tryFind<Orientation> "optionSelector.orientation" |> Option.iter (fun v-> element.Orientation <- v)
+        props |> Props.tryFind<IReadOnlyList<string>> "optionSelector.options" |> Option.iter (fun v-> element.Options <- v)
+        props |> Props.tryFind<Int32> "optionSelector.selectedItem" |> Option.iter (fun v-> element.SelectedItem <- v)
+        // Events
+        props |> Props.tryFind<Orientation->unit> "optionSelector.orientationChanged" |> Option.iter (fun v-> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+        props |> Props.tryFind<CancelEventArgs<Orientation>->unit> "optionSelector.orientationChanging" |> Option.iter (fun v-> Interop.setEventHandler <@ element.OrientationChanging @> v element)
+        props |> Props.tryFind<SelectedItemChangedArgs->unit> "optionSelector.selectedItemChanged" |> Option.iter (fun v-> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
+
+
+    override this.initialize parent =
+        #if DEBUG
+        Diagnostics.Trace.WriteLine $"{this.name} created!"
+        #endif
+        this.parent <- parent
+
+
+        let el = new OptionSelector()
+        parent |> Option.iter (fun p -> p.Add el |> ignore)
+        this.setProps(el, props)
+        props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
+        this.view <- el
+
+
+
+    override this.canUpdate prevElement oldProps =
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
+        let canUpdateElement =
+            true
+
+        canUpdateView && canUpdateElement
+
+
+
+    override this.update prevElement oldProps =
+        let element = prevElement :?> OptionSelector
+        let changedProps,removedProps = Interop.filterProps oldProps props
+        ViewElement.removeProps prevElement removedProps
+        removeProps element removedProps
+        this.setProps(element, changedProps)
+        this.view <- prevElement
 
 // Padding
 type PaddingElement(props:Props) =

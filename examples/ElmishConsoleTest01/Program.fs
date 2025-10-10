@@ -13,6 +13,7 @@ open Terminal.Gui.Elmish
 open System.IO
 open Terminal.Gui
 open Terminal.Gui.Input
+open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 
@@ -83,6 +84,29 @@ let view (state: Model) (dispatch: Msg -> unit) =
                                             )
                                         )
                                         View.menuItemv2 (fun p -> p.commandView (View.line []))
+                                        if ConfigurationManager.IsEnabled then
+                                            View.menuItemv2 (fun p ->
+                                                p.helpText "Cycle Through Themes"
+                                                p.key Key.T.WithCtrl
+
+                                                p.commandView (
+                                                    View.optionSelector (fun p ->
+                                                        p.highlightStates MouseState.None
+                                                        p.options (ThemeManager.GetThemeNames())
+
+                                                        p.selectedItemChanged (fun args ->
+                                                            if args.SelectedItem.HasValue then
+                                                                ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
+                                                        )
+
+                                                        p.selectedItem (
+                                                            ThemeManager
+                                                                .GetThemeNames()
+                                                                .IndexOf(ThemeManager.GetCurrentThemeName())
+                                                        )
+                                                    )
+                                                )
+                                            )
                                     ]
                                 )
                             )
@@ -96,6 +120,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
 [<EntryPoint>]
 let main argv =
+    ConfigurationManager.Enable(ConfigLocations.All)
 
     Program.mkProgram init update view
     |> Program.withSubscription (fun state ->

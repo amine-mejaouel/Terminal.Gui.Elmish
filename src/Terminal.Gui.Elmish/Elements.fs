@@ -47,13 +47,13 @@ type TerminalElement (props:Props) =
     abstract subElements: {| key: string; setParent: bool |} list
     default _.subElements = []
 
-    abstract create: parent:View option -> unit
+    abstract initialize: parent:View option -> unit
     abstract update: prevElement:View -> oldProps:Props -> unit
     abstract canUpdate: prevElement:View -> oldProps:Props -> bool
     abstract name: string
 
     member this.initializeTree(parent: View option) =
-        this.create parent
+        this.initialize parent
         this.children |> List.iter (fun e -> e.initializeTree (Some this.element))
 
     static member initializeElement elementProp parent (props: Props) =
@@ -330,7 +330,7 @@ type AdornmentElement(props:Props) =
         // Events
         props |> Props.tryFind<unit->unit> "adornment.thicknessChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ThicknessChanged @> (fun _ -> v()) element)
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -386,7 +386,7 @@ type BarElement(props:Props) =
         props |> Props.tryFind<App.CancelEventArgs<Orientation>->unit> "bar.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -440,7 +440,7 @@ type BorderElement(props:Props) =
         props |> Props.tryFind<BorderSettings> "border.settings" |> Option.iter (fun v -> element.Settings <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -504,7 +504,7 @@ type ButtonElement(props:Props) =
         props |> Props.tryFind<bool> "button.wantContinuousButtonPressed" |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -568,7 +568,7 @@ type CheckBoxElement(props:Props) =
         props |> Props.tryFind<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -626,7 +626,7 @@ type ColorPickerElement(props:Props) =
         props |> Props.tryFind<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -688,7 +688,7 @@ type ColorPicker16Element(props:Props) =
         props |> Props.tryFind<ResultEventArgs<Terminal.Gui.Drawing.Color>->unit> "colorPicker16.colorChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -760,7 +760,7 @@ type ComboBoxElement(props:Props) =
         props |> Props.tryFind<ListViewItemEventArgs->unit> "comboBox.selectedItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -820,7 +820,7 @@ type DateFieldElement(props:Props) =
         props |> Props.tryFind<DateTimeEventArgs<DateTime>->unit> "dateField.dateChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.DateChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -874,7 +874,7 @@ type DatePickerElement(props:Props) =
         props |> Props.tryFind<DateTime> "datePicker.date" |> Option.iter (fun v -> element.Date <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -930,7 +930,7 @@ type DialogElement(props:Props) =
         props |> Props.tryFind<bool> "dialog.canceled" |> Option.iter (fun v -> element.Canceled <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -998,7 +998,7 @@ type FileDialogElement(props:Props) =
         props |> Props.tryFind<FilesSelectedEventArgs->unit> "fileDialog.filesSelected" |> Option.iter (fun v -> Interop.setEventHandler <@ element.FilesSelected @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1050,7 +1050,7 @@ type FrameViewElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1114,7 +1114,7 @@ type GraphViewElement(props:Props) =
         props |> Props.tryFind<PointF> "graphView.scrollOffset" |> Option.iter (fun v -> element.ScrollOffset <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1180,7 +1180,7 @@ type HexViewElement(props:Props) =
         props |> Props.tryFind<HexViewEventArgs->unit> "hexView.positionChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.PositionChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1234,7 +1234,7 @@ type LabelElement(props:Props) =
         props |> Props.tryFind<string> "label.text" |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1286,7 +1286,7 @@ type LegendAnnotationElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1344,7 +1344,7 @@ type LineElement(props:Props) =
         props |> Props.tryFind<CancelEventArgs<Orientation>->unit> "line.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1402,7 +1402,7 @@ type LineViewElement(props:Props) =
         props |> Props.tryFind<Rune option> "lineView.startingAnchor" |> Option.iter (fun v -> element.StartingAnchor <- v  |> Option.toNullable)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1474,7 +1474,7 @@ type ListViewElement(props:Props) =
         props |> Props.tryFind<ListViewItemEventArgs->unit> "listView.selectedItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1526,7 +1526,7 @@ type MarginElement(props:Props) =
         props |> Props.tryFind<ShadowStyle> "margin.shadowStyle" |> Option.iter (fun v -> element.ShadowStyle <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1587,7 +1587,7 @@ type Menuv2Element(props:Props) =
         props |> Props.tryFind<MenuItemv2->unit> "menuv2.selectedMenuItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1650,7 +1650,7 @@ type PopoverMenuElement(props: Props) =
     override this.subElements =
         {| key= "popoverMenu.root.element"; setParent= false |}::base.subElements
 
-    override this.create(parent) =
+    override this.initialize(parent) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1709,7 +1709,7 @@ type MenuBarItemv2Element(props:Props) =
     override this.subElements =
         {| key="menuBarItemv2.popoverMenu.element"; setParent=true  |}::base.subElements
 
-    override this.create(parent) =
+    override this.initialize(parent) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1772,7 +1772,7 @@ type MenuBarv2Element(props:Props) =
         // Events
         props |> Props.tryFind<KeyChangedEventArgs->unit> "menuBarv2.keyChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1848,7 +1848,7 @@ type ShortcutElement(props:Props) =
         {| key="shortcut.commandView.element"; setParent=true |}::base.subElements
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1915,7 +1915,7 @@ type MenuItemv2Element(props:Props) =
         {| key="menuItemv2.subMenu.element" ; setParent=true |}::base.subElements
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -1982,7 +1982,7 @@ type NumericUpDownElement<'a>(props:Props) =
         props |> Props.tryFind<CancelEventArgs<'a>->unit> "numericUpDown`1.valueChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2038,7 +2038,7 @@ type OpenDialogElement(props:Props) =
         props |> Props.tryFind<OpenMode> "openDialog.openMode" |> Option.iter (fun v -> element.OpenMode <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2088,7 +2088,7 @@ type PaddingElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2150,7 +2150,7 @@ type ProgressBarElement(props:Props) =
         props |> Props.tryFind<string> "progressBar.text" |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2222,7 +2222,7 @@ type RadioGroupElement(props:Props) =
         props |> Props.tryFind<SelectedItemChangedArgs->unit> "radioGroup.selectedItemChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2274,7 +2274,7 @@ type SaveDialogElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2346,7 +2346,7 @@ type ScrollBarElement(props:Props) =
         props |> Props.tryFind<EventArgs<Int32>->unit> "scrollBar.sliderPositionChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SliderPositionChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2418,7 +2418,7 @@ type ScrollSliderElement(props:Props) =
         props |> Props.tryFind<EventArgs<Int32>->unit> "scrollSlider.scrolled" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Scrolled @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2503,7 +2503,7 @@ type SliderElement<'a>(props:Props) =
         props |> Props.tryFind<CancelEventArgs<Orientation>->unit> "slider`1.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2555,7 +2555,7 @@ type SliderElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2617,7 +2617,7 @@ type SpinnerViewElement(props:Props) =
         props |> Props.tryFind<SpinnerStyle> "spinnerView.style" |> Option.iter (fun v -> element.Style <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2669,7 +2669,7 @@ type StatusBarElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2723,12 +2723,12 @@ type TabElement(props:Props) =
 
         props |> Props.tryFind<TerminalElement> "tab.view"
         |> Option.iter (fun v ->
-            v.create (Some element)
+            v.initialize (Some element)
             element.View <- v.element
         )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2796,14 +2796,14 @@ type TabViewElement(props:Props) =
         props |> Props.tryFind<TerminalElement list> "tabView.tabs" |> Option.iter (fun v ->
             v
             |> List.iter (fun tabItems ->
-                tabItems.create (Some element)
+                tabItems.initialize (Some element)
                 element.AddTab ((tabItems.element :?> Tab), false)
 
                 )
             )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2889,7 +2889,7 @@ type TableViewElement(props:Props) =
         props |> Props.tryFind<SelectedCellChangedEventArgs->unit> "tableView.selectedCellChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedCellChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -2965,7 +2965,7 @@ type TextFieldElement(props:Props) =
         props |> Props.tryFind<ResultEventArgs<string>->unit> "textField.textChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.TextChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3019,7 +3019,7 @@ type TextValidateFieldElement(props:Props) =
         props |> Props.tryFind<string> "textValidateField.text" |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3127,7 +3127,7 @@ type TextViewElement(props:Props) =
         props |> Props.tryFind<string->unit> "textView.textChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.ContentsChanged @> (fun _ -> v element.Text) element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3187,7 +3187,7 @@ type TileViewElement(props:Props) =
         props |> Props.tryFind<SplitterEventArgs->unit> "tileView.splitterMoved" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SplitterMoved @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3247,7 +3247,7 @@ type TimeFieldElement(props:Props) =
         props |> Props.tryFind<DateTimeEventArgs<TimeSpan>->unit> "timeField.timeChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.TimeChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3319,7 +3319,7 @@ type ToplevelElement(props:Props) =
         props |> Props.tryFind<unit->unit> "toplevel.unloaded" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Unloaded @> (fun _ -> v()) element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3401,7 +3401,7 @@ type TreeViewElement<'a when 'a : not struct>(props:Props) =
         props |> Props.tryFind<SelectionChangedEventArgs<'a>->unit> "treeView`1.selectionChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectionChanged @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3457,7 +3457,7 @@ type WindowElement(props:Props) =
         ()
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3525,7 +3525,7 @@ type WizardElement(props:Props) =
         props |> Props.tryFind<StepChangeEventArgs->unit> "wizard.stepChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.StepChanging @> v element)
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -3581,7 +3581,7 @@ type WizardStepElement(props:Props) =
         props |> Props.tryFind<string> "wizardStep.nextButtonText" |> Option.iter (fun v -> element.NextButtonText <- v )
 
 
-    override this.create parent =
+    override this.initialize parent =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif

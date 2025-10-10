@@ -251,13 +251,13 @@ type checkBox() =
     // Properties
     member inline this.allowCheckStateNone (value:bool) = this.props.add "checkBox.allowCheckStateNone" value
     member inline this.checkedState (value:CheckState) = this.props.add "checkBox.checkedState" value
+    member inline this.checkedState (value:bool) = this.props.add "checkBox.checkedState" (if value then CheckState.Checked else CheckState.UnChecked)
     member inline this.hotKeySpecifier (value:Rune) = this.props.add "checkBox.hotKeySpecifier" value
     member inline this.radioStyle (value:bool) = this.props.add "checkBox.radioStyle" value
     member inline this.text (value:string) = this.props.add "checkBox.text" value
     // Events
     member inline this.checkedStateChanging (handler:ResultEventArgs<CheckState>->unit) = this.props.add "checkBox.checkedStateChanging" handler
-
-    member inline this.ischecked (value:bool) = this.props.add "checkBox.checkedState" (if value then CheckState.Checked else CheckState.UnChecked)
+    member inline this.checkedStateChanged (handler:EventArgs<CheckState>->unit) = this.props.add "checkBox.checkedStateChanged" handler
 
 
 // ColorPicker

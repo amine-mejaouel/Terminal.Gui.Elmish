@@ -44,6 +44,9 @@ type TerminalElement (props:Props) =
     member _.properties = Props.merge props addProps
     member _.children   = c
 
+    abstract subElements: {| key: string; setParent: bool |} list
+    default _.subElements = []
+
     abstract create: parent:View option -> unit
     abstract update: prevElement:View -> oldProps:Props -> unit
     abstract canUpdate: prevElement:View -> oldProps:Props -> bool
@@ -67,6 +70,19 @@ type TerminalElement (props:Props) =
             let viewProp = elementProp.Substring(0, elementProp.Length - (*".element".Length*) 8)
 
             Some (viewProp, element.element)
+
+    member this.initializeSubElements parent =
+        seq {
+            for x in this.subElements do
+                let parent =
+                    match x.setParent with
+                    | true -> Some parent
+                    | false -> None
+
+                match TerminalElement.initializeElement x.key parent props with
+                | Some x -> yield x
+                | None -> ()
+        }
 
     member this.setProps (element: View, props: Props) =
         // Properties
@@ -1631,6 +1647,9 @@ type PopoverMenuElement(props: Props) =
         props |> Props.tryFind<CommandEventArgs->unit> "popoverMenu.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
         props |> Props.tryFind<KeyChangedEventArgs->unit> "popoverMenu.keyChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
+    override this.subElements =
+        {| key= "popoverMenu.root.element"; setParent= false |}::base.subElements
+
     override this.create(parent) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
@@ -1639,8 +1658,8 @@ type PopoverMenuElement(props: Props) =
 
         let el = new PopoverMenu()
 
-        TerminalElement.initializeElement "popoverMenu.root.element" None props
-        |> Option.iter (fun (k, v) -> props.add k v)
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add k v)
 
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
@@ -1687,6 +1706,9 @@ type MenuBarItemv2Element(props:Props) =
         // Events
         props |> Props.tryFind<bool->unit> "menuBarItemv2.popoverMenuOpenChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
+    override this.subElements =
+        {| key="menuBarItemv2.popoverMenu.element"; setParent=true  |}::base.subElements
+
     override this.create(parent) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
@@ -1696,8 +1718,8 @@ type MenuBarItemv2Element(props:Props) =
 
         let el = new MenuBarItemv2()
 
-        TerminalElement.initializeElement "menuBarItemv2.popoverMenu.element" (Some el) props
-        |> Option.iter (fun (k, v) -> props.add k v)
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add k v)
 
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
@@ -1792,6 +1814,7 @@ type ShortcutElement(props:Props) =
         // Properties
         props |> Props.tryFind<Action> "shortcut.action" |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
         props |> Props.tryFind<AlignmentModes> "shortcut.alignmentModes" |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
+        props |> Props.tryFind<View> "shortcut.commandView" |> Option.iter (fun _ -> element.CommandView <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> "shortcut.forceFocusColors" |> Option.iter (fun _ -> element.ForceFocusColors <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> "shortcut.helpText" |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> "shortcut.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
@@ -1810,6 +1833,7 @@ type ShortcutElement(props:Props) =
         // Properties
         props |> Props.tryFind<Action> "shortcut.action" |> Option.iter (fun v -> element.Action <- v )
         props |> Props.tryFind<AlignmentModes> "shortcut.alignmentModes" |> Option.iter (fun v -> element.AlignmentModes <- v )
+        props |> Props.tryFind<View> "shortcut.commandView" |> Option.iter (fun v -> element.CommandView <- v )
         props |> Props.tryFind<bool> "shortcut.forceFocusColors" |> Option.iter (fun v -> element.ForceFocusColors <- v )
         props |> Props.tryFind<string> "shortcut.helpText" |> Option.iter (fun v -> element.HelpText <- v )
         props |> Props.tryFind<string> "shortcut.text" |> Option.iter (fun v -> element.Text <- v )
@@ -1820,6 +1844,9 @@ type ShortcutElement(props:Props) =
         props |> Props.tryFind<Orientation->unit> "shortcut.orientationChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
         props |> Props.tryFind<CancelEventArgs<Orientation>->unit> "shortcut.orientationChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
+    override this.subElements =
+        {| key="shortcut.commandView.element"; setParent=true |}::base.subElements
+
 
     override this.create parent =
         #if DEBUG
@@ -1828,7 +1855,12 @@ type ShortcutElement(props:Props) =
         this.parent <- parent
 
 
+
         let el = new Shortcut()
+
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add k v)
+
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
@@ -1879,6 +1911,9 @@ type MenuItemv2Element(props:Props) =
         // Events
         props |> Props.tryFind<CommandEventArgs->unit> "menuItemv2.accepted" |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
+    override this.subElements =
+        {| key="menuItemv2.subMenu.element" ; setParent=true |}::base.subElements
+
 
     override this.create parent =
         #if DEBUG
@@ -1888,8 +1923,8 @@ type MenuItemv2Element(props:Props) =
 
         let el = new MenuItemv2()
 
-        TerminalElement.initializeElement "menuItemv2.subMenu.element" (Some el) props
-        |> Option.iter (fun (k, v) -> props.add k v)
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add k v)
 
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)

@@ -540,6 +540,7 @@ type CheckBoxElement(props:Props) =
         props |> Props.tryFind<string> "checkBox.text" |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
         // Events
         props |> Props.tryFind<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CheckedStateChanging @> element)
+        props |> Props.tryFind<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanged" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CheckedStateChanged @> element)
 
     override _.name = $"CheckBox"
 
@@ -554,6 +555,7 @@ type CheckBoxElement(props:Props) =
         props |> Props.tryFind<string> "checkBox.text" |> Option.iter (fun v -> element.Text <- v )
         // Events
         props |> Props.tryFind<ResultEventArgs<CheckState>->unit> "checkBox.checkedStateChanging" |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanging @> v element)
+        props |> Props.tryFind<EventArgs<CheckState>->unit> "checkBox.checkedStateChanged" |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanged @> v element)
 
 
     override this.initialize parent =

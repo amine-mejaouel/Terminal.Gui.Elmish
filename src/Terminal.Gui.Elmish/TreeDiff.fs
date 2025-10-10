@@ -37,22 +37,22 @@ module Differ =
     let rec update (rootTree:TerminalElement) (newTree:TerminalElement) =
         match rootTree, newTree with
         | rt, nt when rt.name <> nt.name ->
-            let parent = rootTree.element |> Interop.getParent
-            parent |> Option.iter (fun p -> p.Remove rootTree.element |> ignore)
-            rootTree.element.Dispose()
+            let parent = rootTree.view |> Interop.getParent
+            parent |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+            rootTree.view.Dispose()
         #if DEBUG
             System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
         #endif
             newTree.initializeTree parent
         | OnlyPropsChanged ->
-            if newTree.canUpdate rootTree.element rootTree.properties then
-                newTree.update rootTree.element rootTree.properties
+            if newTree.canUpdate rootTree.view rootTree.properties then
+                newTree.update rootTree.view rootTree.properties
             else
-                let parent = rootTree.element |> Interop.getParent
-                parent |> Option.iter (fun p -> p.Remove rootTree.element |> ignore)
-                disposeTree rootTree.element
-                rootTree.element.RemoveAll() |> ignore
-                rootTree.element.Dispose()
+                let parent = rootTree.view |> Interop.getParent
+                parent |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+                disposeTree rootTree.view
+                rootTree.view.RemoveAll() |> ignore
+                rootTree.view.Dispose()
                 #if DEBUG
                 System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
                 #endif
@@ -62,12 +62,12 @@ module Differ =
             let sortedNewChildren = newTree.children |> List.sortBy (fun v -> v.name)
             (sortedRootChildren,sortedNewChildren) ||> List.iter2 (fun rt nt -> update rt nt)
         | ChildsDifferent ->
-            if newTree.canUpdate rootTree.element rootTree.properties then
-                newTree.update rootTree.element rootTree.properties
+            if newTree.canUpdate rootTree.view rootTree.properties then
+                newTree.update rootTree.view rootTree.properties
             else
-                let parent = rootTree.element |> Interop.getParent
-                parent |> Option.iter (fun p -> p.Remove rootTree.element |> ignore)
-                rootTree.element.Dispose()
+                let parent = rootTree.view |> Interop.getParent
+                parent |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+                rootTree.view.Dispose()
             #if DEBUG
                 System.Diagnostics.Trace.WriteLine ($"{rootTree.name} removed and disposed!")
             #endif
@@ -92,9 +92,9 @@ module Differ =
                         else
                             // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                             // don't know
-                            if rootTree.element.SubViews.Count = 0 then
-                                rootTree.element.CanFocus <- true
-                            let newElem = ne.initializeTree (Some rootTree.element)
+                            if rootTree.view.SubViews.Count = 0 then
+                                rootTree.view.CanFocus <- true
+                            let newElem = ne.initializeTree (Some rootTree.view)
                             newElem
                         #if DEBUG
                             System.Diagnostics.Trace.WriteLine ($"child {ne.name} created ()!")
@@ -108,8 +108,8 @@ module Differ =
                             update re newElements.[idx]
                         else
                             // the rest we remove
-                            re.element |> rootTree.element.Remove |> ignore
-                            re.element.Dispose()
+                            re.view |> rootTree.view.Remove |> ignore
+                            re.view.Dispose()
                         #if DEBUG
                             System.Diagnostics.Trace.WriteLine ($"child {re.name} removed and disposed!")
                         #endif

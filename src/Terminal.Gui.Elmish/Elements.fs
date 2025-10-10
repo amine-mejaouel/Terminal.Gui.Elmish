@@ -31,14 +31,12 @@ open Terminal.Gui.Views
 
 [<AbstractClass>]
 type TerminalElement (props:Props) =
-    let mutable view: View = null
     let mutable p: View option = None
     let mutable addProps = Props.init()
     let c = props |> Props.tryFindWithDefault<TerminalElement list> "children" []
 
     member this.parent with get() = p and set v = p <- v
-    // TODO: rename to view ?
-    member this.element with get() = view and set v = view <- v
+    member val view: View = null with get, set
     // TODO: is this being used ?
     member this.additionalProps with get() = addProps and set v = addProps <- v
     member _.properties = Props.merge props addProps
@@ -54,34 +52,24 @@ type TerminalElement (props:Props) =
 
     member this.initializeTree(parent: View option) =
         this.initialize parent
-        this.children |> List.iter (fun e -> e.initializeTree (Some this.element))
-
-    static member initializeElement elementProp parent (props: Props) =
-        // TODO: Move that outside to get rid of `props` param
-        let element =
-            props |> Props.tryFind<TerminalElement> elementProp
-
-        match element with
-        | None ->
-            None
-        | Some element ->
-            element.initializeTree parent
-
-            let viewProp = elementProp.Substring(0, elementProp.Length - (*".element".Length*) 8)
-
-            Some (viewProp, element.element)
+        this.children |> List.iter (fun e -> e.initializeTree (Some this.view))
 
     member this.initializeSubElements parent =
         seq {
             for x in this.subElements do
-                let parent =
-                    match x.setParent with
-                    | true -> Some parent
-                    | false -> None
-
-                match TerminalElement.initializeElement x.key parent props with
-                | Some x -> yield x
+                match props |> Props.tryFind<TerminalElement> x.key with
                 | None -> ()
+                | Some subElement ->
+                    let parent =
+                        match x.setParent with
+                        | true -> Some parent
+                        | false -> None
+
+                    subElement.initializeTree parent
+
+                    let viewPropName = x.key.Substring(0, x.key.Length - (*".element".Length*) 8)
+
+                    yield (viewPropName, subElement.view)
         }
 
     member this.setProps (element: View, props: Props) =
@@ -341,7 +329,7 @@ type AdornmentElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -359,7 +347,7 @@ type AdornmentElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 // Bar
 type BarElement(props:Props) =
@@ -397,7 +385,7 @@ type BarElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -417,7 +405,7 @@ type BarElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -451,7 +439,7 @@ type BorderElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -471,7 +459,7 @@ type BorderElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -515,7 +503,7 @@ type ButtonElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -535,7 +523,7 @@ type ButtonElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -579,7 +567,7 @@ type CheckBoxElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -599,7 +587,7 @@ type CheckBoxElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -637,7 +625,7 @@ type ColorPickerElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -657,7 +645,7 @@ type ColorPickerElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -699,7 +687,7 @@ type ColorPicker16Element(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -719,7 +707,7 @@ type ColorPicker16Element(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -771,7 +759,7 @@ type ComboBoxElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -791,7 +779,7 @@ type ComboBoxElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -831,7 +819,7 @@ type DateFieldElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -851,7 +839,7 @@ type DateFieldElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -885,7 +873,7 @@ type DatePickerElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -905,7 +893,7 @@ type DatePickerElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -941,7 +929,7 @@ type DialogElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -961,7 +949,7 @@ type DialogElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1009,7 +997,7 @@ type FileDialogElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1029,7 +1017,7 @@ type FileDialogElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1061,7 +1049,7 @@ type FrameViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1081,7 +1069,7 @@ type FrameViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1125,7 +1113,7 @@ type GraphViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1145,7 +1133,7 @@ type GraphViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1191,7 +1179,7 @@ type HexViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1211,7 +1199,7 @@ type HexViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1245,7 +1233,7 @@ type LabelElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1265,7 +1253,7 @@ type LabelElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1297,7 +1285,7 @@ type LegendAnnotationElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1317,7 +1305,7 @@ type LegendAnnotationElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1355,7 +1343,7 @@ type LineElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1375,7 +1363,7 @@ type LineElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1413,7 +1401,7 @@ type LineViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1433,7 +1421,7 @@ type LineViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1485,7 +1473,7 @@ type ListViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1505,7 +1493,7 @@ type ListViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1537,7 +1525,7 @@ type MarginElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1557,7 +1545,7 @@ type MarginElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1598,7 +1586,7 @@ type Menuv2Element(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1618,7 +1606,7 @@ type Menuv2Element(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1664,7 +1652,7 @@ type PopoverMenuElement(props: Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1680,7 +1668,7 @@ type PopoverMenuElement(props: Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1724,7 +1712,7 @@ type MenuBarItemv2Element(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1740,7 +1728,7 @@ type MenuBarItemv2Element(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 // MenuBar
 type MenuBarv2Element(props:Props) =
@@ -1782,7 +1770,7 @@ type MenuBarv2Element(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1802,7 +1790,7 @@ type MenuBarv2Element(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1864,7 +1852,7 @@ type ShortcutElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1884,7 +1872,7 @@ type ShortcutElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1929,7 +1917,7 @@ type MenuItemv2Element(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -1947,7 +1935,7 @@ type MenuItemv2Element(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -1993,7 +1981,7 @@ type NumericUpDownElement<'a>(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2013,7 +2001,7 @@ type NumericUpDownElement<'a>(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2049,7 +2037,7 @@ type OpenDialogElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2069,7 +2057,7 @@ type OpenDialogElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2099,7 +2087,7 @@ type PaddingElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2119,7 +2107,7 @@ type PaddingElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2161,7 +2149,7 @@ type ProgressBarElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2181,7 +2169,7 @@ type ProgressBarElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2233,7 +2221,7 @@ type RadioGroupElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2253,7 +2241,7 @@ type RadioGroupElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2285,7 +2273,7 @@ type SaveDialogElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2305,7 +2293,7 @@ type SaveDialogElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2357,7 +2345,7 @@ type ScrollBarElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2377,7 +2365,7 @@ type ScrollBarElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2429,7 +2417,7 @@ type ScrollSliderElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2449,7 +2437,7 @@ type ScrollSliderElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 // Slider<'a>
@@ -2514,7 +2502,7 @@ type SliderElement<'a>(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2534,7 +2522,7 @@ type SliderElement<'a>(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2566,7 +2554,7 @@ type SliderElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2586,7 +2574,7 @@ type SliderElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2628,7 +2616,7 @@ type SpinnerViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2648,7 +2636,7 @@ type SpinnerViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2680,7 +2668,7 @@ type StatusBarElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2700,7 +2688,7 @@ type StatusBarElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2724,7 +2712,7 @@ type TabElement(props:Props) =
         props |> Props.tryFind<TerminalElement> "tab.view"
         |> Option.iter (fun v ->
             v.initialize (Some element)
-            element.View <- v.element
+            element.View <- v.view
         )
 
 
@@ -2739,7 +2727,7 @@ type TabElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2759,7 +2747,7 @@ type TabElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2797,7 +2785,7 @@ type TabViewElement(props:Props) =
             v
             |> List.iter (fun tabItems ->
                 tabItems.initialize (Some element)
-                element.AddTab ((tabItems.element :?> Tab), false)
+                element.AddTab ((tabItems.view :?> Tab), false)
 
                 )
             )
@@ -2814,7 +2802,7 @@ type TabViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2834,7 +2822,7 @@ type TabViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2900,7 +2888,7 @@ type TableViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2920,7 +2908,7 @@ type TableViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -2976,7 +2964,7 @@ type TextFieldElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -2996,7 +2984,7 @@ type TextFieldElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3030,7 +3018,7 @@ type TextValidateFieldElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3050,7 +3038,7 @@ type TextValidateFieldElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3138,7 +3126,7 @@ type TextViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3158,7 +3146,7 @@ type TextViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3198,7 +3186,7 @@ type TileViewElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3218,7 +3206,7 @@ type TileViewElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3258,7 +3246,7 @@ type TimeFieldElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3278,7 +3266,7 @@ type TimeFieldElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3330,7 +3318,7 @@ type ToplevelElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3350,7 +3338,7 @@ type ToplevelElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3412,7 +3400,7 @@ type TreeViewElement<'a when 'a : not struct>(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3432,7 +3420,7 @@ type TreeViewElement<'a when 'a : not struct>(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3468,7 +3456,7 @@ type WindowElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3488,7 +3476,7 @@ type WindowElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3536,7 +3524,7 @@ type WizardElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3556,7 +3544,7 @@ type WizardElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 
@@ -3592,7 +3580,7 @@ type WizardStepElement(props:Props) =
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind<View->unit> "ref" |> Option.iter (fun v -> v el)
-        this.element <- el
+        this.view <- el
 
 
 
@@ -3612,7 +3600,7 @@ type WizardStepElement(props:Props) =
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         this.setProps(element, changedProps)
-        this.element <- prevElement
+        this.view <- prevElement
 
 
 

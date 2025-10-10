@@ -107,6 +107,11 @@ let view (state: Model) (dispatch: Msg -> unit) =
                                         ]
                                     ))
                                 )
+                                View.menuItemv2(fun p ->
+                                    p.commandView (View.checkBox (fun p ->
+                                        p.title "Checkbox"
+                                    ))
+                                )
                             ]
                         ))
                     ))

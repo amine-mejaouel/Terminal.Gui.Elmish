@@ -488,6 +488,7 @@ type shortcut() =
      // Properties
      member inline this.action (value:Action) = this.props.add "shortcut.action" value
      member inline this.alignmentModes (value:AlignmentModes) = this.props.add "shortcut.alignmentModes" value
+     member inline this.commandView (value:TerminalElement) = this.props.add "shortcut.commandView.element" value
      member inline this.forceFocusColors (value:bool) = this.props.add "shortcut.forceFocusColors" value
      member inline this.helpText (value:string) = this.props.add "shortcut.helpText" value
      member inline this.text (value:string) = this.props.add "shortcut.text" value

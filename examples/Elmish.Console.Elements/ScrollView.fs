@@ -66,7 +66,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "Scrollbars"
+            labelProps.text "Scrollbars"
         ] 
 
         

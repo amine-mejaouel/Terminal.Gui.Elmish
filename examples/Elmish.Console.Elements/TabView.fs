@@ -7,7 +7,7 @@ let view = [
     View.label [
         prop.position.x.center
         prop.position.y.absolute 0
-        label.text "Tab view example"
+        labelProps.text "Tab view example"
     ]
     View.tabView [
         prop.title "My Tab View"
@@ -15,8 +15,8 @@ let view = [
         prop.position.y.absolute 1
         prop.width.absolute 50
         prop.height.absolute 20
-        tabView.maxTabTextWidth 15
-        tabView.tabs [
+        tabViewProps.maxTabTextWidth 15
+        tabViewProps.tabs [
             View.tab [
                 tab.displayText "Tab 1"
                 tab.view <| View.label [

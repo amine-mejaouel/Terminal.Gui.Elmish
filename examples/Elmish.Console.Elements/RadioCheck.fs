@@ -53,7 +53,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "Radio and Check..."
+            labelProps.text "Radio and Check..."
         ] 
 
         View.label [
@@ -61,15 +61,15 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.y.absolute 5
             prop.width.fill 0
             prop.alignment.center
-            label.text "Please Vote!"
+            labelProps.text "Please Vote!"
         ]
 
         View.radioGroup [
             prop.position.x.center
             prop.position.y.absolute 7
-            radioGroup.selectedItem (model.VoteResultItems |> List.findIndex (fun (i,_) -> i = model.VoteResult))
-            radioGroup.radioLabels (model.VoteResultItems |> List.map snd)
-            radioGroup.selectedItemChanged 
+            radioGroupProps.selectedItem (model.VoteResultItems |> List.findIndex (fun (i,_) -> i = model.VoteResult))
+            radioGroupProps.radioLabels (model.VoteResultItems |> List.map snd)
+            radioGroupProps.selectedItemChanged 
                 (fun r -> 
                     let v = fst model.VoteResultItems.[r.SelectedItem]
                     dispatch (ChangeVoteResult v)
@@ -82,8 +82,8 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.x.center
             prop.position.y.absolute 16
             checkBox.ischecked model.IsHappy
-            checkBox.text "Are you happy?"
-            checkBox.checkedStateChanging (fun b -> dispatch <| ChangeHappy (b.NewValue = CheckState.Checked))            
+            checkBoxProps.text "Are you happy?"
+            checkBoxProps.checkedStateChanging (fun b -> dispatch <| ChangeHappy (b.NewValue = CheckState.Checked))            
         ]
 
         View.label [
@@ -91,7 +91,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.y.absolute 18
             //prop.autoSize true
             prop.color (Color.BrightYellow,Color.Red)
-            label.text $"The Vote says: {model.VoteResult}"
+            labelProps.text $"The Vote says: {model.VoteResult}"
         ]
 
         View.label [
@@ -100,9 +100,9 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.color (Color.BrightYellow,Color.Red)
             match model.IsHappy with
             | true ->
-                label.text "You are Happy!"
+                labelProps.text "You are Happy!"
             | false ->
-                label.text "you are not Happy!"
+                labelProps.text "you are not Happy!"
         ]
     ]
 

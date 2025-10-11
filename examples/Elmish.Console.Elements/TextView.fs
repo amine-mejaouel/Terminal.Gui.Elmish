@@ -57,13 +57,13 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "TextView with File Dialog..."
+            labelProps.text "TextView with File Dialog..."
         ] 
 
         View.button [
             prop.position.x.center
             prop.position.y.absolute 3
-            button.text "Open Textfile"
+            buttonProps.text "Open Textfile"
             prop.accept (fun ev -> dispatch OpenFileDialog)
         ]
 

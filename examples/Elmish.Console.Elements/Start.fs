@@ -10,7 +10,7 @@ let view =
             prop.position.y.absolute 1
             prop.width.fill 1
             prop.alignment.center
-            label.text "Welcome to The Elmish Terminal Show"
+            labelProps.text "Welcome to The Elmish Terminal Show"
         ] 
 
         View.label [
@@ -18,7 +18,7 @@ let view =
             prop.position.y.absolute 2
             prop.width.fill 1
             prop.alignment.start
-            label.text "And Left"
+            labelProps.text "And Left"
         ] 
 
         View.label [
@@ -26,7 +26,7 @@ let view =
             prop.position.y.absolute 3
             prop.width.fill 1
             prop.alignment.``end``
-            label.text "And Right"
+            labelProps.text "And Right"
         ] 
 
         View.label [
@@ -34,7 +34,7 @@ let view =
             prop.position.y.absolute 4
             prop.width.fill 1
             prop.alignment.center
-            label.text "And Centered"
+            labelProps.text "And Centered"
         ] 
 
         View.label [
@@ -42,7 +42,7 @@ let view =
             prop.position.y.absolute 5
             prop.width.fill 1
             prop.alignment.fill
-            label.text "And some justified text alignment. Lorem ipsum dolor sit amet"
+            labelProps.text "And some justified text alignment. Lorem ipsum dolor sit amet"
         ] 
 
         View.label [
@@ -52,7 +52,7 @@ let view =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightCyan ,Color.Magenta)
-            label.text "And Colors"
+            labelProps.text "And Colors"
         ] 
 
         View.label [
@@ -61,7 +61,7 @@ let view =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightGreen,Color.Red)
-            label.text "And Colors"
+            labelProps.text "And Colors"
 
         ] 
 
@@ -71,7 +71,7 @@ let view =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.Magenta,Color.BrightYellow)
-            label.text "And Colors"
+            labelProps.text "And Colors"
         ] 
 
     ]

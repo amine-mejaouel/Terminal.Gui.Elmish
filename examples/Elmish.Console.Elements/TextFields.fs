@@ -55,38 +55,38 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "Some Text Fields..."
+            labelProps.text "Some Text Fields..."
         ] 
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 3
             prop.width.fill 14
-            label.text "Text:"
+            labelProps.text "Text:"
         ]
 
         View.textField [
             prop.position.x.absolute 14
             prop.position.y.absolute 3
             prop.width.fill 0
-            textField.text model.Text
-            textField.textChanging (fun ev -> dispatch (ChangeText ev.NewValue))
+            textFieldProps.text model.Text
+            textFieldProps.textChanging (fun ev -> dispatch (ChangeText ev.NewValue))
         ]
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 5
             prop.width.fill 14
-            label.text "Secret Text:"
+            labelProps.text "Secret Text:"
         ]
 
         View.textField [
             prop.position.x.absolute 14
             prop.position.y.absolute 5
             prop.width.fill 0
-            textField.text  model.SecretText
-            textField.textChanging (fun ev -> dispatch (ChangeSecretText ev.NewValue))
-            textField.secret true
+            textFieldProps.text  model.SecretText
+            textFieldProps.textChanging (fun ev -> dispatch (ChangeSecretText ev.NewValue))
+            textFieldProps.secret true
         ]
         
         
@@ -94,8 +94,8 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.x.absolute 1
             prop.position.y.absolute 7
             prop.width.fill 14
-            numericUpDown<_>.value model.Number
-            numericUpDown<_>.valueChanged (fun num -> dispatch <| ChangeNumber num )
+            numericUpDownProps<_>.value model.Number
+            numericUpDownProps<_>.valueChanged (fun num -> dispatch <| ChangeNumber num )
         ]
         
         
@@ -103,20 +103,20 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.x.absolute 10
             prop.position.y.absolute 7
             prop.width.fill 14
-            numericUpDown<_>.value model.Number
-            numericUpDown<_>.valueChanged (fun num -> dispatch <| ChangeNumber num )
+            numericUpDownProps<_>.value model.Number
+            numericUpDownProps<_>.valueChanged (fun num -> dispatch <| ChangeNumber num )
         ]
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 9
-            label.text $"The Text says: {model.Text}"
+            labelProps.text $"The Text says: {model.Text}"
         ]
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 11
-            label.text $"The Secret Text says: {model.SecretText}"
+            labelProps.text $"The Secret Text says: {model.SecretText}"
         ]
 
 
@@ -124,50 +124,50 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.x.absolute 1
             prop.position.y.absolute 13
             prop.width.fill 14
-            label.text "Time Field:"
+            labelProps.text "Time Field:"
         ]
 
         View.timeField [
             prop.position.x.absolute 16
             prop.position.y.absolute 13
-            timeField.time  model.CurrentTime
-            timeField.timeChanged (fun ev -> dispatch <| ChangeTime ev.NewValue)
+            timeFieldProps.time  model.CurrentTime
+            timeFieldProps.timeChanged (fun ev -> dispatch <| ChangeTime ev.NewValue)
         ]
 
         View.timeField [
             prop.position.x.absolute 30
             prop.position.y.absolute 13
-            timeField.isShortFormat true
-            timeField.time model.CurrentTime
-            timeField.timeChanged (fun ev -> dispatch <| ChangeTime ev.NewValue)
+            timeFieldProps.isShortFormat true
+            timeFieldProps.time model.CurrentTime
+            timeFieldProps.timeChanged (fun ev -> dispatch <| ChangeTime ev.NewValue)
         ]
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 15
             prop.width.fill 14
-            label.text "Date Field:"
+            labelProps.text "Date Field:"
         ]
 
         View.dateField [
             prop.position.x.absolute 16
             prop.position.y.absolute 15
-            dateField.date model.CurrentDate
-            dateField.dateChanged (fun ev -> dispatch <| ChangeDate ev.NewValue)
+            dateFieldProps.date model.CurrentDate
+            dateFieldProps.dateChanged (fun ev -> dispatch <| ChangeDate ev.NewValue)
         ]
 
         View.dateField [
             prop.position.x.absolute 30
             prop.position.y.absolute 15
-            dateField.date model.CurrentDate
-            dateField.dateChanged (fun ev -> dispatch <| ChangeDate ev.NewValue)
+            dateFieldProps.date model.CurrentDate
+            dateFieldProps.dateChanged (fun ev -> dispatch <| ChangeDate ev.NewValue)
         ]
  
 
         View.label [
             prop.position.x.absolute 1
             prop.position.y.absolute 17
-            label.text $"The DateTime (time and date Field) says: {model.CurrentDate.Add(model.CurrentTime):``ddd, yyyy-MM-dd HH:mm:ss``}"
+            labelProps.text $"The DateTime (time and date Field) says: {model.CurrentDate.Add(model.CurrentTime):``ddd, yyyy-MM-dd HH:mm:ss``}"
         ]
         
         View.label (1,19, $"The Number is: {model.Number}")

@@ -30,9 +30,9 @@ open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
 
 open Terminal.Gui.Views
-// View
 
-type view() =
+// View
+type viewProps() =
     member val props = Props.init()
 
     member inline this.children (children:TerminalElement list) = this.props.add "children" children
@@ -208,8 +208,8 @@ type view() =
 //         static member inline transparent = Interop.mkprop   "view.shadowStyle" ShadowStyle.Transparent
 
 // Adornment
-type adornment() =
-    inherit view()
+type adornmentProps() =
+    inherit viewProps()
     // Properties
     member inline this.diagnostics (value:ViewDiagnosticFlags) = this.props.add "adornment.diagnostics" value
     member inline this.superViewRendersLineCanvas (value:bool) = this.props.add "adornment.superViewRendersLineCanvas" value
@@ -219,8 +219,8 @@ type adornment() =
     member inline this.thicknessChanged (handler:unit->unit) = this.props.add "adornment.thicknessChanged" handler
 
 // Bar
-type bar() =
-    inherit view()
+type barProps() =
+    inherit viewProps()
     // Properties
     member inline this.alignmentModes (value:AlignmentModes) = this.props.add "bar.alignmentModes" value
     member inline this.orientation (value:Orientation) = this.props.add "bar.orientation" value
@@ -229,15 +229,15 @@ type bar() =
     member inline this.orientationChanging (handler:App.CancelEventArgs<Orientation>->unit) = this.props.add "bar.orientationChanging" handler
 
 // Border
-type border() =
-    inherit adornment()
+type borderProps() =
+    inherit adornmentProps()
     // Properties
     member inline this.lineStyle (value:LineStyle) = this.props.add "border.lineStyle" value
     member inline this.settings (value:BorderSettings) = this.props.add "border.settings" value
 
 // Button
-type button() =
-    inherit view()
+type buttonProps() =
+    inherit viewProps()
     // Properties
     member inline this.hotKeySpecifier (value:Rune) = this.props.add "button.hotKeySpecifier" value
     member inline this.isDefault (value:bool) = this.props.add "button.isDefault" value
@@ -247,8 +247,8 @@ type button() =
     member inline this.wantContinuousButtonPressed (value:bool) = this.props.add "button.wantContinuousButtonPressed" value
 
 // CheckBox
-type checkBox() =
-    inherit view()
+type checkBoxProps() =
+    inherit viewProps()
     // Properties
     member inline this.allowCheckStateNone (value:bool) = this.props.add "checkBox.allowCheckStateNone" value
     member inline this.checkedState (value:CheckState) = this.props.add "checkBox.checkedState" value
@@ -260,10 +260,9 @@ type checkBox() =
     member inline this.checkedStateChanging (handler:ResultEventArgs<CheckState>->unit) = this.props.add "checkBox.checkedStateChanging" handler
     member inline this.checkedStateChanged (handler:EventArgs<CheckState>->unit) = this.props.add "checkBox.checkedStateChanged" handler
 
-
 // ColorPicker
-type colorPicker() =
-    inherit view()
+type colorPickerProps() =
+    inherit viewProps()
     // Properties
     member inline this.selectedColor (value:Color) = this.props.add "colorPicker.selectedColor" value
     member inline this.style (value:ColorPickerStyle) = this.props.add "colorPicker.style" value
@@ -271,8 +270,8 @@ type colorPicker() =
     member inline this.colorChanged (handler:ResultEventArgs<Color>->unit) = this.props.add "colorPicker.colorChanged" handler
 
 // ColorPicker16
-type colorPicker16() =
-    inherit view()
+type colorPicker16Props() =
+    inherit viewProps()
     // Properties
     member inline this.boxHeight (value:Int32) = this.props.add "colorPicker16.boxHeight" value
     member inline this.boxWidth (value:Int32) = this.props.add "colorPicker16.boxWidth" value
@@ -282,8 +281,8 @@ type colorPicker16() =
     member inline this.colorChanged (handler:ResultEventArgs<Color>->unit) = this.props.add "colorPicker16.colorChanged" handler
 
 // ComboBox
-type comboBox() =
-    inherit view()
+type comboBoxProps() =
+    inherit viewProps()
     // Properties
     member inline this.hideDropdownListOnClick (value:bool) = this.props.add "comboBox.hideDropdownListOnClick" value
     member inline this.readOnly (value:bool) = this.props.add "comboBox.readOnly" value
@@ -298,8 +297,8 @@ type comboBox() =
     member inline this.selectedItemChanged (handler:ListViewItemEventArgs->unit) = this.props.add "comboBox.selectedItemChanged" handler
 
 // TextField
-type textField() =
-    inherit view()
+type textFieldProps() =
+    inherit viewProps()
     // Properties
     member inline this.autocomplete (value:IAutocomplete) = this.props.add "textField.autocomplete" value
     member inline this.caption (value:string) = this.props.add "textField.caption" value
@@ -316,8 +315,8 @@ type textField() =
     member inline this.textChanging (handler:ResultEventArgs<string>->unit) = this.props.add "textField.textChanging" handler
 
 // DateField
-type dateField() =
-    inherit textField()
+type dateFieldProps() =
+    inherit textFieldProps()
     // Properties
     member inline this.culture (value:CultureInfo) = this.props.add "dateField.culture" value
     member inline this.cursorPosition (value:Int32) = this.props.add "dateField.cursorPosition" value
@@ -326,15 +325,15 @@ type dateField() =
     member inline this.dateChanged (handler:DateTimeEventArgs<DateTime>->unit) = this.props.add "dateField.dateChanged" handler
 
 // DatePicker
-type datePicker() =
-    inherit view()
+type datePickerProps() =
+    inherit viewProps()
     // Properties
     member inline this.culture (value:CultureInfo) = this.props.add "datePicker.culture" value
     member inline this.date (value:DateTime) = this.props.add "datePicker.date" value
 
 // Toplevel
-type toplevel() =
-    inherit view()
+type toplevelProps() =
+    inherit viewProps()
     // Properties
     member inline this.modal (value:bool) = this.props.add "toplevel.modal" value
     member inline this.running (value:bool) = this.props.add "toplevel.running" value
@@ -349,16 +348,16 @@ type toplevel() =
     member inline this.unloaded (handler:unit->unit) = this.props.add "toplevel.unloaded" handler
 
 // Dialog
-type dialog() =
-    inherit toplevel()
+type dialogProps() =
+    inherit toplevelProps()
     // Properties
     member inline this.buttonAlignment (value:Alignment) = this.props.add "dialog.buttonAlignment" value
     member inline this.buttonAlignmentModes (value:AlignmentModes) = this.props.add "dialog.buttonAlignmentModes" value
     member inline this.canceled (value:bool) = this.props.add "dialog.canceled" value
 
 // FileDialog
-type fileDialog() =
-    inherit dialog()
+type fileDialogProps() =
+    inherit dialogProps()
     // Properties
     member inline this.allowedTypes (value:IAllowedType list) = this.props.add "fileDialog.allowedTypes" value
     member inline this.allowsMultipleSelection (value:bool) = this.props.add "fileDialog.allowsMultipleSelection" value
@@ -371,17 +370,17 @@ type fileDialog() =
     member inline this.filesSelected (handler:FilesSelectedEventArgs->unit) = this.props.add "fileDialog.filesSelected" handler
 
 /// SaveDialog
-type saveDialog() =
-    inherit fileDialog()
+type saveDialogProps() =
+    inherit fileDialogProps()
 
 // FrameView
-type frameView() =
-    inherit view()
+type frameViewProps() =
+    inherit viewProps()
 // No properties or events FrameView
 
 // GraphView
-type graphView() =
-    inherit view()
+type graphViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.axisX (value:HorizontalAxis) = this.props.add "graphView.axisX" value
@@ -393,8 +392,8 @@ type graphView() =
     member inline this.scrollOffset (value:PointF) = this.props.add "graphView.scrollOffset" value
 
 // HexView
-type hexView() =
-    inherit view()
+type hexViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.address (value:Int64) = this.props.add "hexView.address" value
@@ -407,21 +406,21 @@ type hexView() =
     member inline this.positionChanged (handler:HexViewEventArgs->unit) = this.props.add "hexView.positionChanged" handler
 
 // Label
-type label() =
-    inherit view()
+type labelProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.hotKeySpecifier (value:Rune) = this.props.add "label.hotKeySpecifier" value
     member inline this.text (value:string) = this.props.add "label.text" value
 
 // LegendAnnotation
-type legendAnnotation() =
-    inherit view()
+type legendAnnotationProps() =
+    inherit viewProps()
 // No properties or events LegendAnnotation
 
 // Line
-type line() =
-    inherit view()
+type lineProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.orientation (value:Orientation) = this.props.add "line.orientation" value
@@ -430,8 +429,8 @@ type line() =
     member inline this.orientationChanging (handler:App.CancelEventArgs<Orientation>->unit) = this.props.add "line.orientationChanging" handler
 
 // LineView
-type lineView() =
-    inherit view()
+type lineViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.endingAnchor (value:Rune option) = this.props.add "lineView.endingAnchor" value
@@ -440,8 +439,8 @@ type lineView() =
     member inline this.startingAnchor (value:Rune option) = this.props.add "lineView.startingAnchor" value
 
 // ListView
-type listView() =
-    inherit view()
+type listViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.allowsMarking (value:bool) = this.props.add "listView.allowsMarking" value
@@ -457,14 +456,14 @@ type listView() =
     member inline this.selectedItemChanged (handler:ListViewItemEventArgs->unit) = this.props.add "listView.selectedItemChanged" handler
 
 // Margin
-type margin() =
-    inherit adornment()
+type marginProps() =
+    inherit adornmentProps()
 
     // Properties
     member inline this.shadowStyle (value:ShadowStyle) = this.props.add "margin.shadowStyle" value
 
-type menuv2() =
-    inherit bar()
+type menuv2Props() =
+    inherit barProps()
 
     // Properties
     member inline this.selectedMenuItem (value: MenuItemv2 list) = this.props.add "menuv2.selectedMenuItem" value
@@ -474,8 +473,8 @@ type menuv2() =
     member inline this.selectedMenuItemChanged (value: MenuItemv2->unit) = this.props.add "menuv2.selectedMenuItemChanged" value
 
 // MenuBarV2
-type menuBarv2() =
-    inherit menuv2()
+type menuBarv2Props() =
+    inherit menuv2Props()
 
     // Properties
     member inline this.key (value:Key) = this.props.add "menuBarv2.key" value
@@ -483,8 +482,8 @@ type menuBarv2() =
     // Events
     member inline this.keyChanged (handler:KeyChangedEventArgs->unit) = this.props.add "menuBarv2.keyChanged" handler
 
-type shortcut() =
-     inherit view()
+type shortcutProps() =
+     inherit viewProps()
 
      // Properties
      member inline this.action (value:Action) = this.props.add "shortcut.action" value
@@ -500,27 +499,26 @@ type shortcut() =
      member inline this.orientationChanged (handler:Orientation->unit) = this.props.add "shortcut.orientationChanged" handler
      member inline this.orientationChanging (handler:CancelEventArgs<Orientation>->unit) = this.props.add "shortcut.orientationChanging" handler
 
-type menuItemv2() =
-    inherit shortcut()
+type menuItemv2Props() =
+    inherit shortcutProps()
     member inline this.command (value: Command) = this.props.add "menuItemv2.command" value
     member inline this.submenu(value: Menuv2Element) = this.props.add "menuItemv2.subMenu.element" value
     member inline this.accepted(value: CommandEventArgs -> unit) = this.props.add "menuItemv2.accepted" value
 
-type menuBarItemv2() =
-    inherit menuItemv2()
+type menuBarItemv2Props() =
+    inherit menuItemv2Props()
     member inline this.popoverMenu (value:PopoverMenuElement) = this.props.add "menuBarItemv2.popoverMenu.element" value
     member inline this.popoverMenuOpen (value:bool) = this.props.add "menuBarItemv2.popoverMenuOpen" value
 
-type popoverMenu() =
-    inherit view()
+type popoverMenuProps() =
+    inherit viewProps()
 
     member inline this.key (value:Key) = this.props.add "popoverMenu.key" value
     member inline this.root (value: Menuv2Element) = this.props.add "popoverMenu.root.element" value
 
-
 // NumericUpDown`1
-type numericUpDown<'a>() =
-    inherit view()
+type numericUpDownProps<'a>() =
+    inherit viewProps()
 
     // Properties
     member inline this.format (value:string) = this.props.add "numericUpDown`1.format" value
@@ -533,19 +531,19 @@ type numericUpDown<'a>() =
     member inline this.valueChanging (handler:App.CancelEventArgs<'a>->unit) = this.props.add "numericUpDown`1.value |> this.props.AddChanging" handler
 
 // NumericUpDown
-type numericUpDown() =
-    inherit numericUpDown<int>()
+type numericUpDownProps() =
+    inherit numericUpDownProps<int>()
 // No properties or events NumericUpDown
 
 // OpenDialog
-type openDialog() =
-    inherit fileDialog()
+type openDialogProps() =
+    inherit fileDialogProps()
     // Properties
     member inline this.openMode (value:OpenMode) = this.props.add "openDialog.openMode" value
 
 // OptionSelector
-type optionSelector() =
-    inherit view()
+type optionSelectorProps() =
+    inherit viewProps()
     //Properties
     member inline this.assignHotKeysToCheckBoxes (value:bool) = this.props.add "optionSelector.assignHotKeysToCheckBoxes" value
     member inline this.orientation (value:Orientation) = this.props.add "optionSelector.orientation" value
@@ -558,12 +556,12 @@ type optionSelector() =
     member inline this.selectedItemChanged (value:SelectedItemChangedArgs->unit) = this.props.add "optionSelector.selectedItemChanged" value
 
 // Padding
-type padding() =
-    inherit adornment()
+type paddingProps() =
+    inherit adornmentProps()
 
 // ProgressBar
-type progressBar() =
-    inherit view()
+type progressBarProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.bidirectionalMarquee (value:bool) = this.props.add "progressBar.bidirectionalMarquee" value
@@ -574,8 +572,8 @@ type progressBar() =
     member inline this.text (value:string) = this.props.add "progressBar.text" value
 
 // RadioGroup
-type radioGroup() =
-    inherit view()
+type radioGroupProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.assignHotKeysToRadioLabels (value:bool) = this.props.add "radioGroup.assignHotKeysToRadioLabels" value
@@ -594,8 +592,8 @@ type radioGroup() =
 // No properties or events SaveDialog
 
 // ScrollBar
-type scrollBar() =
-    inherit view()
+type scrollBarProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.autoShow (value:bool) = this.props.add "scrollBar.autoShow" value
@@ -611,8 +609,8 @@ type scrollBar() =
     member inline this.sliderPositionChanged (handler:EventArgs<Int32>->unit) = this.props.add "scrollBar.sliderPositionChanged" handler
 
 // ScrollSlider
-type scrollSlider() =
-    inherit view()
+type scrollSliderProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.orientation (value:Orientation) = this.props.add "scrollSlider.orientation" value
@@ -628,8 +626,8 @@ type scrollSlider() =
     member inline this.scrolled (handler:EventArgs<Int32>->unit) = this.props.add "scrollSlider.scrolled" handler
 
 // Slider`1
-type slider<'a>() =
-    inherit view()
+type sliderProps<'a>() =
+    inherit viewProps()
 
     // Properties
     member inline this.allowEmpty (value:bool) = this.props.add "slider`1.allowEmpty" value
@@ -652,13 +650,13 @@ type slider<'a>() =
     member inline this.orientationChanging (handler:App.CancelEventArgs<Orientation>->unit) = this.props.add "slider`1.orientationChanging" handler
 
 // Slider
-type slider() =
-    inherit slider<obj>()
+type sliderProps() =
+    inherit sliderProps<obj>()
 // No properties or events Slider
 
 // SpinnerView
-type spinnerView() =
-    inherit view()
+type spinnerViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.autoSpin (value:bool) = this.props.add "spinnerView.autoSpin" value
@@ -669,21 +667,21 @@ type spinnerView() =
     member inline this.style (value:SpinnerStyle) = this.props.add "spinnerView.style" value
 
 // StatusBar
-type statusBar() =
-    inherit bar()
+type statusBarProps() =
+    inherit barProps()
 // No properties or events StatusBar
 
 // Tab
-type tab() =
-    inherit view()
+type tabProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.displayText (value:string) = this.props.add "tab.displayText" value
     member inline this.view (value:TerminalElement) = this.props.add "tab.view" value
 
 // TabView
-type tabView() =
-    inherit view()
+type tabViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.maxTabTextWidth (value:int) = this.props.add "tabView.maxTabTextWidth" value
@@ -696,10 +694,9 @@ type tabView() =
 
     member inline this.tabs (value:TerminalElement list) = this.props.add "tabView.tabs" value
 
-
 // TableView
-type tableView() =
-    inherit view()
+type tableViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.cellActivationKey (value:KeyCode) = this.props.add "tableView.cellActivationKey" value
@@ -721,18 +718,17 @@ type tableView() =
     member inline this.cellToggled (handler:CellToggledEventArgs->unit) = this.props.add "tableView.cellToggled" handler
     member inline this.selectedCellChanged (handler:SelectedCellChangedEventArgs->unit) = this.props.add "tableView.selectedCellChanged" handler
 
-
 // TextValidateField
-type textValidateField() =
-    inherit view()
+type textValidateFieldProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.provider (value:ITextValidateProvider) = this.props.add "textValidateField.provider" value
     member inline this.text (value:string) = this.props.add "textValidateField.text" value
 
 // TextView
-type textView() =
-    inherit view()
+type textViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.allowsReturn (value:bool) = this.props.add "textView.allowsReturn" value
@@ -764,8 +760,8 @@ type textView() =
     member inline this.textChanged (value:string->unit) = this.props.add "textView.textChanged" value
 
 // TileView
-type tileView() =
-    inherit view()
+type tileViewProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.lineStyle (value:LineStyle) = this.props.add "tileView.lineStyle" value
@@ -775,8 +771,8 @@ type tileView() =
     member inline this.splitterMoved (handler:SplitterEventArgs->unit) = this.props.add "tileView.splitterMoved" handler
 
 // TimeField
-type timeField() =
-    inherit textField()
+type timeFieldProps() =
+    inherit textFieldProps()
 
     // Properties
     member inline this.cursorPosition (value:Int32) = this.props.add "timeField.cursorPosition" value
@@ -786,8 +782,8 @@ type timeField() =
     member inline this.timeChanged (handler:DateTimeEventArgs<TimeSpan>->unit) = this.props.add "timeField.timeChanged" handler
 
 // TreeView`1
-type treeView<'a when 'a : not struct>() =
-    inherit view()
+type treeViewProps<'a when 'a : not struct>() =
+    inherit viewProps()
 
     // Properties
     member inline this.allowLetterBasedNavigation (value:bool) = this.props.add "treeView`1.allowLetterBasedNavigation" value
@@ -808,18 +804,18 @@ type treeView<'a when 'a : not struct>() =
     member inline this.selectionChanged<'a when 'a : not struct> (handler:SelectionChangedEventArgs<'a>->unit) = this.props.add "treeView`1.selectionChanged" handler
 
 // TreeView
-type treeView() =
-    inherit treeView<ITreeNode>()
+type treeViewProps() =
+    inherit treeViewProps<ITreeNode>()
 // No properties or events TreeView
 
 // Window
-type window() =
-    inherit toplevel()
+type windowProps() =
+    inherit toplevelProps()
 // No properties or events Window
 
 // Wizard
-type wizard() =
-    inherit dialog()
+type wizardProps() =
+    inherit dialogProps()
 
     // Properties
     member inline this.currentStep (value:WizardStep) = this.props.add "wizard.currentStep" value
@@ -833,8 +829,8 @@ type wizard() =
     member inline this.stepChanging (handler:StepChangeEventArgs->unit) = this.props.add "wizard.stepChanging" handler
 
 // WizardStep
-type wizardStep() =
-    inherit view()
+type wizardStepProps() =
+    inherit viewProps()
 
     // Properties
     member inline this.backButtonText (value:string) = this.props.add "wizardStep.backButtonText" value

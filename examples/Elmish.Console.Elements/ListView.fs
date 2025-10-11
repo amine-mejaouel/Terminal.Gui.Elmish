@@ -50,7 +50,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "List View"
+            labelProps.text "List View"
         ] 
 
 
@@ -81,7 +81,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.x.absolute 1
             prop.position.y.absolute 18              
             prop.color (Color.BrightYellow,Color.Red)
-            label.text (sprintf "The Vote says: %s" (model.VoteResult.ToString()))
+            labelProps.text (sprintf "The Vote says: %s" (model.VoteResult.ToString()))
         ]
 
         

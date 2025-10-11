@@ -53,7 +53,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.width.fill 1
             prop.alignment.center
             prop.color (Color.BrightYellow, Color.Green)
-            label.text "Combo und Co..."
+            labelProps.text "Combo und Co..."
         ] 
 
         View.label [
@@ -61,7 +61,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.y.absolute 5
             prop.width.fill 0
             prop.alignment.center
-            label.text "Please Vote!"
+            labelProps.text "Please Vote!"
         ]
 
         View.comboBox [
@@ -69,11 +69,11 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.y.absolute 7
             prop.width.absolute 30
             prop.height.absolute 5
-            comboBox.searchText (model.VoteResultItems |> List.tryFind (fun (r,_)-> r=model.VoteResult) |> Option.map (fun (_,n) -> n) |> Option.defaultValue "")
-            comboBox.hideDropdownListOnClick true
-            comboBox.selectedItem (model.VoteResultItems |> List.findIndex (fun (i,_) -> i = model.VoteResult))
-            comboBox.source (model.VoteResultItems |> List.map snd)
-            comboBox.selectedItemChanged 
+            comboBoxProps.searchText (model.VoteResultItems |> List.tryFind (fun (r,_)-> r=model.VoteResult) |> Option.map (fun (_,n) -> n) |> Option.defaultValue "")
+            comboBoxProps.hideDropdownListOnClick true
+            comboBoxProps.selectedItem (model.VoteResultItems |> List.findIndex (fun (i,_) -> i = model.VoteResult))
+            comboBoxProps.source (model.VoteResultItems |> List.map snd)
+            comboBoxProps.selectedItemChanged 
                 (fun r -> 
                     let v = fst model.VoteResultItems.[r.Item]
                     dispatch (ChangeVoteResult v)
@@ -86,7 +86,7 @@ let view (model:Model) (dispatch:Msg -> unit) =
             prop.position.y.absolute 18
             //prop.autoSize true
             prop.color (Color.BrightYellow,Color.Red)
-            label.text $"The Vote says: {model.VoteResult}"
+            labelProps.text $"The Vote says: {model.VoteResult}"
         ]
 
 

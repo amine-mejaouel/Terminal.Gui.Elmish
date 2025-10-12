@@ -1,5 +1,17 @@
 # Terminal.Gui.Elmish
 
+# Docs build & run
+[mkdocs](https://www.mkdocs.org/) is being used along with [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) to generate the docs pages.
+In order to work on the docs locally follow these commands:
+```bash
+# Only required for initial setup
+pip install mkdocs-material=="9.*"
+
+# Serve the docs
+cd docs
+mkdocs serve
+```
+
 [![Build Status](https://travis-ci.org/DieselMeister/Terminal.Gui.Elmish.svg?branch=master)](https://travis-ci.org/DieselMeister/Terminal.Gui.Elmish)
 
 An elmish wrapper around Miguel de Icaza's 'Gui.cs' https://github.com/migueldeicaza/gui.cs including a Feliz-like like view DSL.

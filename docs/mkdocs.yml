@@ -1,2 +1,5 @@
 site_name: Terminal.Gui.Elmish
 theme: material
+nav:
+  - Home: index.md
+  - Sample: sample.md

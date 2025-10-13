@@ -33,9 +33,9 @@ open Terminal.Gui.Views
 
 // View
 type viewProps() =
-    member val props = Props.init()
+    member val props = IncrementalProps()
 
-    member inline this.children (children:TerminalElement list) = this.props.add PName.view.children children
+    member inline this.children (children:TerminalElement list) = this.props.add PName.view.children (List<_>(children))
     member inline this.ref (reference:View->unit) = this.props.add PName.view.ref reference
 
     // Properties
@@ -478,8 +478,7 @@ type menuBarv2Props() =
     inherit menuv2Props()
 
     // Properties
-    member inline this.key (value:Key) = this.props.add PName.menuBarv2.key value
-    member inline this.menus (value:MenuBarItemv2Element list) = this.props.add PName.view.children (value |> List.map (fun v -> v :> TerminalElement))
+    member inline this.key (value:Key) = this.props.add PName.menuBarv2.key value member inline this.menus (value:MenuBarItemv2Element list) = this.props.add PName.view.children (List<_>(value |> Seq.map (fun v -> v :> TerminalElement)))
     // Events
     member inline this.keyChanged (handler:KeyChangedEventArgs->unit) = this.props.add PName.menuBarv2.keyChanged handler
 

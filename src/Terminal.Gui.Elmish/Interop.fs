@@ -127,7 +127,7 @@ module Interop =
 
 
     // TODO: move maybe to Props ?
-    let filterProps (oldProps: Props) (newProps: Props) =
+    let filterProps (oldProps: IProps) (newProps: IProps) =
 
         let remainingOldProps, removedProps =
             oldProps |> Props.partition (fun kv -> newProps |> Props.keyExists kv.Key)

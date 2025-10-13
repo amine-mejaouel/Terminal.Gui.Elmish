@@ -478,7 +478,8 @@ type menuBarv2Props() =
     inherit menuv2Props()
 
     // Properties
-    member inline this.key (value:Key) = this.props.add PName.menuBarv2.key value member inline this.menus (value:MenuBarItemv2Element list) = this.props.add PName.view.children (List<_>(value |> Seq.map (fun v -> v :> TerminalElement)))
+    member inline this.key (value:Key) = this.props.add PName.menuBarv2.key value
+    member inline this.menus (value:MenuBarItemv2Element list) = this.props.add PName.view.children (List<_>(value |> Seq.map (fun v -> v :> TerminalElement)))
     // Events
     member inline this.keyChanged (handler:KeyChangedEventArgs->unit) = this.props.add PName.menuBarv2.keyChanged handler
 

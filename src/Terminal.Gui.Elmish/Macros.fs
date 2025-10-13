@@ -7,7 +7,7 @@ type menuBarItemv2Macros(props: menuBarItemv2Props) =
         let popoverMenu = props.props.getOrInit PName.menuBarItemv2.popoverMenu_element (fun () -> PopoverMenuElement(IncrementalProps()))
         let menuv2 = popoverMenu.props.getOrInit PName.popoverMenu.root_element (fun () -> Menuv2Element(IncrementalProps()))
 
-        menuv2.props.add PName.menuv2.children (System.Collections.Generic.List<_>(value))
+        menuv2.props |> PSet.menuv2.children (System.Collections.Generic.List<_>(value))
 
 type menuBarv2Macros(props: menuBarv2Props) =
     member _.menuBarItemv2(set: menuBarItemv2Props -> menuBarItemv2Macros -> unit) =

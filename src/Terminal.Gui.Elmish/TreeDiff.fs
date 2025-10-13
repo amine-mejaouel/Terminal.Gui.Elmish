@@ -45,8 +45,8 @@ module Differ =
         #endif
             newTree.initializeTree parent
         | OnlyPropsChanged ->
-            if newTree.canUpdate rootTree.view rootTree.properties then
-                newTree.update rootTree.view rootTree.properties
+            if newTree.canUpdate rootTree.view rootTree.props then
+                newTree.update rootTree.view rootTree.props
             else
                 let parent = rootTree.view |> Interop.getParent
                 parent |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
@@ -62,8 +62,8 @@ module Differ =
             let sortedNewChildren = newTree.children |> Seq.toList |> List.sortBy (fun v -> v.name)
             (sortedRootChildren,sortedNewChildren) ||> List.iter2 (fun rt nt -> update rt nt)
         | ChildsDifferent ->
-            if newTree.canUpdate rootTree.view rootTree.properties then
-                newTree.update rootTree.view rootTree.properties
+            if newTree.canUpdate rootTree.view rootTree.props then
+                newTree.update rootTree.view rootTree.props
             else
                 let parent = rootTree.view |> Interop.getParent
                 parent |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)

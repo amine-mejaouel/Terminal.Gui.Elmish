@@ -33,15 +33,11 @@ open Terminal.Gui.Views
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
     let mutable p: View option = None
-    // TODO: remove mutable, it's not needed
-    let mutable addProps = IncrementalProps()
     let c = props |> Props.tryFindWithDefault<List<TerminalElement>> PName.view.children (List<_>())
     member this.mutableProps = props
     member this.parent with get() = p and set v = p <- v
     member val view: View = null with get, set
-    // TODO: is this being used ?
-    member this.additionalProps with get() = addProps and set v = addProps <- v
-    member _.properties = Props.merge props addProps
+    member _.props = Props(props)
     member _.children   = c
 
     abstract subElements: {| key: string; setParent: bool |} list

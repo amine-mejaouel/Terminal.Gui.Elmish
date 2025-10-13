@@ -33,12 +33,10 @@ open Terminal.Gui.Views
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
     let mutable p: View option = None
-    let c = props |> Props.tryFindWithDefault<List<TerminalElement>> PName.view.children (List<_>())
-    member this.mutableProps = props
+    member this.props = props
     member this.parent with get() = p and set v = p <- v
     member val view: View = null with get, set
-    member _.props = Props(props)
-    member _.children   = c
+    member _.children = props |> Props.tryFindWithDefault<List<TerminalElement>> PName.view.children (List<_>())
 
     abstract subElements: {| key: string; setParent: bool |} list
     default _.subElements = []
@@ -48,10 +46,12 @@ type TerminalElement (props: IncrementalProps) =
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract name: string
 
+    // TODO: could be converted to tail recursive call ?
     member this.initializeTree(parent: View option) =
         this.initialize parent
         this.children |> Seq.iter (fun e -> e.initializeTree (Some this.view))
 
+    /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (propName * View)
     member this.initializeSubElements parent =
         seq {
             for x in this.subElements do

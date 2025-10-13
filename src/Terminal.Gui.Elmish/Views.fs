@@ -427,9 +427,10 @@ type View =
         MarginElement(view.props) :> TerminalElement
 
     /// <seealso cref="Terminal.Gui.MenuBarv2"/>
-    static member inline menuBarv2 (set: menuBarv2Props -> unit) =
+    static member inline menuBarv2 (set: menuBarv2Props -> menuBarv2Macros -> unit) =
         let props = menuBarv2Props()
-        set props
+        let macros = menuBarv2Macros(props)
+        set props macros
         MenuBarv2Element(props.props) :> TerminalElement
     static member inline menuBarv2 (children:TerminalElement list) =
         let view = menuBarv2Props()

@@ -31,11 +31,12 @@ open Terminal.Gui.Views
 
 
 [<AbstractClass>]
-type TerminalElement (props:Props) =
+type TerminalElement (props: IncrementalProps) =
     let mutable p: View option = None
-    let mutable addProps = Props.init()
-    let c = props |> Props.tryFindWithDefault<TerminalElement list> PName.view.children []
-
+    // TODO: remove mutable, it's not needed
+    let mutable addProps = IncrementalProps()
+    let c = props |> Props.tryFindWithDefault<List<TerminalElement>> PName.view.children (List<_>())
+    member this.mutableProps = props
     member this.parent with get() = p and set v = p <- v
     member val view: View = null with get, set
     // TODO: is this being used ?
@@ -47,13 +48,13 @@ type TerminalElement (props:Props) =
     default _.subElements = []
 
     abstract initialize: parent:View option -> unit
-    abstract update: prevElement:View -> oldProps:Props -> unit
-    abstract canUpdate: prevElement:View -> oldProps:Props -> bool
+    abstract update: prevElement:View -> oldProps: IProps -> unit
+    abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract name: string
 
     member this.initializeTree(parent: View option) =
         this.initialize parent
-        this.children |> List.iter (fun e -> e.initializeTree (Some this.view))
+        this.children |> Seq.iter (fun e -> e.initializeTree (Some this.view))
 
     member this.initializeSubElements parent =
         seq {
@@ -73,7 +74,7 @@ type TerminalElement (props:Props) =
                     yield (viewPropName, subElement.view)
         }
 
-    member this.setProps (element: View, props: Props) =
+    member this.setProps (element: View, props: IProps) =
         // Properties
         props |> Props.tryFind<View->unit> PName.view.ref |> Option.iter (fun v -> v element)
         // Properties
@@ -167,7 +168,7 @@ type TerminalElement (props:Props) =
 
 module ViewElement =
 
-    let removeProps (element: View) (props: Props) =
+    let removeProps (element: View) (props: IProps) =
         // Properties
         props |> Props.tryFind<View->unit> PName.view.ref |> Option.iter (fun _ -> ())
         // Properties
@@ -258,7 +259,7 @@ module ViewElement =
         props |> Props.tryFind<unit->unit> PName.view.visibleChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanged @> element)
         props |> Props.tryFind<unit->unit> PName.view.visibleChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
-    let canUpdate (view:View) (props: Props) (removedProps: Props) =
+    let canUpdate (view:View) (props: IProps) (removedProps: IProps) =
         let isPosCompatible (a:Pos) (b:Pos) =
             let nameA = a.GetType().Name
             let nameB = b.GetType().Name
@@ -294,10 +295,10 @@ module ViewElement =
         |> List.forall id
 
 // Adornment
-type AdornmentElement(props:Props) =
+type AdornmentElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Adornment) (props: Props) =
+    let removeProps (element: Adornment) (props: IProps) =
         // Properties
         props |> Props.tryFind<ViewDiagnosticFlags> PName.adornment.diagnostics |> Option.iter (fun _ -> element.Diagnostics <- Unchecked.defaultof<_> )
         props |> Props.tryFind<bool> PName.adornment.superViewRendersLineCanvas |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
@@ -308,7 +309,7 @@ type AdornmentElement(props:Props) =
 
     override _.name = $"Adornment"
 
-    member this.setProps (element: Adornment, props: Props) =
+    member this.setProps (element: Adornment, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -351,10 +352,10 @@ type AdornmentElement(props:Props) =
         this.view <- prevElement
 
 // Bar
-type BarElement(props:Props) =
+type BarElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Bar) (props: Props) =
+    let removeProps (element: Bar) (props: IProps) =
         // Properties
         props |> Props.tryFind<AlignmentModes> PName.bar.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Orientation> PName.bar.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -364,7 +365,7 @@ type BarElement(props:Props) =
 
     override _.name = $"Bar"
 
-    member _.setProps (element: Bar, props: Props) =
+    member _.setProps (element: Bar, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -411,17 +412,17 @@ type BarElement(props:Props) =
 
 
 // Border
-type BorderElement(props:Props) =
+type BorderElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Border) (props: Props) =
+    let removeProps (element: Border) (props: IProps) =
         // Properties
         props |> Props.tryFind<LineStyle> PName.border.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind<BorderSettings> PName.border.settings |> Option.iter (fun _ -> element.Settings <- Unchecked.defaultof<_>)
 
     override _.name = $"Border"
 
-    member _.setProps (element: Border, props: Props) =
+    member _.setProps (element: Border, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -465,10 +466,10 @@ type BorderElement(props:Props) =
 
 
 // Button
-type ButtonElement(props:Props) =
+type ButtonElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Button) (props: Props) =
+    let removeProps (element: Button) (props: IProps) =
         // Properties
         props |> Props.tryFind<Rune> PName.button.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.button.isDefault |> Option.iter (fun _ -> element.IsDefault <- Unchecked.defaultof<_>)
@@ -480,7 +481,7 @@ type ButtonElement(props:Props) =
 
     override _.name = $"Button"
 
-    member _.setProps (element: Button, props: Props) =
+    member _.setProps (element: Button, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -529,10 +530,10 @@ type ButtonElement(props:Props) =
 
 
 // CheckBox
-type CheckBoxElement(props:Props) =
+type CheckBoxElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: CheckBox) (props: Props) =
+    let removeProps (element: CheckBox) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.checkBox.allowCheckStateNone |> Option.iter (fun _ -> element.AllowCheckStateNone <- Unchecked.defaultof<_>)
         props |> Props.tryFind<CheckState> PName.checkBox.checkedState |> Option.iter (fun _ -> element.CheckedState <- Unchecked.defaultof<_>)
@@ -545,7 +546,7 @@ type CheckBoxElement(props:Props) =
 
     override _.name = $"CheckBox"
 
-    member _.setProps (element: CheckBox, props: Props) =
+    member _.setProps (element: CheckBox, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -595,10 +596,10 @@ type CheckBoxElement(props:Props) =
 
 
 // ColorPicker
-type ColorPickerElement(props:Props) =
+type ColorPickerElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker) (props: Props) =
+    let removeProps (element: ColorPicker) (props: IProps) =
         // Properties
         props |> Props.tryFind<Terminal.Gui.Drawing.Color> PName.colorPicker.selectedColor |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
         props |> Props.tryFind<ColorPickerStyle> PName.colorPicker.style |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
@@ -607,7 +608,7 @@ type ColorPickerElement(props:Props) =
 
     override _.name = $"ColorPicker"
 
-    member _.setProps (element: ColorPicker, props: Props) =
+    member _.setProps (element: ColorPicker, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -653,10 +654,10 @@ type ColorPickerElement(props:Props) =
 
 
 // ColorPicker16
-type ColorPicker16Element(props:Props) =
+type ColorPicker16Element(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker16) (props: Props) =
+    let removeProps (element: ColorPicker16) (props: IProps) =
         // Properties
         props |> Props.tryFind<Int32> PName.colorPicker16.boxHeight |> Option.iter (fun _ -> element.BoxHeight <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Int32> PName.colorPicker16.boxWidth |> Option.iter (fun _ -> element.BoxWidth <- Unchecked.defaultof<_>)
@@ -667,7 +668,7 @@ type ColorPicker16Element(props:Props) =
 
     override _.name = $"ColorPicker16"
 
-    member _.setProps (element: ColorPicker16, props: Props) =
+    member _.setProps (element: ColorPicker16, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -715,10 +716,10 @@ type ColorPicker16Element(props:Props) =
 
 
 // ComboBox
-type ComboBoxElement(props:Props) =
+type ComboBoxElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ComboBox) (props: Props) =
+    let removeProps (element: ComboBox) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.comboBox.hideDropdownListOnClick |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.comboBox.readOnly |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
@@ -734,7 +735,7 @@ type ComboBoxElement(props:Props) =
 
     override _.name = $"ComboBox"
 
-    member _.setProps (element: ComboBox, props: Props) =
+    member _.setProps (element: ComboBox, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -787,10 +788,10 @@ type ComboBoxElement(props:Props) =
 
 
 // DateField
-type DateFieldElement(props:Props) =
+type DateFieldElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DateField) (props: Props) =
+    let removeProps (element: DateField) (props: IProps) =
         // Properties
         props |> Props.tryFind<CultureInfo> PName.dateField.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Int32> PName.dateField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
@@ -800,7 +801,7 @@ type DateFieldElement(props:Props) =
 
     override _.name = $"DateField"
 
-    member _.setProps (element: DateField, props: Props) =
+    member _.setProps (element: DateField, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -847,17 +848,17 @@ type DateFieldElement(props:Props) =
 
 
 // DatePicker
-type DatePickerElement(props:Props) =
+type DatePickerElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DatePicker) (props: Props) =
+    let removeProps (element: DatePicker) (props: IProps) =
         // Properties
         props |> Props.tryFind<CultureInfo> PName.datePicker.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind<DateTime> PName.datePicker.date |> Option.iter (fun _ -> element.Date <- Unchecked.defaultof<_>)
 
     override _.name = $"DatePicker"
 
-    member _.setProps (element: DatePicker, props: Props) =
+    member _.setProps (element: DatePicker, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -901,10 +902,10 @@ type DatePickerElement(props:Props) =
 
 
 // Dialog
-type DialogElement(props:Props) =
+type DialogElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Dialog) (props: Props) =
+    let removeProps (element: Dialog) (props: IProps) =
         // Properties
         props |> Props.tryFind<Alignment> PName.dialog.buttonAlignment |> Option.iter (fun _ -> element.ButtonAlignment <- Unchecked.defaultof<_>)
         props |> Props.tryFind<AlignmentModes> PName.dialog.buttonAlignmentModes |> Option.iter (fun _ -> element.ButtonAlignmentModes <- Unchecked.defaultof<_>)
@@ -912,7 +913,7 @@ type DialogElement(props:Props) =
 
     override _.name = $"Dialog"
 
-    member _.setProps (element: Dialog, props: Props) =
+    member _.setProps (element: Dialog, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -957,10 +958,10 @@ type DialogElement(props:Props) =
 
 
 // FileDialog
-type FileDialogElement(props:Props) =
+type FileDialogElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FileDialog) (props: Props) =
+    let removeProps (element: FileDialog) (props: IProps) =
         // Properties
         props |> Props.tryFind<IAllowedType list> PName.fileDialog.allowedTypes |> Option.iter (fun _ -> element.AllowedTypes <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.fileDialog.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -974,7 +975,7 @@ type FileDialogElement(props:Props) =
 
     override _.name = $"FileDialog"
 
-    member _.setProps (element: FileDialog, props: Props) =
+    member _.setProps (element: FileDialog, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1025,16 +1026,16 @@ type FileDialogElement(props:Props) =
 
 
 // FrameView
-type FrameViewElement(props:Props) =
+type FrameViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FrameView) (props: Props) =
+    let removeProps (element: FrameView) (props: IProps) =
         // No properties or events FrameView
         ()
 
     override _.name = $"FrameView"
 
-    member _.setProps (element: FrameView, props: Props) =
+    member _.setProps (element: FrameView, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events FrameView
@@ -1077,10 +1078,10 @@ type FrameViewElement(props:Props) =
 
 
 // GraphView
-type GraphViewElement(props:Props) =
+type GraphViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: GraphView) (props: Props) =
+    let removeProps (element: GraphView) (props: IProps) =
         // Properties
         props |> Props.tryFind<HorizontalAxis> PName.graphView.axisX |> Option.iter (fun _ -> element.AxisX <- Unchecked.defaultof<_>)
         props |> Props.tryFind<VerticalAxis> PName.graphView.axisY |> Option.iter (fun _ -> element.AxisY <- Unchecked.defaultof<_>)
@@ -1092,7 +1093,7 @@ type GraphViewElement(props:Props) =
 
     override _.name = $"GraphView"
 
-    member _.setProps (element: GraphView, props: Props) =
+    member _.setProps (element: GraphView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1141,10 +1142,10 @@ type GraphViewElement(props:Props) =
 
 
 // HexView
-type HexViewElement(props:Props) =
+type HexViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: HexView) (props: Props) =
+    let removeProps (element: HexView) (props: IProps) =
         // Properties
         props |> Props.tryFind<int64> PName.hexView.address |> Option.iter (fun _ -> element.Address <- Unchecked.defaultof<_>)
         props |> Props.tryFind<int> PName.hexView.addressWidth |> Option.iter (fun _ -> element.AddressWidth <- Unchecked.defaultof<_>)
@@ -1157,7 +1158,7 @@ type HexViewElement(props:Props) =
 
     override _.name = $"HexView"
 
-    member _.setProps (element: HexView, props: Props) =
+    member _.setProps (element: HexView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1207,17 +1208,17 @@ type HexViewElement(props:Props) =
 
 
 // Label
-type LabelElement(props:Props) =
+type LabelElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Label) (props: Props) =
+    let removeProps (element: Label) (props: IProps) =
         // Properties
         props |> Props.tryFind<Rune> PName.label.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> PName.label.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     override _.name = $"Label"
 
-    member _.setProps (element: Label, props: Props) =
+    member _.setProps (element: Label, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1261,16 +1262,16 @@ type LabelElement(props:Props) =
 
 
 // LegendAnnotation
-type LegendAnnotationElement(props:Props) =
+type LegendAnnotationElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LegendAnnotation) (props: Props) =
+    let removeProps (element: LegendAnnotation) (props: IProps) =
         // No properties or events LegendAnnotation
         ()
 
     override _.name = $"LegendAnnotation"
 
-    member _.setProps (element: LegendAnnotation, props: Props) =
+    member _.setProps (element: LegendAnnotation, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events LegendAnnotation
@@ -1313,10 +1314,10 @@ type LegendAnnotationElement(props:Props) =
 
 
 // Line
-type LineElement(props:Props) =
+type LineElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Line) (props: Props) =
+    let removeProps (element: Line) (props: IProps) =
         // Properties
         props |> Props.tryFind<Orientation> PName.line.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         // Events
@@ -1325,7 +1326,7 @@ type LineElement(props:Props) =
 
     override _.name = $"Line"
 
-    member _.setProps (element: Line, props: Props) =
+    member _.setProps (element: Line, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1371,10 +1372,10 @@ type LineElement(props:Props) =
 
 
 // LineView
-type LineViewElement(props:Props) =
+type LineViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LineView) (props: Props) =
+    let removeProps (element: LineView) (props: IProps) =
         // Properties
         props |> Props.tryFind<Rune option> PName.lineView.endingAnchor |> Option.iter (fun _ -> element.EndingAnchor <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Rune> PName.lineView.lineRune |> Option.iter (fun _ -> element.LineRune <- Unchecked.defaultof<_>)
@@ -1383,7 +1384,7 @@ type LineViewElement(props:Props) =
 
     override _.name = $"LineView"
 
-    member _.setProps (element: LineView, props: Props) =
+    member _.setProps (element: LineView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1429,10 +1430,10 @@ type LineViewElement(props:Props) =
 
 
 // ListView
-type ListViewElement(props:Props) =
+type ListViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ListView) (props: Props) =
+    let removeProps (element: ListView) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.listView.allowsMarking |> Option.iter (fun _ -> element.AllowsMarking <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.listView.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -1448,7 +1449,7 @@ type ListViewElement(props:Props) =
 
     override _.name = $"ListView"
 
-    member _.setProps (element: ListView, props: Props) =
+    member _.setProps (element: ListView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1501,16 +1502,16 @@ type ListViewElement(props:Props) =
 
 
 // Margin
-type MarginElement(props:Props) =
+type MarginElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Margin) (props: Props) =
+    let removeProps (element: Margin) (props: IProps) =
         // Properties
         props |> Props.tryFind<ShadowStyle> PName.margin.shadowStyle |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
     override _.name = $"Margin"
 
-    member _.setProps (element: Margin, props: Props) =
+    member _.setProps (element: Margin, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1553,10 +1554,10 @@ type MarginElement(props:Props) =
 
 
 // Menuv2
-type Menuv2Element(props:Props) =
+type Menuv2Element(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Menuv2) (props: Props) =
+    let removeProps (element: Menuv2) (props: IProps) =
         // Properties
         props |> Props.tryFind<MenuItemv2> PName.menuv2.selectedMenuItem |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
         props |> Props.tryFind<MenuItemv2> PName.menuv2.superMenuItem |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
@@ -1567,7 +1568,7 @@ type Menuv2Element(props:Props) =
 
     override _.name = $"Menuv2"
 
-    member _.setProps (element: Menuv2, props: Props) =
+    member _.setProps (element: Menuv2, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1613,10 +1614,10 @@ type Menuv2Element(props:Props) =
 
 
 
-type PopoverMenuElement(props: Props) =
+type PopoverMenuElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  PopoverMenu) (props: Props) =
+    let removeProps (element:  PopoverMenu) (props: IProps) =
         // Properties
         props |> Props.tryFind<Key> PName.popoverMenu.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
         props |> Props.tryFind<MouseFlags> PName.popoverMenu.mouseFlags |> Option.iter (fun _ -> element.MouseFlags <- Unchecked.defaultof<_>)
@@ -1627,7 +1628,7 @@ type PopoverMenuElement(props: Props) =
 
     override this.name = "PopoverMenu"
 
-    member _.setProps (element: PopoverMenu, props: Props) =
+    member _.setProps (element: PopoverMenu, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1676,10 +1677,10 @@ type PopoverMenuElement(props: Props) =
 
 
 // MenuBarItemv2
-type MenuBarItemv2Element(props:Props) =
+type MenuBarItemv2Element(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  MenuBarItemv2) (props: Props) =
+    let removeProps (element:  MenuBarItemv2) (props: IProps) =
         // Properties
         props |> Props.tryFind<PopoverMenu> PName.menuBarItemv2.popoverMenu |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_> )
         props |> Props.tryFind<bool> PName.menuBarItemv2.popoverMenuOpen |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_> )
@@ -1688,7 +1689,7 @@ type MenuBarItemv2Element(props:Props) =
 
     override this.name = "MenuBarItemv2"
 
-    member _.setProps (element: MenuBarItemv2, props: Props) =
+    member _.setProps (element: MenuBarItemv2, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1734,10 +1735,10 @@ type MenuBarItemv2Element(props:Props) =
         this.view <- prevElement
 
 // MenuBar
-type MenuBarv2Element(props:Props) =
+type MenuBarv2Element(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: MenuBarv2) (props: Props) =
+    let removeProps (element: MenuBarv2) (props: IProps) =
         // Properties
         props |> Props.tryFind<Key> PName.menuBarv2.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
@@ -1750,7 +1751,7 @@ type MenuBarv2Element(props:Props) =
 
     override _.name = $"MenuBarv2"
 
-    member _.setProps (element: MenuBarv2, props: Props) =
+    member _.setProps (element: MenuBarv2, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1798,10 +1799,10 @@ type MenuBarv2Element(props:Props) =
 
 
 // Shortcut
-type ShortcutElement(props:Props) =
+type ShortcutElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Shortcut) (props: Props) =
+    let removeProps (element: Shortcut) (props: IProps) =
         // Properties
         props |> Props.tryFind<Action> PName.shortcut.action |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
         props |> Props.tryFind<AlignmentModes> PName.shortcut.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
@@ -1818,7 +1819,7 @@ type ShortcutElement(props:Props) =
 
     override _.name = $"Shortcut"
 
-    member _.setProps (element: Shortcut, props: Props) =
+    member _.setProps (element: Shortcut, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1879,10 +1880,10 @@ type ShortcutElement(props:Props) =
 
 
 
-type MenuItemv2Element(props:Props) =
+type MenuItemv2Element(props: IncrementalProps) =
     inherit ShortcutElement(props)
 
-    let removeProps (element:  MenuItemv2) (props: Props) =
+    let removeProps (element:  MenuItemv2) (props: IProps) =
         // Properties
         props |> Props.tryFind<Command> PName.menuItemv2.command |> Option.iter (fun _ -> Unchecked.defaultof<_>)
         props |> Props.tryFind<Menuv2> PName.menuItemv2.subMenu |> Option.iter (fun _ -> Unchecked.defaultof<_>)
@@ -1892,7 +1893,7 @@ type MenuItemv2Element(props:Props) =
 
     override _.name = $"MenuItemv2"
 
-    member this.setProps (element: MenuItemv2, props: Props) =
+    member this.setProps (element: MenuItemv2, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -1943,10 +1944,10 @@ type MenuItemv2Element(props:Props) =
 
 
 // NumericUpDown<'a>
-type NumericUpDownElement<'a>(props:Props) =
+type NumericUpDownElement<'a>(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element:NumericUpDown<'a>) (props: Props) =
+    let removeProps (element:NumericUpDown<'a>) (props: IProps) =
         // Properties
         props |> Props.tryFind<string> "numericUpDown`1.format" |> Option.iter (fun _ -> element.Format <- Unchecked.defaultof<_>)
         props |> Props.tryFind<'a> "numericUpDown`1.increment" |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -1959,7 +1960,7 @@ type NumericUpDownElement<'a>(props:Props) =
 
     override _.name = $"NumericUpDown<'a>"
 
-    member _.setProps (element: NumericUpDown<'a>, props: Props) =
+    member _.setProps (element: NumericUpDown<'a>, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2009,20 +2010,20 @@ type NumericUpDownElement<'a>(props:Props) =
 
 
 // NumericUpDown
-type NumericUpDownElement(props:Props) =
+type NumericUpDownElement(props: IncrementalProps) =
     inherit NumericUpDownElement<int>(props)
 
 // OpenDialog
-type OpenDialogElement(props:Props) =
+type OpenDialogElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OpenDialog) (props: Props) =
+    let removeProps (element: OpenDialog) (props: IProps) =
         // Properties
         props |> Props.tryFind<OpenMode> PName.openDialog.openMode |> Option.iter (fun _ -> element.OpenMode <- Unchecked.defaultof<_>)
 
     override _.name = $"OpenDialog"
 
-    member _.setProps (element: OpenDialog, props: Props) =
+    member _.setProps (element: OpenDialog, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2063,10 +2064,10 @@ type OpenDialogElement(props:Props) =
         this.view <- prevElement
 
 // OptionSelector
-type OptionSelectorElement(props:Props) =
+type OptionSelectorElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OptionSelector) (props: Props) =
+    let removeProps (element: OptionSelector) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.optionSelector.assignHotKeysToCheckBoxes |> Option.iter (fun _ -> element.AssignHotKeysToCheckBoxes <- Unchecked.defaultof<_>)
         // TODO: could be refactored into an IOrientation props handler
@@ -2081,7 +2082,7 @@ type OptionSelectorElement(props:Props) =
 
     override _.name = $"OptionSelector"
 
-    member _.setProps (element: OptionSelector, props: Props) =
+    member _.setProps (element: OptionSelector, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2129,15 +2130,15 @@ type OptionSelectorElement(props:Props) =
         this.view <- prevElement
 
 // Padding
-type PaddingElement(props:Props) =
+type PaddingElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Padding) (props: Props) =
+    let removeProps (element: Padding) (props: IProps) =
         ()
 
     override _.name = $"Padding"
 
-    member _.setProps (element: Padding, props: Props) =
+    member _.setProps (element: Padding, props: IProps) =
         base.setProps(element, props)
 
         ()
@@ -2179,10 +2180,10 @@ type PaddingElement(props:Props) =
 
 
 // ProgressBar
-type ProgressBarElement(props:Props) =
+type ProgressBarElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ProgressBar) (props: Props) =
+    let removeProps (element: ProgressBar) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.progressBar.bidirectionalMarquee |> Option.iter (fun _ -> element.BidirectionalMarquee <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Single> PName.progressBar.fraction |> Option.iter (fun _ -> element.Fraction <- Unchecked.defaultof<_>)
@@ -2193,7 +2194,7 @@ type ProgressBarElement(props:Props) =
 
     override _.name = $"ProgressBar"
 
-    member _.setProps (element: ProgressBar, props: Props) =
+    member _.setProps (element: ProgressBar, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2241,10 +2242,10 @@ type ProgressBarElement(props:Props) =
 
 
 // RadioGroup
-type RadioGroupElement(props:Props) =
+type RadioGroupElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: RadioGroup) (props: Props) =
+    let removeProps (element: RadioGroup) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.radioGroup.assignHotKeysToRadioLabels |> Option.iter (fun _ -> element.AssignHotKeysToRadioLabels <- Unchecked.defaultof<_> )
         props |> Props.tryFind<Int32> PName.radioGroup.cursor |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_> )
@@ -2260,7 +2261,7 @@ type RadioGroupElement(props:Props) =
 
     override _.name = $"RadioGroup"
 
-    member _.setProps (element: RadioGroup, props: Props) =
+    member _.setProps (element: RadioGroup, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2313,16 +2314,16 @@ type RadioGroupElement(props:Props) =
 
 
 // SaveDialog
-type SaveDialogElement(props:Props) =
+type SaveDialogElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SaveDialog) (props: Props) =
+    let removeProps (element: SaveDialog) (props: IProps) =
         // No properties or events SaveDialog
         ()
 
     override _.name = $"SaveDialog"
 
-    member _.setProps (element: SaveDialog, props: Props) =
+    member _.setProps (element: SaveDialog, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events SaveDialog
@@ -2365,10 +2366,10 @@ type SaveDialogElement(props:Props) =
 
 
 // ScrollBar
-type ScrollBarElement(props:Props) =
+type ScrollBarElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ScrollBar) (props: Props) =
+    let removeProps (element: ScrollBar) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.scrollBar.autoShow |> Option.iter (fun _ -> element.AutoShow <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Int32> PName.scrollBar.increment |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -2384,7 +2385,7 @@ type ScrollBarElement(props:Props) =
 
     override _.name = $"ScrollBar"
 
-    member _.setProps (element: ScrollBar, props: Props) =
+    member _.setProps (element: ScrollBar, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2437,10 +2438,10 @@ type ScrollBarElement(props:Props) =
 
 
 // ScrollSlider
-type ScrollSliderElement(props:Props) =
+type ScrollSliderElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  ScrollSlider) (props: Props) =
+    let removeProps (element:  ScrollSlider) (props: IProps) =
         // Properties
         props |> Props.tryFind<Orientation> PName.scrollSlider.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Int32> PName.scrollSlider.position |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
@@ -2456,7 +2457,7 @@ type ScrollSliderElement(props:Props) =
 
     override _.name = $"ScrollSlider"
 
-    member _.setProps (element: ScrollSlider, props: Props) =
+    member _.setProps (element: ScrollSlider, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2508,10 +2509,10 @@ type ScrollSliderElement(props:Props) =
 
 
 // Slider<'a>
-type SliderElement<'a>(props:Props) =
+type SliderElement<'a>(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider<'a>) (props: Props) =
+    let removeProps (element: Slider<'a>) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> "slider`1.allowEmpty" |> Option.iter (fun _ -> element.AllowEmpty <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Int32> "slider`1.focusedOption" |> Option.iter (fun _ -> element.FocusedOption <- Unchecked.defaultof<_>)
@@ -2534,7 +2535,7 @@ type SliderElement<'a>(props:Props) =
 
     override _.name = $"Slider<'a>"
 
-    member _.setProps (element: Slider<'a>, props: Props) =
+    member _.setProps (element: Slider<'a>, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2594,16 +2595,16 @@ type SliderElement<'a>(props:Props) =
 
 
 // Slider
-type SliderElement(props:Props) =
+type SliderElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider) (props: Props) =
+    let removeProps (element: Slider) (props: IProps) =
         // No properties or events Slider
         ()
 
     override _.name = $"Slider"
 
-    member _.setProps (element: Slider, props: Props) =
+    member _.setProps (element: Slider, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events Slider
@@ -2646,10 +2647,10 @@ type SliderElement(props:Props) =
 
 
 // SpinnerView
-type SpinnerViewElement(props:Props) =
+type SpinnerViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SpinnerView) (props: Props) =
+    let removeProps (element: SpinnerView) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.spinnerView.autoSpin |> Option.iter (fun _ -> element.AutoSpin <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string list> PName.spinnerView.sequence |> Option.iter (fun _ -> element.Sequence <- Unchecked.defaultof<_>)
@@ -2660,7 +2661,7 @@ type SpinnerViewElement(props:Props) =
 
     override _.name = $"SpinnerView"
 
-    member _.setProps (element: SpinnerView, props: Props) =
+    member _.setProps (element: SpinnerView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2708,16 +2709,16 @@ type SpinnerViewElement(props:Props) =
 
 
 // StatusBar
-type StatusBarElement(props:Props) =
+type StatusBarElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: StatusBar) (props: Props) =
+    let removeProps (element: StatusBar) (props: IProps) =
         // No properties or events StatusBar
         ()
 
     override _.name = $"StatusBar"
 
-    member _.setProps (element: StatusBar, props: Props) =
+    member _.setProps (element: StatusBar, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events StatusBar
@@ -2760,17 +2761,17 @@ type StatusBarElement(props:Props) =
 
 
 // Tab
-type TabElement(props:Props) =
+type TabElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Tab) (props: Props) =
+    let removeProps (element: Tab) (props: IProps) =
         // Properties
         props |> Props.tryFind<string> PName.tab.displayText |> Option.iter (fun _ -> element.DisplayText <- Unchecked.defaultof<_>)
         props |> Props.tryFind<TerminalElement> PName.tab.view |> Option.iter (fun _ -> element.View <- Unchecked.defaultof<_>)
 
     override _.name = $"Tab"
 
-    member _.setProps (element: Tab, props: Props) =
+    member _.setProps (element: Tab, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2819,11 +2820,11 @@ type TabElement(props:Props) =
 
 
 // TabView
-type TabViewElement(props:Props) =
+type TabViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TabView) (props: Props) =
+    let removeProps (element: TabView) (props: IProps) =
         // Properties
         props |> Props.tryFind<int> PName.tabView.maxTabTextWidth |> Option.iter (fun _ -> element.MaxTabTextWidth <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Tab> PName.tabView.selectedTab |> Option.iter (fun _ -> element.SelectedTab <- Unchecked.defaultof<_>)
@@ -2835,7 +2836,7 @@ type TabViewElement(props:Props) =
 
     override _.name = $"TabView"
 
-    member _.setProps (element: TabView, props: Props) =
+    member _.setProps (element: TabView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2894,10 +2895,10 @@ type TabViewElement(props:Props) =
 
 
 // TableView
-type TableViewElement(props:Props) =
+type TableViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TableView) (props: Props) =
+    let removeProps (element: TableView) (props: IProps) =
         // Properties
         props |> Props.tryFind<KeyCode> PName.tableView.cellActivationKey |> Option.iter (fun _ -> element.CellActivationKey <- Unchecked.defaultof<_>)
         props |> Props.tryFind<ICollectionNavigator> PName.tableView.collectionNavigator |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
@@ -2920,7 +2921,7 @@ type TableViewElement(props:Props) =
 
     override _.name = $"TableView"
 
-    member _.setProps (element: TableView, props: Props) =
+    member _.setProps (element: TableView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -2980,10 +2981,10 @@ type TableViewElement(props:Props) =
 
 
 // TextField
-type TextFieldElement(props:Props) =
+type TextFieldElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextField) (props: Props) =
+    let removeProps (element: TextField) (props: IProps) =
         // Properties
         props |> Props.tryFind<IAutocomplete> PName.textField.autocomplete |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> PName.textField.caption |> Option.iter (fun _ -> element.Caption <- Unchecked.defaultof<_>)
@@ -3001,7 +3002,7 @@ type TextFieldElement(props:Props) =
 
     override _.name = $"TextField"
 
-    member _.setProps (element: TextField, props: Props) =
+    member _.setProps (element: TextField, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3056,17 +3057,17 @@ type TextFieldElement(props:Props) =
 
 
 // TextValidateField
-type TextValidateFieldElement(props:Props) =
+type TextValidateFieldElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextValidateField) (props: Props) =
+    let removeProps (element: TextValidateField) (props: IProps) =
         // Properties
         props |> Props.tryFind<ITextValidateProvider> PName.textValidateField.provider |> Option.iter (fun _ -> element.Provider <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> PName.textValidateField.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     override _.name = $"TextValidateField"
 
-    member _.setProps (element: TextValidateField, props: Props) =
+    member _.setProps (element: TextValidateField, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3110,11 +3111,11 @@ type TextValidateFieldElement(props:Props) =
 
 
 // TextView
-type TextViewElement(props:Props) =
+type TextViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TextView) (props: Props) =
+    let removeProps (element: TextView) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.textView.allowsReturn |> Option.iter (fun _ -> element.AllowsReturn <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.textView.allowsTab |> Option.iter (fun _ -> element.AllowsTab <- Unchecked.defaultof<_>)
@@ -3148,7 +3149,7 @@ type TextViewElement(props:Props) =
 
     override _.name = $"TextView"
 
-    member _.setProps (element: TextView, props: Props) =
+    member _.setProps (element: TextView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3218,10 +3219,10 @@ type TextViewElement(props:Props) =
 
 
 // TileView
-type TileViewElement(props:Props) =
+type TileViewElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TileView) (props: Props) =
+    let removeProps (element: TileView) (props: IProps) =
         // Properties
         props |> Props.tryFind<LineStyle> PName.tileView.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind<Orientation> PName.tileView.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -3231,7 +3232,7 @@ type TileViewElement(props:Props) =
 
     override _.name = $"TileView"
 
-    member _.setProps (element: TileView, props: Props) =
+    member _.setProps (element: TileView, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3278,10 +3279,10 @@ type TileViewElement(props:Props) =
 
 
 // TimeField
-type TimeFieldElement(props:Props) =
+type TimeFieldElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TimeField) (props: Props) =
+    let removeProps (element: TimeField) (props: IProps) =
         // Properties
         props |> Props.tryFind<Int32> PName.timeField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.timeField.isShortFormat |> Option.iter (fun _ -> element.IsShortFormat <- Unchecked.defaultof<_>)
@@ -3291,7 +3292,7 @@ type TimeFieldElement(props:Props) =
 
     override _.name = $"TimeField"
 
-    member _.setProps (element: TimeField, props: Props) =
+    member _.setProps (element: TimeField, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3338,10 +3339,10 @@ type TimeFieldElement(props:Props) =
 
 
 // Toplevel
-type ToplevelElement(props:Props) =
+type ToplevelElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Toplevel) (props: Props) =
+    let removeProps (element: Toplevel) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> PName.toplevel.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.toplevel.running |> Option.iter (fun _ -> element.Running <- Unchecked.defaultof<_>)
@@ -3357,7 +3358,7 @@ type ToplevelElement(props:Props) =
 
     override _.name = $"Toplevel"
 
-    member _.setProps (element: Toplevel, props: Props) =
+    member _.setProps (element: Toplevel, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3410,10 +3411,10 @@ type ToplevelElement(props:Props) =
 
 
 // TreeView<'a when 'a : not struct>
-type TreeViewElement<'a when 'a : not struct>(props:Props) =
+type TreeViewElement<'a when 'a : not struct>(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TreeView<'a>) (props: Props) =
+    let removeProps (element: TreeView<'a>) (props: IProps) =
         // Properties
         props |> Props.tryFind<bool> "treeView`1.allowLetterBasedNavigation" |> Option.iter (fun _ -> element.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
         props |> Props.tryFind<AspectGetterDelegate<'a>> "treeView`1.aspectGetter" |> Option.iter (fun _ -> element.AspectGetter <- Unchecked.defaultof<_>)
@@ -3434,7 +3435,7 @@ type TreeViewElement<'a when 'a : not struct>(props:Props) =
 
     override _.name = $"TreeView<'a>"
 
-    member _.setProps (element: TreeView<'a>, props: Props) =
+    member _.setProps (element: TreeView<'a>, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3492,20 +3493,20 @@ type TreeViewElement<'a when 'a : not struct>(props:Props) =
 
 
 // TreeView
-type TreeViewElement(props:Props) =
+type TreeViewElement(props: IncrementalProps) =
     inherit TreeViewElement<ITreeNode>(props)
 
 // Window
-type WindowElement(props:Props) =
+type WindowElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Window) (props: Props) =
+    let removeProps (element: Window) (props: IProps) =
         // No properties or events Window
         ()
 
     override _.name = $"Window"
 
-    member _.setProps (element: Window, props: Props) =
+    member _.setProps (element: Window, props: IProps) =
         base.setProps(element, props)
 
         // No properties or events Window
@@ -3548,10 +3549,10 @@ type WindowElement(props:Props) =
 
 
 // Wizard
-type WizardElement(props:Props) =
+type WizardElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Wizard) (props: Props) =
+    let removeProps (element: Wizard) (props: IProps) =
         // Properties
         props |> Props.tryFind<WizardStep> PName.wizard.currentStep |> Option.iter (fun _ -> element.CurrentStep <- Unchecked.defaultof<_>)
         props |> Props.tryFind<bool> PName.wizard.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
@@ -3565,7 +3566,7 @@ type WizardElement(props:Props) =
 
     override _.name = $"Wizard"
 
-    member _.setProps (element: Wizard, props: Props) =
+    member _.setProps (element: Wizard, props: IProps) =
         base.setProps(element, props)
 
         // Properties
@@ -3616,10 +3617,10 @@ type WizardElement(props:Props) =
 
 
 // WizardStep
-type WizardStepElement(props:Props) =
+type WizardStepElement(props: IncrementalProps) =
     inherit TerminalElement(props)
 
-    let removeProps (element: WizardStep) (props: Props) =
+    let removeProps (element: WizardStep) (props: IProps) =
         // Properties
         props |> Props.tryFind<string> PName.wizardStep.backButtonText |> Option.iter (fun _ -> element.BackButtonText <- Unchecked.defaultof<_>)
         props |> Props.tryFind<string> PName.wizardStep.helpText |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
@@ -3627,7 +3628,7 @@ type WizardStepElement(props:Props) =
 
     override _.name = $"WizardStep"
 
-    member _.setProps (element: WizardStep, props: Props) =
+    member _.setProps (element: WizardStep, props: IProps) =
         base.setProps(element, props)
 
         // Properties

@@ -27,7 +27,7 @@ let update (msg: Msg) (model: Model) = (), Cmd.none
 
 let view (state: Model) (dispatch: Msg -> unit) =
     View.topLevel [
-        View.menuBarv2 (fun p ->
+        View.menuBarv2 (fun p m ->
             p.menus [
                 View.menuBarItemv2 (fun p ->
                     p.title "_File"

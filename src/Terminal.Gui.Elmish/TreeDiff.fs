@@ -19,8 +19,8 @@ module Differ =
             ()
 
     let (|OnlyPropsChanged|_|) (ve1:TerminalElement,ve2:TerminalElement) =
-        let cve1 = ve1.children |> List.map (fun e -> e.name) |> List.sort
-        let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
+        let cve1 = ve1.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
+        let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
 
@@ -30,8 +30,8 @@ module Differ =
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
 
-        let cve1 = ve1.children |> List.map (fun e -> e.name) |> List.sort
-        let cve2 = ve2.children |> List.map (fun e -> e.name) |> List.sort
+        let cve1 = ve1.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
+        let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         if cve1 <> cve2 then Some () else None
 
     let rec update (rootTree:TerminalElement) (newTree:TerminalElement) =
@@ -58,8 +58,8 @@ module Differ =
                 #endif
                 newTree.initializeTree parent
 
-            let sortedRootChildren = rootTree.children |> List.sortBy (fun v -> v.name)
-            let sortedNewChildren = newTree.children |> List.sortBy (fun v -> v.name)
+            let sortedRootChildren = rootTree.children |> Seq.toList |> List.sortBy (fun v -> v.name)
+            let sortedNewChildren = newTree.children |> Seq.toList |> List.sortBy (fun v -> v.name)
             (sortedRootChildren,sortedNewChildren) ||> List.iter2 (fun rt nt -> update rt nt)
         | ChildsDifferent ->
             if newTree.canUpdate rootTree.view rootTree.properties then
@@ -73,8 +73,8 @@ module Differ =
             #endif
                 newTree.initializeTree parent
 
-            let sortedRootChildren = rootTree.children |> List.sortBy (fun v -> v.name)
-            let sortedNewChildren = newTree.children |> List.sortBy (fun v -> v.name)
+            let sortedRootChildren = rootTree.children |> Seq.toList |> List.sortBy (fun v -> v.name)
+            let sortedNewChildren = newTree.children |> Seq.toList |> List.sortBy (fun v -> v.name)
             let groupedRootType = sortedRootChildren |> List.map (fun v -> v.name) |> List.distinct
             let groupedNewType = sortedNewChildren |> List.map (fun v -> v.name) |> List.distinct
             let allTypes = groupedRootType @ groupedNewType |> List.distinct

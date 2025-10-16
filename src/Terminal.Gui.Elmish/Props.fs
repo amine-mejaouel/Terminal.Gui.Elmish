@@ -676,7 +676,7 @@ type tabProps() =
 
     // Properties
     member inline this.displayText (value:string) = this.props.add (PKey.tab.displayText, value)
-    member inline this.view (value:ITerminalElement) = this.props.add (PKey.tab.view, value)
+    member inline this.view (value:ITerminalElement) = this.props.add (PKey.tab.view_element, value)
 
 // TabView
 type tabViewProps() =

@@ -619,7 +619,8 @@ module PKey =
 
         // Properties
         member inline this.displayText : PKey<string> = PKey "tab.displayText"
-        member inline this.view : PKey<ITerminalElement> = PKey "tab.view"
+        member inline this.view : PKey<View> = PKey "tab.view"
+        member inline this.view_element : PKey<ITerminalElement> = PKey "tab.view_element"
 
     // TabView
     type tabViewPKeys() =

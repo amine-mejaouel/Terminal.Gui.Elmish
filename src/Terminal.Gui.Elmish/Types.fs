@@ -32,30 +32,27 @@ type IProps =
         abstract dict : IReadOnlyDictionary<string, obj>
     end
 
-type IIncrementalProps =
-    interface
-        inherit IProps
-        abstract add : key: string -> value: obj -> unit
-        abstract getOrInit<'a> : key: string -> init: (unit -> 'a) -> 'a
-    end
+type PKey<'a> = | PKey of string
+with
+    member this.value =
+        let (PKey value) = this
+        value
 
 /// Props object that is still under construction
 type IncrementalProps(?initialProps) =
 
     let dict = defaultArg initialProps (Dictionary<_,_>())
 
-    member _.add k v  = dict.Add(k, v)
-    member _.getOrInit<'a> k (init: unit -> 'a) : 'a =
+    member _.add (k: string, v: obj)  = dict.Add(k, v)
+    member _.add<'a> (PKey k: PKey<'a>, v: 'a)  = dict.Add(k, v :> obj)
+
+    member _.getOrInit<'a> (PKey k: PKey<'a>) (init: unit -> 'a) : 'a =
         match dict.TryGetValue k with
         | true, value -> value |> unbox<'a>
         | false, _ ->
             let value = init()
             dict[k] <- value :> obj
             value
-
-    interface IIncrementalProps with
-        member this.add k v = this.add k v
-        member this.getOrInit<'a> k v = this.getOrInit<'a> k v
 
     interface IProps with
         member _.dict with get() = dict
@@ -80,32 +77,43 @@ module Props =
     /// <summary>Builds two new Props, one containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
     /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
     let partition predicate (props: IProps) =
-        let first = IncrementalProps() :> IIncrementalProps
-        let second = IncrementalProps() :> IIncrementalProps
+        let first = IncrementalProps()
+        let second = IncrementalProps()
 
         for kv in props.dict do
             if predicate kv then
-                first.add kv.Key kv.Value
+                first.add (kv.Key, kv.Value)
             else
-                second.add kv.Key kv.Value
+                second.add (kv.Key, kv.Value)
 
         first, second
 
     let filter predicate (props: IProps) =
-        let result = IncrementalProps() :> IIncrementalProps
+        let result = IncrementalProps()
 
         for kv in props.dict do
             if predicate kv then
-                result.add kv.Key kv.Value
+                result.add (kv.Key, kv.Value)
 
         result
 
-    let tryFind<'a> key (props: IProps) =
+    let tryFind (PKey key: PKey<'a>) (props: IProps) =
         match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
 
-    let tryFindWithDefault<'a> key defaultValue props =
-        props |> tryFind<'a> key |> Option.defaultValue defaultValue
+    let tryFindByRawKey<'a> key (props: IProps) =
+        match props.dict.TryGetValue key with
+        | true, v -> v |> unbox<'a> |> Some
+        | _, _ -> None
 
-    let keyExists k (p: IProps) = p.dict.ContainsKey k
+    let find key (props: IProps) =
+        match tryFind key props with
+        | Some v -> v
+        | None -> failwith $"Failed to find '{key}'"
+
+    let tryFindWithDefault (key: PKey<'a>) defaultValue props =
+        props |> tryFind key |> Option.defaultValue defaultValue
+
+    let rawKeyExists k (p: IProps) = p.dict.ContainsKey k
+    let exists (PKey k) (p: IProps) = p.dict.ContainsKey k

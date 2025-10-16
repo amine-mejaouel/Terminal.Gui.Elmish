@@ -1,6 +1,8 @@
 ﻿module Terminal.Gui.Elmish.Tests
 
+open System.Linq
 open NUnit.Framework
+open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.Views
 
 [<SetUp>]
@@ -45,6 +47,18 @@ let ``Using properties syntax: Menu should be correctly set`` () =
             )
         ]
 
+    let menuBarv2Element = view.children.Single() :?> MenuBarv2Element
+    let menuBarItemv2Element =
+        (menuBarv2Element.props
+        |> Props.find PKey.menuBarv2.children).Single()
+        :?> MenuBarItemv2Element
+    let popoverMenu =
+        menuBarItemv2Element.props
+        |> Props.find PKey.menuBarItemv2.popoverMenu_element
+    let popoverMenuRoot =
+        popoverMenu.props
+        |> Props.find PKey.popoverMenu.root_element
+
     let view = view |> render
     let menuBar = (view.SubViews |> Seq.head) :?> MenuBarv2
     let menuBarItem = (menuBar.SubViews |> Seq.head) :?> MenuBarItemv2
@@ -72,6 +86,19 @@ let ``Using macros syntax: Menu should be correctly set`` () =
                 )
             )
         ]
+
+    let menuBarv2Element = view.children.Single() :?> MenuBarv2Element
+    let menuBarItemv2Element =
+        (menuBarv2Element.props
+        |> Props.find PKey.menuBarv2.children).Single()
+        :?> MenuBarItemv2Element
+    let popoverMenu =
+        menuBarItemv2Element.props
+        |> Props.find PKey.menuBarItemv2.popoverMenu_element
+    let popoverMenuRoot =
+        popoverMenu.props
+        |> Props.find PKey.popoverMenu.root_element
+
 
     let view = view |> render
     let menuBar = (view.SubViews |> Seq.head) :?> MenuBarv2

@@ -130,11 +130,11 @@ module Interop =
     let filterProps (oldProps: IProps) (newProps: IProps) =
 
         let remainingOldProps, removedProps =
-            oldProps |> Props.partition (fun kv -> newProps |> Props.keyExists kv.Key)
+            oldProps |> Props.partition (fun kv -> newProps |> Props.rawKeyExists kv.Key)
 
         let changedProps =
             newProps |> Props.filter (fun kv ->
-                match remainingOldProps |> Props.tryFind kv.Key with
+                match remainingOldProps |> Props.tryFindByRawKey kv.Key with
                 | _ when kv.Value = "children" ->
                     false
                 | Some v' when kv.Value = v' ->

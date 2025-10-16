@@ -636,6 +636,7 @@ module PKey =
         member inline this.tabClicked : PKey<TabMouseEventArgs->unit> = PKey "tabView.tabClicked"
         // Additional properties
         member inline this.tabs : PKey<List<ITerminalElement>> = PKey "tabView.tabs"
+        member inline this.tabs_elements : PKey<List<ITerminalElement>> = PKey "tabView.tabs_elements"
 
     // TableView
     type tableViewPKeys() =

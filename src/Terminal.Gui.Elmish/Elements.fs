@@ -29,6 +29,20 @@ open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
+[<RequireQualifiedAccess>]
+module SubElements =
+    [<RequireQualifiedAccess>]
+    type Kind =
+        | SingleElement
+        | ListOfElements
+
+    type SubElement =
+        {
+            Key: string
+            SetParent: bool
+            Kind: Kind
+        }
+
 
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
@@ -53,7 +67,7 @@ type TerminalElement (props: IncrementalProps) =
         props
         |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
-    abstract subElements: {| key: string; setParent: bool |} list
+    abstract subElements: SubElements.SubElement list
     default _.subElements = []
 
     abstract initialize: parent:View option -> unit
@@ -65,23 +79,39 @@ type TerminalElement (props: IncrementalProps) =
         initializeTreeLoop [(this, parent)]
 
     /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-    member this.initializeSubElements parent =
+    member this.initializeSubElements parent : (string * obj) seq =
         seq {
             for x in this.subElements do
-                match props |> Props.tryFindByRawKey x.key with
-                | None -> ()
-                | Some subElement ->
-                    let subElement = subElement :> TerminalElement
+                match x.Kind, props |> Props.tryFindByRawKey<obj> x.Key with
+
+                | _, None -> ()
+
+                | SubElements.Kind.SingleElement, Some value ->
+                    let subElement = value :?> TerminalElement
                     let parent =
-                        match x.setParent with
+                        match x.SetParent with
                         | true -> Some parent
                         | false -> None
 
                     subElement.initializeTree parent
 
-                    let viewProPKey = x.key.Substring(0, x.key.Length - (*".element".Length*) 8)
+                    let viewKey = x.Key.Substring(0, x.Key.Length - (*".element".Length*) 8)
 
-                    yield (viewProPKey, subElement.view)
+                    yield viewKey, subElement.view
+
+                | SubElements.Kind.ListOfElements, Some value ->
+                    let elements = value :?> List<ITerminalElement>
+                    let parent =
+                        match x.SetParent with
+                        | true -> Some parent
+                        | false -> None
+
+                    elements |> Seq.iter (fun e -> e.initializeTree parent)
+
+                    let viewKey = x.Key.Substring(0, x.Key.Length - (*".elements".Length*) 9)
+                    let views = elements |> Seq.map _.view |> Seq.toList
+
+                    yield viewKey, views
         }
 
     member this.setProps (element: View, props: IProps) =
@@ -1663,7 +1693,7 @@ type PopoverMenuElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.popoverMenu.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     override this.subElements =
-        {| key= PKey.popoverMenu.root_element.value; setParent= false |}::base.subElements
+        { Key= PKey.popoverMenu.root_element.value; SetParent= false; Kind= SubElements.Kind.SingleElement }::base.subElements
 
     override this.initialize(parent) =
         #if DEBUG
@@ -1724,7 +1754,7 @@ type MenuBarItemv2Element(props: IncrementalProps) =
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
     override this.subElements =
-        {| key=PKey.menuBarItemv2.popoverMenu_element.value; setParent=true  |}::base.subElements
+        { Key= PKey.menuBarItemv2.popoverMenu_element.value; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
     override this.initialize(parent) =
         #if DEBUG
@@ -1864,7 +1894,7 @@ type ShortcutElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.shortcut.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     override this.subElements =
-        {| key=PKey.shortcut.commandView_element.value; setParent=true |}::base.subElements
+        { Key=PKey.shortcut.commandView_element.value; SetParent=true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
 
     override this.initialize parent =
@@ -1931,7 +1961,7 @@ type MenuItemv2Element(props: IncrementalProps) =
         props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     override this.subElements =
-        {| key=PKey.menuItemv2.subMenu_element.value ; setParent=true |}::base.subElements
+        { Key= PKey.menuItemv2.subMenu_element.value ; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
 
     override this.initialize parent =
@@ -2805,7 +2835,7 @@ type TabElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
     override this.subElements =
-        {| key= PKey.tab.view.value; setParent= true |}::base.subElements
+        { Key= PKey.tab.view.value; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
     override this.initialize parent =
         #if DEBUG
@@ -2876,14 +2906,12 @@ type TabViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.tabView.tabClicked |> Option.iter (fun v -> Interop.setEventHandler <@ element.TabClicked @> v element)
 
         // Additional properties
-        props |> Props.tryFind PKey.tabView.tabs |> Option.iter (fun v ->
-            v
-            |> Seq.iter (fun tabItems ->
-                tabItems.initialize (Some element)
-                element.AddTab ((tabItems.view :?> Tab), false)
-                )
-            )
+        props |> Props.tryFind PKey.tabView.tabs |> Option.iter (fun tabItems ->
+            tabItems |> Seq.iter (fun tabItem ->
+                element.AddTab (tabItem.view :?> Tab, false)))
 
+    override this.subElements =
+        { Key= PKey.tabView.tabs_elements.value; SetParent= true; Kind= SubElements.Kind.ListOfElements }::base.subElements
 
     override this.initialize parent =
         #if DEBUG
@@ -2893,6 +2921,10 @@ type TabViewElement(props: IncrementalProps) =
 
 
         let el = new TabView()
+
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add(k, v))
+
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)

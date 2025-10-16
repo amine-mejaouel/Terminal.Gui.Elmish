@@ -33,6 +33,19 @@ open Terminal.Gui.Views
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
     let mutable p: View option = None
+
+    [<TailCall>]
+    let rec initializeTreeLoop (nodes: (ITerminalElement * View option) list) =
+        match nodes with
+        | [] ->
+            ()
+        | (curNode, curParent) :: remainingNodes ->
+            curNode.initialize curParent
+            let childNodes =
+                curNode.children |> Seq.map (fun e -> (e, Some curNode.view)) |> List.ofSeq
+
+            initializeTreeLoop (childNodes @ remainingNodes)
+
     member this.props = props
     member this.parent with get() = p and set v = p <- v
     member val view: View = null with get, set
@@ -48,10 +61,8 @@ type TerminalElement (props: IncrementalProps) =
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract name: string
 
-    // TODO: could be converted to tail recursive call ?
-    member this.initializeTree(parent: View option) =
-        this.initialize parent
-        this.children |> Seq.iter (fun e -> e.initializeTree (Some this.view))
+    member this.initializeTree(parent: View option) : unit =
+        initializeTreeLoop [(this, parent)]
 
     /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
     member this.initializeSubElements parent =

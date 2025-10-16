@@ -20,7 +20,7 @@ type Program<'arg, 'model, 'msg, 'view> = private {
     init : 'arg -> 'model * Cmd<'msg>
     update : 'msg -> 'model -> 'model * Cmd<'msg>
     subscribe : 'model -> Cmd<'msg>
-    view : 'model -> Dispatch<'msg> -> TerminalElement
+    view : 'model -> Dispatch<'msg> -> ITerminalElement
     setState : 'model -> Dispatch<'msg> -> unit
     onError : (string*exn) -> unit
     syncDispatch: Dispatch<'msg> -> Dispatch<'msg>
@@ -37,7 +37,7 @@ module Program =
     let mkProgram
         (init : 'arg -> 'model * Cmd<'msg>)
         (update : 'msg -> 'model -> 'model * Cmd<'msg>)
-        (view : 'model -> Dispatch<'msg> -> TerminalElement) =
+        (view : 'model -> Dispatch<'msg> -> ITerminalElement) =
         { init = init
           update = update
           view = view
@@ -50,7 +50,7 @@ module Program =
     let mkSimple
         (init : 'arg -> 'model)
         (update : 'msg -> 'model -> 'model)
-        (view : 'model -> Dispatch<'msg> -> TerminalElement) =
+        (view : 'model -> Dispatch<'msg> -> ITerminalElement) =
         { init = init >> fun state -> state,Cmd.none
           update = fun msg -> update msg >> fun state -> state,Cmd.none
           view = view
@@ -141,7 +141,7 @@ module Program =
         let rb = RingBuffer 10
         let mutable reentered = false
         let mutable state = model
-        let mutable currentTreeState:TerminalElement option = None
+        let mutable currentTreeState:ITerminalElement option = None
         let rec dispatch msg =
             if reentered then
                 rb.Push msg
@@ -244,6 +244,3 @@ module Program =
     let quit() =
         Application.Shutdown()
         quitWithErrorCode 0
-
-
-

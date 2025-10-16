@@ -18,7 +18,7 @@ module Differ =
             |> Seq.iter (fun e -> disposeTree e)
             ()
 
-    let (|OnlyPropsChanged|_|) (ve1:TerminalElement,ve2:TerminalElement) =
+    let (|OnlyPropsChanged|_|) (ve1:ITerminalElement,ve2:ITerminalElement) =
         let cve1 = ve1.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         //let cve1 = getChildrenNames(ve1)
@@ -26,7 +26,7 @@ module Differ =
 
         if cve1 = cve2 then Some () else None
 
-    let (|ChildsDifferent|_|) (ve1:TerminalElement,ve2:TerminalElement) =
+    let (|ChildsDifferent|_|) (ve1:ITerminalElement,ve2:ITerminalElement) =
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
 
@@ -34,7 +34,7 @@ module Differ =
         let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         if cve1 <> cve2 then Some () else None
 
-    let rec update (rootTree:TerminalElement) (newTree:TerminalElement) =
+    let rec update (rootTree:ITerminalElement) (newTree:ITerminalElement) =
         match rootTree, newTree with
         | rt, nt when rt.name <> nt.name ->
             let parent = rootTree.view |> Interop.getParent

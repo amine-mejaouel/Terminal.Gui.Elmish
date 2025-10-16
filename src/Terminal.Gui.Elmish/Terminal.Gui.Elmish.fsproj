@@ -37,9 +37,8 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Interop.fs" />
-    <Compile Include="PName.fs" />
+    <Compile Include="PKey.fs" />
     <Compile Include="Elements.fs" />
-    <Compile Include="PSet.fs" />
     <Compile Include="Props.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="Views.fs" />

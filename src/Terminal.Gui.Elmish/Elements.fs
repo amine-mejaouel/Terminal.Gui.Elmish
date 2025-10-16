@@ -2804,12 +2804,8 @@ type TabElement(props: IncrementalProps) =
         // Properties
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
-        props |> Props.tryFind PKey.tab.view
-        |> Option.iter (fun v ->
-            v.initialize (Some element)
-            element.View <- v.view
-        )
-
+    override this.subElements =
+        {| key= PKey.tab.view.value; setParent= true |}::base.subElements
 
     override this.initialize parent =
         #if DEBUG
@@ -2819,6 +2815,10 @@ type TabElement(props: IncrementalProps) =
 
 
         let el = new Tab()
+
+        this.initializeSubElements(el)
+        |> Seq.iter (fun (k, v) -> props.add(k, v))
+
         parent |> Option.iter (fun p -> p.Add el |> ignore)
         this.setProps(el, props)
         props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)

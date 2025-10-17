@@ -24,7 +24,6 @@ open Terminal.Gui.Views
 
 // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
 type ITerminalElement =
-    abstract initialize: parent:View option -> unit
     abstract initializeTree: parent: View option -> unit
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract update: prevElement:View -> oldProps: IProps -> unit

@@ -54,7 +54,7 @@ type TerminalElement (props: IncrementalProps) =
         | [] ->
             ()
         | (curNode, curParent) :: remainingNodes ->
-            curNode.initialize curParent
+            (curNode :?> TerminalElement).initialize curParent
             let childNodes =
                 curNode.children |> Seq.map (fun e -> (e, Some curNode.view)) |> List.ofSeq
 
@@ -70,7 +70,25 @@ type TerminalElement (props: IncrementalProps) =
     abstract subElements: SubElements.SubElement list
     default _.subElements = []
 
-    abstract initialize: parent:View option -> unit
+    abstract newView: unit -> View
+
+    member this.initialize parent =
+        #if DEBUG
+        Diagnostics.Trace.WriteLine $"{this.name} created!"
+        #endif
+        this.parent <- parent
+
+        let el = this.newView()
+
+        this.initializeSubElements(el)
+        |> Seq.iter props.add
+
+        // Here, the "children" view are added to their parent
+        parent |> Option.iter (fun p -> p.Add el |> ignore)
+        this.setProps(el, props)
+        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
+        this.view <- el
+
     abstract update: prevElement:View -> oldProps: IProps -> unit
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract name: string
@@ -114,7 +132,9 @@ type TerminalElement (props: IncrementalProps) =
                     yield viewKey, views
         }
 
-    member this.setProps (element: View, props: IProps) =
+    abstract setProps: element: View * props: IProps ->  unit
+
+    default this.setProps (element: View, props: IProps) =
         // Properties
         props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v element)
         // Properties
@@ -211,7 +231,6 @@ type TerminalElement (props: IncrementalProps) =
     // These two kind of behavior should be separated
     // TODO: inline relevant implementation here
     interface ITerminalElement with
-        member this.initialize(parent) = this.initialize(parent)
         member this.initializeTree(parent) = this.initializeTree(parent)
         member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
         member this.update prevElement oldProps = this.update prevElement oldProps
@@ -365,8 +384,10 @@ type AdornmentElement(props: IncrementalProps) =
 
     override _.name = $"Adornment"
 
-    member this.setProps (element: Adornment, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Adornment
 
         // Properties
         props |> Props.tryFind PKey.adornment.diagnostics |> Option.iter (fun v -> element.Diagnostics <- v )
@@ -376,20 +397,7 @@ type AdornmentElement(props: IncrementalProps) =
         // Events
         props |> Props.tryFind PKey.adornment.thicknessChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.ThicknessChanged @> (fun _ -> v()) element)
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Adornment()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Adornment()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -421,9 +429,10 @@ type BarElement(props: IncrementalProps) =
 
     override _.name = $"Bar"
 
-    member _.setProps (element: Bar, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
 
+        let element = element :?> Bar
         // Properties
         props |> Props.tryFind PKey.bar.alignmentModes |> Option.iter (fun v -> element.AlignmentModes <- v )
         props |> Props.tryFind PKey.bar.orientation |> Option.iter (fun v -> element.Orientation <- v )
@@ -432,20 +441,7 @@ type BarElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.bar.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Bar()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Bar()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -478,28 +474,17 @@ type BorderElement(props: IncrementalProps) =
 
     override _.name = $"Border"
 
-    member _.setProps (element: Border, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Border
 
         // Properties
         props |> Props.tryFind PKey.border.lineStyle |> Option.iter (fun v -> element.LineStyle <- v )
         props |> Props.tryFind PKey.border.settings |> Option.iter (fun v -> element.Settings <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Border()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Border()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -537,8 +522,10 @@ type ButtonElement(props: IncrementalProps) =
 
     override _.name = $"Button"
 
-    member _.setProps (element: Button, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Button
 
         // Properties
         props |> Props.tryFind PKey.button.hotKeySpecifier |> Option.iter (fun v -> element.HotKeySpecifier <- v )
@@ -550,20 +537,7 @@ type ButtonElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.button.wantContinuousButtonPressed |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Button()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Button()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -602,8 +576,10 @@ type CheckBoxElement(props: IncrementalProps) =
 
     override _.name = $"CheckBox"
 
-    member _.setProps (element: CheckBox, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> CheckBox
 
         // Properties
         props |> Props.tryFind PKey.checkBox.allowCheckStateNone |> Option.iter (fun v -> element.AllowCheckStateNone <- v )
@@ -616,20 +592,7 @@ type CheckBoxElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.checkBox.checkedStateChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.CheckedStateChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new CheckBox()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new CheckBox()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -664,8 +627,10 @@ type ColorPickerElement(props: IncrementalProps) =
 
     override _.name = $"ColorPicker"
 
-    member _.setProps (element: ColorPicker, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ColorPicker
 
         // Properties
         props |> Props.tryFind PKey.colorPicker.selectedColor |> Option.iter (fun v -> element.SelectedColor <- v )
@@ -674,20 +639,7 @@ type ColorPickerElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.colorPicker.colorChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ColorPicker()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ColorPicker()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -724,8 +676,10 @@ type ColorPicker16Element(props: IncrementalProps) =
 
     override _.name = $"ColorPicker16"
 
-    member _.setProps (element: ColorPicker16, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ColorPicker16
 
         // Properties
         props |> Props.tryFind PKey.colorPicker16.boxHeight |> Option.iter (fun v -> element.BoxHeight <- v )
@@ -736,20 +690,7 @@ type ColorPicker16Element(props: IncrementalProps) =
         props |> Props.tryFind PKey.colorPicker16.colorChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.ColorChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ColorPicker16()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ColorPicker16()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -791,8 +732,10 @@ type ComboBoxElement(props: IncrementalProps) =
 
     override _.name = $"ComboBox"
 
-    member _.setProps (element: ComboBox, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ComboBox
 
         // Properties
         props |> Props.tryFind PKey.comboBox.hideDropdownListOnClick |> Option.iter (fun v -> element.HideDropdownListOnClick <- v )
@@ -808,20 +751,7 @@ type ComboBoxElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.comboBox.selectedItemChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ComboBox()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ComboBox()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -857,8 +787,10 @@ type DateFieldElement(props: IncrementalProps) =
 
     override _.name = $"DateField"
 
-    member _.setProps (element: DateField, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> DateField
 
         // Properties
         props |> Props.tryFind PKey.dateField.culture |> Option.iter (fun v -> element.Culture <- v )
@@ -868,20 +800,7 @@ type DateFieldElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.dateField.dateChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.DateChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new DateField()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new DateField()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -914,28 +833,17 @@ type DatePickerElement(props: IncrementalProps) =
 
     override _.name = $"DatePicker"
 
-    member _.setProps (element: DatePicker, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> DatePicker
 
         // Properties
         props |> Props.tryFind PKey.datePicker.culture |> Option.iter (fun v -> element.Culture <- v )
         props |> Props.tryFind PKey.datePicker.date |> Option.iter (fun v -> element.Date <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new DatePicker()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new DatePicker()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -969,8 +877,10 @@ type DialogElement(props: IncrementalProps) =
 
     override _.name = $"Dialog"
 
-    member _.setProps (element: Dialog, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Dialog
 
         // Properties
         props |> Props.tryFind PKey.dialog.buttonAlignment |> Option.iter (fun v -> element.ButtonAlignment <- v )
@@ -978,20 +888,7 @@ type DialogElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.dialog.canceled |> Option.iter (fun v -> element.Canceled <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Dialog()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Dialog()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1031,8 +928,10 @@ type FileDialogElement(props: IncrementalProps) =
 
     override _.name = $"FileDialog"
 
-    member _.setProps (element: FileDialog, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> FileDialog
 
         // Properties
         props |> Props.tryFind PKey.fileDialog.allowedTypes |> Option.iter (fun v -> element.AllowedTypes <- v.ToList())
@@ -1046,20 +945,7 @@ type FileDialogElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.fileDialog.filesSelected |> Option.iter (fun v -> Interop.setEventHandler <@ element.FilesSelected @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new FileDialog()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new FileDialog()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1091,27 +977,16 @@ type FrameViewElement(props: IncrementalProps) =
 
     override _.name = $"FrameView"
 
-    member _.setProps (element: FrameView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> FrameView
 
         // No properties or events FrameView
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new FrameView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new FrameView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1149,8 +1024,10 @@ type GraphViewElement(props: IncrementalProps) =
 
     override _.name = $"GraphView"
 
-    member _.setProps (element: GraphView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> GraphView
 
         // Properties
         props |> Props.tryFind PKey.graphView.axisX |> Option.iter (fun v -> element.AxisX <- v )
@@ -1162,20 +1039,7 @@ type GraphViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.graphView.scrollOffset |> Option.iter (fun v -> element.ScrollOffset <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new GraphView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new GraphView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1214,8 +1078,10 @@ type HexViewElement(props: IncrementalProps) =
 
     override _.name = $"HexView"
 
-    member _.setProps (element: HexView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> HexView
 
         // Properties
         props |> Props.tryFind PKey.hexView.address |> Option.iter (fun v -> element.Address <- v )
@@ -1228,20 +1094,7 @@ type HexViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.hexView.positionChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PositionChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new HexView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new HexView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1274,28 +1127,17 @@ type LabelElement(props: IncrementalProps) =
 
     override _.name = $"Label"
 
-    member _.setProps (element: Label, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Label
 
         // Properties
         props |> Props.tryFind PKey.label.hotKeySpecifier |> Option.iter (fun v -> element.HotKeySpecifier <- v )
         props |> Props.tryFind PKey.label.text |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Label()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Label()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1327,27 +1169,16 @@ type LegendAnnotationElement(props: IncrementalProps) =
 
     override _.name = $"LegendAnnotation"
 
-    member _.setProps (element: LegendAnnotation, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> LegendAnnotation
 
         // No properties or events LegendAnnotation
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new LegendAnnotation()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new LegendAnnotation()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1382,8 +1213,10 @@ type LineElement(props: IncrementalProps) =
 
     override _.name = $"Line"
 
-    member _.setProps (element: Line, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Line
 
         // Properties
         props |> Props.tryFind PKey.line.orientation |> Option.iter (fun v -> element.Orientation <- v )
@@ -1392,20 +1225,7 @@ type LineElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.line.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Line()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Line()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1440,8 +1260,10 @@ type LineViewElement(props: IncrementalProps) =
 
     override _.name = $"LineView"
 
-    member _.setProps (element: LineView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> LineView
 
         // Properties
         props |> Props.tryFind PKey.lineView.endingAnchor |> Option.iter (fun v -> element.EndingAnchor <- v  |> Option.toNullable)
@@ -1450,20 +1272,7 @@ type LineViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.lineView.startingAnchor |> Option.iter (fun v -> element.StartingAnchor <- v  |> Option.toNullable)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new LineView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new LineView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1505,8 +1314,10 @@ type ListViewElement(props: IncrementalProps) =
 
     override _.name = $"ListView"
 
-    member _.setProps (element: ListView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ListView
 
         // Properties
         props |> Props.tryFind PKey.listView.allowsMarking |> Option.iter (fun v -> element.AllowsMarking <- v )
@@ -1522,20 +1333,7 @@ type ListViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.listView.selectedItemChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ListView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ListView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1567,27 +1365,16 @@ type MarginElement(props: IncrementalProps) =
 
     override _.name = $"Margin"
 
-    member _.setProps (element: Margin, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Margin
 
         // Properties
         props |> Props.tryFind PKey.margin.shadowStyle |> Option.iter (fun v -> element.ShadowStyle <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Margin()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Margin()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1624,8 +1411,10 @@ type Menuv2Element(props: IncrementalProps) =
 
     override _.name = $"Menuv2"
 
-    member _.setProps (element: Menuv2, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Menuv2
 
         // Properties
         props |> Props.tryFind PKey.menuv2.selectedMenuItem |> Option.iter (fun v -> element.SelectedMenuItem <- v )
@@ -1634,18 +1423,7 @@ type Menuv2Element(props: IncrementalProps) =
         props |> Props.tryFind PKey.menuv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
         props |> Props.tryFind PKey.menuv2.selectedMenuItemChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Menuv2()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
+    override this.newView() = new Menuv2()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1681,8 +1459,10 @@ type PopoverMenuElement(props: IncrementalProps) =
 
     override this.name = "PopoverMenu"
 
-    member _.setProps (element: PopoverMenu, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> PopoverMenu
 
         // Properties
         props |> Props.tryFind PKey.popoverMenu.key |> Option.iter (fun v -> element.Key <- v )
@@ -1695,21 +1475,7 @@ type PopoverMenuElement(props: IncrementalProps) =
     override this.subElements =
         { Key= PKey.popoverMenu.root_element.value; SetParent= false; Kind= SubElements.Kind.SingleElement }::base.subElements
 
-    override this.initialize(parent) =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-        let el = new PopoverMenu()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
+    override this.newView() = new PopoverMenu()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1744,8 +1510,10 @@ type MenuBarItemv2Element(props: IncrementalProps) =
 
     override this.name = "MenuBarItemv2"
 
-    member _.setProps (element: MenuBarItemv2, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> MenuBarItemv2
 
         // Properties
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenu |> Option.iter (fun v -> element.PopoverMenu <- v )
@@ -1756,22 +1524,7 @@ type MenuBarItemv2Element(props: IncrementalProps) =
     override this.subElements =
         { Key= PKey.menuBarItemv2.popoverMenu_element.value; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
-    override this.initialize(parent) =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new MenuBarItemv2()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
+    override this.newView() = new MenuBarItemv2()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1808,8 +1561,10 @@ type MenuBarv2Element(props: IncrementalProps) =
 
     override _.name = $"MenuBarv2"
 
-    member _.setProps (element: MenuBarv2, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> MenuBarv2
 
         // Properties
         props |> Props.tryFind PKey.menuBarv2.key |> Option.iter (fun v -> element.Key <- v )
@@ -1821,19 +1576,7 @@ type MenuBarv2Element(props: IncrementalProps) =
         // Events
         props |> Props.tryFind PKey.menuBarv2.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-
-        this.parent <- parent
-        let el = new MenuBarv2()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new MenuBarv2()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1876,8 +1619,10 @@ type ShortcutElement(props: IncrementalProps) =
 
     override _.name = $"Shortcut"
 
-    member _.setProps (element: Shortcut, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Shortcut
 
         // Properties
         props |> Props.tryFind PKey.shortcut.action |> Option.iter (fun v -> element.Action <- v )
@@ -1897,25 +1642,8 @@ type ShortcutElement(props: IncrementalProps) =
         { Key=PKey.shortcut.commandView_element.value; SetParent=true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
 
-
-
-        let el = new Shortcut()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Shortcut()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -1950,8 +1678,10 @@ type MenuItemv2Element(props: IncrementalProps) =
 
     override _.name = $"MenuItemv2"
 
-    member this.setProps (element: MenuItemv2, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> MenuItemv2
 
         // Properties
         props |> Props.tryFind PKey.menuItemv2.command |> Option.iter (fun v -> element.Command <- v )
@@ -1964,22 +1694,7 @@ type MenuItemv2Element(props: IncrementalProps) =
         { Key= PKey.menuItemv2.subMenu_element.value ; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-        let el = new MenuItemv2()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
+    override this.newView() = new MenuItemv2()
 
 
     override this.canUpdate prevElement oldProps =
@@ -2017,8 +1732,10 @@ type NumericUpDownElement<'a>(props: IncrementalProps) =
 
     override _.name = $"NumericUpDown<'a>"
 
-    member _.setProps (element: NumericUpDown<'a>, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> NumericUpDown<'a>
 
         // Properties
         props |> Props.tryFind PKey.numericUpDown<'a>.format |> Option.iter (fun v -> element.Format <- v )
@@ -2030,21 +1747,7 @@ type NumericUpDownElement<'a>(props: IncrementalProps) =
         props |> Props.tryFind PKey.numericUpDown<'a>.valueChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanged @> (fun arg -> v arg.Value) element)
         props |> Props.tryFind PKey.numericUpDown<'a>.valueChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanging @> v element)
 
-
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new NumericUpDown<'a>()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new NumericUpDown<'a>()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2080,27 +1783,16 @@ type OpenDialogElement(props: IncrementalProps) =
 
     override _.name = $"OpenDialog"
 
-    member _.setProps (element: OpenDialog, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> OpenDialog
 
         // Properties
         props |> Props.tryFind PKey.openDialog.openMode |> Option.iter (fun v -> element.OpenMode <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new OpenDialog()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new OpenDialog()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2139,8 +1831,10 @@ type OptionSelectorElement(props: IncrementalProps) =
 
     override _.name = $"OptionSelector"
 
-    member _.setProps (element: OptionSelector, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> OptionSelector
 
         // Properties
         props |> Props.tryFind PKey.optionSelector.assignHotKeysToCheckBoxes |> Option.iter (fun v -> element.AssignHotKeysToCheckBoxes <- v)
@@ -2153,20 +1847,7 @@ type OptionSelectorElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.optionSelector.selectedItemChanged |> Option.iter (fun v-> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new OptionSelector()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new OptionSelector()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2195,26 +1876,15 @@ type PaddingElement(props: IncrementalProps) =
 
     override _.name = $"Padding"
 
-    member _.setProps (element: Padding, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Padding
 
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Padding()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Padding()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2251,8 +1921,10 @@ type ProgressBarElement(props: IncrementalProps) =
 
     override _.name = $"ProgressBar"
 
-    member _.setProps (element: ProgressBar, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ProgressBar
 
         // Properties
         props |> Props.tryFind PKey.progressBar.bidirectionalMarquee |> Option.iter (fun v -> element.BidirectionalMarquee <- v )
@@ -2263,20 +1935,7 @@ type ProgressBarElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.progressBar.text |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ProgressBar()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ProgressBar()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2318,8 +1977,10 @@ type RadioGroupElement(props: IncrementalProps) =
 
     override _.name = $"RadioGroup"
 
-    member _.setProps (element: RadioGroup, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> RadioGroup
 
         // Properties
         props |> Props.tryFind PKey.radioGroup.assignHotKeysToRadioLabels |> Option.iter (fun v -> element.AssignHotKeysToRadioLabels <- v )
@@ -2335,20 +1996,7 @@ type RadioGroupElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.radioGroup.selectedItemChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new RadioGroup()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new RadioGroup()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2380,27 +2028,16 @@ type SaveDialogElement(props: IncrementalProps) =
 
     override _.name = $"SaveDialog"
 
-    member _.setProps (element: SaveDialog, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> SaveDialog
 
         // No properties or events SaveDialog
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new SaveDialog()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new SaveDialog()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2442,8 +2079,10 @@ type ScrollBarElement(props: IncrementalProps) =
 
     override _.name = $"ScrollBar"
 
-    member _.setProps (element: ScrollBar, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ScrollBar
 
         // Properties
         props |> Props.tryFind PKey.scrollBar.autoShow |> Option.iter (fun v -> element.AutoShow <- v )
@@ -2459,20 +2098,7 @@ type ScrollBarElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.scrollBar.sliderPositionChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SliderPositionChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ScrollBar()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ScrollBar()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2514,8 +2140,10 @@ type ScrollSliderElement(props: IncrementalProps) =
 
     override _.name = $"ScrollSlider"
 
-    member _.setProps (element: ScrollSlider, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> ScrollSlider
 
         // Properties
         props |> Props.tryFind PKey.scrollSlider.orientation |> Option.iter (fun v -> element.Orientation <- v )
@@ -2531,20 +2159,7 @@ type ScrollSliderElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.scrollSlider.scrolled |> Option.iter (fun v -> Interop.setEventHandler <@ element.Scrolled @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new ScrollSlider()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new ScrollSlider()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2592,8 +2207,10 @@ type SliderElement<'a>(props: IncrementalProps) =
 
     override _.name = $"Slider<'a>"
 
-    member _.setProps (element: Slider<'a>, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Slider<'a>
 
         // Properties
         props |> Props.tryFind PKey.slider.allowEmpty |> Option.iter (fun v -> element.AllowEmpty <- v )
@@ -2616,20 +2233,7 @@ type SliderElement<'a>(props: IncrementalProps) =
         props |> Props.tryFind PKey.slider.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Slider<'a>()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Slider<'a>()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2661,27 +2265,16 @@ type SliderElement(props: IncrementalProps) =
 
     override _.name = $"Slider"
 
-    member _.setProps (element: Slider, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Slider
 
         // No properties or events Slider
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Slider()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Slider()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2718,8 +2311,10 @@ type SpinnerViewElement(props: IncrementalProps) =
 
     override _.name = $"SpinnerView"
 
-    member _.setProps (element: SpinnerView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> SpinnerView
 
         // Properties
         props |> Props.tryFind PKey.spinnerView.autoSpin |> Option.iter (fun v -> element.AutoSpin <- v )
@@ -2730,20 +2325,7 @@ type SpinnerViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.spinnerView.style |> Option.iter (fun v -> element.Style <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new SpinnerView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new SpinnerView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2775,27 +2357,16 @@ type StatusBarElement(props: IncrementalProps) =
 
     override _.name = $"StatusBar"
 
-    member _.setProps (element: StatusBar, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> StatusBar
 
         // No properties or events StatusBar
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new StatusBar()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new StatusBar()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2828,8 +2399,10 @@ type TabElement(props: IncrementalProps) =
 
     override _.name = $"Tab"
 
-    member _.setProps (element: Tab, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Tab
 
         // Properties
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
@@ -2837,24 +2410,7 @@ type TabElement(props: IncrementalProps) =
     override this.subElements =
         { Key= PKey.tab.view.value; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Tab()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Tab()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2893,8 +2449,10 @@ type TabViewElement(props: IncrementalProps) =
 
     override _.name = $"TabView"
 
-    member _.setProps (element: TabView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TabView
 
         // Properties
         props |> Props.tryFind PKey.tabView.maxTabTextWidth |> Option.iter (fun v -> element.MaxTabTextWidth <- (v |> uint32))
@@ -2913,24 +2471,7 @@ type TabViewElement(props: IncrementalProps) =
     override this.subElements =
         { Key= PKey.tabView.tabs_elements.value; SetParent= true; Kind= SubElements.Kind.ListOfElements }::base.subElements
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TabView()
-
-        this.initializeSubElements(el)
-        |> Seq.iter (fun (k, v) -> props.add(k, v))
-
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TabView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -2979,8 +2520,10 @@ type TableViewElement(props: IncrementalProps) =
 
     override _.name = $"TableView"
 
-    member _.setProps (element: TableView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TableView
 
         // Properties
         props |> Props.tryFind PKey.tableView.cellActivationKey |> Option.iter (fun v -> element.CellActivationKey <- v )
@@ -3003,20 +2546,7 @@ type TableViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.tableView.selectedCellChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedCellChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TableView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TableView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3060,8 +2590,10 @@ type TextFieldElement(props: IncrementalProps) =
 
     override _.name = $"TextField"
 
-    member _.setProps (element: TextField, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TextField
 
         // Properties
         props |> Props.tryFind PKey.textField.autocomplete |> Option.iter (fun v -> element.Autocomplete <- v )
@@ -3079,20 +2611,7 @@ type TextFieldElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.textField.textChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.TextChanging @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TextField()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TextField()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3125,28 +2644,17 @@ type TextValidateFieldElement(props: IncrementalProps) =
 
     override _.name = $"TextValidateField"
 
-    member _.setProps (element: TextValidateField, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TextValidateField
 
         // Properties
         props |> Props.tryFind PKey.textValidateField.provider |> Option.iter (fun v -> element.Provider <- v )
         props |> Props.tryFind PKey.textValidateField.text |> Option.iter (fun v -> element.Text <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TextValidateField()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TextValidateField()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3207,8 +2715,10 @@ type TextViewElement(props: IncrementalProps) =
 
     override _.name = $"TextView"
 
-    member _.setProps (element: TextView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TextView
 
         // Properties
         props |> Props.tryFind PKey.textView.allowsReturn |> Option.iter (fun v -> element.AllowsReturn <- v )
@@ -3241,20 +2751,7 @@ type TextViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.textView.textChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.ContentsChanged @> (fun _ -> v element.Text) element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TextView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TextView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3290,8 +2787,10 @@ type TileViewElement(props: IncrementalProps) =
 
     override _.name = $"TileView"
 
-    member _.setProps (element: TileView, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TileView
 
         // Properties
         props |> Props.tryFind PKey.tileView.lineStyle |> Option.iter (fun v -> element.LineStyle <- v )
@@ -3301,20 +2800,7 @@ type TileViewElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.tileView.splitterMoved |> Option.iter (fun v -> Interop.setEventHandler <@ element.SplitterMoved @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TileView()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TileView()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3350,8 +2836,10 @@ type TimeFieldElement(props: IncrementalProps) =
 
     override _.name = $"TimeField"
 
-    member _.setProps (element: TimeField, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TimeField
 
         // Properties
         props |> Props.tryFind PKey.timeField.cursorPosition |> Option.iter (fun v -> element.CursorPosition <- v )
@@ -3361,20 +2849,7 @@ type TimeFieldElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.timeField.timeChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.TimeChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TimeField()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TimeField()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3416,8 +2891,10 @@ type ToplevelElement(props: IncrementalProps) =
 
     override _.name = $"Toplevel"
 
-    member _.setProps (element: Toplevel, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Toplevel
 
         // Properties
         props |> Props.tryFind PKey.toplevel.modal |> Option.iter (fun v -> element.Modal <- v )
@@ -3433,20 +2910,7 @@ type ToplevelElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.toplevel.unloaded |> Option.iter (fun v -> Interop.setEventHandler <@ element.Unloaded @> (fun _ -> v()) element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Toplevel()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Toplevel()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3493,8 +2957,10 @@ type TreeViewElement<'a when 'a : not struct>(props: IncrementalProps) =
 
     override _.name = $"TreeView<'a>"
 
-    member _.setProps (element: TreeView<'a>, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> TreeView<'a>
 
         // Properties
         props |> Props.tryFind PKey.treeView<'a>.allowLetterBasedNavigation |> Option.iter (fun v -> element.AllowLetterBasedNavigation <- v )
@@ -3515,20 +2981,7 @@ type TreeViewElement<'a when 'a : not struct>(props: IncrementalProps) =
         props |> Props.tryFind PKey.treeView<'a>.selectionChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectionChanged @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new TreeView<'a>()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new TreeView<'a>()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3564,27 +3017,16 @@ type WindowElement(props: IncrementalProps) =
 
     override _.name = $"Window"
 
-    member _.setProps (element: Window, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Window
 
         // No properties or events Window
         ()
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Window()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Window()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3624,8 +3066,10 @@ type WizardElement(props: IncrementalProps) =
 
     override _.name = $"Wizard"
 
-    member _.setProps (element: Wizard, props: IProps) =
+    override _.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> Wizard
 
         // Properties
         props |> Props.tryFind PKey.wizard.currentStep |> Option.iter (fun v -> element.CurrentStep <- v )
@@ -3639,20 +3083,7 @@ type WizardElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.wizard.stepChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.StepChanging @> v element)
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new Wizard()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new Wizard()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props
@@ -3686,8 +3117,10 @@ type WizardStepElement(props: IncrementalProps) =
 
     override _.name = $"WizardStep"
 
-    member _.setProps (element: WizardStep, props: IProps) =
+    override this.setProps (element: View, props: IProps) =
         base.setProps(element, props)
+
+        let element = element :?> WizardStep
 
         // Properties
         props |> Props.tryFind PKey.wizardStep.backButtonText |> Option.iter (fun v -> element.BackButtonText <- v )
@@ -3695,20 +3128,7 @@ type WizardStepElement(props: IncrementalProps) =
         props |> Props.tryFind PKey.wizardStep.nextButtonText |> Option.iter (fun v -> element.NextButtonText <- v )
 
 
-    override this.initialize parent =
-        #if DEBUG
-        Diagnostics.Trace.WriteLine $"{this.name} created!"
-        #endif
-        this.parent <- parent
-
-
-        let el = new WizardStep()
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
-
-
+    override this.newView() = new WizardStep()
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Interop.filterProps oldProps props

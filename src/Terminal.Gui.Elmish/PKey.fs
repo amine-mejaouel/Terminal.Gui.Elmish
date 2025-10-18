@@ -47,7 +47,6 @@ module PKey =
 
     type viewPKeys() =
         member inline this.children : PKey<System.Collections.Generic.List<ITerminalElement>> = PKey "children"
-        member inline this.ref : PKey<View->unit> = PKey "ref"
 
         // Properties
         member inline this.arrangement : PKey<ViewArrangement> = PKey "view.arrangement"

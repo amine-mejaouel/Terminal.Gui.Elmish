@@ -36,7 +36,6 @@ type viewProps() =
     member val props = IncrementalProps()
 
     member inline this.children (children:ITerminalElement list) = this.props.add (PKey.view.children, List<_>(children))
-    member inline this.ref (reference:View->unit) = this.props.add (PKey.view.ref, reference)
 
     // Properties
     member inline this.arrangement (value:ViewArrangement) = this.props.add (PKey.view.arrangement, value)

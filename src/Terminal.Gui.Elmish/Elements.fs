@@ -33,7 +33,7 @@ module SubElements =
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
     [<TailCall>]
-    let rec initializeTreeLoop (nodes: (ITerminalElement * View option) list) =
+    let rec initializeTreeLoop (nodes: ((* Element *) ITerminalElement * (* Parent *) View option) list) =
         match nodes with
         | [] ->
             ()
@@ -62,16 +62,15 @@ type TerminalElement (props: IncrementalProps) =
         #endif
         this.parent <- parent
 
-        let el = this.newView()
+        let newView = this.newView()
 
-        this.initializeSubElements(el)
+        this.initializeSubElements(newView)
         |> Seq.iter props.add
 
         // Here, the "children" view are added to their parent
-        parent |> Option.iter (fun p -> p.Add el |> ignore)
-        this.setProps(el, props)
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v el)
-        this.view <- el
+        parent |> Option.iter (fun p -> p.Add newView |> ignore)
+        this.setProps(newView, props)
+        this.view <- newView
 
     abstract update: prevElement:View -> oldProps: IProps -> unit
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
@@ -119,8 +118,6 @@ type TerminalElement (props: IncrementalProps) =
     abstract setProps: element: View * props: IProps ->  unit
 
     default this.setProps (element: View, props: IProps) =
-        // Properties
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun v -> v element)
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun v -> element.Arrangement <- v )
         props |> Props.tryFind PKey.view.borderStyle |> Option.iter (fun v -> element.BorderStyle <- v )
@@ -222,8 +219,6 @@ type TerminalElement (props: IncrementalProps) =
 module ViewElement =
 
     let removeProps (element: View) (props: IProps) =
-        // Properties
-        props |> Props.tryFind PKey.view.ref |> Option.iter (fun _ -> ())
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun _ -> element.Arrangement <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.view.borderStyle |> Option.iter (fun _ -> element.BorderStyle <- Unchecked.defaultof<_> )

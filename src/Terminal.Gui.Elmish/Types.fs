@@ -32,6 +32,7 @@ type IProps =
         abstract dict : IReadOnlyDictionary<string, obj>
     end
 
+/// Represents a property in an Terminal.Gui View
 type PKey<'a> = | PKey of string
 with
     member this.value =

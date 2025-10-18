@@ -23,12 +23,13 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
+// TODO:  ie make all classes internal / expose public interface instead
 type ITerminalElement =
     abstract initializeTree: parent: View option -> unit
     abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
     abstract update: prevElement:View -> oldProps: IProps -> unit
     abstract children: List<ITerminalElement> with get
-    abstract view: View with get, set
+    abstract view: View with get
     abstract props: IncrementalProps
     abstract name: string
 

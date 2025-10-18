@@ -1,35 +1,41 @@
 ﻿// Learn more about F# at http://fsharp.org
 
-open System
-
-open System.Diagnostics
-open System.Drawing
-open System.Text
-open System.Threading.Tasks
+open System.Collections.Immutable
 open Terminal.Gui.App
 open Terminal.Gui.Configuration
-open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
-open System.IO
-open Terminal.Gui
 open Terminal.Gui.Input
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
+type Model = {
+    AvailableThemes: IImmutableList<string>
+    SelectedThemeIndex: int
+}
 
-type Model = unit
+type Msg = ThemeIndexChanged of index: int
 
-type Msg = unit
+let init () =
+    let themes = ThemeManager.GetThemeNames();
+    let model = {
+        AvailableThemes = themes
+        SelectedThemeIndex = themes.IndexOf(ThemeManager.GetCurrentThemeName())
+    }
 
-let init () = (), Cmd.none
+    model, Cmd.none
 
-let update (msg: Msg) (model: Model) = (), Cmd.none
+let update (msg: Msg) (model: Model) =
+    match msg with
+    | ThemeIndexChanged index -> ThemeManager.Theme <- model.AvailableThemes[index]
+
+    model, Cmd.none
 
 let view (state: Model) (dispatch: Msg -> unit) =
     View.topLevel [
         View.menuBarv2 (fun p m ->
             m.menuBarItemv2 (fun p m ->
                 p.title "_File"
+
                 m.menuItems [
                     View.menuItemv2 (fun p ->
                         p.title "Quit"
@@ -39,8 +45,10 @@ let view (state: Model) (dispatch: Msg -> unit) =
                     )
                 ]
             )
+
             m.menuBarItemv2 (fun p m ->
                 p.title "_Themes"
+
                 m.menuItems [
                     View.menuItemv2 (fun p ->
                         p.commandView (
@@ -60,7 +68,6 @@ let view (state: Model) (dispatch: Msg -> unit) =
                                          && args.Result = CheckState.UnChecked
                                          && not Application.Driver.SupportsTrueColor)
                                     then
-
                                         args.Handled <- true
                                 )
 
@@ -77,18 +84,14 @@ let view (state: Model) (dispatch: Msg -> unit) =
                             p.commandView (
                                 View.optionSelector (fun p ->
                                     p.highlightStates MouseState.None
-                                    p.options (ThemeManager.GetThemeNames())
+                                    p.options state.AvailableThemes
 
                                     p.selectedItemChanged (fun args ->
                                         if args.SelectedItem.HasValue then
-                                            ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
+                                            dispatch (ThemeIndexChanged args.SelectedItem.Value)
                                     )
 
-                                    p.selectedItem (
-                                        ThemeManager
-                                            .GetThemeNames()
-                                            .IndexOf(ThemeManager.GetCurrentThemeName())
-                                    )
+                                    p.selectedItem state.SelectedThemeIndex
                                 )
                             )
                         )

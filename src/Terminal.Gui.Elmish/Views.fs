@@ -100,7 +100,6 @@ type View =
 
         let view = buttonProps()
         setProps view
-        // TODO: could get better perf when choosing another props type
         ButtonElement(view.props) :>  ITerminalElement
 
     /// <seealso cref="Terminal.Gui.CheckBox"/>

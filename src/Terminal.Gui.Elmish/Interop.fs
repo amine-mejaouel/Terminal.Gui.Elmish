@@ -51,7 +51,7 @@ module internal EventHelpers =
 [<RequireQualifiedAccess>]
 module Interop =
     // TODO: move maybe to Props ?
-    let filterProps (oldProps: IProps) (newProps: IProps) =
+    let filterProps (oldProps: Props) (newProps: Props) =
 
         let remainingOldProps, removedProps =
             oldProps |> Props.partition (fun kv -> newProps |> Props.rawKeyExists kv.Key)

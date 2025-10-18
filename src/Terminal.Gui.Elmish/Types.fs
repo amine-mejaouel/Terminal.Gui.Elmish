@@ -2,12 +2,7 @@
 
 open System.Collections.Generic
 
-type IProps =
-    interface
-        abstract dict : IReadOnlyDictionary<string, obj>
-    end
-
-/// Represents a property in an Terminal.Gui View
+/// Represents a property in a Terminal.Gui View
 type PKey<'a> = | PKey of string
 with
     member this.value =
@@ -17,36 +12,33 @@ with
 /// Props object that is still under construction
 type Props(?initialProps) =
 
-    let dict = defaultArg initialProps (Dictionary<_,_>())
+    member val dict = defaultArg initialProps (Dictionary<_,_>()) with get
 
-    member _.add (k: string, v: obj)  = dict.Add(k, v)
-    member _.add<'a> (PKey k: PKey<'a>, v: 'a)  = dict.Add(k, v :> obj)
+    member this.add (k: string, v: obj)  = this.dict.Add(k, v)
+    member this.add<'a> (PKey k: PKey<'a>, v: 'a)  = this.dict.Add(k, v :> obj)
 
-    member _.getOrInit<'a> (PKey k: PKey<'a>) (init: unit -> 'a) : 'a =
-        match dict.TryGetValue k with
+    member this.getOrInit<'a> (PKey k: PKey<'a>) (init: unit -> 'a) : 'a =
+        match this.dict.TryGetValue k with
         | true, value -> value |> unbox<'a>
         | false, _ ->
             let value = init()
-            dict[k] <- value :> obj
+            this.dict[k] <- value :> obj
             value
 
-    interface IProps with
-        member _.dict with get() = dict
-
 module Props =
-    let merge (props': IProps) (props'': IProps) =
+    let merge (props': Props) (props'': Props) =
         let result = Dictionary()
-        let addToResult (source: IProps) =
+        let addToResult (source: Props) =
             source.dict |> Seq.iter (fun kv -> result.Add(kv.Key, kv.Value))
 
         addToResult props'
         addToResult props''
 
-        Props(result) :> IProps
+        Props(result)
 
     /// <summary>Builds two new Props, one containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
     /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
-    let partition predicate (props: IProps) =
+    let partition predicate (props: Props) =
         let first = Props()
         let second = Props()
 
@@ -58,7 +50,7 @@ module Props =
 
         first, second
 
-    let filter predicate (props: IProps) =
+    let filter predicate (props: Props) =
         let result = Props()
 
         for kv in props.dict do
@@ -67,17 +59,17 @@ module Props =
 
         result
 
-    let tryFind (PKey key: PKey<'a>) (props: IProps) =
+    let tryFind (PKey key: PKey<'a>) (props: Props) =
         match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
 
-    let tryFindByRawKey<'a> key (props: IProps) =
+    let tryFindByRawKey<'a> key (props: Props) =
         match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
 
-    let find key (props: IProps) =
+    let find key (props: Props) =
         match tryFind key props with
         | Some v -> v
         | None -> failwith $"Failed to find '{key}'"
@@ -85,5 +77,5 @@ module Props =
     let tryFindWithDefault (key: PKey<'a>) defaultValue props =
         props |> tryFind key |> Option.defaultValue defaultValue
 
-    let rawKeyExists k (p: IProps) = p.dict.ContainsKey k
-    let exists (PKey k) (p: IProps) = p.dict.ContainsKey k
+    let rawKeyExists k (p: Props) = p.dict.ContainsKey k
+    let exists (PKey k) (p: Props) = p.dict.ContainsKey k

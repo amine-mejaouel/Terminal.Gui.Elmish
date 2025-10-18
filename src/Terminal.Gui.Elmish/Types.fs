@@ -2,14 +2,6 @@
 
 open System.Collections.Generic
 
-// TODO: could be removed no ?
-type IStyle = interface end
-
-
-type IMenuBar = interface end
-type IMenuBarItem = interface end
-type IMenu = interface end
-
 type IProps =
     interface
         abstract dict : IReadOnlyDictionary<string, obj>

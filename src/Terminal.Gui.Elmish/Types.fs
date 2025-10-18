@@ -33,11 +33,6 @@ type IncrementalProps(?initialProps) =
     interface IProps with
         member _.dict with get() = dict
 
-/// Props where property list is frozen but each property held value may be changed.
-type Props(incProps: IncrementalProps) =
-    interface IProps with
-        member _.dict = (incProps :> IProps).dict
-
 module Props =
     let merge (props': IProps) (props'': IProps) =
         let result = Dictionary()

@@ -72,8 +72,8 @@ type TerminalElement (props: Props) =
         this.setProps(newView, props)
         this.view <- newView
 
-    abstract update: prevElement:View -> oldProps: IProps -> unit
-    abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
+    abstract update: prevElement:View -> oldProps: Props -> unit
+    abstract canUpdate: prevElement:View -> oldProps: Props -> bool
     abstract name: string
 
     member this.initializeTree(parent: View option) : unit =
@@ -115,9 +115,9 @@ type TerminalElement (props: Props) =
                     yield viewKey, views
         }
 
-    abstract setProps: element: View * props: IProps ->  unit
+    abstract setProps: element: View * props: Props ->  unit
 
-    default this.setProps (element: View, props: IProps) =
+    default this.setProps (element: View, props: Props) =
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun v -> element.Arrangement <- v )
         props |> Props.tryFind PKey.view.borderStyle |> Option.iter (fun v -> element.BorderStyle <- v )
@@ -218,7 +218,7 @@ type TerminalElement (props: Props) =
 
 module ViewElement =
 
-    let removeProps (element: View) (props: IProps) =
+    let removeProps (element: View) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun _ -> element.Arrangement <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.view.borderStyle |> Option.iter (fun _ -> element.BorderStyle <- Unchecked.defaultof<_> )
@@ -307,7 +307,7 @@ module ViewElement =
         props |> Props.tryFind PKey.view.visibleChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanged @> element)
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
-    let canUpdate (view:View) (props: IProps) (removedProps: IProps) =
+    let canUpdate (view:View) (props: Props) (removedProps: Props) =
         let isPosCompatible (a:Pos) (b:Pos) =
             let nameA = a.GetType().Name
             let nameB = b.GetType().Name
@@ -346,7 +346,7 @@ module ViewElement =
 type AdornmentElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Adornment) (props: IProps) =
+    let removeProps (element: Adornment) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.adornment.diagnostics |> Option.iter (fun _ -> element.Diagnostics <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.adornment.superViewRendersLineCanvas |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
@@ -357,7 +357,7 @@ type AdornmentElement(props: Props) =
 
     override _.name = $"Adornment"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Adornment
@@ -392,7 +392,7 @@ type AdornmentElement(props: Props) =
 type BarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Bar) (props: IProps) =
+    let removeProps (element: Bar) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.bar.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.bar.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -402,7 +402,7 @@ type BarElement(props: Props) =
 
     override _.name = $"Bar"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Bar
@@ -440,14 +440,14 @@ type BarElement(props: Props) =
 type BorderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Border) (props: IProps) =
+    let removeProps (element: Border) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.border.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.border.settings |> Option.iter (fun _ -> element.Settings <- Unchecked.defaultof<_>)
 
     override _.name = $"Border"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Border
@@ -483,7 +483,7 @@ type BorderElement(props: Props) =
 type ButtonElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Button) (props: IProps) =
+    let removeProps (element: Button) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.button.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.button.isDefault |> Option.iter (fun _ -> element.IsDefault <- Unchecked.defaultof<_>)
@@ -495,7 +495,7 @@ type ButtonElement(props: Props) =
 
     override _.name = $"Button"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Button
@@ -536,7 +536,7 @@ type ButtonElement(props: Props) =
 type CheckBoxElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: CheckBox) (props: IProps) =
+    let removeProps (element: CheckBox) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.checkBox.allowCheckStateNone |> Option.iter (fun _ -> element.AllowCheckStateNone <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.checkBox.checkedState |> Option.iter (fun _ -> element.CheckedState <- Unchecked.defaultof<_>)
@@ -549,7 +549,7 @@ type CheckBoxElement(props: Props) =
 
     override _.name = $"CheckBox"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> CheckBox
@@ -591,7 +591,7 @@ type CheckBoxElement(props: Props) =
 type ColorPickerElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker) (props: IProps) =
+    let removeProps (element: ColorPicker) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.colorPicker.selectedColor |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.colorPicker.style |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
@@ -600,7 +600,7 @@ type ColorPickerElement(props: Props) =
 
     override _.name = $"ColorPicker"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ColorPicker
@@ -638,7 +638,7 @@ type ColorPickerElement(props: Props) =
 type ColorPicker16Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker16) (props: IProps) =
+    let removeProps (element: ColorPicker16) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.colorPicker16.boxHeight |> Option.iter (fun _ -> element.BoxHeight <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.colorPicker16.boxWidth |> Option.iter (fun _ -> element.BoxWidth <- Unchecked.defaultof<_>)
@@ -649,7 +649,7 @@ type ColorPicker16Element(props: Props) =
 
     override _.name = $"ColorPicker16"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ColorPicker16
@@ -689,7 +689,7 @@ type ColorPicker16Element(props: Props) =
 type ComboBoxElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ComboBox) (props: IProps) =
+    let removeProps (element: ComboBox) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.comboBox.hideDropdownListOnClick |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.comboBox.readOnly |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
@@ -705,7 +705,7 @@ type ComboBoxElement(props: Props) =
 
     override _.name = $"ComboBox"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ComboBox
@@ -750,7 +750,7 @@ type ComboBoxElement(props: Props) =
 type DateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DateField) (props: IProps) =
+    let removeProps (element: DateField) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.dateField.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.dateField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
@@ -760,7 +760,7 @@ type DateFieldElement(props: Props) =
 
     override _.name = $"DateField"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> DateField
@@ -799,14 +799,14 @@ type DateFieldElement(props: Props) =
 type DatePickerElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DatePicker) (props: IProps) =
+    let removeProps (element: DatePicker) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.datePicker.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.datePicker.date |> Option.iter (fun _ -> element.Date <- Unchecked.defaultof<_>)
 
     override _.name = $"DatePicker"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> DatePicker
@@ -842,7 +842,7 @@ type DatePickerElement(props: Props) =
 type DialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Dialog) (props: IProps) =
+    let removeProps (element: Dialog) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.dialog.buttonAlignment |> Option.iter (fun _ -> element.ButtonAlignment <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.dialog.buttonAlignmentModes |> Option.iter (fun _ -> element.ButtonAlignmentModes <- Unchecked.defaultof<_>)
@@ -850,7 +850,7 @@ type DialogElement(props: Props) =
 
     override _.name = $"Dialog"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Dialog
@@ -887,7 +887,7 @@ type DialogElement(props: Props) =
 type FileDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FileDialog) (props: IProps) =
+    let removeProps (element: FileDialog) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.fileDialog.allowedTypes |> Option.iter (fun _ -> element.AllowedTypes <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.fileDialog.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -901,7 +901,7 @@ type FileDialogElement(props: Props) =
 
     override _.name = $"FileDialog"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> FileDialog
@@ -944,13 +944,13 @@ type FileDialogElement(props: Props) =
 type FrameViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FrameView) (props: IProps) =
+    let removeProps (element: FrameView) (props: Props) =
         // No properties or events FrameView
         ()
 
     override _.name = $"FrameView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> FrameView
@@ -985,7 +985,7 @@ type FrameViewElement(props: Props) =
 type GraphViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: GraphView) (props: IProps) =
+    let removeProps (element: GraphView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.graphView.axisX |> Option.iter (fun _ -> element.AxisX <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.graphView.axisY |> Option.iter (fun _ -> element.AxisY <- Unchecked.defaultof<_>)
@@ -997,7 +997,7 @@ type GraphViewElement(props: Props) =
 
     override _.name = $"GraphView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> GraphView
@@ -1038,7 +1038,7 @@ type GraphViewElement(props: Props) =
 type HexViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: HexView) (props: IProps) =
+    let removeProps (element: HexView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.hexView.address |> Option.iter (fun _ -> element.Address <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.hexView.addressWidth |> Option.iter (fun _ -> element.AddressWidth <- Unchecked.defaultof<_>)
@@ -1051,7 +1051,7 @@ type HexViewElement(props: Props) =
 
     override _.name = $"HexView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> HexView
@@ -1093,14 +1093,14 @@ type HexViewElement(props: Props) =
 type LabelElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Label) (props: IProps) =
+    let removeProps (element: Label) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.label.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.label.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     override _.name = $"Label"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Label
@@ -1136,13 +1136,13 @@ type LabelElement(props: Props) =
 type LegendAnnotationElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LegendAnnotation) (props: IProps) =
+    let removeProps (element: LegendAnnotation) (props: Props) =
         // No properties or events LegendAnnotation
         ()
 
     override _.name = $"LegendAnnotation"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> LegendAnnotation
@@ -1177,7 +1177,7 @@ type LegendAnnotationElement(props: Props) =
 type LineElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Line) (props: IProps) =
+    let removeProps (element: Line) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.line.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         // Events
@@ -1186,7 +1186,7 @@ type LineElement(props: Props) =
 
     override _.name = $"Line"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Line
@@ -1224,7 +1224,7 @@ type LineElement(props: Props) =
 type LineViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LineView) (props: IProps) =
+    let removeProps (element: LineView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.lineView.endingAnchor |> Option.iter (fun _ -> element.EndingAnchor <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.lineView.lineRune |> Option.iter (fun _ -> element.LineRune <- Unchecked.defaultof<_>)
@@ -1233,7 +1233,7 @@ type LineViewElement(props: Props) =
 
     override _.name = $"LineView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> LineView
@@ -1271,7 +1271,7 @@ type LineViewElement(props: Props) =
 type ListViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ListView) (props: IProps) =
+    let removeProps (element: ListView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.listView.allowsMarking |> Option.iter (fun _ -> element.AllowsMarking <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.listView.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -1287,7 +1287,7 @@ type ListViewElement(props: Props) =
 
     override _.name = $"ListView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ListView
@@ -1332,13 +1332,13 @@ type ListViewElement(props: Props) =
 type MarginElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Margin) (props: IProps) =
+    let removeProps (element: Margin) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.margin.shadowStyle |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
     override _.name = $"Margin"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Margin
@@ -1373,7 +1373,7 @@ type MarginElement(props: Props) =
 type Menuv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Menuv2) (props: IProps) =
+    let removeProps (element: Menuv2) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.menuv2.selectedMenuItem |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.menuv2.superMenuItem |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
@@ -1384,7 +1384,7 @@ type Menuv2Element(props: Props) =
 
     override _.name = $"Menuv2"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Menuv2
@@ -1421,7 +1421,7 @@ type Menuv2Element(props: Props) =
 type PopoverMenuElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  PopoverMenu) (props: IProps) =
+    let removeProps (element:  PopoverMenu) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.popoverMenu.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.popoverMenu.mouseFlags |> Option.iter (fun _ -> element.MouseFlags <- Unchecked.defaultof<_>)
@@ -1432,7 +1432,7 @@ type PopoverMenuElement(props: Props) =
 
     override this.name = "PopoverMenu"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> PopoverMenu
@@ -1474,7 +1474,7 @@ type PopoverMenuElement(props: Props) =
 type MenuBarItemv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  MenuBarItemv2) (props: IProps) =
+    let removeProps (element:  MenuBarItemv2) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenu |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpen |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_> )
@@ -1483,7 +1483,7 @@ type MenuBarItemv2Element(props: Props) =
 
     override this.name = "MenuBarItemv2"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> MenuBarItemv2
@@ -1521,7 +1521,7 @@ type MenuBarItemv2Element(props: Props) =
 type MenuBarv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: MenuBarv2) (props: IProps) =
+    let removeProps (element: MenuBarv2) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.menuBarv2.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
@@ -1534,7 +1534,7 @@ type MenuBarv2Element(props: Props) =
 
     override _.name = $"MenuBarv2"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> MenuBarv2
@@ -1575,7 +1575,7 @@ type MenuBarv2Element(props: Props) =
 type ShortcutElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Shortcut) (props: IProps) =
+    let removeProps (element: Shortcut) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.shortcut.action |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.shortcut.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
@@ -1592,7 +1592,7 @@ type ShortcutElement(props: Props) =
 
     override _.name = $"Shortcut"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Shortcut
@@ -1641,7 +1641,7 @@ type ShortcutElement(props: Props) =
 type MenuItemv2Element(props: Props) =
     inherit ShortcutElement(props)
 
-    let removeProps (element:  MenuItemv2) (props: IProps) =
+    let removeProps (element:  MenuItemv2) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.menuItemv2.command |> Option.iter (fun _ -> Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.menuItemv2.subMenu |> Option.iter (fun _ -> Unchecked.defaultof<_>)
@@ -1651,7 +1651,7 @@ type MenuItemv2Element(props: Props) =
 
     override _.name = $"MenuItemv2"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> MenuItemv2
@@ -1692,7 +1692,7 @@ type MenuItemv2Element(props: Props) =
 type NumericUpDownElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:NumericUpDown<'a>) (props: IProps) =
+    let removeProps (element:NumericUpDown<'a>) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.numericUpDown<'a>.format |> Option.iter (fun _ -> element.Format <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.numericUpDown<'a>.increment |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -1705,7 +1705,7 @@ type NumericUpDownElement<'a>(props: Props) =
 
     override _.name = $"NumericUpDown<'a>"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> NumericUpDown<'a>
@@ -1750,13 +1750,13 @@ type NumericUpDownElement(props: Props) =
 type OpenDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OpenDialog) (props: IProps) =
+    let removeProps (element: OpenDialog) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.openDialog.openMode |> Option.iter (fun _ -> element.OpenMode <- Unchecked.defaultof<_>)
 
     override _.name = $"OpenDialog"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> OpenDialog
@@ -1786,14 +1786,14 @@ type OpenDialogElement(props: Props) =
         this.view <- prevElement
 
 type OrientationInterface =
-    static member removeProps (element: IOrientation) (props: IProps) =
+    static member removeProps (element: IOrientation) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.optionSelector.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_> )
         // Events
         props |> Props.tryFind PKey.optionSelector.orientationChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
         props |> Props.tryFind PKey.optionSelector.orientationChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
 
-    static member setProps (element: IOrientation) (props: IProps) =
+    static member setProps (element: IOrientation) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.optionSelector.orientation |> Option.iter (fun v-> element.Orientation <- v)
         // Events
@@ -1805,7 +1805,7 @@ type OrientationInterface =
 type OptionSelectorElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OptionSelector) (props: IProps) =
+    let removeProps (element: OptionSelector) (props: Props) =
         // Interfaces
         OrientationInterface.removeProps element props
 
@@ -1818,7 +1818,7 @@ type OptionSelectorElement(props: Props) =
 
     override _.name = $"OptionSelector"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> OptionSelector
@@ -1858,12 +1858,12 @@ type OptionSelectorElement(props: Props) =
 type PaddingElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Padding) (props: IProps) =
+    let removeProps (element: Padding) (props: Props) =
         ()
 
     override _.name = $"Padding"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Padding
@@ -1897,7 +1897,7 @@ type PaddingElement(props: Props) =
 type ProgressBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ProgressBar) (props: IProps) =
+    let removeProps (element: ProgressBar) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.progressBar.bidirectionalMarquee |> Option.iter (fun _ -> element.BidirectionalMarquee <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.progressBar.fraction |> Option.iter (fun _ -> element.Fraction <- Unchecked.defaultof<_>)
@@ -1908,7 +1908,7 @@ type ProgressBarElement(props: Props) =
 
     override _.name = $"ProgressBar"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ProgressBar
@@ -1948,7 +1948,7 @@ type ProgressBarElement(props: Props) =
 type RadioGroupElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: RadioGroup) (props: IProps) =
+    let removeProps (element: RadioGroup) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.radioGroup.assignHotKeysToRadioLabels |> Option.iter (fun _ -> element.AssignHotKeysToRadioLabels <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.radioGroup.cursor |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_> )
@@ -1964,7 +1964,7 @@ type RadioGroupElement(props: Props) =
 
     override _.name = $"RadioGroup"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> RadioGroup
@@ -2009,13 +2009,13 @@ type RadioGroupElement(props: Props) =
 type SaveDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SaveDialog) (props: IProps) =
+    let removeProps (element: SaveDialog) (props: Props) =
         // No properties or events SaveDialog
         ()
 
     override _.name = $"SaveDialog"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> SaveDialog
@@ -2050,7 +2050,7 @@ type SaveDialogElement(props: Props) =
 type ScrollBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ScrollBar) (props: IProps) =
+    let removeProps (element: ScrollBar) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.scrollBar.autoShow |> Option.iter (fun _ -> element.AutoShow <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.scrollBar.increment |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -2066,7 +2066,7 @@ type ScrollBarElement(props: Props) =
 
     override _.name = $"ScrollBar"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ScrollBar
@@ -2111,7 +2111,7 @@ type ScrollBarElement(props: Props) =
 type ScrollSliderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  ScrollSlider) (props: IProps) =
+    let removeProps (element:  ScrollSlider) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.scrollSlider.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.scrollSlider.position |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
@@ -2127,7 +2127,7 @@ type ScrollSliderElement(props: Props) =
 
     override _.name = $"ScrollSlider"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> ScrollSlider
@@ -2171,7 +2171,7 @@ type ScrollSliderElement(props: Props) =
 type SliderElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider<'a>) (props: IProps) =
+    let removeProps (element: Slider<'a>) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.slider<'a>.allowEmpty |> Option.iter (fun _ -> element.AllowEmpty <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.slider<'a>.focusedOption |> Option.iter (fun _ -> element.FocusedOption <- Unchecked.defaultof<_>)
@@ -2194,7 +2194,7 @@ type SliderElement<'a>(props: Props) =
 
     override _.name = $"Slider<'a>"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Slider<'a>
@@ -2246,13 +2246,13 @@ type SliderElement<'a>(props: Props) =
 type SliderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider) (props: IProps) =
+    let removeProps (element: Slider) (props: Props) =
         // No properties or events Slider
         ()
 
     override _.name = $"Slider"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Slider
@@ -2287,7 +2287,7 @@ type SliderElement(props: Props) =
 type SpinnerViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SpinnerView) (props: IProps) =
+    let removeProps (element: SpinnerView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.spinnerView.autoSpin |> Option.iter (fun _ -> element.AutoSpin <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.spinnerView.sequence |> Option.iter (fun _ -> element.Sequence <- Unchecked.defaultof<_>)
@@ -2298,7 +2298,7 @@ type SpinnerViewElement(props: Props) =
 
     override _.name = $"SpinnerView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> SpinnerView
@@ -2338,13 +2338,13 @@ type SpinnerViewElement(props: Props) =
 type StatusBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: StatusBar) (props: IProps) =
+    let removeProps (element: StatusBar) (props: Props) =
         // No properties or events StatusBar
         ()
 
     override _.name = $"StatusBar"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> StatusBar
@@ -2379,14 +2379,14 @@ type StatusBarElement(props: Props) =
 type TabElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Tab) (props: IProps) =
+    let removeProps (element: Tab) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun _ -> element.DisplayText <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tab.view |> Option.iter (fun _ -> element.View <- Unchecked.defaultof<_>)
 
     override _.name = $"Tab"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Tab
@@ -2424,7 +2424,7 @@ type TabViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TabView) (props: IProps) =
+    let removeProps (element: TabView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.tabView.maxTabTextWidth |> Option.iter (fun _ -> element.MaxTabTextWidth <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tabView.selectedTab |> Option.iter (fun _ -> element.SelectedTab <- Unchecked.defaultof<_>)
@@ -2436,7 +2436,7 @@ type TabViewElement(props: Props) =
 
     override _.name = $"TabView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TabView
@@ -2484,7 +2484,7 @@ type TabViewElement(props: Props) =
 type TableViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TableView) (props: IProps) =
+    let removeProps (element: TableView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.tableView.cellActivationKey |> Option.iter (fun _ -> element.CellActivationKey <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tableView.collectionNavigator |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
@@ -2507,7 +2507,7 @@ type TableViewElement(props: Props) =
 
     override _.name = $"TableView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TableView
@@ -2559,7 +2559,7 @@ type TableViewElement(props: Props) =
 type TextFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextField) (props: IProps) =
+    let removeProps (element: TextField) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.textField.autocomplete |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textField.caption |> Option.iter (fun _ -> element.Caption <- Unchecked.defaultof<_>)
@@ -2577,7 +2577,7 @@ type TextFieldElement(props: Props) =
 
     override _.name = $"TextField"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TextField
@@ -2624,14 +2624,14 @@ type TextFieldElement(props: Props) =
 type TextValidateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextValidateField) (props: IProps) =
+    let removeProps (element: TextValidateField) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.textValidateField.provider |> Option.iter (fun _ -> element.Provider <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textValidateField.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     override _.name = $"TextValidateField"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TextValidateField
@@ -2668,7 +2668,7 @@ type TextViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TextView) (props: IProps) =
+    let removeProps (element: TextView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.textView.allowsReturn |> Option.iter (fun _ -> element.AllowsReturn <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textView.allowsTab |> Option.iter (fun _ -> element.AllowsTab <- Unchecked.defaultof<_>)
@@ -2702,7 +2702,7 @@ type TextViewElement(props: Props) =
 
     override _.name = $"TextView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TextView
@@ -2764,7 +2764,7 @@ type TextViewElement(props: Props) =
 type TileViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TileView) (props: IProps) =
+    let removeProps (element: TileView) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.tileView.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tileView.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -2774,7 +2774,7 @@ type TileViewElement(props: Props) =
 
     override _.name = $"TileView"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TileView
@@ -2813,7 +2813,7 @@ type TileViewElement(props: Props) =
 type TimeFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TimeField) (props: IProps) =
+    let removeProps (element: TimeField) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.timeField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.timeField.isShortFormat |> Option.iter (fun _ -> element.IsShortFormat <- Unchecked.defaultof<_>)
@@ -2823,7 +2823,7 @@ type TimeFieldElement(props: Props) =
 
     override _.name = $"TimeField"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TimeField
@@ -2862,7 +2862,7 @@ type TimeFieldElement(props: Props) =
 type ToplevelElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Toplevel) (props: IProps) =
+    let removeProps (element: Toplevel) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.toplevel.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.toplevel.running |> Option.iter (fun _ -> element.Running <- Unchecked.defaultof<_>)
@@ -2878,7 +2878,7 @@ type ToplevelElement(props: Props) =
 
     override _.name = $"Toplevel"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Toplevel
@@ -2923,7 +2923,7 @@ type ToplevelElement(props: Props) =
 type TreeViewElement<'a when 'a : not struct>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TreeView<'a>) (props: IProps) =
+    let removeProps (element: TreeView<'a>) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.treeView<'a>.allowLetterBasedNavigation |> Option.iter (fun _ -> element.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.treeView<'a>.aspectGetter |> Option.iter (fun _ -> element.AspectGetter <- Unchecked.defaultof<_>)
@@ -2944,7 +2944,7 @@ type TreeViewElement<'a when 'a : not struct>(props: Props) =
 
     override _.name = $"TreeView<'a>"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> TreeView<'a>
@@ -2998,13 +2998,13 @@ type TreeViewElement(props: Props) =
 type WindowElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Window) (props: IProps) =
+    let removeProps (element: Window) (props: Props) =
         // No properties or events Window
         ()
 
     override _.name = $"Window"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Window
@@ -3039,7 +3039,7 @@ type WindowElement(props: Props) =
 type WizardElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Wizard) (props: IProps) =
+    let removeProps (element: Wizard) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.wizard.currentStep |> Option.iter (fun _ -> element.CurrentStep <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.wizard.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
@@ -3053,7 +3053,7 @@ type WizardElement(props: Props) =
 
     override _.name = $"Wizard"
 
-    override _.setProps (element: View, props: IProps) =
+    override _.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> Wizard
@@ -3096,7 +3096,7 @@ type WizardElement(props: Props) =
 type WizardStepElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: WizardStep) (props: IProps) =
+    let removeProps (element: WizardStep) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.wizardStep.backButtonText |> Option.iter (fun _ -> element.BackButtonText <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.wizardStep.helpText |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
@@ -3104,7 +3104,7 @@ type WizardStepElement(props: Props) =
 
     override _.name = $"WizardStep"
 
-    override this.setProps (element: View, props: IProps) =
+    override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
 
         let element = element :?> WizardStep

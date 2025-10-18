@@ -26,8 +26,8 @@ open Terminal.Gui.Views
 // TODO:  ie make all classes internal / expose public interface instead
 type ITerminalElement =
     abstract initializeTree: parent: View option -> unit
-    abstract canUpdate: prevElement:View -> oldProps: IProps -> bool
-    abstract update: prevElement:View -> oldProps: IProps -> unit
+    abstract canUpdate: prevElement:View -> oldProps: Props -> bool
+    abstract update: prevElement:View -> oldProps: Props -> unit
     abstract children: List<ITerminalElement> with get
     abstract view: View with get
     abstract props: Props

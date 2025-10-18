@@ -10,22 +10,8 @@ namespace Terminal.Gui.Elmish.Elements
 
 open System
 open System.Collections.Generic
-open System.Collections.Specialized
 open System.Collections.ObjectModel
-open System.ComponentModel
-open System.Drawing
-open System.Globalization
-open System.Text
-open System.Linq
-open System.IO
-open Terminal.Gui
-open Terminal.Gui.App
-open Terminal.Gui.Drawing
-open Terminal.Gui.Drivers
 open Terminal.Gui.Elmish
-open Terminal.Gui.FileServices
-open Terminal.Gui.Input
-open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
@@ -46,8 +32,6 @@ module SubElements =
 
 [<AbstractClass>]
 type TerminalElement (props: IncrementalProps) =
-    let mutable p: View option = None
-
     [<TailCall>]
     let rec initializeTreeLoop (nodes: (ITerminalElement * View option) list) =
         match nodes with
@@ -61,7 +45,7 @@ type TerminalElement (props: IncrementalProps) =
             initializeTreeLoop (childNodes @ remainingNodes)
 
     member this.props = props
-    member this.parent with get() = p and set v = p <- v
+    member val parent: View option = None with get, set
     member val view: View = null with get, set
     member _.children with get() =
         props
@@ -225,17 +209,11 @@ type TerminalElement (props: IncrementalProps) =
         props |> Props.tryFind PKey.view.visibleChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanged @> (fun _ -> v()) element)
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanging @> (fun _ -> v()) element)
 
-    //TODO: break this interface into subinterface
-    //There is the base behavior required for the elmish logic
-    // And there is a separate behavior that should be implement by child Elements
-    // These two kind of behavior should be separated
-    // TODO: inline relevant implementation here
     interface ITerminalElement with
         member this.initializeTree(parent) = this.initializeTree(parent)
         member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
         member this.update prevElement oldProps = this.update prevElement oldProps
-        member this.view = this.view
-        member this.view with set value = this.view <- value
+        member this.view with get() = this.view
         member this.props = this.props
         member this.name = this.name
         member this.children = this.children
@@ -934,7 +912,7 @@ type FileDialogElement(props: IncrementalProps) =
         let element = element :?> FileDialog
 
         // Properties
-        props |> Props.tryFind PKey.fileDialog.allowedTypes |> Option.iter (fun v -> element.AllowedTypes <- v.ToList())
+        props |> Props.tryFind PKey.fileDialog.allowedTypes |> Option.iter (fun v -> element.AllowedTypes <- List<_>(v))
         props |> Props.tryFind PKey.fileDialog.allowsMultipleSelection |> Option.iter (fun v -> element.AllowsMultipleSelection <- v )
         props |> Props.tryFind PKey.fileDialog.fileOperationsHandler |> Option.iter (fun v -> element.FileOperationsHandler <- v )
         props |> Props.tryFind PKey.fileDialog.mustExist |> Option.iter (fun v -> element.MustExist <- v )
@@ -2217,7 +2195,7 @@ type SliderElement<'a>(props: IncrementalProps) =
         props |> Props.tryFind PKey.slider.focusedOption |> Option.iter (fun v -> element.FocusedOption <- v )
         props |> Props.tryFind PKey.slider.legendsOrientation |> Option.iter (fun v -> element.LegendsOrientation <- v )
         props |> Props.tryFind PKey.slider.minimumInnerSpacing |> Option.iter (fun v -> element.MinimumInnerSpacing <- v )
-        props |> Props.tryFind PKey.slider.options |> Option.iter (fun v -> element.Options <- v.ToList())
+        props |> Props.tryFind PKey.slider.options |> Option.iter (fun v -> element.Options <- List<_>(v))
         props |> Props.tryFind PKey.slider.orientation |> Option.iter (fun v -> element.Orientation <- v )
         props |> Props.tryFind PKey.slider.rangeAllowSingle |> Option.iter (fun v -> element.RangeAllowSingle <- v )
         props |> Props.tryFind PKey.slider.showEndSpacing |> Option.iter (fun v -> element.ShowEndSpacing <- v )

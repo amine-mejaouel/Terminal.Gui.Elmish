@@ -42,7 +42,6 @@ module Props =
         addToResult props'
         addToResult props''
 
-        // TODO: refine this
         Props(result) :> IProps
 
     /// <summary>Builds two new Props, one containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>

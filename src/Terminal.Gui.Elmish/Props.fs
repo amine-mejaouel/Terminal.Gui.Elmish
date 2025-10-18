@@ -33,7 +33,7 @@ open Terminal.Gui.Views
 
 // View
 type viewProps() =
-    member val props = IncrementalProps()
+    member val props = Props()
 
     member inline this.children (children:ITerminalElement list) = this.props.add (PKey.view.children, List<_>(children))
 

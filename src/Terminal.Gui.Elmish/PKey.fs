@@ -30,7 +30,7 @@ type ITerminalElement =
     abstract update: prevElement:View -> oldProps: IProps -> unit
     abstract children: List<ITerminalElement> with get
     abstract view: View with get
-    abstract props: IncrementalProps
+    abstract props: Props
     abstract name: string
 
 type IMenuv2Element =

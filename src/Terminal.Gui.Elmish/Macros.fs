@@ -4,8 +4,8 @@ open Terminal.Gui.Elmish.Elements
 
 type menuBarItemv2Macros(props: menuBarItemv2Props) =
     member _.menuItems(value: ITerminalElement list) =
-        let popoverMenu = props.props.getOrInit PKey.menuBarItemv2.popoverMenu_element (fun () -> PopoverMenuElement(IncrementalProps()))
-        let menuv2 = popoverMenu.props.getOrInit PKey.popoverMenu.root_element (fun () -> Menuv2Element(IncrementalProps()))
+        let popoverMenu = props.props.getOrInit PKey.menuBarItemv2.popoverMenu_element (fun () -> PopoverMenuElement(Props()))
+        let menuv2 = popoverMenu.props.getOrInit PKey.popoverMenu.root_element (fun () -> Menuv2Element(Props()))
 
         menuv2.props.add (PKey.menuv2.children, System.Collections.Generic.List<_>(value))
 

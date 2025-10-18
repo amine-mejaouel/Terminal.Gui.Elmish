@@ -15,7 +15,7 @@ with
         value
 
 /// Props object that is still under construction
-type IncrementalProps(?initialProps) =
+type Props(?initialProps) =
 
     let dict = defaultArg initialProps (Dictionary<_,_>())
 
@@ -43,13 +43,13 @@ module Props =
         addToResult props''
 
         // TODO: refine this
-        IncrementalProps(result) :> IProps
+        Props(result) :> IProps
 
     /// <summary>Builds two new Props, one containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
     /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
     let partition predicate (props: IProps) =
-        let first = IncrementalProps()
-        let second = IncrementalProps()
+        let first = Props()
+        let second = Props()
 
         for kv in props.dict do
             if predicate kv then
@@ -60,7 +60,7 @@ module Props =
         first, second
 
     let filter predicate (props: IProps) =
-        let result = IncrementalProps()
+        let result = Props()
 
         for kv in props.dict do
             if predicate kv then

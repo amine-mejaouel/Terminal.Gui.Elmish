@@ -31,7 +31,7 @@ module SubElements =
 
 
 [<AbstractClass>]
-type TerminalElement (props: IncrementalProps) =
+type TerminalElement (props: Props) =
     [<TailCall>]
     let rec initializeTreeLoop (nodes: ((* Element *) ITerminalElement * (* Parent *) View option) list) =
         match nodes with
@@ -343,7 +343,7 @@ module ViewElement =
         |> List.forall id
 
 // Adornment
-type AdornmentElement(props: IncrementalProps) =
+type AdornmentElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Adornment) (props: IProps) =
@@ -389,7 +389,7 @@ type AdornmentElement(props: IncrementalProps) =
         this.view <- prevElement
 
 // Bar
-type BarElement(props: IncrementalProps) =
+type BarElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Bar) (props: IProps) =
@@ -437,7 +437,7 @@ type BarElement(props: IncrementalProps) =
 
 
 // Border
-type BorderElement(props: IncrementalProps) =
+type BorderElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Border) (props: IProps) =
@@ -480,7 +480,7 @@ type BorderElement(props: IncrementalProps) =
 
 
 // Button
-type ButtonElement(props: IncrementalProps) =
+type ButtonElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Button) (props: IProps) =
@@ -533,7 +533,7 @@ type ButtonElement(props: IncrementalProps) =
 
 
 // CheckBox
-type CheckBoxElement(props: IncrementalProps) =
+type CheckBoxElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: CheckBox) (props: IProps) =
@@ -588,7 +588,7 @@ type CheckBoxElement(props: IncrementalProps) =
 
 
 // ColorPicker
-type ColorPickerElement(props: IncrementalProps) =
+type ColorPickerElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ColorPicker) (props: IProps) =
@@ -635,7 +635,7 @@ type ColorPickerElement(props: IncrementalProps) =
 
 
 // ColorPicker16
-type ColorPicker16Element(props: IncrementalProps) =
+type ColorPicker16Element(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ColorPicker16) (props: IProps) =
@@ -686,7 +686,7 @@ type ColorPicker16Element(props: IncrementalProps) =
 
 
 // ComboBox
-type ComboBoxElement(props: IncrementalProps) =
+type ComboBoxElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ComboBox) (props: IProps) =
@@ -747,7 +747,7 @@ type ComboBoxElement(props: IncrementalProps) =
 
 
 // DateField
-type DateFieldElement(props: IncrementalProps) =
+type DateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: DateField) (props: IProps) =
@@ -796,7 +796,7 @@ type DateFieldElement(props: IncrementalProps) =
 
 
 // DatePicker
-type DatePickerElement(props: IncrementalProps) =
+type DatePickerElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: DatePicker) (props: IProps) =
@@ -839,7 +839,7 @@ type DatePickerElement(props: IncrementalProps) =
 
 
 // Dialog
-type DialogElement(props: IncrementalProps) =
+type DialogElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Dialog) (props: IProps) =
@@ -884,7 +884,7 @@ type DialogElement(props: IncrementalProps) =
 
 
 // FileDialog
-type FileDialogElement(props: IncrementalProps) =
+type FileDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: FileDialog) (props: IProps) =
@@ -941,7 +941,7 @@ type FileDialogElement(props: IncrementalProps) =
 
 
 // FrameView
-type FrameViewElement(props: IncrementalProps) =
+type FrameViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: FrameView) (props: IProps) =
@@ -982,7 +982,7 @@ type FrameViewElement(props: IncrementalProps) =
 
 
 // GraphView
-type GraphViewElement(props: IncrementalProps) =
+type GraphViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: GraphView) (props: IProps) =
@@ -1035,7 +1035,7 @@ type GraphViewElement(props: IncrementalProps) =
 
 
 // HexView
-type HexViewElement(props: IncrementalProps) =
+type HexViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: HexView) (props: IProps) =
@@ -1090,7 +1090,7 @@ type HexViewElement(props: IncrementalProps) =
 
 
 // Label
-type LabelElement(props: IncrementalProps) =
+type LabelElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Label) (props: IProps) =
@@ -1133,7 +1133,7 @@ type LabelElement(props: IncrementalProps) =
 
 
 // LegendAnnotation
-type LegendAnnotationElement(props: IncrementalProps) =
+type LegendAnnotationElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: LegendAnnotation) (props: IProps) =
@@ -1174,7 +1174,7 @@ type LegendAnnotationElement(props: IncrementalProps) =
 
 
 // Line
-type LineElement(props: IncrementalProps) =
+type LineElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Line) (props: IProps) =
@@ -1221,7 +1221,7 @@ type LineElement(props: IncrementalProps) =
 
 
 // LineView
-type LineViewElement(props: IncrementalProps) =
+type LineViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: LineView) (props: IProps) =
@@ -1268,7 +1268,7 @@ type LineViewElement(props: IncrementalProps) =
 
 
 // ListView
-type ListViewElement(props: IncrementalProps) =
+type ListViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ListView) (props: IProps) =
@@ -1329,7 +1329,7 @@ type ListViewElement(props: IncrementalProps) =
 
 
 // Margin
-type MarginElement(props: IncrementalProps) =
+type MarginElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Margin) (props: IProps) =
@@ -1370,7 +1370,7 @@ type MarginElement(props: IncrementalProps) =
 
 
 // Menuv2
-type Menuv2Element(props: IncrementalProps) =
+type Menuv2Element(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Menuv2) (props: IProps) =
@@ -1418,7 +1418,7 @@ type Menuv2Element(props: IncrementalProps) =
 
 
 
-type PopoverMenuElement(props: IncrementalProps) =
+type PopoverMenuElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element:  PopoverMenu) (props: IProps) =
@@ -1471,7 +1471,7 @@ type PopoverMenuElement(props: IncrementalProps) =
 
 
 // MenuBarItemv2
-type MenuBarItemv2Element(props: IncrementalProps) =
+type MenuBarItemv2Element(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element:  MenuBarItemv2) (props: IProps) =
@@ -1518,7 +1518,7 @@ type MenuBarItemv2Element(props: IncrementalProps) =
     interface IMenuBarItemv2Element
 
 // MenuBar
-type MenuBarv2Element(props: IncrementalProps) =
+type MenuBarv2Element(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: MenuBarv2) (props: IProps) =
@@ -1572,7 +1572,7 @@ type MenuBarv2Element(props: IncrementalProps) =
 
 
 // Shortcut
-type ShortcutElement(props: IncrementalProps) =
+type ShortcutElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Shortcut) (props: IProps) =
@@ -1638,7 +1638,7 @@ type ShortcutElement(props: IncrementalProps) =
 
 
 
-type MenuItemv2Element(props: IncrementalProps) =
+type MenuItemv2Element(props: Props) =
     inherit ShortcutElement(props)
 
     let removeProps (element:  MenuItemv2) (props: IProps) =
@@ -1689,7 +1689,7 @@ type MenuItemv2Element(props: IncrementalProps) =
 
 
 // NumericUpDown<'a>
-type NumericUpDownElement<'a>(props: IncrementalProps) =
+type NumericUpDownElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element:NumericUpDown<'a>) (props: IProps) =
@@ -1743,11 +1743,11 @@ type NumericUpDownElement<'a>(props: IncrementalProps) =
 
 
 // NumericUpDown
-type NumericUpDownElement(props: IncrementalProps) =
+type NumericUpDownElement(props: Props) =
     inherit NumericUpDownElement<int>(props)
 
 // OpenDialog
-type OpenDialogElement(props: IncrementalProps) =
+type OpenDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: OpenDialog) (props: IProps) =
@@ -1802,7 +1802,7 @@ type OrientationInterface =
 
 
 // OptionSelector
-type OptionSelectorElement(props: IncrementalProps) =
+type OptionSelectorElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: OptionSelector) (props: IProps) =
@@ -1855,7 +1855,7 @@ type OptionSelectorElement(props: IncrementalProps) =
         this.view <- prevElement
 
 // Padding
-type PaddingElement(props: IncrementalProps) =
+type PaddingElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Padding) (props: IProps) =
@@ -1894,7 +1894,7 @@ type PaddingElement(props: IncrementalProps) =
 
 
 // ProgressBar
-type ProgressBarElement(props: IncrementalProps) =
+type ProgressBarElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ProgressBar) (props: IProps) =
@@ -1945,7 +1945,7 @@ type ProgressBarElement(props: IncrementalProps) =
 
 
 // RadioGroup
-type RadioGroupElement(props: IncrementalProps) =
+type RadioGroupElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: RadioGroup) (props: IProps) =
@@ -2006,7 +2006,7 @@ type RadioGroupElement(props: IncrementalProps) =
 
 
 // SaveDialog
-type SaveDialogElement(props: IncrementalProps) =
+type SaveDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: SaveDialog) (props: IProps) =
@@ -2047,7 +2047,7 @@ type SaveDialogElement(props: IncrementalProps) =
 
 
 // ScrollBar
-type ScrollBarElement(props: IncrementalProps) =
+type ScrollBarElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: ScrollBar) (props: IProps) =
@@ -2108,7 +2108,7 @@ type ScrollBarElement(props: IncrementalProps) =
 
 
 // ScrollSlider
-type ScrollSliderElement(props: IncrementalProps) =
+type ScrollSliderElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element:  ScrollSlider) (props: IProps) =
@@ -2168,7 +2168,7 @@ type ScrollSliderElement(props: IncrementalProps) =
 
 
 // Slider<'a>
-type SliderElement<'a>(props: IncrementalProps) =
+type SliderElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Slider<'a>) (props: IProps) =
@@ -2243,7 +2243,7 @@ type SliderElement<'a>(props: IncrementalProps) =
 
 
 // Slider
-type SliderElement(props: IncrementalProps) =
+type SliderElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Slider) (props: IProps) =
@@ -2284,7 +2284,7 @@ type SliderElement(props: IncrementalProps) =
 
 
 // SpinnerView
-type SpinnerViewElement(props: IncrementalProps) =
+type SpinnerViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: SpinnerView) (props: IProps) =
@@ -2335,7 +2335,7 @@ type SpinnerViewElement(props: IncrementalProps) =
 
 
 // StatusBar
-type StatusBarElement(props: IncrementalProps) =
+type StatusBarElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: StatusBar) (props: IProps) =
@@ -2376,7 +2376,7 @@ type StatusBarElement(props: IncrementalProps) =
 
 
 // Tab
-type TabElement(props: IncrementalProps) =
+type TabElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Tab) (props: IProps) =
@@ -2420,7 +2420,7 @@ type TabElement(props: IncrementalProps) =
 
 
 // TabView
-type TabViewElement(props: IncrementalProps) =
+type TabViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
@@ -2481,7 +2481,7 @@ type TabViewElement(props: IncrementalProps) =
 
 
 // TableView
-type TableViewElement(props: IncrementalProps) =
+type TableViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TableView) (props: IProps) =
@@ -2556,7 +2556,7 @@ type TableViewElement(props: IncrementalProps) =
 
 
 // TextField
-type TextFieldElement(props: IncrementalProps) =
+type TextFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TextField) (props: IProps) =
@@ -2621,7 +2621,7 @@ type TextFieldElement(props: IncrementalProps) =
 
 
 // TextValidateField
-type TextValidateFieldElement(props: IncrementalProps) =
+type TextValidateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TextValidateField) (props: IProps) =
@@ -2664,7 +2664,7 @@ type TextValidateFieldElement(props: IncrementalProps) =
 
 
 // TextView
-type TextViewElement(props: IncrementalProps) =
+type TextViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
@@ -2761,7 +2761,7 @@ type TextViewElement(props: IncrementalProps) =
 
 
 // TileView
-type TileViewElement(props: IncrementalProps) =
+type TileViewElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TileView) (props: IProps) =
@@ -2810,7 +2810,7 @@ type TileViewElement(props: IncrementalProps) =
 
 
 // TimeField
-type TimeFieldElement(props: IncrementalProps) =
+type TimeFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TimeField) (props: IProps) =
@@ -2859,7 +2859,7 @@ type TimeFieldElement(props: IncrementalProps) =
 
 
 // Toplevel
-type ToplevelElement(props: IncrementalProps) =
+type ToplevelElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Toplevel) (props: IProps) =
@@ -2920,7 +2920,7 @@ type ToplevelElement(props: IncrementalProps) =
 
 
 // TreeView<'a when 'a : not struct>
-type TreeViewElement<'a when 'a : not struct>(props: IncrementalProps) =
+type TreeViewElement<'a when 'a : not struct>(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: TreeView<'a>) (props: IProps) =
@@ -2991,11 +2991,11 @@ type TreeViewElement<'a when 'a : not struct>(props: IncrementalProps) =
 
 
 // TreeView
-type TreeViewElement(props: IncrementalProps) =
+type TreeViewElement(props: Props) =
     inherit TreeViewElement<ITreeNode>(props)
 
 // Window
-type WindowElement(props: IncrementalProps) =
+type WindowElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Window) (props: IProps) =
@@ -3036,7 +3036,7 @@ type WindowElement(props: IncrementalProps) =
 
 
 // Wizard
-type WizardElement(props: IncrementalProps) =
+type WizardElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: Wizard) (props: IProps) =
@@ -3093,7 +3093,7 @@ type WizardElement(props: IncrementalProps) =
 
 
 // WizardStep
-type WizardStepElement(props: IncrementalProps) =
+type WizardStepElement(props: Props) =
     inherit TerminalElement(props)
 
     let removeProps (element: WizardStep) (props: IProps) =

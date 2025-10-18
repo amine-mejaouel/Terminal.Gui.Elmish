@@ -78,4 +78,23 @@ module Props =
         props |> tryFind key |> Option.defaultValue defaultValue
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
+
     let exists (PKey k) (p: Props) = p.dict.ContainsKey k
+
+    let compare (oldProps: Props) (newProps: Props) =
+
+        let remainingOldProps, removedProps =
+            oldProps |> partition (fun kv -> newProps |> rawKeyExists kv.Key)
+
+        let changedProps =
+            newProps |> filter (fun kv ->
+                match remainingOldProps |> tryFindByRawKey kv.Key with
+                | _ when kv.Value = "children" ->
+                    false
+                | Some v' when kv.Value = v' ->
+                    false
+                | _ ->
+                    true
+            )
+
+        (changedProps, removedProps)

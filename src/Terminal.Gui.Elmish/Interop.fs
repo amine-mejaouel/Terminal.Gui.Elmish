@@ -50,24 +50,7 @@ module internal EventHelpers =
 
 [<RequireQualifiedAccess>]
 module Interop =
-    // TODO: move maybe to Props ?
-    let filterProps (oldProps: Props) (newProps: Props) =
 
-        let remainingOldProps, removedProps =
-            oldProps |> Props.partition (fun kv -> newProps |> Props.rawKeyExists kv.Key)
-
-        let changedProps =
-            newProps |> Props.filter (fun kv ->
-                match remainingOldProps |> Props.tryFindByRawKey kv.Key with
-                | _ when kv.Value = "children" ->
-                    false
-                | Some v' when kv.Value = v' ->
-                    false
-                | _ ->
-                    true
-            )
-
-        (changedProps, removedProps)
 
     let inline csharpList (list:'a list) = System.Linq.Enumerable.ToList list
 

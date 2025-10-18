@@ -36,7 +36,7 @@ let getPropertiesNotInherited (t: Type) =
         let setMethodReturnParameterModifiers = p.SetMethod.ReturnParameter.GetRequiredCustomModifiers()
         setMethodReturnParameterModifiers |> Seq.exists (fun t -> t = (typeof<System.Runtime.CompilerServices.IsExternalInit>)) |> not
     )
-    
+
     |> Array.map (fun p -> (p.Name, p.PropertyType, p.PropertyType.GetGenericArguments()))
 
 let getProperties (t: Type) =
@@ -58,10 +58,10 @@ let getProperties (t: Type) =
         setMethodReturnParameterModifiers |> Seq.exists (fun t -> t = (typeof<System.Runtime.CompilerServices.IsExternalInit>)) |> not
     )
     |> Array.map (fun p ->
-        let name = p.Name    
+        let name = p.Name
         (name, p.PropertyType, p.PropertyType.GetGenericArguments())
     )
-    
+
 // get all events but not the inherited ones
 let getEventsNotInherited (t: Type) =
     t.GetEvents(BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance)
@@ -70,16 +70,16 @@ let getEventsNotInherited (t: Type) =
         e.Name, e.EventHandlerType, e.EventHandlerType.GetGenericArguments()
     )
 
-    
-    
-    
+
+
+
 let getEvents (t: Type) =
     t.GetEvents()
     |> Array.map (fun e ->
         // return name, type and generic sub type of eventhandler
         let name = e.Name
         e.Name, e.EventHandlerType, e.EventHandlerType.GetGenericArguments()
-    )    
+    )
 
 let getAllNamespaces (types:Type array) =
     types
@@ -91,14 +91,14 @@ let toCamelCase (s: string) =
     let first = s.[0]
     let rest = s.[1..]
     $"{Char.ToLower(first)}{rest}"
-    
 
-  
+
+
 let rec mapTypeAndSubTypeProperties (t: Type) (subtypes:Type array) =
     match t.Name, subtypes with
     | "T", _ -> "'a"
-    | "IList`1", [| st |] 
-    | "List`1", [| st |] 
+    | "IList`1", [| st |]
+    | "List`1", [| st |]
     | "IEnumerable`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"{mapTypeAndSubTypeProperties st subprops} list"
@@ -119,33 +119,33 @@ let rec mapTypeAndSubTypeProperties (t: Type) (subtypes:Type array) =
     | "Nullable`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"{mapTypeAndSubTypeProperties st subprops} option"
-    | "EventArgs`1", [| st |] -> 
+    | "EventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"{mapTypeAndSubTypeProperties st subprops}"
-    | "CancelEventArgs`1", [| st |] -> 
+    | "CancelEventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"CancelEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-    | "DateTimeEventArgs`1", [| st |] -> 
+    | "DateTimeEventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"DateTimeEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-    | "DrawTreeViewLineEventArgs`1", [| st |] -> 
+    | "DrawTreeViewLineEventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"DrawTreeViewLineEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-    | "ObjectActivatedEventArgs`1", [| st |] -> 
+    | "ObjectActivatedEventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"ObjectActivatedEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-    | "SelectionChangedEventArgs`1", [| st |] -> 
+    | "SelectionChangedEventArgs`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"SelectionChangedEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-        
-    | "NotifyCollectionChangedEventHandler", [| st |] -> 
+
+    | "NotifyCollectionChangedEventHandler", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"SelectionChangedEventArgs<{mapTypeAndSubTypeProperties st subprops}>"
-        
-    | "AspectGetterDelegate`1", [| st |] -> 
+
+    | "AspectGetterDelegate`1", [| st |] ->
         let subprops = st.GetGenericArguments()
         $"AspectGetterDelegate<{mapTypeAndSubTypeProperties st subprops}>"
-        
+
     | "IListDataSource", [| |] -> $"string list"
     | "String", [| |] -> $"string"
     | "Boolean", [| |] -> $"bool"
@@ -161,9 +161,9 @@ let rec mapTypeAndSubTypeProperties (t: Type) (subtypes:Type array) =
         $"{t.GetElementType().Name} list"
     | _ when t.IsArray ->
         $"{t.GetElementType().Name} list"
-    
+
     | _ -> $"{t.Name}"
-    
+
 
 let mapTypeAndSubTypeEvents (t:Type) (subtypes:Type array) =
     match t.Name, subtypes with
@@ -178,7 +178,7 @@ let mapTypeAndSubTypeEvents (t:Type) (subtypes:Type array) =
         $"{mapTypeAndSubTypeProperties st subprops}->unit", mapFunction
     | "NotifyCollectionChangedEventHandler", [| |] -> "NotifyCollectionChangedEventArgs->unit","v"
     | "SplitterEventHandler", [| |] -> "SplitterEventArgs->unit","v"
-    | _ -> $"{t.Name}", "v"    
+    | _ -> $"{t.Name}", "v"
 
 let getPropertyProps (properties: (string * Type * Type array) array) =
     properties
@@ -201,24 +201,24 @@ let getEventProps (events: (string * Type * Type array) array) =
         {|
             Name = name
             CamelName = toCamelCase name
-            Type = t            
+            Type = t
             MapFunction = mapFunction
         |}
     )
 
-let printPropertiesProps (printfn:string->unit) (t:Type) (properties: {| Name:string; CamelName:string; Type:string; OrigType: string |} array) = 
+let printPropertiesProps (printfn:string->unit) (t:Type) (properties: {| Name:string; CamelName:string; Type:string; OrigType: string |} array) =
     properties
     |> Array.iter (fun e ->
         printfn $"    static member inline {e.CamelName} (value:{e.Type}) = Interop.mkprop \"{toCamelCase t.Name}.{e.CamelName}\" value"
     )
-    
+
 let printEventsProps(printfn:string->unit) (t:Type) (events: {| Name:string; CamelName:string; Type:string; MapFunction: string |} array) =
     events
     |> Array.iter (fun e ->
         printfn $"    static member inline {e.CamelName} (handler:{e.Type}) = Interop.mkprop \"{toCamelCase t.Name}.{e.CamelName}\" handler"
     )
-    
-    
+
+
 let printViewProps (printfn:string->unit) (view: Type) =
     let propsProps =
         if view.Name = "View" then
@@ -227,7 +227,7 @@ let printViewProps (printfn:string->unit) (view: Type) =
         else
             getPropertiesNotInherited view
             |> getPropertyProps
-        
+
     let eventProps =
         if view.Name = "View" then
             getEvents view
@@ -235,11 +235,11 @@ let printViewProps (printfn:string->unit) (view: Type) =
         else
             getEventsNotInherited view
             |> getEventProps
-    
-    
+
+
     printfn $"// {view.Name}"
     if propsProps.Length + eventProps.Length > 0 then
-        
+
         // Header View
         let typeName = (if view.Name = "View" then "prop" else toCamelCase view.Name).Replace("`1", "<'a>")
         let typeName = if typeName = "treeView<'a>" then "treeView<'a when 'a : not struct>" else typeName
@@ -251,29 +251,29 @@ type {typeName} =
             """
         else
             printfn $"type {typeName} ="
-        
-        
-        
-        if typeName = "prop" then        
+
+
+
+        if typeName = "prop" then
             printfn "    // Properties"
             propsProps
             |> printPropertiesProps printfn view
             printfn "    // Events"
             eventProps
             |> printEventsProps printfn view
-            
-            
+
+
             // additional props
             printfn $"""
     static member inline color (fg:Color, bg:Color) = Interop.mkprop "view.colorScheme" (
             let attrib = Attribute(&fg, &bg)
             ColorScheme(attrib)
-        )            
+        )
             """
             // add addtional props for Position and Dim, extract the static methods from the Dim and Position Class
             printfn $"""
 
-module prop =    
+module prop =
     module position =
         type x =
             static member inline absolute (position:int)                                        = Interop.mkprop "view.x" (Pos.Absolute(position))
@@ -300,7 +300,7 @@ module prop =
             static member inline center                                                         = Interop.mkprop "view.y" (Pos.Center())
             static member inline func (f:unit -> int)                                           = Interop.mkprop "view.y" (Pos.Func(f))
             static member inline percent (percent:int)                                          = Interop.mkprop "view.y" (Pos.Percent(percent))
-        
+
     type width =
         static member inline absolute (size:int)                                                                    = Interop.mkprop "view.width" (Dim.Absolute(size))
         static member inline auto (?style:DimAutoStyle, ?minimumContentDim:Dim, ?maximumContentDim:Dim)
@@ -326,8 +326,8 @@ module prop =
         static member inline func (f:unit->int)                                                                     = Interop.mkprop "view.height" (Dim.Func(f))
         static member inline percent (percent:int, mode:DimPercentMode)                                             = Interop.mkprop "view.height" (Dim.Percent(percent, mode))
         static member inline percent (percent:int)                                                                  = Interop.mkprop "view.height" (Dim.Percent(percent, DimPercentMode.ContentSize))
-    
-    
+
+
     type alignment =
         static member inline center     =   Interop.mkprop "view.alignment" Alignment.Center
         static member inline ``end``    =   Interop.mkprop "view.alignment" Alignment.End
@@ -353,19 +353,19 @@ module prop =
         static member inline none = Interop.mkprop          "view.shadowStyle" ShadowStyle.None
         static member inline opaque = Interop.mkprop        "view.shadowStyle" ShadowStyle.Opaque
         static member inline transparent = Interop.mkprop   "view.shadowStyle" ShadowStyle.Transparent
-    
-    """                    
+
+    """
         else
             if propsProps.Length > 0 then
                 printfn "    // Properties"
                 propsProps
                 |> printPropertiesProps printfn view
-                
-            if eventProps.Length > 0 then                
+
+            if eventProps.Length > 0 then
                 printfn "    // Events"
                 eventProps
                 |> printEventsProps printfn view
-                
+
             // add possible additional props
             if view.Name = "CheckBox" then
                 printfn $"""
@@ -379,15 +379,15 @@ module prop =
                 printfn $"""
     static member inline tabs (value:TerminalElement list) = Interop.mkprop "tabView.tabs" value
             """
-            
-            
-                
-            
+
+
+
+
     else
         printfn $"// No properties or events {view.Name}"
-        
+
     printfn ""
-        
+
 let printNamepaces (printfn:string->unit) =
     let namespaces = getAllNamespaces inheritedTypes
     // opens
@@ -400,7 +400,7 @@ let printNamepaces (printfn:string->unit) =
     printfn "open System.Collections.Generic"
     printfn "open System.Collections.Specialized"
     printfn "open System.Globalization"
-    printfn "open Terminal.Gui.Elmish"    
+    printfn "open Terminal.Gui.Elmish"
     printfn "open Terminal.Gui.TextValidateProviders"
     namespaces |> Array.filter (fun ns -> String.IsNullOrWhiteSpace ns |> not)|> Array.iter (fun ns -> printfn $"open {ns}")
 
@@ -441,10 +441,10 @@ if true then
 let printElementSetProps (printfn:string->unit) (t:Type) =
     let props =
         if t.Name = "View" then getProperties t else getPropertiesNotInherited t
-        
+
     let events =
         if t.Name = "View" then getEvents t else getEventsNotInherited t
-    
+
     if props.Length + events.Length = 0 then
         printfn $"        // No properties or events {t.Name}"
         printfn $"        ()"
@@ -468,17 +468,17 @@ let printElementSetProps (printfn:string->unit) (t:Type) =
                     printfn $"""
         props
         |> Interop.getValue<TerminalElement> "{toCamelCase t.Name}.{e.CamelName}"
-        |> Option.iter (fun v -> 
+        |> Option.iter (fun v ->
             v.create (Some element)
             element.View <- v.element
         )"""
-                | "String[]" 
+                | "String[]"
                 | "MenuBarItem[]" ->
                     printfn $"""        props |> Interop.getValue<{e.Type}> "{toCamelCase t.Name}.{e.CamelName}" |> Option.iter (fun v -> element.{e.Name} <- v |> List.toArray)"""
                 | _ ->
                     printfn $"""        props |> Interop.getValue<{e.Type}> "{toCamelCase t.Name}.{e.CamelName}" |> Option.iter (fun v -> element.{e.Name} <- v {(if e.Type.Contains(" option") then " |> Option.toNullable" else "")})"""
             )
-        
+
         if events.Length>0 then
             // print events from view
             printfn "        // Events"
@@ -491,27 +491,27 @@ let printElementSetProps (printfn:string->unit) (t:Type) =
                 else
                     printfn $"        props |> Interop.getValue<{e.Type}> \"{toCamelCase t.Name}.{e.CamelName}\" |> Option.iter (fun v -> Interop.setEventHandler <@ element.{e.Name} @> {e.MapFunction} element)"
             )
-        
-        
+
+
 // print elements (Elements2.fs)
 let printViewElementSetProps (printfn:string->unit) =
     printfn "    let setProps (element: View) props ="
     printfn "        // Properties"
     printfn "        props |> Interop.getValue<View->unit> \"ref\" |> Option.iter (fun v -> v element)"
-    
+
     printElementSetProps printfn typeof<View>
-    
-    
-    
-    
-    
+
+
+
+
+
 let printElementRemoveProps (printfn:string->unit) (t:Type) =
     let props =
         if t.Name = "View" then getProperties t else getPropertiesNotInherited t
-        
+
     let events =
         if t.Name = "View" then getEvents t else getEventsNotInherited t
-    
+
     if props.Length + events.Length = 0 then
         printfn $"        // No properties or events {t.Name}"
         printfn $"        ()"
@@ -529,7 +529,7 @@ let printElementRemoveProps (printfn:string->unit) (t:Type) =
                 | _ ->
                     printfn $"        props |> Interop.getValue<{e.Type}> \"{toCamelCase t.Name}.{e.CamelName}\" |> Option.iter (fun _ -> element.{e.Name} <- Unchecked.defaultof<_>)"
             )
-    
+
         if events.Length>0 then
             // print events from view
             printfn "        // Events"
@@ -539,15 +539,15 @@ let printElementRemoveProps (printfn:string->unit) (t:Type) =
             |> Array.iter (fun e ->
                 printfn $"        props |> Interop.getValue<{e.Type}> \"{toCamelCase t.Name}.{e.CamelName}\" |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.{e.Name} @> element)"
             )
-    
+
 let printViewElementRemoveProps (printfn:string->unit) =
     printfn "    let removeProps (element: View) props ="
     printfn "        // Properties"
     printfn "        props |> Interop.getValue<View->unit> \"ref\" |> Option.iter (fun _ -> ())"
-    
+
     printElementRemoveProps printfn typeof<View>
-    
-    
+
+
 
 let printViewElement (printfn:string->unit) =
     printfn "module ViewElement ="
@@ -572,7 +572,7 @@ let printViewElement (printfn:string->unit) =
             (nameA = "DimAbsolute" && nameB = "DimAbsolute") ||
             (nameA <> "DimAbsolute" && nameB <> "DimAbsolute")
 
-            
+
         let positionX = props |> Interop.getValue<Pos> "view.x"      |> Option.map (fun v -> isPosCompatible view.X v) |> Option.defaultValue true
         let positionY = props |> Interop.getValue<Pos> "view.y"      |> Option.map (fun v -> isPosCompatible view.Y v) |> Option.defaultValue true
         let width = props |> Interop.getValue<Dim> "view.width"      |> Option.map (fun v -> isDimCompatible view.Width v) |> Option.defaultValue true
@@ -603,14 +603,14 @@ let printElement (printfn:string->unit) (t:Type) =
         | x when x.Contains("`1") ->
             t.Name.Replace("`1", ""), true, false
         | _ -> t.Name, false, false
-            
-    let onlyRefNotation = if onlyRef then " when 'a : not struct" else ""            
-            
+
+    let onlyRefNotation = if onlyRef then " when 'a : not struct" else ""
+
     printfn $"""// {name}{(if isGeneric then ($"<'a{onlyRefNotation}>") else "")}"""
     printfn $"""type {name}Element{(if isGeneric then ($"<'a{onlyRefNotation}>") else "")}(props:IProperty list) ="""
-    
+
     let name = $"""{name}{(if isGeneric then "<'a>" else "")}"""
-    
+
     match name with
     |"TreeView" ->
         printfn $"    inherit {name}Element<ITreeNode>(props)"
@@ -637,11 +637,11 @@ let printElement (printfn:string->unit) (t:Type) =
             |> List.iter (fun tabItems ->
                 tabItems.create (Some element)
                 element.AddTab ((tabItems.element :?> Tab), false)
-                
+
                 )
             )
             """
-        
+
         printfn ""
         printfn $"""    let removeProps (element:{name}) props ="""
         printElementRemoveProps printfn t
@@ -672,7 +672,7 @@ let printElement (printfn:string->unit) (t:Type) =
         printfn ""
         printfn """
     override this.canUpdate prevElement oldProps =
-        let changedProps,removedProps = Interop.filterProps oldProps props
+        let changedProps,removedProps = Props.compare oldProps props
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -681,14 +681,14 @@ let printElement (printfn:string->unit) (t:Type) =
         """
         printfn ""
         printfn $"""
-    override this.update prevElement oldProps = 
+    override this.update prevElement oldProps =
         let element = prevElement :?> {name}
-        let changedProps,removedProps = Interop.filterProps oldProps props
+        let changedProps,removedProps = Props.compare oldProps props
         ViewElement.removeProps prevElement removedProps
         removeProps element removedProps
         ViewElement.setProps prevElement changedProps
         setProps element changedProps
-        this.element <- prevElement    
+        this.element <- prevElement
         """
         printfn ""
         printfn ""
@@ -696,8 +696,8 @@ let printElement (printfn:string->unit) (t:Type) =
 
 
 
-    
-let generateElementsFs (printfn:string->unit) =    
+
+let generateElementsFs (printfn:string->unit) =
     printfn ""
     printfn "(*"
     printfn "#######################################"
@@ -741,8 +741,8 @@ type TerminalElement (props:IProperty list) =
     inheritedTypes
     |> Array.filter (fun t -> t.Name <> "View")
     |> Array.iter (printElement printfn)
-    
-    
+
+
 if true then
     let file = Path.Combine(__SOURCE_DIRECTORY__, @"..\..\Terminal.Gui.Elmish\Elements.fs")
     // empty file
@@ -774,11 +774,11 @@ let printViewType (printfn:string->unit) =
                 "",""
         printfn $"""    /// <seealso cref="Terminal.Gui.{name}"/>"""
         printfn $"""    static member inline {toCamelCase name}{notStruct} (props:IProperty list) = {name}Element{generic}(props) :> TerminalElement"""
-        printfn $"""    static member inline {toCamelCase name}{notStruct} (children:TerminalElement list) = 
+        printfn $"""    static member inline {toCamelCase name}{notStruct} (children:TerminalElement list) =
         let props = [ prop.children children ]
         {name}Element{generic}(props) :> TerminalElement"""
-        printfn $"""    static member inline {toCamelCase name}{notStruct} (x:int, y:int, title: string) = 
-        let props = [ 
+        printfn $"""    static member inline {toCamelCase name}{notStruct} (x:int, y:int, title: string) =
+        let props = [
             prop.position.x.absolute x
             prop.position.y.absolute y
             prop.title title
@@ -786,11 +786,11 @@ let printViewType (printfn:string->unit) =
         {name}Element{generic}(props) :> TerminalElement"""
         printfn ""
     )
-     
 
 
 
-let generateViewFs (printfn:string->unit) =    
+
+let generateViewFs (printfn:string->unit) =
     printfn ""
     printfn "(*"
     printfn "#######################################"
@@ -811,18 +811,18 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.Elmish.EventHelpers
     """
-    
+
     printfn "type View ="
     printfn """
     static member inline topLevel (props:IProperty list) = ToplevelElement(props) :> TerminalElement
-    static member inline topLevel (children:TerminalElement list) = 
+    static member inline topLevel (children:TerminalElement list) =
         let props = [ prop.children children ]
         ToplevelElement(props) :> TerminalElement
 
     """
-    
+
     printViewType printfn
-    
+
     printfn ""
     printfn """
 module Dialogs =
@@ -842,11 +842,11 @@ module Dialogs =
         if dia.Canceled then
             None
         else
-            let file = 
+            let file =
                 dia.FilePaths
                 |> Seq.tryHead
                 |> Option.bind (fun s ->
-                    if String.IsNullOrEmpty(s) then None 
+                    if String.IsNullOrEmpty(s) then None
                     else Some s
                 )
             file
@@ -869,8 +869,8 @@ module Dialogs =
 
 
     """
-    
-    
+
+
 if true then
     let file = Path.Combine(__SOURCE_DIRECTORY__, @"..\..\Terminal.Gui.Elmish\Views.fs")
     // empty file

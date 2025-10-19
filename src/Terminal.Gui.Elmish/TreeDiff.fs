@@ -34,6 +34,7 @@ module Differ =
         let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         if cve1 <> cve2 then Some () else None
 
+    // TODO: Could be nice if this can be turned into a TailCall
     let rec update (rootTree:ITerminalElement) (newTree:ITerminalElement) =
         match rootTree, newTree with
         | rt, nt when rt.name <> nt.name ->

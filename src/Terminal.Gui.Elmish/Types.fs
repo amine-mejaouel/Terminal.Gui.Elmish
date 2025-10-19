@@ -36,7 +36,7 @@ module Props =
 
         Props(result)
 
-    /// <summary>Builds two new Props, one containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
+    /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
     /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
     let partition predicate (props: Props) =
         let first = Props()
@@ -81,6 +81,7 @@ module Props =
 
     let exists (PKey k) (p: Props) = p.dict.ContainsKey k
 
+    // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =
 
         let remainingOldProps, removedProps =
@@ -98,3 +99,8 @@ module Props =
             )
 
         (changedProps, removedProps)
+
+    let keys (props: Props) = props.dict.Keys |> Seq.map id
+
+    let iter iteration (props: Props) =
+        props.dict |> Seq.iter iteration

@@ -673,6 +673,7 @@ let printElement (printfn:string->unit) (t:Type) =
         printfn """
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true

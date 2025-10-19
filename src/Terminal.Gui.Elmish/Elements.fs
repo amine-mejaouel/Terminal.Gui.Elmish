@@ -96,7 +96,8 @@ type TerminalElement (props: Props) =
 
                     subElement.initializeTree parent
 
-                    let viewKey = x.Key.Substring(0, x.Key.Length - (*".element".Length*) 8)
+                    // TODO: helpers functions for Element/View key would be nice
+                    let viewKey = x.Key.Replace("_element", "_view")
 
                     yield viewKey, subElement.view
 
@@ -116,7 +117,6 @@ type TerminalElement (props: Props) =
         }
 
     abstract setProps: element: View * props: Props ->  unit
-
     default this.setProps (element: View, props: Props) =
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun v -> element.Arrangement <- v )
@@ -206,19 +206,8 @@ type TerminalElement (props: Props) =
         props |> Props.tryFind PKey.view.visibleChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanged @> (fun _ -> v()) element)
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanging @> (fun _ -> v()) element)
 
-    interface ITerminalElement with
-        member this.initializeTree(parent) = this.initializeTree(parent)
-        member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
-        member this.update prevElement oldProps = this.update prevElement oldProps
-        member this.view with get() = this.view
-        member this.props = this.props
-        member this.name = this.name
-        member this.children = this.children
-
-
-module ViewElement =
-
-    let removeProps (element: View) (props: Props) =
+    abstract removeProps: element: View * props: Props ->  unit
+    default this.removeProps (element: View, props: Props) =
         // Properties
         props |> Props.tryFind PKey.view.arrangement |> Option.iter (fun _ -> element.Arrangement <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.view.borderStyle |> Option.iter (fun _ -> element.BorderStyle <- Unchecked.defaultof<_> )
@@ -307,6 +296,101 @@ module ViewElement =
         props |> Props.tryFind PKey.view.visibleChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanged @> element)
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
+    override this.update oldView oldProps =
+        let changedProps,unchangedProps,removedProps = this.compare oldProps
+
+        // foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
+        let viewKeysToReinject =
+            unchangedProps
+            |> Props.filter _.Key.EndsWith("_element")
+            |> Props.keys
+            // TODO: helpers functions for Element/View key would be nice
+            |> Seq.map _.Replace("_element", "_view")
+            |> Seq.toArray
+
+        let viewsPropsToReinject, removedProps =
+            removedProps
+            |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains(kv.Key))
+
+        viewsPropsToReinject
+        |> Props.iter (fun kv ->
+            this.props.add(kv.Key, kv.Value)
+        )
+
+        this.removeProps(oldView, removedProps)
+        this.setProps(oldView, changedProps)
+        this.view <- oldView
+
+    member this.equivalentTo (other: TerminalElement) =
+        let mutable isEquivalent = true
+
+        let mutable enumerator = this.props.dict.GetEnumerator()
+
+        while isEquivalent && enumerator.MoveNext() do
+            let kv = enumerator.Current
+            if kv.Key = "children" then // TODO: for now children comparison is not yet implemented
+                ()
+            elif kv.Key.EndsWith("_view") then
+                ()
+            elif kv.Key.EndsWith("_element") then
+                let curElement = kv.Value :?> TerminalElement
+                let otherElement =
+                    other.props
+                    |> Props.tryFindByRawKey kv.Key
+                    |> Option.map (fun (x: obj) -> x :?> TerminalElement)
+                match curElement, otherElement with
+                | curValue, Some otherValue when (curValue.equivalentTo otherValue)->
+                    ()
+                | _, _ ->
+                    isEquivalent <- false
+            else
+                let curElement = kv.Value
+                let otherElement =
+                    other.props
+                    |> Props.tryFindByRawKey kv.Key
+
+                isEquivalent <- curElement = otherElement
+
+        isEquivalent
+
+    member this.compare (prevProps: Props) =
+
+        let remainingOldProps, removedProps =
+            prevProps |> Props.partition (fun kv -> this.props |> Props.rawKeyExists kv.Key)
+
+        let changedProps, unchangedProps  =
+            this.props |> Props.partition (fun kv ->
+                match remainingOldProps |> Props.tryFindByRawKey kv.Key with
+                | _ when kv.Key = "children" -> // Here we always ignore the 'children' from changed props
+                    false
+                | Some (v: obj) when kv.Key.EndsWith("_element") ->
+                    let curElement = kv.Value :?> TerminalElement
+                    let oldElement = v :?> TerminalElement
+                    not (curElement.equivalentTo oldElement)
+                // TODO: comparison is not good here, it can fail for many C# types
+                // TODO: Properties values should be comparable
+                // TODO: should also be able to compare _element props
+                | Some v' when kv.Value = v' ->
+                    false
+                | _ ->
+                    true
+            )
+
+        (changedProps, unchangedProps, removedProps)
+
+    interface ITerminalElement with
+        member this.initializeTree(parent) = this.initializeTree(parent)
+        member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
+        member this.update prevElement oldProps = this.update prevElement oldProps
+        member this.view with get() = this.view
+        member this.props = this.props
+        member this.name = this.name
+        member this.children = this.children
+
+
+module ViewElement =
+
+
     let canUpdate (view:View) (props: Props) (removedProps: Props) =
         let isPosCompatible (a:Pos) (b:Pos) =
             let nameA = a.GetType().Name
@@ -346,7 +430,9 @@ module ViewElement =
 type AdornmentElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Adornment) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Adornment
         // Properties
         props |> Props.tryFind PKey.adornment.diagnostics |> Option.iter (fun _ -> element.Diagnostics <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.adornment.superViewRendersLineCanvas |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
@@ -374,25 +460,20 @@ type AdornmentElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Adornment
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
 // Bar
 type BarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Bar) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Bar
         // Properties
         props |> Props.tryFind PKey.bar.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.bar.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -418,6 +499,7 @@ type BarElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -426,21 +508,13 @@ type BarElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Bar
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Border
 type BorderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Border) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Border
         // Properties
         props |> Props.tryFind PKey.border.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.border.settings |> Option.iter (fun _ -> element.Settings <- Unchecked.defaultof<_>)
@@ -461,6 +535,7 @@ type BorderElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -469,21 +544,13 @@ type BorderElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Border
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Button
 type ButtonElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Button) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Button
         // Properties
         props |> Props.tryFind PKey.button.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.button.isDefault |> Option.iter (fun _ -> element.IsDefault <- Unchecked.defaultof<_>)
@@ -514,6 +581,7 @@ type ButtonElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -522,21 +590,13 @@ type ButtonElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Button
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // CheckBox
 type CheckBoxElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: CheckBox) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> CheckBox
         // Properties
         props |> Props.tryFind PKey.checkBox.allowCheckStateNone |> Option.iter (fun _ -> element.AllowCheckStateNone <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.checkBox.checkedState |> Option.iter (fun _ -> element.CheckedState <- Unchecked.defaultof<_>)
@@ -569,6 +629,7 @@ type CheckBoxElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -577,21 +638,13 @@ type CheckBoxElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> CheckBox
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ColorPicker
 type ColorPickerElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ColorPicker
         // Properties
         props |> Props.tryFind PKey.colorPicker.selectedColor |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.colorPicker.style |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
@@ -616,6 +669,7 @@ type ColorPickerElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -624,21 +678,13 @@ type ColorPickerElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ColorPicker
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ColorPicker16
 type ColorPicker16Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ColorPicker16) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ColorPicker16
         // Properties
         props |> Props.tryFind PKey.colorPicker16.boxHeight |> Option.iter (fun _ -> element.BoxHeight <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.colorPicker16.boxWidth |> Option.iter (fun _ -> element.BoxWidth <- Unchecked.defaultof<_>)
@@ -667,6 +713,7 @@ type ColorPicker16Element(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -675,21 +722,13 @@ type ColorPicker16Element(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ColorPicker16
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ComboBox
 type ComboBoxElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ComboBox) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ComboBox
         // Properties
         props |> Props.tryFind PKey.comboBox.hideDropdownListOnClick |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.comboBox.readOnly |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
@@ -728,6 +767,7 @@ type ComboBoxElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -736,21 +776,13 @@ type ComboBoxElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ComboBox
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // DateField
 type DateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DateField) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> DateField
         // Properties
         props |> Props.tryFind PKey.dateField.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.dateField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
@@ -777,6 +809,7 @@ type DateFieldElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -785,21 +818,13 @@ type DateFieldElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> DateField
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // DatePicker
 type DatePickerElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: DatePicker) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> DatePicker
         // Properties
         props |> Props.tryFind PKey.datePicker.culture |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.datePicker.date |> Option.iter (fun _ -> element.Date <- Unchecked.defaultof<_>)
@@ -820,6 +845,7 @@ type DatePickerElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -828,21 +854,13 @@ type DatePickerElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> DatePicker
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Dialog
 type DialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Dialog) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Dialog
         // Properties
         props |> Props.tryFind PKey.dialog.buttonAlignment |> Option.iter (fun _ -> element.ButtonAlignment <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.dialog.buttonAlignmentModes |> Option.iter (fun _ -> element.ButtonAlignmentModes <- Unchecked.defaultof<_>)
@@ -865,6 +883,7 @@ type DialogElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -873,21 +892,13 @@ type DialogElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Dialog
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // FileDialog
 type FileDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FileDialog) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> FileDialog
         // Properties
         props |> Props.tryFind PKey.fileDialog.allowedTypes |> Option.iter (fun _ -> element.AllowedTypes <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.fileDialog.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -922,6 +933,7 @@ type FileDialogElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -930,21 +942,13 @@ type FileDialogElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> FileDialog
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // FrameView
 type FrameViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: FrameView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> FrameView
         // No properties or events FrameView
         ()
 
@@ -963,6 +967,7 @@ type FrameViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -971,21 +976,13 @@ type FrameViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> FrameView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // GraphView
 type GraphViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: GraphView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> GraphView
         // Properties
         props |> Props.tryFind PKey.graphView.axisX |> Option.iter (fun _ -> element.AxisX <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.graphView.axisY |> Option.iter (fun _ -> element.AxisY <- Unchecked.defaultof<_>)
@@ -1016,6 +1013,7 @@ type GraphViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1024,21 +1022,13 @@ type GraphViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> GraphView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // HexView
 type HexViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: HexView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> HexView
         // Properties
         props |> Props.tryFind PKey.hexView.address |> Option.iter (fun _ -> element.Address <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.hexView.addressWidth |> Option.iter (fun _ -> element.AddressWidth <- Unchecked.defaultof<_>)
@@ -1071,6 +1061,7 @@ type HexViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1079,21 +1070,13 @@ type HexViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> HexView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Label
 type LabelElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Label) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Label
         // Properties
         props |> Props.tryFind PKey.label.hotKeySpecifier |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.label.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
@@ -1114,6 +1097,7 @@ type LabelElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1122,21 +1106,13 @@ type LabelElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Label
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // LegendAnnotation
 type LegendAnnotationElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LegendAnnotation) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> LegendAnnotation
         // No properties or events LegendAnnotation
         ()
 
@@ -1155,6 +1131,7 @@ type LegendAnnotationElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1163,21 +1140,13 @@ type LegendAnnotationElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> LegendAnnotation
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Line
 type LineElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Line) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Line
         // Properties
         props |> Props.tryFind PKey.line.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         // Events
@@ -1202,6 +1171,7 @@ type LineElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1210,21 +1180,13 @@ type LineElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Line
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // LineView
 type LineViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: LineView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> LineView
         // Properties
         props |> Props.tryFind PKey.lineView.endingAnchor |> Option.iter (fun _ -> element.EndingAnchor <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.lineView.lineRune |> Option.iter (fun _ -> element.LineRune <- Unchecked.defaultof<_>)
@@ -1249,6 +1211,7 @@ type LineViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1257,21 +1220,13 @@ type LineViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> LineView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ListView
 type ListViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ListView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ListView
         // Properties
         props |> Props.tryFind PKey.listView.allowsMarking |> Option.iter (fun _ -> element.AllowsMarking <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.listView.allowsMultipleSelection |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
@@ -1310,6 +1265,7 @@ type ListViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1318,21 +1274,13 @@ type ListViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ListView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Margin
 type MarginElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Margin) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Margin
         // Properties
         props |> Props.tryFind PKey.margin.shadowStyle |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
@@ -1351,6 +1299,7 @@ type MarginElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1359,21 +1308,13 @@ type MarginElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Margin
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Menuv2
 type Menuv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Menuv2) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Menuv2
         // Properties
         props |> Props.tryFind PKey.menuv2.selectedMenuItem |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.menuv2.superMenuItem |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
@@ -1400,19 +1341,12 @@ type Menuv2Element(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Menuv2
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
     interface IMenuv2Element
 
@@ -1421,7 +1355,9 @@ type Menuv2Element(props: Props) =
 type PopoverMenuElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  PopoverMenu) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> PopoverMenu
         // Properties
         props |> Props.tryFind PKey.popoverMenu.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.popoverMenu.mouseFlags |> Option.iter (fun _ -> element.MouseFlags <- Unchecked.defaultof<_>)
@@ -1452,19 +1388,12 @@ type PopoverMenuElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> PopoverMenu
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
     interface IPopoverMenuElement
 
@@ -1474,7 +1403,9 @@ type PopoverMenuElement(props: Props) =
 type MenuBarItemv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  MenuBarItemv2) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> MenuBarItemv2
         // Properties
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenu |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpen |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_> )
@@ -1501,19 +1432,12 @@ type MenuBarItemv2Element(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> MenuBarItemv2
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
     interface IMenuBarItemv2Element
 
@@ -1521,7 +1445,9 @@ type MenuBarItemv2Element(props: Props) =
 type MenuBarv2Element(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: MenuBarv2) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> MenuBarv2
         // Properties
         props |> Props.tryFind PKey.menuBarv2.key |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
@@ -1553,6 +1479,7 @@ type MenuBarv2Element(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1561,21 +1488,13 @@ type MenuBarv2Element(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> MenuBarv2
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Shortcut
 type ShortcutElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Shortcut) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Shortcut
         // Properties
         props |> Props.tryFind PKey.shortcut.action |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.shortcut.alignmentModes |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
@@ -1620,6 +1539,7 @@ type ShortcutElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1628,20 +1548,12 @@ type ShortcutElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Shortcut
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 type MenuItemv2Element(props: Props) =
     inherit ShortcutElement(props)
 
-    let removeProps (element:  MenuItemv2) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> MenuItemv2
         // Properties
         props |> Props.tryFind PKey.menuItemv2.command |> Option.iter (fun _ -> Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.menuItemv2.subMenu |> Option.iter (fun _ -> Unchecked.defaultof<_>)
@@ -1672,27 +1584,20 @@ type MenuItemv2Element(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> MenuItemv2
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // NumericUpDown<'a>
 type NumericUpDownElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:NumericUpDown<'a>) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> NumericUpDown<'a>
         // Properties
         props |> Props.tryFind PKey.numericUpDown<'a>.format |> Option.iter (fun _ -> element.Format <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.numericUpDown<'a>.increment |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -1724,21 +1629,12 @@ type NumericUpDownElement<'a>(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> NumericUpDown<'a>
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
 
 
@@ -1750,7 +1646,9 @@ type NumericUpDownElement(props: Props) =
 type OpenDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OpenDialog) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> OpenDialog
         // Properties
         props |> Props.tryFind PKey.openDialog.openMode |> Option.iter (fun _ -> element.OpenMode <- Unchecked.defaultof<_>)
 
@@ -1769,6 +1667,7 @@ type OpenDialogElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1776,14 +1675,6 @@ type OpenDialogElement(props: Props) =
         canUpdateView && canUpdateElement
 
 
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> OpenDialog
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
 type OrientationInterface =
     static member removeProps (element: IOrientation) (props: Props) =
@@ -1805,7 +1696,9 @@ type OrientationInterface =
 type OptionSelectorElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: OptionSelector) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> OptionSelector
         // Interfaces
         OrientationInterface.removeProps element props
 
@@ -1838,6 +1731,7 @@ type OptionSelectorElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1846,19 +1740,13 @@ type OptionSelectorElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> OptionSelector
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
 // Padding
 type PaddingElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Padding) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Padding
         ()
 
     override _.name = $"Padding"
@@ -1875,6 +1763,7 @@ type PaddingElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1883,21 +1772,13 @@ type PaddingElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Padding
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ProgressBar
 type ProgressBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ProgressBar) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ProgressBar
         // Properties
         props |> Props.tryFind PKey.progressBar.bidirectionalMarquee |> Option.iter (fun _ -> element.BidirectionalMarquee <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.progressBar.fraction |> Option.iter (fun _ -> element.Fraction <- Unchecked.defaultof<_>)
@@ -1926,6 +1807,7 @@ type ProgressBarElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1934,21 +1816,13 @@ type ProgressBarElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ProgressBar
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // RadioGroup
 type RadioGroupElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: RadioGroup) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> RadioGroup
         // Properties
         props |> Props.tryFind PKey.radioGroup.assignHotKeysToRadioLabels |> Option.iter (fun _ -> element.AssignHotKeysToRadioLabels <- Unchecked.defaultof<_> )
         props |> Props.tryFind PKey.radioGroup.cursor |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_> )
@@ -1987,6 +1861,7 @@ type RadioGroupElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -1995,21 +1870,13 @@ type RadioGroupElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> RadioGroup
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // SaveDialog
 type SaveDialogElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SaveDialog) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> SaveDialog
         // No properties or events SaveDialog
         ()
 
@@ -2028,6 +1895,7 @@ type SaveDialogElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2036,21 +1904,13 @@ type SaveDialogElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> SaveDialog
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ScrollBar
 type ScrollBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: ScrollBar) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ScrollBar
         // Properties
         props |> Props.tryFind PKey.scrollBar.autoShow |> Option.iter (fun _ -> element.AutoShow <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.scrollBar.increment |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
@@ -2089,6 +1949,7 @@ type ScrollBarElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2097,21 +1958,13 @@ type ScrollBarElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ScrollBar
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // ScrollSlider
 type ScrollSliderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element:  ScrollSlider) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> ScrollSlider
         // Properties
         props |> Props.tryFind PKey.scrollSlider.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.scrollSlider.position |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
@@ -2150,6 +2003,7 @@ type ScrollSliderElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2158,20 +2012,13 @@ type ScrollSliderElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> ScrollSlider
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
 // Slider<'a>
 type SliderElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider<'a>) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Slider<'a>
         // Properties
         props |> Props.tryFind PKey.slider<'a>.allowEmpty |> Option.iter (fun _ -> element.AllowEmpty <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.slider<'a>.focusedOption |> Option.iter (fun _ -> element.FocusedOption <- Unchecked.defaultof<_>)
@@ -2224,6 +2071,7 @@ type SliderElement<'a>(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2232,21 +2080,13 @@ type SliderElement<'a>(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Slider<'a>
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Slider
 type SliderElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Slider) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Slider
         // No properties or events Slider
         ()
 
@@ -2265,6 +2105,7 @@ type SliderElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2273,21 +2114,13 @@ type SliderElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Slider
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // SpinnerView
 type SpinnerViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: SpinnerView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> SpinnerView
         // Properties
         props |> Props.tryFind PKey.spinnerView.autoSpin |> Option.iter (fun _ -> element.AutoSpin <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.spinnerView.sequence |> Option.iter (fun _ -> element.Sequence <- Unchecked.defaultof<_>)
@@ -2316,6 +2149,7 @@ type SpinnerViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2324,21 +2158,13 @@ type SpinnerViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> SpinnerView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // StatusBar
 type StatusBarElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: StatusBar) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> StatusBar
         // No properties or events StatusBar
         ()
 
@@ -2357,6 +2183,7 @@ type StatusBarElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2365,21 +2192,13 @@ type StatusBarElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> StatusBar
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Tab
 type TabElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Tab) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Tab
         // Properties
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun _ -> element.DisplayText <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tab.view |> Option.iter (fun _ -> element.View <- Unchecked.defaultof<_>)
@@ -2401,6 +2220,7 @@ type TabElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2409,22 +2229,14 @@ type TabElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Tab
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TabView
 type TabViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TabView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TabView
         // Properties
         props |> Props.tryFind PKey.tabView.maxTabTextWidth |> Option.iter (fun _ -> element.MaxTabTextWidth <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tabView.selectedTab |> Option.iter (fun _ -> element.SelectedTab <- Unchecked.defaultof<_>)
@@ -2462,6 +2274,7 @@ type TabViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2470,21 +2283,13 @@ type TabViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TabView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TableView
 type TableViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TableView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TableView
         // Properties
         props |> Props.tryFind PKey.tableView.cellActivationKey |> Option.iter (fun _ -> element.CellActivationKey <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tableView.collectionNavigator |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
@@ -2537,6 +2342,7 @@ type TableViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2545,21 +2351,13 @@ type TableViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TableView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TextField
 type TextFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextField) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TextField
         // Properties
         props |> Props.tryFind PKey.textField.autocomplete |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textField.caption |> Option.iter (fun _ -> element.Caption <- Unchecked.defaultof<_>)
@@ -2602,6 +2400,7 @@ type TextFieldElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2610,21 +2409,13 @@ type TextFieldElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TextField
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TextValidateField
 type TextValidateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TextValidateField) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TextValidateField
         // Properties
         props |> Props.tryFind PKey.textValidateField.provider |> Option.iter (fun _ -> element.Provider <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textValidateField.text |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
@@ -2645,6 +2436,7 @@ type TextValidateFieldElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2653,22 +2445,14 @@ type TextValidateFieldElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TextValidateField
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TextView
 type TextViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
-    let removeProps (element: TextView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TextView
         // Properties
         props |> Props.tryFind PKey.textView.allowsReturn |> Option.iter (fun _ -> element.AllowsReturn <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.textView.allowsTab |> Option.iter (fun _ -> element.AllowsTab <- Unchecked.defaultof<_>)
@@ -2742,6 +2526,7 @@ type TextViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2750,21 +2535,13 @@ type TextViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TextView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TileView
 type TileViewElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TileView) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TileView
         // Properties
         props |> Props.tryFind PKey.tileView.lineStyle |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.tileView.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
@@ -2791,6 +2568,7 @@ type TileViewElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2799,21 +2577,13 @@ type TileViewElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TileView
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TimeField
 type TimeFieldElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TimeField) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TimeField
         // Properties
         props |> Props.tryFind PKey.timeField.cursorPosition |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.timeField.isShortFormat |> Option.iter (fun _ -> element.IsShortFormat <- Unchecked.defaultof<_>)
@@ -2840,6 +2610,7 @@ type TimeFieldElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -2848,21 +2619,13 @@ type TimeFieldElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TimeField
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Toplevel
 type ToplevelElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Toplevel) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Toplevel
         // Properties
         props |> Props.tryFind PKey.toplevel.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.toplevel.running |> Option.iter (fun _ -> element.Running <- Unchecked.defaultof<_>)
@@ -2901,29 +2664,20 @@ type ToplevelElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
 
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Toplevel
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // TreeView<'a when 'a : not struct>
 type TreeViewElement<'a when 'a : not struct>(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: TreeView<'a>) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> TreeView<'a>
         // Properties
         props |> Props.tryFind PKey.treeView<'a>.allowLetterBasedNavigation |> Option.iter (fun _ -> element.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.treeView<'a>.aspectGetter |> Option.iter (fun _ -> element.AspectGetter <- Unchecked.defaultof<_>)
@@ -2972,21 +2726,12 @@ type TreeViewElement<'a when 'a : not struct>(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> TreeView<'a>
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
 
 
@@ -2998,7 +2743,9 @@ type TreeViewElement(props: Props) =
 type WindowElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Window) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Window
         // No properties or events Window
         ()
 
@@ -3017,6 +2764,7 @@ type WindowElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -3025,21 +2773,13 @@ type WindowElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Window
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // Wizard
 type WizardElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: Wizard) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> Wizard
         // Properties
         props |> Props.tryFind PKey.wizard.currentStep |> Option.iter (fun _ -> element.CurrentStep <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.wizard.modal |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
@@ -3074,6 +2814,7 @@ type WizardElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
@@ -3082,21 +2823,13 @@ type WizardElement(props: Props) =
 
 
 
-    override this.update prevElement oldProps =
-        let element = prevElement :?> Wizard
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
-
-
-
 // WizardStep
 type WizardStepElement(props: Props) =
     inherit TerminalElement(props)
 
-    let removeProps (element: WizardStep) (props: Props) =
+    override this.removeProps (element: View, props: Props) =
+        base.removeProps(element, props)
+        let element = element :?> WizardStep
         // Properties
         props |> Props.tryFind PKey.wizardStep.backButtonText |> Option.iter (fun _ -> element.BackButtonText <- Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.wizardStep.helpText |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
@@ -3119,21 +2852,12 @@ type WizardStepElement(props: Props) =
 
     override this.canUpdate prevElement oldProps =
         let changedProps,removedProps = Props.compare oldProps props
+        let removedProps = removedProps |> Props.filter (not << _.Key.EndsWith("_view"))
         let canUpdateView = ViewElement.canUpdate prevElement changedProps removedProps
         let canUpdateElement =
             true
 
         canUpdateView && canUpdateElement
-
-
-
-    override this.update prevElement oldProps =
-        let element = prevElement :?> WizardStep
-        let changedProps,removedProps = Props.compare oldProps props
-        ViewElement.removeProps prevElement removedProps
-        removeProps element removedProps
-        this.setProps(element, changedProps)
-        this.view <- prevElement
 
 
 

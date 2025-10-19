@@ -26,7 +26,9 @@ open Terminal.Gui.Views
 // TODO:  ie make all classes internal / expose public interface instead
 type ITerminalElement =
     abstract initializeTree: parent: View option -> unit
+    // TODO: rename to prevView
     abstract canUpdate: prevElement:View -> oldProps: Props -> bool
+    // TODO: rename to prevView
     abstract update: prevElement:View -> oldProps: Props -> unit
     abstract children: List<ITerminalElement> with get
     abstract view: View with get
@@ -416,7 +418,7 @@ module PKey =
          // Properties
          member inline this.action : PKey<Action> = PKey "shortcut.action"
          member inline this.alignmentModes : PKey<AlignmentModes> = PKey "shortcut.alignmentModes"
-         member inline this.commandView : PKey<View> = PKey "shortcut.commandView"
+         member inline this.commandView : PKey<View> = PKey "shortcut.commandView_view"
          member inline this.commandView_element : PKey<ITerminalElement> = PKey "shortcut.commandView_element"
          member inline this.forceFocusColors : PKey<bool> = PKey "shortcut.forceFocusColors"
          member inline this.helpText : PKey<string> = PKey "shortcut.helpText"
@@ -431,7 +433,7 @@ module PKey =
     type menuItemv2PKeys() =
         inherit shortcutPKeys()
         member inline this.command : PKey< Command> = PKey "menuItemv2.command"
-        member inline this.subMenu: PKey<Menuv2> = PKey "menuItemv2.subMenu"
+        member inline this.subMenu: PKey<Menuv2> = PKey "menuItemv2.subMenu_view"
         member inline this.subMenu_element : PKey<IMenuv2Element> = PKey "menuItemv2.subMenu_element"
         member inline this.targetView : PKey<View> = PKey "menuItemv2.targetView"
         member inline this.accepted: PKey<CommandEventArgs -> unit> = PKey "menuItemv2.accepted"
@@ -440,7 +442,7 @@ module PKey =
         inherit menuItemv2PKeys()
 
         // Properties
-        member inline this.popoverMenu : PKey<PopoverMenu> = PKey "menuBarItemv2.popoverMenu"
+        member inline this.popoverMenu : PKey<PopoverMenu> = PKey "menuBarItemv2.popoverMenu_view"
         member inline this.popoverMenu_element : PKey<IPopoverMenuElement> = PKey "menuBarItemv2.popoverMenu_element"
         member inline this.popoverMenuOpen : PKey<bool> = PKey "menuBarItemv2.popoverMenuOpen"
         // Events
@@ -452,7 +454,7 @@ module PKey =
         // Properties
         member inline this.key : PKey<Key> = PKey "popoverMenu.key"
         member inline this.mouseFlags : PKey<MouseFlags> = PKey "popoverMenu.mouseFlags"
-        member inline this.root : PKey<Menuv2> = PKey "popoverMenu.root"
+        member inline this.root : PKey<Menuv2> = PKey "popoverMenu.root_view"
         member inline this.root_element : PKey<IMenuv2Element> = PKey "popoverMenu.root_element"
         // Events
         member inline this.accepted : PKey<CommandEventArgs->unit> = PKey "popoverMenu.accepted"
@@ -618,7 +620,7 @@ module PKey =
 
         // Properties
         member inline this.displayText : PKey<string> = PKey "tab.displayText"
-        member inline this.view : PKey<View> = PKey "tab.view"
+        member inline this.view : PKey<View> = PKey "tab.view_view"
         member inline this.view_element : PKey<ITerminalElement> = PKey "tab.view_element"
 
     // TabView
@@ -634,7 +636,7 @@ module PKey =
         member inline this.selectedTabChanged : PKey<TabChangedEventArgs->unit> = PKey "tabView.selectedTabChanged"
         member inline this.tabClicked : PKey<TabMouseEventArgs->unit> = PKey "tabView.tabClicked"
         // Additional properties
-        member inline this.tabs : PKey<List<ITerminalElement>> = PKey "tabView.tabs"
+        member inline this.tabs : PKey<List<ITerminalElement>> = PKey "tabView.tabs_view"
         member inline this.tabs_elements : PKey<List<ITerminalElement>> = PKey "tabView.tabs_elements"
 
     // TableView

@@ -15,20 +15,11 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
-[<RequireQualifiedAccess>]
-module SubElements =
-    [<RequireQualifiedAccess>]
-    // TODO: useless after the introduction of typed keys
-    type Kind =
-        | SingleElement
-        | MultiElement
-
-    type SubElement =
-        {
-            ElementKey: ElementKey<ITerminalElement>
-            SetParent: bool
-            Kind: Kind
-        }
+type SubElement =
+    {
+        ElementKey: ElementKey<ITerminalElement>
+        SetParent: bool
+    }
 
 
 [<AbstractClass>]
@@ -52,7 +43,7 @@ type TerminalElement (props: Props) =
         props
         |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
-    abstract subElements: SubElements.SubElement list
+    abstract subElements: SubElement list
     default _.subElements = []
 
     abstract newView: unit -> View
@@ -84,36 +75,37 @@ type TerminalElement (props: Props) =
     member this.initializeSubElements parent : (string * obj) seq =
         seq {
             for x in this.subElements do
-                match x.Kind, props |> Props.tryFindByRawKey<obj> x.ElementKey.key with
+                match props |> Props.tryFindByRawKey<obj> x.ElementKey.key with
 
-                | _, None -> ()
+                | None -> ()
 
-                | SubElements.Kind.SingleElement, Some value ->
-                    let subElement = value :?> TerminalElement
-                    let parent =
-                        match x.SetParent with
-                        | true -> Some parent
-                        | false -> None
+                | Some value ->
+                    match value with
+                    | :? TerminalElement as subElement ->
+                        let parent =
+                            match x.SetParent with
+                            | true -> Some parent
+                            | false -> None
 
-                    subElement.initializeTree parent
+                        subElement.initializeTree parent
 
-                    let viewKey = x.ElementKey.viewKey
+                        let viewKey = x.ElementKey.viewKey
 
-                    yield viewKey, subElement.view
+                        yield viewKey, subElement.view
+                    | :? List<ITerminalElement> as elements ->
+                        let parent =
+                            match x.SetParent with
+                            | true -> Some parent
+                            | false -> None
 
-                | SubElements.Kind.MultiElement, Some value ->
-                    let elements = value :?> List<ITerminalElement>
-                    let parent =
-                        match x.SetParent with
-                        | true -> Some parent
-                        | false -> None
+                        elements |> Seq.iter (fun e -> e.initializeTree parent)
 
-                    elements |> Seq.iter (fun e -> e.initializeTree parent)
+                        let viewKey = x.ElementKey.viewKey
+                        let views = elements |> Seq.map _.view |> Seq.toList
 
-                    let viewKey = x.ElementKey.viewKey
-                    let views = elements |> Seq.map _.view |> Seq.toList
-
-                    yield viewKey, views
+                        yield viewKey, views
+                    | _ ->
+                        failwith "Out of range subElement type"
         }
 
     abstract setProps: element: View * props: Props ->  unit
@@ -948,19 +940,13 @@ type FrameViewElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> FrameView
         // No properties or events FrameView
-        ()
 
     override _.name = $"FrameView"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> FrameView
-
         // No properties or events FrameView
-        ()
 
 
     override this.newView() = new FrameView()
@@ -1112,19 +1098,13 @@ type LegendAnnotationElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> LegendAnnotation
         // No properties or events LegendAnnotation
-        ()
 
     override _.name = $"LegendAnnotation"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> LegendAnnotation
-
         // No properties or events LegendAnnotation
-        ()
 
 
     override this.newView() = new LegendAnnotation()
@@ -1382,7 +1362,7 @@ type PopoverMenuElement(props: Props) =
         props |> Props.tryFind PKey.popoverMenu.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.popoverMenu.root_element; SetParent= false; Kind= SubElements.Kind.SingleElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.popoverMenu.root_element; SetParent= false }::base.subElements
 
     override this.newView() = new PopoverMenu()
 
@@ -1426,7 +1406,7 @@ type MenuBarItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.menuBarItemv2.popoverMenu_element; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.menuBarItemv2.popoverMenu_element; SetParent= true }::base.subElements
 
     override this.newView() = new MenuBarItemv2()
 
@@ -1456,7 +1436,7 @@ type MenuBarv2Element(props: Props) =
         //       And "children" properties are handled by the TreeDiff initializeTree function
 
         // Events
-        props |> Props.tryFind PKey.menuBarv2.keyChanged |> Option.iter (fun v -> Interop.removeEventHandler <@ element.KeyChanged @> element)
+        props |> Props.tryFind PKey.menuBarv2.keyChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.KeyChanged @> element)
 
     override _.name = $"MenuBarv2"
 
@@ -1531,7 +1511,7 @@ type ShortcutElement(props: Props) =
         props |> Props.tryFind PKey.shortcut.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.shortcut.commandView_element; SetParent=true; Kind= SubElements.Kind.SingleElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.shortcut.commandView_element; SetParent=true }::base.subElements
 
 
 
@@ -1559,7 +1539,7 @@ type MenuItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuItemv2.subMenu |> Option.iter (fun _ -> Unchecked.defaultof<_>)
         props |> Props.tryFind PKey.menuItemv2.targetView |> Option.iter (fun _ -> Unchecked.defaultof<_>)
         // Events
-        props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.removeEventHandler <@ element.Accepted @> element)
+        props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Accepted @> element)
 
     override _.name = $"MenuItemv2"
 
@@ -1576,7 +1556,7 @@ type MenuItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.menuItemv2.subMenu_element; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.menuItemv2.subMenu_element; SetParent= true }::base.subElements
 
 
     override this.newView() = new MenuItemv2()
@@ -1746,17 +1726,11 @@ type PaddingElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> Padding
-        ()
 
     override _.name = $"Padding"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> Padding
-
-        ()
 
 
     override this.newView() = new Padding()
@@ -1876,19 +1850,13 @@ type SaveDialogElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> SaveDialog
         // No properties or events SaveDialog
-        ()
 
     override _.name = $"SaveDialog"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> SaveDialog
-
         // No properties or events SaveDialog
-        ()
 
 
     override this.newView() = new SaveDialog()
@@ -2010,8 +1978,6 @@ type ScrollSliderElement(props: Props) =
 
         canUpdateView && canUpdateElement
 
-
-
 // Slider<'a>
 type SliderElement<'a>(props: Props) =
     inherit TerminalElement(props)
@@ -2086,20 +2052,13 @@ type SliderElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> Slider
         // No properties or events Slider
-        ()
 
     override _.name = $"Slider"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> Slider
-
         // No properties or events Slider
-        ()
-
 
     override this.newView() = new Slider()
 
@@ -2164,19 +2123,13 @@ type StatusBarElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> StatusBar
         // No properties or events StatusBar
-        ()
 
     override _.name = $"StatusBar"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> StatusBar
-
         // No properties or events StatusBar
-        ()
 
 
     override this.newView() = new StatusBar()
@@ -2214,7 +2167,7 @@ type TabElement(props: Props) =
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.tab.view_element; SetParent= true; Kind= SubElements.Kind.SingleElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.tab.view_element; SetParent= true }::base.subElements
 
     override this.newView() = new Tab()
 
@@ -2268,7 +2221,7 @@ type TabViewElement(props: Props) =
                 element.AddTab (tabItem.view :?> Tab, false)))
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.tabView.tabs_elements; SetParent= true; Kind= SubElements.Kind.MultiElement }::base.subElements
+        { ElementKey= ElementKey.from PKey.tabView.tabs_elements; SetParent= true }::base.subElements
 
     override this.newView() = new TabView()
 
@@ -2745,19 +2698,13 @@ type WindowElement(props: Props) =
 
     override this.removeProps (element: View, props: Props) =
         base.removeProps(element, props)
-        let element = element :?> Window
         // No properties or events Window
-        ()
 
     override _.name = $"Window"
 
     override this.setProps (element: View, props: Props) =
         base.setProps(element, props)
-
-        let element = element :?> Window
-
         // No properties or events Window
-        ()
 
 
     override this.newView() = new Window()

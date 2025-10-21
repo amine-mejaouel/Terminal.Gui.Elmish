@@ -2,87 +2,87 @@ namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
 
-// TODO: this file is starting to be a mess, it needs some organization
+[<AutoOpen>]
+module internal PropKey =
+    type IPropKey<'a> =
+        abstract member key: string
 
-type IPropertyKey<'a> =
-    abstract member key: string
+    /// Represents a property in a Terminal.Gui View
+    type SimplePropKey<'a> = private Key of string
+    with
+        static member create<'a> (key:string) : SimplePropKey<'a> =
+            // TODO: should I do the same check for "_view" ?
+            if key.EndsWith "_element" || key.EndsWith "_elements" then
+                failwith $"Invalid key: {key}"
+            else
+                Key key
 
-/// Represents a property in a Terminal.Gui View
-type SimplePropertyKey<'a> = private Key of string
-with
-    static member create<'a> (key:string) : SimplePropertyKey<'a> =
-        // TODO: should I do the same check for "_view" ?
-        if key.EndsWith "_element" || key.EndsWith "_elements" then
-            failwith $"Invalid key: {key}"
-        else
-            Key key
+        static member map (value: SimplePropKey<'a>) : SimplePropKey<'b> =
+            Key value.key
 
-    static member map (value: SimplePropertyKey<'a>) : SimplePropertyKey<'b> =
-        Key value.key
+        member this.key =
+            let (Key key) = this
+            key
 
-    member this.key =
-        let (Key key) = this
-        key
+        interface IPropKey<'a> with
+            member this.key = this.key
 
-    interface IPropertyKey<'a> with
-        member this.key = this.key
+    type SingleElementPropKey<'a> = private Key of string
+    with
+        static member create<'a> (key:string) : SingleElementPropKey<'a> =
+            if key.EndsWith "_element" then
+                Key key
+            else failwith $"Invalid key: {key}"
 
-type SingleElementKey<'a> = private Key of string
-with
-    static member create<'a> (key:string) : SingleElementKey<'a> =
-        if key.EndsWith "_element" then
-            Key key
-        else failwith $"Invalid key: {key}"
+        member this.key =
+            let (Key key) = this
+            key
 
-    member this.key =
-        let (Key key) = this
-        key
+        interface IPropKey<'a> with
+            member this.key = this.key
 
-    interface IPropertyKey<'a> with
-        member this.key = this.key
+    type MultiElementPropKey<'a> = private Key of string
+    with
+        static member create<'a> (key:string) : MultiElementPropKey<'a> =
+            if key.EndsWith "_elements" then
+                Key key
+            else failwith $"Invalid key: {key}"
 
-type MultiElementKey<'a> = private Key of string
-with
-    static member create<'a> (key:string) : MultiElementKey<'a> =
-        if key.EndsWith "_elements" then
-            Key key
-        else failwith $"Invalid key: {key}"
+        member this.key =
+            let (Key key) = this
+            key
 
-    member this.key =
-        let (Key key) = this
-        key
+        interface IPropKey<'a> with
+            member this.key = this.key
 
-    interface IPropertyKey<'a> with
-        member this.key = this.key
+    type ElementPropKey<'a> =
+        | SingleElementKey of SingleElementPropKey<'a>
+        | MultiElementKey of MultiElementPropKey<'a>
 
-type ElementKey<'a> =
-    | SingleElementKey of SingleElementKey<'a>
-    | MultiElementKey of MultiElementKey<'a>
+        static member createSingleElementKey<'a> (key: string) : ElementPropKey<'a> =
+            SingleElementKey(SingleElementPropKey.create<'a> key)
 
-    static member createSingleElementKey<'a> (key: string) : ElementKey<'a> =
-        SingleElementKey(SingleElementKey.create<'a> key)
+        static member createMultiElementKey<'a> (key: string) : ElementPropKey<'a> =
+            MultiElementKey(MultiElementPropKey.create<'a> key)
 
-    static member createMultiElementKey<'a> (key: string) : ElementKey<'a> =
-        MultiElementKey(MultiElementKey.create<'a> key)
+        static member from (singleElementKey: SingleElementPropKey<'a>) : ElementPropKey<'b> =
+            ElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
 
-    static member from (singleElementKey: SingleElementKey<'a>) : ElementKey<'b> =
-        ElementKey<'b>.createSingleElementKey (singleElementKey :> IPropertyKey<'a>).key
+        static member from (multiElementKey: MultiElementPropKey<'a>) : ElementPropKey<'b> =
+            ElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
 
-    static member from (multiElementKey: MultiElementKey<'a>) : ElementKey<'b> =
-        ElementKey<'b>.createMultiElementKey (multiElementKey :> IPropertyKey<'a>).key
+        member this.key =
+            match this with
+            | SingleElementKey key -> key.key
+            | MultiElementKey key -> key.key
 
-    member this.key =
-        match this with
-        | SingleElementKey key -> key.key
-        | MultiElementKey key -> key.key
+        member this.viewKey =
+            match this with
+            | SingleElementKey key -> key.key.Replace("_element", "_view")
+            | MultiElementKey key -> key.key.Replace("_elements", "_view")
 
-    member this.viewKey =
-        match this with
-        | SingleElementKey key -> key.key.Replace("_element", "_view")
-        | MultiElementKey key -> key.key.Replace("_elements", "_view")
-
-    interface IPropertyKey<'a> with
-        member this.key = this.key
+        interface IPropKey<'a> with
+            member this.key = this.key
 
 /// Props object that is still under construction
 type internal Props(?initialProps) =
@@ -90,9 +90,9 @@ type internal Props(?initialProps) =
     member val dict = defaultArg initialProps (Dictionary<_,_>()) with get
 
     member this.add (k: string, v: obj)  = this.dict.Add(k, v)
-    member this.add<'a> (k: IPropertyKey<'a>, v: 'a)  = this.dict.Add(k.key, v :> obj)
+    member this.add<'a> (k: IPropKey<'a>, v: 'a)  = this.dict.Add(k.key, v :> obj)
 
-    member this.getOrInit<'a> (k: IPropertyKey<'a>) (init: unit -> 'a) : 'a =
+    member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
         match this.dict.TryGetValue k.key with
         | true, value -> value |> unbox<'a>
         | false, _ ->
@@ -134,7 +134,7 @@ module internal Props =
 
         result
 
-    let tryFind (key: IPropertyKey<'a>) (props: Props) =
+    let tryFind (key: IPropKey<'a>) (props: Props) =
         match props.dict.TryGetValue key.key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
@@ -149,12 +149,12 @@ module internal Props =
         | Some v -> v
         | None -> failwith $"Failed to find '{key}'"
 
-    let tryFindWithDefault (key: SimplePropertyKey<'a>) defaultValue props =
+    let tryFindWithDefault (key: SimplePropKey<'a>) defaultValue props =
         props |> tryFind key |> Option.defaultValue defaultValue
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    let exists (k: IPropertyKey<'a>) (p: Props) = p.dict.ContainsKey k.key
+    let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k.key
 
     // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =
@@ -180,38 +180,40 @@ module internal Props =
     let iter iteration (props: Props) =
         props.dict |> Seq.iter iteration
 
-type ITerminalElement = interface end
+[<AutoOpen>]
+module Element =
+    type ITerminalElement = interface end
 
-open Terminal.Gui.ViewBase
+    open Terminal.Gui.ViewBase
 
-// TODO: all concrete Element(s) could be made internal, leaving only the interface as public
-// TODO:  ie make all classes internal / expose public interface instead
-type internal IInternalTerminalElement =
-    inherit ITerminalElement
-    abstract initializeTree: parent: View option -> unit
-    // TODO: rename to prevView
-    abstract canUpdate: prevElement:View -> oldProps: Props -> bool
-    // TODO: rename to prevView
-    abstract update: prevElement:View -> oldProps: Props -> unit
-    abstract children: List<IInternalTerminalElement> with get
-    abstract view: View with get
-    abstract props: Props
-    abstract name: string
+    // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
+    // TODO:  ie make all classes internal / expose public interface instead
+    type internal IInternalTerminalElement =
+        inherit ITerminalElement
+        abstract initializeTree: parent: View option -> unit
+        // TODO: rename to prevView
+        abstract canUpdate: prevElement:View -> oldProps: Props -> bool
+        // TODO: rename to prevView
+        abstract update: prevElement:View -> oldProps: Props -> unit
+        abstract children: List<IInternalTerminalElement> with get
+        abstract view: View with get
+        abstract props: Props
+        abstract name: string
 
-type IMenuv2Element =
-    inherit ITerminalElement
+    type IMenuv2Element =
+        inherit ITerminalElement
 
-type IPopoverMenuElement =
-    inherit ITerminalElement
+    type IPopoverMenuElement =
+        inherit ITerminalElement
 
-type IMenuBarItemv2Element =
-    inherit ITerminalElement
+    type IMenuBarItemv2Element =
+        inherit ITerminalElement
 
-type INumericUpDownElement =
-    inherit ITerminalElement
+    type INumericUpDownElement =
+        inherit ITerminalElement
 
-type ISliderElement =
-    inherit ITerminalElement
+    type ISliderElement =
+        inherit ITerminalElement
 
-type ITreeViewElement =
-    inherit ITerminalElement
+    type ITreeViewElement =
+        inherit ITerminalElement

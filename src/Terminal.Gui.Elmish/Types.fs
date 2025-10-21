@@ -6,12 +6,21 @@ type IPropertyKey<'a> =
     abstract member key: string
 
 /// Represents a property in a Terminal.Gui View
-type SimplePropertyKey<'a> = | SimplePropertyKey of string
+type SimplePropertyKey<'a> = private Key of string
 with
+    static member create<'a> (key:string) : SimplePropertyKey<'a> =
+        // TODO: should I do the same check for "_view" ?
+        if key.EndsWith "_element" || key.EndsWith "_elements" then
+            failwith $"Invalid key: {key}"
+        else
+            Key key
+
+    member this.key =
+        let (Key key) = this
+        key
+
     interface IPropertyKey<'a> with
-        member this.key =
-            let (SimplePropertyKey key) = this
-            key
+        member this.key = this.key
 
 type SingleElementKey<'a> = private Key of string
 with
@@ -120,8 +129,8 @@ module Props =
 
         result
 
-    let tryFind (SimplePropertyKey key: SimplePropertyKey<'a>) (props: Props) =
-        match props.dict.TryGetValue key with
+    let tryFind (key: IPropertyKey<'a>) (props: Props) =
+        match props.dict.TryGetValue key.key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
 
@@ -140,7 +149,7 @@ module Props =
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    let exists (SimplePropertyKey k) (p: Props) = p.dict.ContainsKey k
+    let exists (k: IPropertyKey<'a>) (p: Props) = p.dict.ContainsKey k.key
 
     // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =

@@ -1,13 +1,74 @@
-﻿namespace Terminal.Gui.Elmish
+namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
 
+type IPropertyKey<'a> =
+    abstract member key: string
+
 /// Represents a property in a Terminal.Gui View
-type PKey<'a> = | PKey of string
+type PropertyKey<'a> = | PropertyKey of string
 with
-    member this.value =
-        let (PKey value) = this
-        value
+    interface IPropertyKey<'a> with
+        member this.key =
+            let (PropertyKey key) = this
+            key
+
+type SingleElementKey<'a> = private Key of string
+with
+    static member create<'a> (key:string) : SingleElementKey<'a> =
+        if key.EndsWith "_element" then
+            Key key
+        else failwith $"Invalid key: {key}"
+
+    member this.key =
+        let (Key key) = this
+        key
+
+    interface IPropertyKey<'a> with
+        member this.key = this.key
+
+type MultiElementKey<'a> = private Key of string
+with
+    static member create<'a> (key:string) : MultiElementKey<'a> =
+        if key.EndsWith "_elements" then
+            Key key
+        else failwith $"Invalid key: {key}"
+
+    member this.key =
+        let (Key key) = this
+        key
+
+    interface IPropertyKey<'a> with
+        member this.key = this.key
+
+type ElementKey<'a> =
+    | SingleElementKey of SingleElementKey<'a>
+    | MultiElementKey of MultiElementKey<'a>
+
+    static member createSingleElementKey<'a> (key: string) : ElementKey<'a> =
+        SingleElementKey(SingleElementKey.create<'a> key)
+
+    static member createMultiElementKey<'a> (key: string) : ElementKey<'a> =
+        MultiElementKey(MultiElementKey.create<'a> key)
+
+    static member from (singleElementKey: SingleElementKey<'a>) : ElementKey<'b> =
+        ElementKey<'b>.createSingleElementKey (singleElementKey :> IPropertyKey<'a>).key
+
+    static member from (multiElementKey: MultiElementKey<'a>) : ElementKey<'b> =
+        ElementKey<'b>.createMultiElementKey (multiElementKey :> IPropertyKey<'a>).key
+
+    member this.key =
+        match this with
+        | SingleElementKey key -> key.key
+        | MultiElementKey key -> key.key
+
+    member this.viewKey =
+        match this with
+        | SingleElementKey key -> key.key.Replace("_element", "_view")
+        | MultiElementKey key -> key.key.Replace("_elements", "_view")
+
+    interface IPropertyKey<'a> with
+        member this.key = this.key
 
 /// Props object that is still under construction
 type Props(?initialProps) =
@@ -15,14 +76,14 @@ type Props(?initialProps) =
     member val dict = defaultArg initialProps (Dictionary<_,_>()) with get
 
     member this.add (k: string, v: obj)  = this.dict.Add(k, v)
-    member this.add<'a> (PKey k: PKey<'a>, v: 'a)  = this.dict.Add(k, v :> obj)
+    member this.add<'a> (k: IPropertyKey<'a>, v: 'a)  = this.dict.Add(k.key, v :> obj)
 
-    member this.getOrInit<'a> (PKey k: PKey<'a>) (init: unit -> 'a) : 'a =
-        match this.dict.TryGetValue k with
+    member this.getOrInit<'a> (k: IPropertyKey<'a>) (init: unit -> 'a) : 'a =
+        match this.dict.TryGetValue k.key with
         | true, value -> value |> unbox<'a>
         | false, _ ->
             let value = init()
-            this.dict[k] <- value :> obj
+            this.dict[k.key] <- value :> obj
             value
 
 module Props =
@@ -59,7 +120,7 @@ module Props =
 
         result
 
-    let tryFind (PKey key: PKey<'a>) (props: Props) =
+    let tryFind (PropertyKey key: PropertyKey<'a>) (props: Props) =
         match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
@@ -74,12 +135,12 @@ module Props =
         | Some v -> v
         | None -> failwith $"Failed to find '{key}'"
 
-    let tryFindWithDefault (key: PKey<'a>) defaultValue props =
+    let tryFindWithDefault (key: PropertyKey<'a>) defaultValue props =
         props |> tryFind key |> Option.defaultValue defaultValue
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    let exists (PKey k) (p: Props) = p.dict.ContainsKey k
+    let exists (PropertyKey k) (p: Props) = p.dict.ContainsKey k
 
     // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =

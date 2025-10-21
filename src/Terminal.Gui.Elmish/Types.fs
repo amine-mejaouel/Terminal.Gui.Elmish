@@ -6,11 +6,11 @@ type IPropertyKey<'a> =
     abstract member key: string
 
 /// Represents a property in a Terminal.Gui View
-type PropertyKey<'a> = | PropertyKey of string
+type SimplePropertyKey<'a> = | SimplePropertyKey of string
 with
     interface IPropertyKey<'a> with
         member this.key =
-            let (PropertyKey key) = this
+            let (SimplePropertyKey key) = this
             key
 
 type SingleElementKey<'a> = private Key of string
@@ -120,7 +120,7 @@ module Props =
 
         result
 
-    let tryFind (PropertyKey key: PropertyKey<'a>) (props: Props) =
+    let tryFind (SimplePropertyKey key: SimplePropertyKey<'a>) (props: Props) =
         match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
@@ -135,12 +135,12 @@ module Props =
         | Some v -> v
         | None -> failwith $"Failed to find '{key}'"
 
-    let tryFindWithDefault (key: PropertyKey<'a>) defaultValue props =
+    let tryFindWithDefault (key: SimplePropertyKey<'a>) defaultValue props =
         props |> tryFind key |> Option.defaultValue defaultValue
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    let exists (PropertyKey k) (p: Props) = p.dict.ContainsKey k
+    let exists (SimplePropertyKey k) (p: Props) = p.dict.ContainsKey k
 
     // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =

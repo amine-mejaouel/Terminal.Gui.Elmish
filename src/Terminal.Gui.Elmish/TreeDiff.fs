@@ -1,6 +1,6 @@
 ﻿namespace Terminal.Gui.Elmish
 
-module Differ =
+module internal Differ =
 
     open Terminal.Gui.ViewBase
     open Terminal.Gui.Elmish.Elements
@@ -18,7 +18,7 @@ module Differ =
             |> Seq.iter (fun e -> disposeTree e)
             ()
 
-    let (|OnlyPropsChanged|_|) (ve1:ITerminalElement,ve2:ITerminalElement) =
+    let (|OnlyPropsChanged|_|) (ve1:IInternalTerminalElement,ve2:IInternalTerminalElement) =
         let cve1 = ve1.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         let cve2 = ve2.children |> Seq.map (fun e -> e.name) |> Seq.toList |> List.sort
         //let cve1 = getChildrenNames(ve1)
@@ -26,7 +26,7 @@ module Differ =
 
         if cve1 = cve2 then Some () else None
 
-    let (|ChildsDifferent|_|) (ve1:ITerminalElement,ve2:ITerminalElement) =
+    let (|ChildsDifferent|_|) (ve1:IInternalTerminalElement,ve2:IInternalTerminalElement) =
         //let cve1 = getChildrenNames(ve1)
         //let cve2 = getChildrenNames(ve2)
 
@@ -35,7 +35,7 @@ module Differ =
         if cve1 <> cve2 then Some () else None
 
     // TODO: Could be nice if this can be turned into a TailCall
-    let rec update (rootTree:ITerminalElement) (newTree:ITerminalElement) =
+    let rec update (rootTree:IInternalTerminalElement) (newTree:IInternalTerminalElement) =
         match rootTree, newTree with
         | rt, nt when rt.name <> nt.name ->
             let parent = rootTree.view |> Interop.getParent

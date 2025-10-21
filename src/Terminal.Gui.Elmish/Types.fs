@@ -2,6 +2,8 @@ namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
 
+// TODO: this file is starting to be a mess, it needs some organization
+
 type IPropertyKey<'a> =
     abstract member key: string
 
@@ -14,6 +16,9 @@ with
             failwith $"Invalid key: {key}"
         else
             Key key
+
+    static member map (value: SimplePropertyKey<'a>) : SimplePropertyKey<'b> =
+        Key value.key
 
     member this.key =
         let (Key key) = this
@@ -80,7 +85,7 @@ type ElementKey<'a> =
         member this.key = this.key
 
 /// Props object that is still under construction
-type Props(?initialProps) =
+type internal Props(?initialProps) =
 
     member val dict = defaultArg initialProps (Dictionary<_,_>()) with get
 
@@ -95,7 +100,7 @@ type Props(?initialProps) =
             this.dict[k.key] <- value :> obj
             value
 
-module Props =
+module internal Props =
     let merge (props': Props) (props'': Props) =
         let result = Dictionary()
         let addToResult (source: Props) =
@@ -174,3 +179,39 @@ module Props =
 
     let iter iteration (props: Props) =
         props.dict |> Seq.iter iteration
+
+type ITerminalElement = interface end
+
+open Terminal.Gui.ViewBase
+
+// TODO: all concrete Element(s) could be made internal, leaving only the interface as public
+// TODO:  ie make all classes internal / expose public interface instead
+type internal IInternalTerminalElement =
+    inherit ITerminalElement
+    abstract initializeTree: parent: View option -> unit
+    // TODO: rename to prevView
+    abstract canUpdate: prevElement:View -> oldProps: Props -> bool
+    // TODO: rename to prevView
+    abstract update: prevElement:View -> oldProps: Props -> unit
+    abstract children: List<IInternalTerminalElement> with get
+    abstract view: View with get
+    abstract props: Props
+    abstract name: string
+
+type IMenuv2Element =
+    inherit ITerminalElement
+
+type IPopoverMenuElement =
+    inherit ITerminalElement
+
+type IMenuBarItemv2Element =
+    inherit ITerminalElement
+
+type INumericUpDownElement =
+    inherit ITerminalElement
+
+type ISliderElement =
+    inherit ITerminalElement
+
+type ITreeViewElement =
+    inherit ITerminalElement

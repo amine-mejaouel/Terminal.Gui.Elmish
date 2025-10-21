@@ -141,7 +141,7 @@ module Program =
         let rb = RingBuffer 10
         let mutable reentered = false
         let mutable state = model
-        let mutable currentTreeState:ITerminalElement option = None
+        let mutable currentTreeState:IInternalTerminalElement option = None
         let rec dispatch msg =
             if reentered then
                 rb.Push msg
@@ -161,7 +161,7 @@ module Program =
                         | None ->
                             ()
                         | Some currentState ->
-                            let nextTreeState = program.view model' syncDispatch
+                            let nextTreeState = program.view model' syncDispatch :?> IInternalTerminalElement
                             Differ.update currentState nextTreeState
                             currentTreeState <- Some nextTreeState
 
@@ -198,7 +198,7 @@ module Program =
 
         program.setState model syncDispatch
 
-        let startState = program.view model syncDispatch
+        let startState = program.view model syncDispatch :?> IInternalTerminalElement
 
         startState.initializeTree None
         currentTreeState <- Some startState

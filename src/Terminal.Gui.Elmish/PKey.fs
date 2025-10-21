@@ -22,33 +22,11 @@ open Terminal.Gui.ViewBase
 
 open Terminal.Gui.Views
 
-// TODO: all concrete Element(s) could be made internal, leaving only the interface as public
-// TODO:  ie make all classes internal / expose public interface instead
-type ITerminalElement =
-    abstract initializeTree: parent: View option -> unit
-    // TODO: rename to prevView
-    abstract canUpdate: prevElement:View -> oldProps: Props -> bool
-    // TODO: rename to prevView
-    abstract update: prevElement:View -> oldProps: Props -> unit
-    abstract children: List<ITerminalElement> with get
-    abstract view: View with get
-    abstract props: Props
-    abstract name: string
-
-type IMenuv2Element =
-    inherit ITerminalElement
-
-type IPopoverMenuElement =
-    inherit ITerminalElement
-
-type IMenuBarItemv2Element =
-    inherit ITerminalElement
-
 /// Properties key index
-module PKey =
+module internal PKey =
 
     type viewPKeys() =
-        member inline this.children : SimplePropertyKey<System.Collections.Generic.List<ITerminalElement>> = SimplePropertyKey.create "children"
+        member inline this.children : SimplePropertyKey<System.Collections.Generic.List<IInternalTerminalElement>> = SimplePropertyKey.create "children"
 
         // Properties
         member inline this.arrangement : SimplePropertyKey<ViewArrangement> = SimplePropertyKey.create "view.arrangement"

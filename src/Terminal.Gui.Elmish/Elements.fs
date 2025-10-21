@@ -1,12 +1,4 @@
-
-(*
-#######################################
-#            Elements.fs              #
-#######################################
-*)
-
-
-namespace Terminal.Gui.Elmish.Elements
+module internal Terminal.Gui.Elmish.Elements
 
 open System
 open System.Collections.Generic
@@ -17,13 +9,12 @@ open Terminal.Gui.Views
 
 type SubElement =
     {
-        ElementKey: ElementKey<ITerminalElement>
+        ElementKey: ElementPropKey<ITerminalElement>
         SetParent: bool
     }
 
-
 [<AbstractClass>]
-type internal TerminalElement (props: Props) =
+type TerminalElement (props: Props) =
     [<TailCall>]
     let rec initializeTreeLoop (nodes: ((* Element *) IInternalTerminalElement * (* Parent *) View option) list) =
         match nodes with
@@ -420,7 +411,7 @@ module internal ViewElement =
         |> List.forall id
 
 // Adornment
-type internal AdornmentElement(props: Props) =
+type AdornmentElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -461,7 +452,7 @@ type internal AdornmentElement(props: Props) =
         canUpdateView && canUpdateElement
 
 // Bar
-type internal BarElement(props: Props) =
+type BarElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -502,7 +493,7 @@ type internal BarElement(props: Props) =
 
 
 // Border
-type internal BorderElement(props: Props) =
+type BorderElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -538,7 +529,7 @@ type internal BorderElement(props: Props) =
 
 
 // Button
-type internal ButtonElement(props: Props) =
+type ButtonElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -584,7 +575,7 @@ type internal ButtonElement(props: Props) =
 
 
 // CheckBox
-type internal CheckBoxElement(props: Props) =
+type CheckBoxElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -632,7 +623,7 @@ type internal CheckBoxElement(props: Props) =
 
 
 // ColorPicker
-type internal ColorPickerElement(props: Props) =
+type ColorPickerElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -672,7 +663,7 @@ type internal ColorPickerElement(props: Props) =
 
 
 // ColorPicker16
-type internal ColorPicker16Element(props: Props) =
+type ColorPicker16Element(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -716,7 +707,7 @@ type internal ColorPicker16Element(props: Props) =
 
 
 // ComboBox
-type internal ComboBoxElement(props: Props) =
+type ComboBoxElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -770,7 +761,7 @@ type internal ComboBoxElement(props: Props) =
 
 
 // DateField
-type internal DateFieldElement(props: Props) =
+type DateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -812,7 +803,7 @@ type internal DateFieldElement(props: Props) =
 
 
 // DatePicker
-type internal DatePickerElement(props: Props) =
+type DatePickerElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -848,7 +839,7 @@ type internal DatePickerElement(props: Props) =
 
 
 // Dialog
-type internal DialogElement(props: Props) =
+type DialogElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -886,7 +877,7 @@ type internal DialogElement(props: Props) =
 
 
 // FileDialog
-type internal FileDialogElement(props: Props) =
+type FileDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -936,7 +927,7 @@ type internal FileDialogElement(props: Props) =
 
 
 // FrameView
-type internal FrameViewElement(props: Props) =
+type FrameViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -964,7 +955,7 @@ type internal FrameViewElement(props: Props) =
 
 
 // GraphView
-type internal GraphViewElement(props: Props) =
+type GraphViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1010,7 +1001,7 @@ type internal GraphViewElement(props: Props) =
 
 
 // HexView
-type internal HexViewElement(props: Props) =
+type HexViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1058,7 +1049,7 @@ type internal HexViewElement(props: Props) =
 
 
 // Label
-type internal LabelElement(props: Props) =
+type LabelElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1094,7 +1085,7 @@ type internal LabelElement(props: Props) =
 
 
 // LegendAnnotation
-type internal LegendAnnotationElement(props: Props) =
+type LegendAnnotationElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1122,7 +1113,7 @@ type internal LegendAnnotationElement(props: Props) =
 
 
 // Line
-type internal LineElement(props: Props) =
+type LineElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1162,7 +1153,7 @@ type internal LineElement(props: Props) =
 
 
 // LineView
-type internal LineViewElement(props: Props) =
+type LineViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1202,7 +1193,7 @@ type internal LineViewElement(props: Props) =
 
 
 // ListView
-type internal ListViewElement(props: Props) =
+type ListViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1256,7 +1247,7 @@ type internal ListViewElement(props: Props) =
 
 
 // Margin
-type internal MarginElement(props: Props) =
+type MarginElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1290,7 +1281,7 @@ type internal MarginElement(props: Props) =
 
 
 // Menuv2
-type internal Menuv2Element(props: Props) =
+type Menuv2Element(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1333,7 +1324,7 @@ type internal Menuv2Element(props: Props) =
 
 
 
-type internal PopoverMenuElement(props: Props) =
+type PopoverMenuElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1363,7 +1354,7 @@ type internal PopoverMenuElement(props: Props) =
         props |> Props.tryFind PKey.popoverMenu.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.popoverMenu.root_element; SetParent= false }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.popoverMenu.root_element; SetParent= false }::base.subElements
 
     override this.newView() = new PopoverMenu()
 
@@ -1379,7 +1370,7 @@ type internal PopoverMenuElement(props: Props) =
     interface IPopoverMenuElement
 
 // MenuBarItemv2
-type internal MenuBarItemv2Element(props: Props) =
+type MenuBarItemv2Element(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1405,7 +1396,7 @@ type internal MenuBarItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.menuBarItemv2.popoverMenu_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element; SetParent= true }::base.subElements
 
     override this.newView() = new MenuBarItemv2()
 
@@ -1421,7 +1412,7 @@ type internal MenuBarItemv2Element(props: Props) =
     interface IMenuBarItemv2Element
 
 // MenuBar
-type internal MenuBarv2Element(props: Props) =
+type MenuBarv2Element(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1468,7 +1459,7 @@ type internal MenuBarv2Element(props: Props) =
 
 
 // Shortcut
-type internal ShortcutElement(props: Props) =
+type ShortcutElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1510,7 +1501,7 @@ type internal ShortcutElement(props: Props) =
         props |> Props.tryFind PKey.shortcut.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.shortcut.commandView_element; SetParent=true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.shortcut.commandView_element; SetParent=true }::base.subElements
 
 
 
@@ -1527,7 +1518,7 @@ type internal ShortcutElement(props: Props) =
 
 
 
-type internal MenuItemv2Element(props: Props) =
+type MenuItemv2Element(props: Props) =
     inherit ShortcutElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1555,7 +1546,7 @@ type internal MenuItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.menuItemv2.subMenu_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.menuItemv2.subMenu_element; SetParent= true }::base.subElements
 
 
     override this.newView() = new MenuItemv2()
@@ -1571,7 +1562,7 @@ type internal MenuItemv2Element(props: Props) =
         canUpdateView && canUpdateElement
 
 // NumericUpDown<'a>
-type internal NumericUpDownElement<'a>(props: Props) =
+type NumericUpDownElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1619,11 +1610,11 @@ type internal NumericUpDownElement<'a>(props: Props) =
 
 
 // NumericUpDown
-type internal NumericUpDownElement(props: Props) =
+type NumericUpDownElement(props: Props) =
     inherit NumericUpDownElement<int>(props)
 
 // OpenDialog
-type internal OpenDialogElement(props: Props) =
+type OpenDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1656,7 +1647,7 @@ type internal OpenDialogElement(props: Props) =
 
 
 
-type internal OrientationInterface =
+type OrientationInterface =
     static member removeProps (element: IOrientation) (props: Props) =
         // Properties
         props |> Props.tryFind PKey.optionSelector.orientation |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_> )
@@ -1673,7 +1664,7 @@ type internal OrientationInterface =
 
 
 // OptionSelector
-type internal OptionSelectorElement(props: Props) =
+type OptionSelectorElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1721,7 +1712,7 @@ type internal OptionSelectorElement(props: Props) =
 
 
 // Padding
-type internal PaddingElement(props: Props) =
+type PaddingElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1747,7 +1738,7 @@ type internal PaddingElement(props: Props) =
 
 
 // ProgressBar
-type internal ProgressBarElement(props: Props) =
+type ProgressBarElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1791,7 +1782,7 @@ type internal ProgressBarElement(props: Props) =
 
 
 // RadioGroup
-type internal RadioGroupElement(props: Props) =
+type RadioGroupElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1845,7 +1836,7 @@ type internal RadioGroupElement(props: Props) =
 
 
 // SaveDialog
-type internal SaveDialogElement(props: Props) =
+type SaveDialogElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1873,7 +1864,7 @@ type internal SaveDialogElement(props: Props) =
 
 
 // ScrollBar
-type internal ScrollBarElement(props: Props) =
+type ScrollBarElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1927,7 +1918,7 @@ type internal ScrollBarElement(props: Props) =
 
 
 // ScrollSlider
-type internal ScrollSliderElement(props: Props) =
+type ScrollSliderElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -1979,7 +1970,7 @@ type internal ScrollSliderElement(props: Props) =
         canUpdateView && canUpdateElement
 
 // Slider<'a>
-type internal SliderElement<'a>(props: Props) =
+type SliderElement<'a>(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2047,7 +2038,7 @@ type internal SliderElement<'a>(props: Props) =
     interface ISliderElement
 
 // Slider
-type internal SliderElement(props: Props) =
+type SliderElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2074,7 +2065,7 @@ type internal SliderElement(props: Props) =
 
 
 // SpinnerView
-type internal SpinnerViewElement(props: Props) =
+type SpinnerViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2118,7 +2109,7 @@ type internal SpinnerViewElement(props: Props) =
 
 
 // StatusBar
-type internal StatusBarElement(props: Props) =
+type StatusBarElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2146,7 +2137,7 @@ type internal StatusBarElement(props: Props) =
 
 
 // Tab
-type internal TabElement(props: Props) =
+type TabElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2167,7 +2158,7 @@ type internal TabElement(props: Props) =
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.tab.view_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.tab.view_element; SetParent= true }::base.subElements
 
     override this.newView() = new Tab()
 
@@ -2183,7 +2174,7 @@ type internal TabElement(props: Props) =
 
 
 // TabView
-type internal TabViewElement(props: Props) =
+type TabViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
@@ -2221,7 +2212,7 @@ type internal TabViewElement(props: Props) =
                 element.AddTab ((tabItem :?> IInternalTerminalElement).view :?> Tab, false)))
 
     override this.subElements =
-        { ElementKey= ElementKey.from PKey.tabView.tabs_elements; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.tabView.tabs_elements; SetParent= true }::base.subElements
 
     override this.newView() = new TabView()
 
@@ -2237,7 +2228,7 @@ type internal TabViewElement(props: Props) =
 
 
 // TableView
-type internal TableViewElement(props: Props) =
+type TableViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2305,7 +2296,7 @@ type internal TableViewElement(props: Props) =
 
 
 // TextField
-type internal TextFieldElement(props: Props) =
+type TextFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2363,7 +2354,7 @@ type internal TextFieldElement(props: Props) =
 
 
 // TextValidateField
-type internal TextValidateFieldElement(props: Props) =
+type TextValidateFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2399,7 +2390,7 @@ type internal TextValidateFieldElement(props: Props) =
 
 
 // TextView
-type internal TextViewElement(props: Props) =
+type TextViewElement(props: Props) =
     inherit TerminalElement(props)
 
 
@@ -2489,7 +2480,7 @@ type internal TextViewElement(props: Props) =
 
 
 // TileView
-type internal TileViewElement(props: Props) =
+type TileViewElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2531,7 +2522,7 @@ type internal TileViewElement(props: Props) =
 
 
 // TimeField
-type internal TimeFieldElement(props: Props) =
+type TimeFieldElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2573,7 +2564,7 @@ type internal TimeFieldElement(props: Props) =
 
 
 // Toplevel
-type internal ToplevelElement(props: Props) =
+type ToplevelElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2625,7 +2616,7 @@ type internal ToplevelElement(props: Props) =
         canUpdateView && canUpdateElement
 
 // TreeView<'a when 'a : not struct>
-type internal TreeViewElement<'a when 'a : not struct>(props: Props) =
+type TreeViewElement<'a when 'a : not struct>(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2688,11 +2679,11 @@ type internal TreeViewElement<'a when 'a : not struct>(props: Props) =
     interface ITreeViewElement
 
 // TreeView
-type internal TreeViewElement(props: Props) =
+type TreeViewElement(props: Props) =
     inherit TreeViewElement<ITreeNode>(props)
 
 // Window
-type internal WindowElement(props: Props) =
+type WindowElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2720,7 +2711,7 @@ type internal WindowElement(props: Props) =
 
 
 // Wizard
-type internal WizardElement(props: Props) =
+type WizardElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =
@@ -2770,7 +2761,7 @@ type internal WizardElement(props: Props) =
 
 
 // WizardStep
-type internal WizardStepElement(props: Props) =
+type WizardStepElement(props: Props) =
     inherit TerminalElement(props)
 
     override this.removeProps (element: View, props: Props) =

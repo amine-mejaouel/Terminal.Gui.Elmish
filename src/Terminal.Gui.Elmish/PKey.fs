@@ -26,256 +26,256 @@ open Terminal.Gui.Views
 module internal PKey =
 
     type viewPKeys() =
-        member inline this.children : SimplePropertyKey<System.Collections.Generic.List<IInternalTerminalElement>> = SimplePropertyKey.create "children"
+        member inline this.children : SimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = SimplePropKey.create "children"
 
         // Properties
-        member inline this.arrangement : SimplePropertyKey<ViewArrangement> = SimplePropertyKey.create "view.arrangement"
-        member inline this.borderStyle : SimplePropertyKey<LineStyle> = SimplePropertyKey.create "view.borderStyle"
-        member inline this.canFocus : SimplePropertyKey<bool> = SimplePropertyKey.create "view.canFocus"
-        member inline this.contentSizeTracksViewport : SimplePropertyKey<bool> = SimplePropertyKey.create "view.contentSizeTracksViewport"
-        member inline this.cursorVisibility : SimplePropertyKey<CursorVisibility> = SimplePropertyKey.create "view.cursorVisibility"
-        member inline this.data : SimplePropertyKey<Object> = SimplePropertyKey.create "view.data"
-        member inline this.enabled : SimplePropertyKey<bool> = SimplePropertyKey.create "view.enabled"
-        member inline this.frame : SimplePropertyKey<Rectangle> = SimplePropertyKey.create "view.frame"
-        member inline this.hasFocus : SimplePropertyKey<bool> = SimplePropertyKey.create "view.hasFocus"
-        member inline this.height : SimplePropertyKey<Dim> = SimplePropertyKey.create "view.height"
-        member inline this.highlightStates : SimplePropertyKey<MouseState> = SimplePropertyKey.create "view.highlightStates"
-        member inline this.hotKey : SimplePropertyKey<Key> = SimplePropertyKey.create "view.hotKey"
-        member inline this.hotKeySpecifier : SimplePropertyKey<Rune> = SimplePropertyKey.create "view.hotKeySpecifier"
-        member inline this.id : SimplePropertyKey<string> = SimplePropertyKey.create "view.id"
-        member inline this.isInitialized : SimplePropertyKey<bool> = SimplePropertyKey.create "view.isInitialized"
-        member inline this.mouseHeldDown : SimplePropertyKey<IMouseHeldDown> = SimplePropertyKey.create "view.mouseHeldDown"
-        member inline this.needsDraw : SimplePropertyKey<bool> = SimplePropertyKey.create "view.needsDraw"
-        member inline this.preserveTrailingSpaces : SimplePropertyKey<bool> = SimplePropertyKey.create "view.preserveTrailingSpaces"
-        member inline this.schemeName : SimplePropertyKey<string> = SimplePropertyKey.create "view.schemeName"
-        member inline this.shadowStyle : SimplePropertyKey<ShadowStyle> = SimplePropertyKey.create "view.shadowStyle"
-        member inline this.superViewRendersLineCanvas : SimplePropertyKey<bool> = SimplePropertyKey.create "view.superViewRendersLineCanvas"
-        member inline this.tabStop : SimplePropertyKey<TabBehavior option> = SimplePropertyKey.create "view.tabStop"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "view.text"
-        member inline this.textAlignment : SimplePropertyKey<Alignment> = SimplePropertyKey.create "view.textAlignment"
-        member inline this.textDirection : SimplePropertyKey<TextDirection> = SimplePropertyKey.create "view.textDirection"
-        member inline this.title : SimplePropertyKey<string> = SimplePropertyKey.create "view.title"
-        member inline this.validatePosDim : SimplePropertyKey<bool> = SimplePropertyKey.create "view.validatePosDim"
-        member inline this.verticalTextAlignment : SimplePropertyKey<Alignment> = SimplePropertyKey.create "view.verticalTextAlignment"
-        member inline this.viewport : SimplePropertyKey<Rectangle> = SimplePropertyKey.create "view.viewport"
-        member inline this.viewportSettings : SimplePropertyKey<ViewportSettingsFlags> = SimplePropertyKey.create "view.viewportSettings"
-        member inline this.visible : SimplePropertyKey<bool> = SimplePropertyKey.create "view.visible"
-        member inline this.wantContinuousButtonPressed : SimplePropertyKey<bool> = SimplePropertyKey.create "view.wantContinuousButtonPressed"
-        member inline this.wantMousePositionReports : SimplePropertyKey<bool> = SimplePropertyKey.create "view.wantMousePositionReports"
-        member inline this.width : SimplePropertyKey<Dim> = SimplePropertyKey.create "view.width"
-        member inline this.x : SimplePropertyKey<Pos> = SimplePropertyKey.create "view.x"
-        member inline this.y : SimplePropertyKey<Pos> = SimplePropertyKey.create "view.y"
+        member inline this.arrangement : SimplePropKey<ViewArrangement> = SimplePropKey.create "view.arrangement"
+        member inline this.borderStyle : SimplePropKey<LineStyle> = SimplePropKey.create "view.borderStyle"
+        member inline this.canFocus : SimplePropKey<bool> = SimplePropKey.create "view.canFocus"
+        member inline this.contentSizeTracksViewport : SimplePropKey<bool> = SimplePropKey.create "view.contentSizeTracksViewport"
+        member inline this.cursorVisibility : SimplePropKey<CursorVisibility> = SimplePropKey.create "view.cursorVisibility"
+        member inline this.data : SimplePropKey<Object> = SimplePropKey.create "view.data"
+        member inline this.enabled : SimplePropKey<bool> = SimplePropKey.create "view.enabled"
+        member inline this.frame : SimplePropKey<Rectangle> = SimplePropKey.create "view.frame"
+        member inline this.hasFocus : SimplePropKey<bool> = SimplePropKey.create "view.hasFocus"
+        member inline this.height : SimplePropKey<Dim> = SimplePropKey.create "view.height"
+        member inline this.highlightStates : SimplePropKey<MouseState> = SimplePropKey.create "view.highlightStates"
+        member inline this.hotKey : SimplePropKey<Key> = SimplePropKey.create "view.hotKey"
+        member inline this.hotKeySpecifier : SimplePropKey<Rune> = SimplePropKey.create "view.hotKeySpecifier"
+        member inline this.id : SimplePropKey<string> = SimplePropKey.create "view.id"
+        member inline this.isInitialized : SimplePropKey<bool> = SimplePropKey.create "view.isInitialized"
+        member inline this.mouseHeldDown : SimplePropKey<IMouseHeldDown> = SimplePropKey.create "view.mouseHeldDown"
+        member inline this.needsDraw : SimplePropKey<bool> = SimplePropKey.create "view.needsDraw"
+        member inline this.preserveTrailingSpaces : SimplePropKey<bool> = SimplePropKey.create "view.preserveTrailingSpaces"
+        member inline this.schemeName : SimplePropKey<string> = SimplePropKey.create "view.schemeName"
+        member inline this.shadowStyle : SimplePropKey<ShadowStyle> = SimplePropKey.create "view.shadowStyle"
+        member inline this.superViewRendersLineCanvas : SimplePropKey<bool> = SimplePropKey.create "view.superViewRendersLineCanvas"
+        member inline this.tabStop : SimplePropKey<TabBehavior option> = SimplePropKey.create "view.tabStop"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "view.text"
+        member inline this.textAlignment : SimplePropKey<Alignment> = SimplePropKey.create "view.textAlignment"
+        member inline this.textDirection : SimplePropKey<TextDirection> = SimplePropKey.create "view.textDirection"
+        member inline this.title : SimplePropKey<string> = SimplePropKey.create "view.title"
+        member inline this.validatePosDim : SimplePropKey<bool> = SimplePropKey.create "view.validatePosDim"
+        member inline this.verticalTextAlignment : SimplePropKey<Alignment> = SimplePropKey.create "view.verticalTextAlignment"
+        member inline this.viewport : SimplePropKey<Rectangle> = SimplePropKey.create "view.viewport"
+        member inline this.viewportSettings : SimplePropKey<ViewportSettingsFlags> = SimplePropKey.create "view.viewportSettings"
+        member inline this.visible : SimplePropKey<bool> = SimplePropKey.create "view.visible"
+        member inline this.wantContinuousButtonPressed : SimplePropKey<bool> = SimplePropKey.create "view.wantContinuousButtonPressed"
+        member inline this.wantMousePositionReports : SimplePropKey<bool> = SimplePropKey.create "view.wantMousePositionReports"
+        member inline this.width : SimplePropKey<Dim> = SimplePropKey.create "view.width"
+        member inline this.x : SimplePropKey<Pos> = SimplePropKey.create "view.x"
+        member inline this.y : SimplePropKey<Pos> = SimplePropKey.create "view.y"
         // Events
-        member inline this.accepting : SimplePropertyKey<HandledEventArgs->unit> = SimplePropertyKey.create "view.accepting"
-        member inline this.advancingFocus : SimplePropertyKey<AdvanceFocusEventArgs->unit> = SimplePropertyKey.create "view.advancingFocus"
-        member inline this.borderStyleChanged : SimplePropertyKey<EventArgs->unit> = SimplePropertyKey.create "view.borderStyleChanged"
-        member inline this.canFocusChanged : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.canFocusChanged"
-        member inline this.clearedViewport : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.clearedViewport"
-        member inline this.clearingViewport : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.clearingViewport"
-        member inline this.commandNotBound : SimplePropertyKey<CommandEventArgs->unit> = SimplePropertyKey.create "view.commandNotBound"
-        member inline this.contentSizeChanged : SimplePropertyKey<SizeChangedEventArgs->unit> = SimplePropertyKey.create "view.contentSizeChanged"
-        member inline this.disposing : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.disposing"
-        member inline this.drawComplete : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.drawComplete"
-        member inline this.drawingContent : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.drawingContent"
-        member inline this.drawingSubViews : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.drawingSubViews"
-        member inline this.drawingText : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.drawingText"
-        member inline this.enabledChanged : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.enabledChanged"
-        member inline this.focusedChanged : SimplePropertyKey<HasFocusEventArgs->unit> = SimplePropertyKey.create "view.focusedChanged"
-        member inline this.frameChanged : SimplePropertyKey<EventArgs<Rectangle>->unit> = SimplePropertyKey.create "view.frameChanged"
-        member inline this.gettingAttributeForRole : SimplePropertyKey<VisualRoleEventArgs->unit> = SimplePropertyKey.create "view.gettingAttributeForRole"
-        member inline this.gettingScheme : SimplePropertyKey<ResultEventArgs<Scheme>->unit> = SimplePropertyKey.create "view.gettingScheme"
-        member inline this.handlingHotKey : SimplePropertyKey<CommandEventArgs->unit> = SimplePropertyKey.create "view.handlingHotKey"
-        member inline this.hasFocusChanged : SimplePropertyKey<HasFocusEventArgs->unit> = SimplePropertyKey.create "view.hasFocusChanged"
-        member inline this.hasFocusChanging : SimplePropertyKey<HasFocusEventArgs->unit> = SimplePropertyKey.create "view.hasFocusChanging"
-        member inline this.hotKeyChanged : SimplePropertyKey<KeyChangedEventArgs->unit> = SimplePropertyKey.create "view.hotKeyChanged"
-        member inline this.initialized : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.initialized"
-        member inline this.keyDown : SimplePropertyKey<Key->unit> = SimplePropertyKey.create "view.keyDown"
-        member inline this.keyDownNotHandled : SimplePropertyKey<Key->unit> = SimplePropertyKey.create "view.keyDownNotHandled"
-        member inline this.keyUp : SimplePropertyKey<Key->unit> = SimplePropertyKey.create "view.keyUp"
-        member inline this.mouseClick : SimplePropertyKey<MouseEventArgs->unit> = SimplePropertyKey.create "view.mouseClick"
-        member inline this.mouseEnter : SimplePropertyKey<CancelEventArgs->unit> = SimplePropertyKey.create "view.mouseEnter"
-        member inline this.mouseEvent : SimplePropertyKey<MouseEventArgs->unit> = SimplePropertyKey.create "view.mouseEvent"
-        member inline this.mouseLeave : SimplePropertyKey<EventArgs->unit> = SimplePropertyKey.create "view.mouseLeave"
-        member inline this.mouseStateChanged : SimplePropertyKey<EventArgs->unit> = SimplePropertyKey.create "view.mouseStateChanged"
-        member inline this.mouseWheel : SimplePropertyKey<MouseEventArgs->unit> = SimplePropertyKey.create "view.mouseWheel"
-        member inline this.removed : SimplePropertyKey<SuperViewChangedEventArgs->unit> = SimplePropertyKey.create "view.removed"
-        member inline this.schemeChanged : SimplePropertyKey<ValueChangedEventArgs<Scheme>->unit> = SimplePropertyKey.create "view.schemeChanged"
-        member inline this.schemeChanging : SimplePropertyKey<ValueChangingEventArgs<Scheme>->unit> = SimplePropertyKey.create "view.schemeChanging"
-        member inline this.schemeNameChanged : SimplePropertyKey<ValueChangedEventArgs<string>->unit> = SimplePropertyKey.create "view.schemeNameChanged"
-        member inline this.schemeNameChanging : SimplePropertyKey<ValueChangingEventArgs<string>->unit> = SimplePropertyKey.create "view.schemeNameChanging"
-        member inline this.selecting : SimplePropertyKey<CommandEventArgs->unit> = SimplePropertyKey.create "view.selecting"
-        member inline this.subViewAdded : SimplePropertyKey<SuperViewChangedEventArgs->unit> = SimplePropertyKey.create "view.subViewAdded"
-        member inline this.subViewLayout : SimplePropertyKey<LayoutEventArgs->unit> = SimplePropertyKey.create "view.subViewLayout"
-        member inline this.subViewRemoved : SimplePropertyKey<SuperViewChangedEventArgs->unit> = SimplePropertyKey.create "view.subViewRemoved"
-        member inline this.subViewsLaidOut : SimplePropertyKey<LayoutEventArgs->unit> = SimplePropertyKey.create "view.subViewsLaidOut"
-        member inline this.superViewChanged : SimplePropertyKey<SuperViewChangedEventArgs->unit> = SimplePropertyKey.create "view.superViewChanged"
-        member inline this.textChanged : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.textChanged"
-        member inline this.titleChanged : SimplePropertyKey<string->unit> = SimplePropertyKey.create "view.titleChanged"
-        member inline this.titleChanging : SimplePropertyKey<App.CancelEventArgs<string>->unit> = SimplePropertyKey.create "view.titleChanging"
-        member inline this.viewportChanged : SimplePropertyKey<DrawEventArgs->unit> = SimplePropertyKey.create "view.viewportChanged"
-        member inline this.visibleChanged : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.visibleChanged"
-        member inline this.visibleChanging : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "view.visibleChanging"
+        member inline this.accepting : SimplePropKey<HandledEventArgs->unit> = SimplePropKey.create "view.accepting"
+        member inline this.advancingFocus : SimplePropKey<AdvanceFocusEventArgs->unit> = SimplePropKey.create "view.advancingFocus"
+        member inline this.borderStyleChanged : SimplePropKey<EventArgs->unit> = SimplePropKey.create "view.borderStyleChanged"
+        member inline this.canFocusChanged : SimplePropKey<unit->unit> = SimplePropKey.create "view.canFocusChanged"
+        member inline this.clearedViewport : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.clearedViewport"
+        member inline this.clearingViewport : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.clearingViewport"
+        member inline this.commandNotBound : SimplePropKey<CommandEventArgs->unit> = SimplePropKey.create "view.commandNotBound"
+        member inline this.contentSizeChanged : SimplePropKey<SizeChangedEventArgs->unit> = SimplePropKey.create "view.contentSizeChanged"
+        member inline this.disposing : SimplePropKey<unit->unit> = SimplePropKey.create "view.disposing"
+        member inline this.drawComplete : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.drawComplete"
+        member inline this.drawingContent : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.drawingContent"
+        member inline this.drawingSubViews : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.drawingSubViews"
+        member inline this.drawingText : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.drawingText"
+        member inline this.enabledChanged : SimplePropKey<unit->unit> = SimplePropKey.create "view.enabledChanged"
+        member inline this.focusedChanged : SimplePropKey<HasFocusEventArgs->unit> = SimplePropKey.create "view.focusedChanged"
+        member inline this.frameChanged : SimplePropKey<EventArgs<Rectangle>->unit> = SimplePropKey.create "view.frameChanged"
+        member inline this.gettingAttributeForRole : SimplePropKey<VisualRoleEventArgs->unit> = SimplePropKey.create "view.gettingAttributeForRole"
+        member inline this.gettingScheme : SimplePropKey<ResultEventArgs<Scheme>->unit> = SimplePropKey.create "view.gettingScheme"
+        member inline this.handlingHotKey : SimplePropKey<CommandEventArgs->unit> = SimplePropKey.create "view.handlingHotKey"
+        member inline this.hasFocusChanged : SimplePropKey<HasFocusEventArgs->unit> = SimplePropKey.create "view.hasFocusChanged"
+        member inline this.hasFocusChanging : SimplePropKey<HasFocusEventArgs->unit> = SimplePropKey.create "view.hasFocusChanging"
+        member inline this.hotKeyChanged : SimplePropKey<KeyChangedEventArgs->unit> = SimplePropKey.create "view.hotKeyChanged"
+        member inline this.initialized : SimplePropKey<unit->unit> = SimplePropKey.create "view.initialized"
+        member inline this.keyDown : SimplePropKey<Key->unit> = SimplePropKey.create "view.keyDown"
+        member inline this.keyDownNotHandled : SimplePropKey<Key->unit> = SimplePropKey.create "view.keyDownNotHandled"
+        member inline this.keyUp : SimplePropKey<Key->unit> = SimplePropKey.create "view.keyUp"
+        member inline this.mouseClick : SimplePropKey<MouseEventArgs->unit> = SimplePropKey.create "view.mouseClick"
+        member inline this.mouseEnter : SimplePropKey<CancelEventArgs->unit> = SimplePropKey.create "view.mouseEnter"
+        member inline this.mouseEvent : SimplePropKey<MouseEventArgs->unit> = SimplePropKey.create "view.mouseEvent"
+        member inline this.mouseLeave : SimplePropKey<EventArgs->unit> = SimplePropKey.create "view.mouseLeave"
+        member inline this.mouseStateChanged : SimplePropKey<EventArgs->unit> = SimplePropKey.create "view.mouseStateChanged"
+        member inline this.mouseWheel : SimplePropKey<MouseEventArgs->unit> = SimplePropKey.create "view.mouseWheel"
+        member inline this.removed : SimplePropKey<SuperViewChangedEventArgs->unit> = SimplePropKey.create "view.removed"
+        member inline this.schemeChanged : SimplePropKey<ValueChangedEventArgs<Scheme>->unit> = SimplePropKey.create "view.schemeChanged"
+        member inline this.schemeChanging : SimplePropKey<ValueChangingEventArgs<Scheme>->unit> = SimplePropKey.create "view.schemeChanging"
+        member inline this.schemeNameChanged : SimplePropKey<ValueChangedEventArgs<string>->unit> = SimplePropKey.create "view.schemeNameChanged"
+        member inline this.schemeNameChanging : SimplePropKey<ValueChangingEventArgs<string>->unit> = SimplePropKey.create "view.schemeNameChanging"
+        member inline this.selecting : SimplePropKey<CommandEventArgs->unit> = SimplePropKey.create "view.selecting"
+        member inline this.subViewAdded : SimplePropKey<SuperViewChangedEventArgs->unit> = SimplePropKey.create "view.subViewAdded"
+        member inline this.subViewLayout : SimplePropKey<LayoutEventArgs->unit> = SimplePropKey.create "view.subViewLayout"
+        member inline this.subViewRemoved : SimplePropKey<SuperViewChangedEventArgs->unit> = SimplePropKey.create "view.subViewRemoved"
+        member inline this.subViewsLaidOut : SimplePropKey<LayoutEventArgs->unit> = SimplePropKey.create "view.subViewsLaidOut"
+        member inline this.superViewChanged : SimplePropKey<SuperViewChangedEventArgs->unit> = SimplePropKey.create "view.superViewChanged"
+        member inline this.textChanged : SimplePropKey<unit->unit> = SimplePropKey.create "view.textChanged"
+        member inline this.titleChanged : SimplePropKey<string->unit> = SimplePropKey.create "view.titleChanged"
+        member inline this.titleChanging : SimplePropKey<App.CancelEventArgs<string>->unit> = SimplePropKey.create "view.titleChanging"
+        member inline this.viewportChanged : SimplePropKey<DrawEventArgs->unit> = SimplePropKey.create "view.viewportChanged"
+        member inline this.visibleChanged : SimplePropKey<unit->unit> = SimplePropKey.create "view.visibleChanged"
+        member inline this.visibleChanging : SimplePropKey<unit->unit> = SimplePropKey.create "view.visibleChanging"
 
     // Adornment
     type adornmentPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.diagnostics : SimplePropertyKey<ViewDiagnosticFlags> = SimplePropertyKey.create "adornment.diagnostics"
-        member inline this.superViewRendersLineCanvas : SimplePropertyKey<bool> = SimplePropertyKey.create "adornment.superViewRendersLineCanvas"
-        member inline this.thickness : SimplePropertyKey<Thickness> = SimplePropertyKey.create "adornment.thickness"
-        member inline this.viewport : SimplePropertyKey<Rectangle> = SimplePropertyKey.create "adornment.viewport"
+        member inline this.diagnostics : SimplePropKey<ViewDiagnosticFlags> = SimplePropKey.create "adornment.diagnostics"
+        member inline this.superViewRendersLineCanvas : SimplePropKey<bool> = SimplePropKey.create "adornment.superViewRendersLineCanvas"
+        member inline this.thickness : SimplePropKey<Thickness> = SimplePropKey.create "adornment.thickness"
+        member inline this.viewport : SimplePropKey<Rectangle> = SimplePropKey.create "adornment.viewport"
         // Events
-        member inline this.thicknessChanged : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "adornment.thicknessChanged"
+        member inline this.thicknessChanged : SimplePropKey<unit->unit> = SimplePropKey.create "adornment.thicknessChanged"
 
     // Bar
     type barPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.alignmentModes : SimplePropertyKey<AlignmentModes> = SimplePropertyKey.create "bar.alignmentModes"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "bar.orientation"
+        member inline this.alignmentModes : SimplePropKey<AlignmentModes> = SimplePropKey.create "bar.alignmentModes"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "bar.orientation"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "bar.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<App.CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "bar.orientationChanging"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "bar.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<App.CancelEventArgs<Orientation>->unit> = SimplePropKey.create "bar.orientationChanging"
 
     // Border
     type borderPKeys() =
         inherit adornmentPKeys()
         // Properties
-        member inline this.lineStyle : SimplePropertyKey<LineStyle> = SimplePropertyKey.create "border.lineStyle"
-        member inline this.settings : SimplePropertyKey<BorderSettings> = SimplePropertyKey.create "border.settings"
+        member inline this.lineStyle : SimplePropKey<LineStyle> = SimplePropKey.create "border.lineStyle"
+        member inline this.settings : SimplePropKey<BorderSettings> = SimplePropKey.create "border.settings"
 
     // Button
     type buttonPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.hotKeySpecifier : SimplePropertyKey<Rune> = SimplePropertyKey.create "button.hotKeySpecifier"
-        member inline this.isDefault : SimplePropertyKey<bool> = SimplePropertyKey.create "button.isDefault"
-        member inline this.noDecorations : SimplePropertyKey<bool> = SimplePropertyKey.create "button.noDecorations"
-        member inline this.noPadding : SimplePropertyKey<bool> = SimplePropertyKey.create "button.noPadding"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "button.text"
-        member inline this.wantContinuousButtonPressed : SimplePropertyKey<bool> = SimplePropertyKey.create "button.wantContinuousButtonPressed"
+        member inline this.hotKeySpecifier : SimplePropKey<Rune> = SimplePropKey.create "button.hotKeySpecifier"
+        member inline this.isDefault : SimplePropKey<bool> = SimplePropKey.create "button.isDefault"
+        member inline this.noDecorations : SimplePropKey<bool> = SimplePropKey.create "button.noDecorations"
+        member inline this.noPadding : SimplePropKey<bool> = SimplePropKey.create "button.noPadding"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "button.text"
+        member inline this.wantContinuousButtonPressed : SimplePropKey<bool> = SimplePropKey.create "button.wantContinuousButtonPressed"
 
     // CheckBox
     type checkBoxPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.allowCheckStateNone : SimplePropertyKey<bool> = SimplePropertyKey.create "checkBox.allowCheckStateNone"
-        member inline this.checkedState : SimplePropertyKey<CheckState> = SimplePropertyKey.create "checkBox.checkedState"
-        member inline this.hotKeySpecifier : SimplePropertyKey<Rune> = SimplePropertyKey.create "checkBox.hotKeySpecifier"
-        member inline this.radioStyle : SimplePropertyKey<bool> = SimplePropertyKey.create "checkBox.radioStyle"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "checkBox.text"
+        member inline this.allowCheckStateNone : SimplePropKey<bool> = SimplePropKey.create "checkBox.allowCheckStateNone"
+        member inline this.checkedState : SimplePropKey<CheckState> = SimplePropKey.create "checkBox.checkedState"
+        member inline this.hotKeySpecifier : SimplePropKey<Rune> = SimplePropKey.create "checkBox.hotKeySpecifier"
+        member inline this.radioStyle : SimplePropKey<bool> = SimplePropKey.create "checkBox.radioStyle"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "checkBox.text"
         // Events
-        member inline this.checkedStateChanging : SimplePropertyKey<ResultEventArgs<CheckState>->unit> = SimplePropertyKey.create "checkBox.checkedStateChanging"
-        member inline this.checkedStateChanged : SimplePropertyKey<EventArgs<CheckState>->unit> = SimplePropertyKey.create "checkBox.checkedStateChanged"
+        member inline this.checkedStateChanging : SimplePropKey<ResultEventArgs<CheckState>->unit> = SimplePropKey.create "checkBox.checkedStateChanging"
+        member inline this.checkedStateChanged : SimplePropKey<EventArgs<CheckState>->unit> = SimplePropKey.create "checkBox.checkedStateChanged"
 
     // ColorPicker
     type colorPickerPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.selectedColor : SimplePropertyKey<Color> = SimplePropertyKey.create "colorPicker.selectedColor"
-        member inline this.style : SimplePropertyKey<ColorPickerStyle> = SimplePropertyKey.create "colorPicker.style"
+        member inline this.selectedColor : SimplePropKey<Color> = SimplePropKey.create "colorPicker.selectedColor"
+        member inline this.style : SimplePropKey<ColorPickerStyle> = SimplePropKey.create "colorPicker.style"
         // Events
-        member inline this.colorChanged : SimplePropertyKey<ResultEventArgs<Color>->unit> = SimplePropertyKey.create "colorPicker.colorChanged"
+        member inline this.colorChanged : SimplePropKey<ResultEventArgs<Color>->unit> = SimplePropKey.create "colorPicker.colorChanged"
 
     // ColorPicker16
     type colorPicker16PKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.boxHeight : SimplePropertyKey<Int32> = SimplePropertyKey.create "colorPicker16.boxHeight"
-        member inline this.boxWidth : SimplePropertyKey<Int32> = SimplePropertyKey.create "colorPicker16.boxWidth"
-        member inline this.cursor : SimplePropertyKey<Point> = SimplePropertyKey.create "colorPicker16.cursor"
-        member inline this.selectedColor : SimplePropertyKey<ColorName16> = SimplePropertyKey.create "colorPicker16.selectedColor"
+        member inline this.boxHeight : SimplePropKey<Int32> = SimplePropKey.create "colorPicker16.boxHeight"
+        member inline this.boxWidth : SimplePropKey<Int32> = SimplePropKey.create "colorPicker16.boxWidth"
+        member inline this.cursor : SimplePropKey<Point> = SimplePropKey.create "colorPicker16.cursor"
+        member inline this.selectedColor : SimplePropKey<ColorName16> = SimplePropKey.create "colorPicker16.selectedColor"
         // Events
-        member inline this.colorChanged : SimplePropertyKey<ResultEventArgs<Color>->unit> = SimplePropertyKey.create "colorPicker16.colorChanged"
+        member inline this.colorChanged : SimplePropKey<ResultEventArgs<Color>->unit> = SimplePropKey.create "colorPicker16.colorChanged"
 
     // ComboBox
     type comboBoxPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.hideDropdownListOnClick : SimplePropertyKey<bool> = SimplePropertyKey.create "comboBox.hideDropdownListOnClick"
-        member inline this.readOnly : SimplePropertyKey<bool> = SimplePropertyKey.create "comboBox.readOnly"
-        member inline this.searchText : SimplePropertyKey<string> = SimplePropertyKey.create "comboBox.searchText"
-        member inline this.selectedItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "comboBox.selectedItem"
-        member inline this.source : SimplePropertyKey<string list> = SimplePropertyKey.create "comboBox.source"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "comboBox.text"
+        member inline this.hideDropdownListOnClick : SimplePropKey<bool> = SimplePropKey.create "comboBox.hideDropdownListOnClick"
+        member inline this.readOnly : SimplePropKey<bool> = SimplePropKey.create "comboBox.readOnly"
+        member inline this.searchText : SimplePropKey<string> = SimplePropKey.create "comboBox.searchText"
+        member inline this.selectedItem : SimplePropKey<Int32> = SimplePropKey.create "comboBox.selectedItem"
+        member inline this.source : SimplePropKey<string list> = SimplePropKey.create "comboBox.source"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "comboBox.text"
         // Events
-        member inline this.collapsed : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "comboBox.collapsed"
-        member inline this.expanded : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "comboBox.expanded"
-        member inline this.openSelectedItem : SimplePropertyKey<ListViewItemEventArgs->unit> = SimplePropertyKey.create "comboBox.openSelectedItem"
-        member inline this.selectedItemChanged : SimplePropertyKey<ListViewItemEventArgs->unit> = SimplePropertyKey.create "comboBox.selectedItemChanged"
+        member inline this.collapsed : SimplePropKey<unit->unit> = SimplePropKey.create "comboBox.collapsed"
+        member inline this.expanded : SimplePropKey<unit->unit> = SimplePropKey.create "comboBox.expanded"
+        member inline this.openSelectedItem : SimplePropKey<ListViewItemEventArgs->unit> = SimplePropKey.create "comboBox.openSelectedItem"
+        member inline this.selectedItemChanged : SimplePropKey<ListViewItemEventArgs->unit> = SimplePropKey.create "comboBox.selectedItemChanged"
 
     // TextField
     type textFieldPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.autocomplete : SimplePropertyKey<IAutocomplete> = SimplePropertyKey.create "textField.autocomplete"
-        member inline this.caption : SimplePropertyKey<string> = SimplePropertyKey.create "textField.caption"
-        member inline this.captionColor : SimplePropertyKey<Terminal.Gui.Drawing.Color> = SimplePropertyKey.create "textField.captionColor"
-        member inline this.cursorPosition : SimplePropertyKey<Int32> = SimplePropertyKey.create "textField.cursorPosition"
-        member inline this.readOnly : SimplePropertyKey<bool> = SimplePropertyKey.create "textField.readOnly"
-        member inline this.secret : SimplePropertyKey<bool> = SimplePropertyKey.create "textField.secret"
-        member inline this.selectedStart : SimplePropertyKey<Int32> = SimplePropertyKey.create "textField.selectedStart"
-        member inline this.selectWordOnlyOnDoubleClick : SimplePropertyKey<bool> = SimplePropertyKey.create "textField.selectWordOnlyOnDoubleClick"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "textField.text"
-        member inline this.used : SimplePropertyKey<bool> = SimplePropertyKey.create "textField.used"
-        member inline this.useSameRuneTypeForWords : SimplePropertyKey<bool> = SimplePropertyKey.create "textField.useSameRuneTypeForWords"
+        member inline this.autocomplete : SimplePropKey<IAutocomplete> = SimplePropKey.create "textField.autocomplete"
+        member inline this.caption : SimplePropKey<string> = SimplePropKey.create "textField.caption"
+        member inline this.captionColor : SimplePropKey<Terminal.Gui.Drawing.Color> = SimplePropKey.create "textField.captionColor"
+        member inline this.cursorPosition : SimplePropKey<Int32> = SimplePropKey.create "textField.cursorPosition"
+        member inline this.readOnly : SimplePropKey<bool> = SimplePropKey.create "textField.readOnly"
+        member inline this.secret : SimplePropKey<bool> = SimplePropKey.create "textField.secret"
+        member inline this.selectedStart : SimplePropKey<Int32> = SimplePropKey.create "textField.selectedStart"
+        member inline this.selectWordOnlyOnDoubleClick : SimplePropKey<bool> = SimplePropKey.create "textField.selectWordOnlyOnDoubleClick"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "textField.text"
+        member inline this.used : SimplePropKey<bool> = SimplePropKey.create "textField.used"
+        member inline this.useSameRuneTypeForWords : SimplePropKey<bool> = SimplePropKey.create "textField.useSameRuneTypeForWords"
         // Events
-        member inline this.textChanging : SimplePropertyKey<ResultEventArgs<string>->unit> = SimplePropertyKey.create "textField.textChanging"
+        member inline this.textChanging : SimplePropKey<ResultEventArgs<string>->unit> = SimplePropKey.create "textField.textChanging"
 
     // DateField
     type dateFieldPKeys() =
         inherit textFieldPKeys()
         // Properties
-        member inline this.culture : SimplePropertyKey<CultureInfo> = SimplePropertyKey.create "dateField.culture"
-        member inline this.cursorPosition : SimplePropertyKey<Int32> = SimplePropertyKey.create "dateField.cursorPosition"
-        member inline this.date : SimplePropertyKey<DateTime> = SimplePropertyKey.create "dateField.date"
+        member inline this.culture : SimplePropKey<CultureInfo> = SimplePropKey.create "dateField.culture"
+        member inline this.cursorPosition : SimplePropKey<Int32> = SimplePropKey.create "dateField.cursorPosition"
+        member inline this.date : SimplePropKey<DateTime> = SimplePropKey.create "dateField.date"
         // Events
-        member inline this.dateChanged : SimplePropertyKey<DateTimeEventArgs<DateTime>->unit> = SimplePropertyKey.create "dateField.dateChanged"
+        member inline this.dateChanged : SimplePropKey<DateTimeEventArgs<DateTime>->unit> = SimplePropKey.create "dateField.dateChanged"
 
     // DatePicker
     type datePickerPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.culture : SimplePropertyKey<CultureInfo> = SimplePropertyKey.create "datePicker.culture"
-        member inline this.date : SimplePropertyKey<DateTime> = SimplePropertyKey.create "datePicker.date"
+        member inline this.culture : SimplePropKey<CultureInfo> = SimplePropKey.create "datePicker.culture"
+        member inline this.date : SimplePropKey<DateTime> = SimplePropKey.create "datePicker.date"
 
     // Toplevel
     type toplevelPKeys() =
         inherit viewPKeys()
         // Properties
-        member inline this.modal : SimplePropertyKey<bool> = SimplePropertyKey.create "toplevel.modal"
-        member inline this.running : SimplePropertyKey<bool> = SimplePropertyKey.create "toplevel.running"
+        member inline this.modal : SimplePropKey<bool> = SimplePropKey.create "toplevel.modal"
+        member inline this.running : SimplePropKey<bool> = SimplePropKey.create "toplevel.running"
         // Events
-        member inline this.activate : SimplePropertyKey<ToplevelEventArgs->unit> = SimplePropertyKey.create "toplevel.activate"
-        member inline this.closed : SimplePropertyKey<ToplevelEventArgs->unit> = SimplePropertyKey.create "toplevel.closed"
-        member inline this.closing : SimplePropertyKey<ToplevelClosingEventArgs->unit> = SimplePropertyKey.create "toplevel.closing"
-        member inline this.deactivate : SimplePropertyKey<ToplevelEventArgs->unit> = SimplePropertyKey.create "toplevel.deactivate"
-        member inline this.loaded : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "toplevel.loaded"
-        member inline this.ready : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "toplevel.ready"
-        member inline this.sizeChanging : SimplePropertyKey<SizeChangedEventArgs->unit> = SimplePropertyKey.create "toplevel.sizeChanging"
-        member inline this.unloaded : SimplePropertyKey<unit->unit> = SimplePropertyKey.create "toplevel.unloaded"
+        member inline this.activate : SimplePropKey<ToplevelEventArgs->unit> = SimplePropKey.create "toplevel.activate"
+        member inline this.closed : SimplePropKey<ToplevelEventArgs->unit> = SimplePropKey.create "toplevel.closed"
+        member inline this.closing : SimplePropKey<ToplevelClosingEventArgs->unit> = SimplePropKey.create "toplevel.closing"
+        member inline this.deactivate : SimplePropKey<ToplevelEventArgs->unit> = SimplePropKey.create "toplevel.deactivate"
+        member inline this.loaded : SimplePropKey<unit->unit> = SimplePropKey.create "toplevel.loaded"
+        member inline this.ready : SimplePropKey<unit->unit> = SimplePropKey.create "toplevel.ready"
+        member inline this.sizeChanging : SimplePropKey<SizeChangedEventArgs->unit> = SimplePropKey.create "toplevel.sizeChanging"
+        member inline this.unloaded : SimplePropKey<unit->unit> = SimplePropKey.create "toplevel.unloaded"
 
     // Dialog
     type dialogPKeys() =
         inherit toplevelPKeys()
         // Properties
-        member inline this.buttonAlignment : SimplePropertyKey<Alignment> = SimplePropertyKey.create "dialog.buttonAlignment"
-        member inline this.buttonAlignmentModes : SimplePropertyKey<AlignmentModes> = SimplePropertyKey.create "dialog.buttonAlignmentModes"
-        member inline this.canceled : SimplePropertyKey<bool> = SimplePropertyKey.create "dialog.canceled"
+        member inline this.buttonAlignment : SimplePropKey<Alignment> = SimplePropKey.create "dialog.buttonAlignment"
+        member inline this.buttonAlignmentModes : SimplePropKey<AlignmentModes> = SimplePropKey.create "dialog.buttonAlignmentModes"
+        member inline this.canceled : SimplePropKey<bool> = SimplePropKey.create "dialog.canceled"
 
     // FileDialog
     type fileDialogPKeys() =
         inherit dialogPKeys()
         // Properties
-        member inline this.allowedTypes : SimplePropertyKey<IAllowedType list> = SimplePropertyKey.create "fileDialog.allowedTypes"
-        member inline this.allowsMultipleSelection : SimplePropertyKey<bool> = SimplePropertyKey.create "fileDialog.allowsMultipleSelection"
-        member inline this.fileOperationsHandler : SimplePropertyKey<IFileOperations> = SimplePropertyKey.create "fileDialog.fileOperationsHandler"
-        member inline this.mustExist : SimplePropertyKey<bool> = SimplePropertyKey.create "fileDialog.mustExist"
-        member inline this.openMode : SimplePropertyKey<OpenMode> = SimplePropertyKey.create "fileDialog.openMode"
-        member inline this.path : SimplePropertyKey<string> = SimplePropertyKey.create "fileDialog.path"
-        member inline this.searchMatcher : SimplePropertyKey<ISearchMatcher> = SimplePropertyKey.create "fileDialog.searchMatcher"
+        member inline this.allowedTypes : SimplePropKey<IAllowedType list> = SimplePropKey.create "fileDialog.allowedTypes"
+        member inline this.allowsMultipleSelection : SimplePropKey<bool> = SimplePropKey.create "fileDialog.allowsMultipleSelection"
+        member inline this.fileOperationsHandler : SimplePropKey<IFileOperations> = SimplePropKey.create "fileDialog.fileOperationsHandler"
+        member inline this.mustExist : SimplePropKey<bool> = SimplePropKey.create "fileDialog.mustExist"
+        member inline this.openMode : SimplePropKey<OpenMode> = SimplePropKey.create "fileDialog.openMode"
+        member inline this.path : SimplePropKey<string> = SimplePropKey.create "fileDialog.path"
+        member inline this.searchMatcher : SimplePropKey<ISearchMatcher> = SimplePropKey.create "fileDialog.searchMatcher"
         // Events
-        member inline this.filesSelected : SimplePropertyKey<FilesSelectedEventArgs->unit> = SimplePropertyKey.create "fileDialog.filesSelected"
+        member inline this.filesSelected : SimplePropKey<FilesSelectedEventArgs->unit> = SimplePropKey.create "fileDialog.filesSelected"
 
     /// SaveDialog
     type saveDialogPKeys() =
@@ -291,35 +291,35 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.axisX : SimplePropertyKey<HorizontalAxis> = SimplePropertyKey.create "graphView.axisX"
-        member inline this.axisY : SimplePropertyKey<VerticalAxis> = SimplePropertyKey.create "graphView.axisY"
-        member inline this.cellSize : SimplePropertyKey<PointF> = SimplePropertyKey.create "graphView.cellSize"
-        member inline this.graphColor : SimplePropertyKey<Attribute option> = SimplePropertyKey.create "graphView.graphColor"
-        member inline this.marginBottom : SimplePropertyKey<int> = SimplePropertyKey.create "graphView.marginBottom"
-        member inline this.marginLeft : SimplePropertyKey<int> = SimplePropertyKey.create "graphView.marginLeft"
-        member inline this.scrollOffset : SimplePropertyKey<PointF> = SimplePropertyKey.create "graphView.scrollOffset"
+        member inline this.axisX : SimplePropKey<HorizontalAxis> = SimplePropKey.create "graphView.axisX"
+        member inline this.axisY : SimplePropKey<VerticalAxis> = SimplePropKey.create "graphView.axisY"
+        member inline this.cellSize : SimplePropKey<PointF> = SimplePropKey.create "graphView.cellSize"
+        member inline this.graphColor : SimplePropKey<Attribute option> = SimplePropKey.create "graphView.graphColor"
+        member inline this.marginBottom : SimplePropKey<int> = SimplePropKey.create "graphView.marginBottom"
+        member inline this.marginLeft : SimplePropKey<int> = SimplePropKey.create "graphView.marginLeft"
+        member inline this.scrollOffset : SimplePropKey<PointF> = SimplePropKey.create "graphView.scrollOffset"
 
     // HexView
     type hexViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.address : SimplePropertyKey<Int64> = SimplePropertyKey.create "hexView.address"
-        member inline this.addressWidth : SimplePropertyKey<int> = SimplePropertyKey.create "hexView.addressWidth"
-        member inline this.allowEdits : SimplePropertyKey<int> = SimplePropertyKey.create "hexView.allowEdits"
-        member inline this.readOnly : SimplePropertyKey<bool> = SimplePropertyKey.create "hexView.readOnly"
-        member inline this.source : SimplePropertyKey<Stream> = SimplePropertyKey.create "hexView.source"
+        member inline this.address : SimplePropKey<Int64> = SimplePropKey.create "hexView.address"
+        member inline this.addressWidth : SimplePropKey<int> = SimplePropKey.create "hexView.addressWidth"
+        member inline this.allowEdits : SimplePropKey<int> = SimplePropKey.create "hexView.allowEdits"
+        member inline this.readOnly : SimplePropKey<bool> = SimplePropKey.create "hexView.readOnly"
+        member inline this.source : SimplePropKey<Stream> = SimplePropKey.create "hexView.source"
         // Events
-        member inline this.edited : SimplePropertyKey<HexViewEditEventArgs->unit> = SimplePropertyKey.create "hexView.edited"
-        member inline this.positionChanged : SimplePropertyKey<HexViewEventArgs->unit> = SimplePropertyKey.create "hexView.positionChanged"
+        member inline this.edited : SimplePropKey<HexViewEditEventArgs->unit> = SimplePropKey.create "hexView.edited"
+        member inline this.positionChanged : SimplePropKey<HexViewEventArgs->unit> = SimplePropKey.create "hexView.positionChanged"
 
     // Label
     type labelPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.hotKeySpecifier : SimplePropertyKey<Rune> = SimplePropertyKey.create "label.hotKeySpecifier"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "label.text"
+        member inline this.hotKeySpecifier : SimplePropKey<Rune> = SimplePropKey.create "label.hotKeySpecifier"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "label.text"
 
     // LegendAnnotation
     type legendAnnotationPKeys() =
@@ -331,126 +331,126 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "line.orientation"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "line.orientation"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "line.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<App.CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "line.orientationChanging"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "line.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<App.CancelEventArgs<Orientation>->unit> = SimplePropKey.create "line.orientationChanging"
 
     // LineView
     type lineViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.endingAnchor : SimplePropertyKey<Rune option> = SimplePropertyKey.create "lineView.endingAnchor"
-        member inline this.lineRune : SimplePropertyKey<Rune> = SimplePropertyKey.create "lineView.lineRune"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "lineView.orientation"
-        member inline this.startingAnchor : SimplePropertyKey<Rune option> = SimplePropertyKey.create "lineView.startingAnchor"
+        member inline this.endingAnchor : SimplePropKey<Rune option> = SimplePropKey.create "lineView.endingAnchor"
+        member inline this.lineRune : SimplePropKey<Rune> = SimplePropKey.create "lineView.lineRune"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "lineView.orientation"
+        member inline this.startingAnchor : SimplePropKey<Rune option> = SimplePropKey.create "lineView.startingAnchor"
 
     // ListView
     type listViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.allowsMarking : SimplePropertyKey<bool> = SimplePropertyKey.create "listView.allowsMarking"
-        member inline this.allowsMultipleSelection : SimplePropertyKey<bool> = SimplePropertyKey.create "listView.allowsMultipleSelection"
-        member inline this.leftItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "listView.leftItem"
-        member inline this.selectedItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "listView.selectedItem"
-        member inline this.source : SimplePropertyKey<string list> = SimplePropertyKey.create "listView.source"
-        member inline this.topItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "listView.topItem"
+        member inline this.allowsMarking : SimplePropKey<bool> = SimplePropKey.create "listView.allowsMarking"
+        member inline this.allowsMultipleSelection : SimplePropKey<bool> = SimplePropKey.create "listView.allowsMultipleSelection"
+        member inline this.leftItem : SimplePropKey<Int32> = SimplePropKey.create "listView.leftItem"
+        member inline this.selectedItem : SimplePropKey<Int32> = SimplePropKey.create "listView.selectedItem"
+        member inline this.source : SimplePropKey<string list> = SimplePropKey.create "listView.source"
+        member inline this.topItem : SimplePropKey<Int32> = SimplePropKey.create "listView.topItem"
         // Events
-        member inline this.collectionChanged : SimplePropertyKey<NotifyCollectionChangedEventArgs->unit> = SimplePropertyKey.create "listView.collectionChanged"
-        member inline this.openSelectedItem : SimplePropertyKey<ListViewItemEventArgs->unit> = SimplePropertyKey.create "listView.openSelectedItem"
-        member inline this.rowRender : SimplePropertyKey<ListViewRowEventArgs->unit> = SimplePropertyKey.create "listView.rowRender"
-        member inline this.selectedItemChanged : SimplePropertyKey<ListViewItemEventArgs->unit> = SimplePropertyKey.create "listView.selectedItemChanged"
+        member inline this.collectionChanged : SimplePropKey<NotifyCollectionChangedEventArgs->unit> = SimplePropKey.create "listView.collectionChanged"
+        member inline this.openSelectedItem : SimplePropKey<ListViewItemEventArgs->unit> = SimplePropKey.create "listView.openSelectedItem"
+        member inline this.rowRender : SimplePropKey<ListViewRowEventArgs->unit> = SimplePropKey.create "listView.rowRender"
+        member inline this.selectedItemChanged : SimplePropKey<ListViewItemEventArgs->unit> = SimplePropKey.create "listView.selectedItemChanged"
 
     // Margin
     type marginPKeys() =
         inherit adornmentPKeys()
 
         // Properties
-        member inline this.shadowStyle : SimplePropertyKey<ShadowStyle> = SimplePropertyKey.create "margin.shadowStyle"
+        member inline this.shadowStyle : SimplePropKey<ShadowStyle> = SimplePropKey.create "margin.shadowStyle"
 
     type menuv2PKeys() =
         inherit barPKeys()
 
         // Properties
-        member inline this.selectedMenuItem : SimplePropertyKey<MenuItemv2> = SimplePropertyKey.create "menuv2.selectedMenuItem"
-        member inline this.superMenuItem : SimplePropertyKey<MenuItemv2> = SimplePropertyKey.create "menuv2.superMenuItem"
+        member inline this.selectedMenuItem : SimplePropKey<MenuItemv2> = SimplePropKey.create "menuv2.selectedMenuItem"
+        member inline this.superMenuItem : SimplePropKey<MenuItemv2> = SimplePropKey.create "menuv2.superMenuItem"
         // Events
-        member inline this.accepted : SimplePropertyKey< CommandEventArgs->unit> = SimplePropertyKey.create "menuv2.accepted"
-        member inline this.selectedMenuItemChanged : SimplePropertyKey< MenuItemv2->unit> = SimplePropertyKey.create "menuv2.selectedMenuItemChanged"
+        member inline this.accepted : SimplePropKey< CommandEventArgs->unit> = SimplePropKey.create "menuv2.accepted"
+        member inline this.selectedMenuItemChanged : SimplePropKey< MenuItemv2->unit> = SimplePropKey.create "menuv2.selectedMenuItemChanged"
 
     // MenuBarV2
     type menuBarv2PKeys() =
         inherit menuv2PKeys()
 
         // Properties
-        member inline this.key : SimplePropertyKey<Key> = SimplePropertyKey.create "menuBarv2.key"
-        member inline this.menus : SimplePropertyKey<MenuBarItemv2 array> = SimplePropertyKey.create "view.menus"
+        member inline this.key : SimplePropKey<Key> = SimplePropKey.create "menuBarv2.key"
+        member inline this.menus : SimplePropKey<MenuBarItemv2 array> = SimplePropKey.create "view.menus"
         // Events
-        member inline this.keyChanged : SimplePropertyKey<KeyChangedEventArgs->unit> = SimplePropertyKey.create "menuBarv2.keyChanged"
+        member inline this.keyChanged : SimplePropKey<KeyChangedEventArgs->unit> = SimplePropKey.create "menuBarv2.keyChanged"
 
     type shortcutPKeys() =
          inherit viewPKeys()
 
          // Properties
-         member inline this.action : SimplePropertyKey<Action> = SimplePropertyKey.create "shortcut.action"
-         member inline this.alignmentModes : SimplePropertyKey<AlignmentModes> = SimplePropertyKey.create "shortcut.alignmentModes"
-         member inline this.commandView : SimplePropertyKey<View> = SimplePropertyKey.create "shortcut.commandView_view"
-         member inline this.commandView_element : SingleElementKey<ITerminalElement> = SingleElementKey.create "shortcut.commandView_element"
-         member inline this.forceFocusColors : SimplePropertyKey<bool> = SimplePropertyKey.create "shortcut.forceFocusColors"
-         member inline this.helpText : SimplePropertyKey<string> = SimplePropertyKey.create "shortcut.helpText"
-         member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "shortcut.text"
-         member inline this.bindKeyToApplication : SimplePropertyKey<bool> = SimplePropertyKey.create "shortcut.bindKeyToApplication"
-         member inline this.key : SimplePropertyKey<Key> = SimplePropertyKey.create "shortcut.key"
-         member inline this.minimumKeyTextSize : SimplePropertyKey<Int32> = SimplePropertyKey.create "shortcut.minimumKeyTextSize"
+         member inline this.action : SimplePropKey<Action> = SimplePropKey.create "shortcut.action"
+         member inline this.alignmentModes : SimplePropKey<AlignmentModes> = SimplePropKey.create "shortcut.alignmentModes"
+         member inline this.commandView : SimplePropKey<View> = SimplePropKey.create "shortcut.commandView_view"
+         member inline this.commandView_element : SingleElementPropKey<ITerminalElement> = SingleElementPropKey.create "shortcut.commandView_element"
+         member inline this.forceFocusColors : SimplePropKey<bool> = SimplePropKey.create "shortcut.forceFocusColors"
+         member inline this.helpText : SimplePropKey<string> = SimplePropKey.create "shortcut.helpText"
+         member inline this.text : SimplePropKey<string> = SimplePropKey.create "shortcut.text"
+         member inline this.bindKeyToApplication : SimplePropKey<bool> = SimplePropKey.create "shortcut.bindKeyToApplication"
+         member inline this.key : SimplePropKey<Key> = SimplePropKey.create "shortcut.key"
+         member inline this.minimumKeyTextSize : SimplePropKey<Int32> = SimplePropKey.create "shortcut.minimumKeyTextSize"
          // Events
-         member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "shortcut.orientationChanged"
-         member inline this.orientationChanging : SimplePropertyKey<CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "shortcut.orientationChanging"
+         member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "shortcut.orientationChanged"
+         member inline this.orientationChanging : SimplePropKey<CancelEventArgs<Orientation>->unit> = SimplePropKey.create "shortcut.orientationChanging"
 
     type menuItemv2PKeys() =
         inherit shortcutPKeys()
-        member inline this.command : SimplePropertyKey< Command> = SimplePropertyKey.create "menuItemv2.command"
-        member inline this.subMenu: SimplePropertyKey<Menuv2> = SimplePropertyKey.create "menuItemv2.subMenu_view"
-        member inline this.subMenu_element : SingleElementKey<IMenuv2Element> = SingleElementKey.create "menuItemv2.subMenu_element"
-        member inline this.targetView : SimplePropertyKey<View> = SimplePropertyKey.create "menuItemv2.targetView"
-        member inline this.accepted: SimplePropertyKey<CommandEventArgs -> unit> = SimplePropertyKey.create "menuItemv2.accepted"
+        member inline this.command : SimplePropKey< Command> = SimplePropKey.create "menuItemv2.command"
+        member inline this.subMenu: SimplePropKey<Menuv2> = SimplePropKey.create "menuItemv2.subMenu_view"
+        member inline this.subMenu_element : SingleElementPropKey<IMenuv2Element> = SingleElementPropKey.create "menuItemv2.subMenu_element"
+        member inline this.targetView : SimplePropKey<View> = SimplePropKey.create "menuItemv2.targetView"
+        member inline this.accepted: SimplePropKey<CommandEventArgs -> unit> = SimplePropKey.create "menuItemv2.accepted"
 
     type menuBarItemv2PKeys() =
         inherit menuItemv2PKeys()
 
         // Properties
-        member inline this.popoverMenu : SimplePropertyKey<PopoverMenu> = SimplePropertyKey.create "menuBarItemv2.popoverMenu_view"
-        member inline this.popoverMenu_element : SingleElementKey<IPopoverMenuElement> = SingleElementKey.create "menuBarItemv2.popoverMenu_element"
-        member inline this.popoverMenuOpen : SimplePropertyKey<bool> = SimplePropertyKey.create "menuBarItemv2.popoverMenuOpen"
+        member inline this.popoverMenu : SimplePropKey<PopoverMenu> = SimplePropKey.create "menuBarItemv2.popoverMenu_view"
+        member inline this.popoverMenu_element : SingleElementPropKey<IPopoverMenuElement> = SingleElementPropKey.create "menuBarItemv2.popoverMenu_element"
+        member inline this.popoverMenuOpen : SimplePropKey<bool> = SimplePropKey.create "menuBarItemv2.popoverMenuOpen"
         // Events
-        member inline this.popoverMenuOpenChanged : SimplePropertyKey<bool->unit> = SimplePropertyKey.create "menuBarItemv2.popoverMenuOpenChanged"
+        member inline this.popoverMenuOpenChanged : SimplePropKey<bool->unit> = SimplePropKey.create "menuBarItemv2.popoverMenuOpenChanged"
 
     type popoverMenuPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.key : SimplePropertyKey<Key> = SimplePropertyKey.create "popoverMenu.key"
-        member inline this.mouseFlags : SimplePropertyKey<MouseFlags> = SimplePropertyKey.create "popoverMenu.mouseFlags"
-        member inline this.root : SimplePropertyKey<Menuv2> = SimplePropertyKey.create "popoverMenu.root_view"
-        member inline this.root_element : SingleElementKey<IMenuv2Element> = SingleElementKey.create "popoverMenu.root_element"
+        member inline this.key : SimplePropKey<Key> = SimplePropKey.create "popoverMenu.key"
+        member inline this.mouseFlags : SimplePropKey<MouseFlags> = SimplePropKey.create "popoverMenu.mouseFlags"
+        member inline this.root : SimplePropKey<Menuv2> = SimplePropKey.create "popoverMenu.root_view"
+        member inline this.root_element : SingleElementPropKey<IMenuv2Element> = SingleElementPropKey.create "popoverMenu.root_element"
         // Events
-        member inline this.accepted : SimplePropertyKey<CommandEventArgs->unit> = SimplePropertyKey.create "popoverMenu.accepted"
-        member inline this.keyChanged : SimplePropertyKey<KeyChangedEventArgs->unit> = SimplePropertyKey.create "popoverMenu.keyChanged"
+        member inline this.accepted : SimplePropKey<CommandEventArgs->unit> = SimplePropKey.create "popoverMenu.accepted"
+        member inline this.keyChanged : SimplePropKey<KeyChangedEventArgs->unit> = SimplePropKey.create "popoverMenu.keyChanged"
 
     // NumericUpDown`1
     type numericUpDownPKeys<'a>() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.format : SimplePropertyKey<string> = SimplePropertyKey.create "numericUpDown.format"
-        member inline this.increment : SimplePropertyKey<'a> = SimplePropertyKey.create "numericUpDown.increment"
-        member inline this.value : SimplePropertyKey<'a> = SimplePropertyKey.create "numericUpDown.value"
+        member inline this.format : SimplePropKey<string> = SimplePropKey.create "numericUpDown.format"
+        member inline this.increment : SimplePropKey<'a> = SimplePropKey.create "numericUpDown.increment"
+        member inline this.value : SimplePropKey<'a> = SimplePropKey.create "numericUpDown.value"
         // Events
-        member inline this.formatChanged : SimplePropertyKey<string->unit> = SimplePropertyKey.create "numericUpDown.formatChanged"
-        member inline this.incrementChanged : SimplePropertyKey<'a->unit> = SimplePropertyKey.create "numericUpDown.incrementChanged"
-        member inline this.valueChanged : SimplePropertyKey<'a->unit> = SimplePropertyKey.create "numericUpDown.valueChanged"
-        member inline this.valueChanging : SimplePropertyKey<App.CancelEventArgs<'a>->unit> = SimplePropertyKey.create "numericUpDown.valueChanging"
+        member inline this.formatChanged : SimplePropKey<string->unit> = SimplePropKey.create "numericUpDown.formatChanged"
+        member inline this.incrementChanged : SimplePropKey<'a->unit> = SimplePropKey.create "numericUpDown.incrementChanged"
+        member inline this.valueChanged : SimplePropKey<'a->unit> = SimplePropKey.create "numericUpDown.valueChanged"
+        member inline this.valueChanging : SimplePropKey<App.CancelEventArgs<'a>->unit> = SimplePropKey.create "numericUpDown.valueChanging"
 
     // NumericUpDown
     // type numericUpDownPKeys() =
@@ -461,20 +461,20 @@ module internal PKey =
     type openDialogPKeys() =
         inherit fileDialogPKeys()
         // Properties
-        member inline this.openMode : SimplePropertyKey<OpenMode> = SimplePropertyKey.create "openDialog.openMode"
+        member inline this.openMode : SimplePropKey<OpenMode> = SimplePropKey.create "openDialog.openMode"
 
     // OptionSelector
     type optionSelectorPKeys() =
         inherit viewPKeys()
         //Properties
-        member inline this.assignHotKeysToCheckBoxes : SimplePropertyKey<bool> = SimplePropertyKey.create "optionSelector.assignHotKeysToCheckBoxes"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "optionSelector.orientation"
-        member inline this.options : SimplePropertyKey<IReadOnlyList<string>> = SimplePropertyKey.create "optionSelector.options"
-        member inline this.selectedItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "optionSelector.selectedItem"
+        member inline this.assignHotKeysToCheckBoxes : SimplePropKey<bool> = SimplePropKey.create "optionSelector.assignHotKeysToCheckBoxes"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "optionSelector.orientation"
+        member inline this.options : SimplePropKey<IReadOnlyList<string>> = SimplePropKey.create "optionSelector.options"
+        member inline this.selectedItem : SimplePropKey<Int32> = SimplePropKey.create "optionSelector.selectedItem"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "optionSelector.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "optionSelector.orientationChanging"
-        member inline this.selectedItemChanged : SimplePropertyKey<SelectedItemChangedArgs->unit> = SimplePropertyKey.create "optionSelector.selectedItemChanged"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "optionSelector.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<CancelEventArgs<Orientation>->unit> = SimplePropKey.create "optionSelector.orientationChanging"
+        member inline this.selectedItemChanged : SimplePropKey<SelectedItemChangedArgs->unit> = SimplePropKey.create "optionSelector.selectedItemChanged"
 
     // Padding
     type paddingPKeys() =
@@ -485,29 +485,29 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.bidirectionalMarquee : SimplePropertyKey<bool> = SimplePropertyKey.create "progressBar.bidirectionalMarquee"
-        member inline this.fraction : SimplePropertyKey<Single> = SimplePropertyKey.create "progressBar.fraction"
-        member inline this.progressBarFormat : SimplePropertyKey<ProgressBarFormat> = SimplePropertyKey.create "progressBar.progressBarFormat"
-        member inline this.progressBarStyle : SimplePropertyKey<ProgressBarStyle> = SimplePropertyKey.create "progressBar.progressBarStyle"
-        member inline this.segmentCharacter : SimplePropertyKey<Rune> = SimplePropertyKey.create "progressBar.segmentCharacter"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "progressBar.text"
+        member inline this.bidirectionalMarquee : SimplePropKey<bool> = SimplePropKey.create "progressBar.bidirectionalMarquee"
+        member inline this.fraction : SimplePropKey<Single> = SimplePropKey.create "progressBar.fraction"
+        member inline this.progressBarFormat : SimplePropKey<ProgressBarFormat> = SimplePropKey.create "progressBar.progressBarFormat"
+        member inline this.progressBarStyle : SimplePropKey<ProgressBarStyle> = SimplePropKey.create "progressBar.progressBarStyle"
+        member inline this.segmentCharacter : SimplePropKey<Rune> = SimplePropKey.create "progressBar.segmentCharacter"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "progressBar.text"
 
     // RadioGroup
     type radioGroupPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.assignHotKeysToRadioLabels : SimplePropertyKey<bool> = SimplePropertyKey.create "radioGroup.assignHotKeysToRadioLabels"
-        member inline this.cursor : SimplePropertyKey<Int32> = SimplePropertyKey.create "radioGroup.cursor"
-        member inline this.doubleClickAccepts : SimplePropertyKey<bool> = SimplePropertyKey.create "radioGroup.doubleClickAccepts"
-        member inline this.horizontalSpace : SimplePropertyKey<Int32> = SimplePropertyKey.create "radioGroup.horizontalSpace"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "radioGroup.orientation"
-        member inline this.radioLabels : SimplePropertyKey<string list> = SimplePropertyKey.create "radioGroup.radioLabels"
-        member inline this.selectedItem : SimplePropertyKey<Int32> = SimplePropertyKey.create "radioGroup.selectedItem"
+        member inline this.assignHotKeysToRadioLabels : SimplePropKey<bool> = SimplePropKey.create "radioGroup.assignHotKeysToRadioLabels"
+        member inline this.cursor : SimplePropKey<Int32> = SimplePropKey.create "radioGroup.cursor"
+        member inline this.doubleClickAccepts : SimplePropKey<bool> = SimplePropKey.create "radioGroup.doubleClickAccepts"
+        member inline this.horizontalSpace : SimplePropKey<Int32> = SimplePropKey.create "radioGroup.horizontalSpace"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "radioGroup.orientation"
+        member inline this.radioLabels : SimplePropKey<string list> = SimplePropKey.create "radioGroup.radioLabels"
+        member inline this.selectedItem : SimplePropKey<Int32> = SimplePropKey.create "radioGroup.selectedItem"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "radioGroup.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<App.CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "radioGroup.orientationChanging"
-        member inline this.selectedItemChanged : SimplePropertyKey<SelectedItemChangedArgs->unit> = SimplePropertyKey.create "radioGroup.selectedItemChanged"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "radioGroup.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<App.CancelEventArgs<Orientation>->unit> = SimplePropKey.create "radioGroup.orientationChanging"
+        member inline this.selectedItemChanged : SimplePropKey<SelectedItemChangedArgs->unit> = SimplePropKey.create "radioGroup.selectedItemChanged"
 
     // SaveDialog
     // No properties or events SaveDialog
@@ -517,58 +517,58 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.autoShow : SimplePropertyKey<bool> = SimplePropertyKey.create "scrollBar.autoShow"
-        member inline this.increment : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollBar.increment"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "scrollBar.orientation"
-        member inline this.position : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollBar.position"
-        member inline this.scrollableContentSize : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollBar.scrollableContentSize"
-        member inline this.visibleContentSize : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollBar.visibleContentSize"
+        member inline this.autoShow : SimplePropKey<bool> = SimplePropKey.create "scrollBar.autoShow"
+        member inline this.increment : SimplePropKey<Int32> = SimplePropKey.create "scrollBar.increment"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "scrollBar.orientation"
+        member inline this.position : SimplePropKey<Int32> = SimplePropKey.create "scrollBar.position"
+        member inline this.scrollableContentSize : SimplePropKey<Int32> = SimplePropKey.create "scrollBar.scrollableContentSize"
+        member inline this.visibleContentSize : SimplePropKey<Int32> = SimplePropKey.create "scrollBar.visibleContentSize"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "scrollBar.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "scrollBar.orientationChanging"
-        member inline this.scrollableContentSizeChanged : SimplePropertyKey<EventArgs<Int32>->unit> = SimplePropertyKey.create "scrollBar.scrollableContentSizeChanged"
-        member inline this.sliderPositionChanged : SimplePropertyKey<EventArgs<Int32>->unit> = SimplePropertyKey.create "scrollBar.sliderPositionChanged"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "scrollBar.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<CancelEventArgs<Orientation>->unit> = SimplePropKey.create "scrollBar.orientationChanging"
+        member inline this.scrollableContentSizeChanged : SimplePropKey<EventArgs<Int32>->unit> = SimplePropKey.create "scrollBar.scrollableContentSizeChanged"
+        member inline this.sliderPositionChanged : SimplePropKey<EventArgs<Int32>->unit> = SimplePropKey.create "scrollBar.sliderPositionChanged"
 
     // ScrollSlider
     type scrollSliderPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "scrollSlider.orientation"
-        member inline this.position : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollSlider.position"
-        member inline this.size : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollSlider.size"
-        member inline this.sliderPadding : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollSlider.sliderPadding"
-        member inline this.visibleContentSize : SimplePropertyKey<Int32> = SimplePropertyKey.create "scrollSlider.visibleContentSize"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "scrollSlider.orientation"
+        member inline this.position : SimplePropKey<Int32> = SimplePropKey.create "scrollSlider.position"
+        member inline this.size : SimplePropKey<Int32> = SimplePropKey.create "scrollSlider.size"
+        member inline this.sliderPadding : SimplePropKey<Int32> = SimplePropKey.create "scrollSlider.sliderPadding"
+        member inline this.visibleContentSize : SimplePropKey<Int32> = SimplePropKey.create "scrollSlider.visibleContentSize"
         // Events
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "scrollSlider.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "scrollSlider.orientationChanging"
-        member inline this.positionChanged : SimplePropertyKey<EventArgs<Int32>->unit> = SimplePropertyKey.create "scrollSlider.positionChanged"
-        member inline this.positionChanging : SimplePropertyKey<CancelEventArgs<Int32>->unit> = SimplePropertyKey.create "scrollSlider.positionChanging"
-        member inline this.scrolled : SimplePropertyKey<EventArgs<Int32>->unit> = SimplePropertyKey.create "scrollSlider.scrolled"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "scrollSlider.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<CancelEventArgs<Orientation>->unit> = SimplePropKey.create "scrollSlider.orientationChanging"
+        member inline this.positionChanged : SimplePropKey<EventArgs<Int32>->unit> = SimplePropKey.create "scrollSlider.positionChanged"
+        member inline this.positionChanging : SimplePropKey<CancelEventArgs<Int32>->unit> = SimplePropKey.create "scrollSlider.positionChanging"
+        member inline this.scrolled : SimplePropKey<EventArgs<Int32>->unit> = SimplePropKey.create "scrollSlider.scrolled"
 
     // Slider`1
     type sliderPKeys<'a>() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.allowEmpty : SimplePropertyKey<bool> = SimplePropertyKey.create "slider.allowEmpty"
-        member inline this.focusedOption : SimplePropertyKey<Int32> = SimplePropertyKey.create "slider.focusedOption"
-        member inline this.legendsOrientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "slider.legendsOrientation"
-        member inline this.minimumInnerSpacing : SimplePropertyKey<Int32> = SimplePropertyKey.create "slider.minimumInnerSpacing"
-        member inline this.options : SimplePropertyKey<SliderOption<'a> list> = SimplePropertyKey.create "slider.options"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "slider.orientation"
-        member inline this.rangeAllowSingle : SimplePropertyKey<bool> = SimplePropertyKey.create "slider.rangeAllowSingle"
-        member inline this.showEndSpacing : SimplePropertyKey<bool> = SimplePropertyKey.create "slider.showEndSpacing"
-        member inline this.showLegends : SimplePropertyKey<bool> = SimplePropertyKey.create "slider.showLegends"
-        member inline this.style : SimplePropertyKey<SliderStyle> = SimplePropertyKey.create "slider.style"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "slider.text"
-        member inline this.``type`` : SimplePropertyKey<SliderType> = SimplePropertyKey.create "slider.``type``"
-        member inline this.useMinimumSize : SimplePropertyKey<bool> = SimplePropertyKey.create "slider.useMinimumSize"
+        member inline this.allowEmpty : SimplePropKey<bool> = SimplePropKey.create "slider.allowEmpty"
+        member inline this.focusedOption : SimplePropKey<Int32> = SimplePropKey.create "slider.focusedOption"
+        member inline this.legendsOrientation : SimplePropKey<Orientation> = SimplePropKey.create "slider.legendsOrientation"
+        member inline this.minimumInnerSpacing : SimplePropKey<Int32> = SimplePropKey.create "slider.minimumInnerSpacing"
+        member inline this.options : SimplePropKey<SliderOption<'a> list> = SimplePropKey.create "slider.options"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "slider.orientation"
+        member inline this.rangeAllowSingle : SimplePropKey<bool> = SimplePropKey.create "slider.rangeAllowSingle"
+        member inline this.showEndSpacing : SimplePropKey<bool> = SimplePropKey.create "slider.showEndSpacing"
+        member inline this.showLegends : SimplePropKey<bool> = SimplePropKey.create "slider.showLegends"
+        member inline this.style : SimplePropKey<SliderStyle> = SimplePropKey.create "slider.style"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "slider.text"
+        member inline this.``type`` : SimplePropKey<SliderType> = SimplePropKey.create "slider.``type``"
+        member inline this.useMinimumSize : SimplePropKey<bool> = SimplePropKey.create "slider.useMinimumSize"
         // Events
-        member inline this.optionFocused : SimplePropertyKey<SliderEventArgs<'a>->unit> = SimplePropertyKey.create "slider.optionFocused"
-        member inline this.optionsChanged : SimplePropertyKey<SliderEventArgs<'a>->unit> = SimplePropertyKey.create "slider.optionsChanged"
-        member inline this.orientationChanged : SimplePropertyKey<Orientation->unit> = SimplePropertyKey.create "slider.orientationChanged"
-        member inline this.orientationChanging : SimplePropertyKey<App.CancelEventArgs<Orientation>->unit> = SimplePropertyKey.create "slider.orientationChanging"
+        member inline this.optionFocused : SimplePropKey<SliderEventArgs<'a>->unit> = SimplePropKey.create "slider.optionFocused"
+        member inline this.optionsChanged : SimplePropKey<SliderEventArgs<'a>->unit> = SimplePropKey.create "slider.optionsChanged"
+        member inline this.orientationChanged : SimplePropKey<Orientation->unit> = SimplePropKey.create "slider.orientationChanged"
+        member inline this.orientationChanging : SimplePropKey<App.CancelEventArgs<Orientation>->unit> = SimplePropKey.create "slider.orientationChanging"
 
     // Slider
     // type sliderPKeys() =
@@ -580,12 +580,12 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.autoSpin : SimplePropertyKey<bool> = SimplePropertyKey.create "spinnerView.autoSpin"
-        member inline this.sequence : SimplePropertyKey<string list> = SimplePropertyKey.create "spinnerView.sequence"
-        member inline this.spinBounce : SimplePropertyKey<bool> = SimplePropertyKey.create "spinnerView.spinBounce"
-        member inline this.spinDelay : SimplePropertyKey<Int32> = SimplePropertyKey.create "spinnerView.spinDelay"
-        member inline this.spinReverse : SimplePropertyKey<bool> = SimplePropertyKey.create "spinnerView.spinReverse"
-        member inline this.style : SimplePropertyKey<SpinnerStyle> = SimplePropertyKey.create "spinnerView.style"
+        member inline this.autoSpin : SimplePropKey<bool> = SimplePropKey.create "spinnerView.autoSpin"
+        member inline this.sequence : SimplePropKey<string list> = SimplePropKey.create "spinnerView.sequence"
+        member inline this.spinBounce : SimplePropKey<bool> = SimplePropKey.create "spinnerView.spinBounce"
+        member inline this.spinDelay : SimplePropKey<Int32> = SimplePropKey.create "spinnerView.spinDelay"
+        member inline this.spinReverse : SimplePropKey<bool> = SimplePropKey.create "spinnerView.spinReverse"
+        member inline this.style : SimplePropKey<SpinnerStyle> = SimplePropKey.create "spinnerView.style"
 
     // StatusBar
     type statusBarPKeys() =
@@ -597,134 +597,134 @@ module internal PKey =
         inherit viewPKeys()
 
         // Properties
-        member inline this.displayText : SimplePropertyKey<string> = SimplePropertyKey.create "tab.displayText"
-        member inline this.view : SimplePropertyKey<View> = SimplePropertyKey.create "tab.view_view"
-        member inline this.view_element : SingleElementKey<ITerminalElement> = SingleElementKey.create "tab.view_element"
+        member inline this.displayText : SimplePropKey<string> = SimplePropKey.create "tab.displayText"
+        member inline this.view : SimplePropKey<View> = SimplePropKey.create "tab.view_view"
+        member inline this.view_element : SingleElementPropKey<ITerminalElement> = SingleElementPropKey.create "tab.view_element"
 
     // TabView
     type tabViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.maxTabTextWidth : SimplePropertyKey<int> = SimplePropertyKey.create "tabView.maxTabTextWidth"
-        member inline this.selectedTab : SimplePropertyKey<Tab> = SimplePropertyKey.create "tabView.selectedTab"
-        member inline this.style : SimplePropertyKey<TabStyle> = SimplePropertyKey.create "tabView.style"
-        member inline this.tabScrollOffset : SimplePropertyKey<Int32> = SimplePropertyKey.create "tabView.tabScrollOffset"
+        member inline this.maxTabTextWidth : SimplePropKey<int> = SimplePropKey.create "tabView.maxTabTextWidth"
+        member inline this.selectedTab : SimplePropKey<Tab> = SimplePropKey.create "tabView.selectedTab"
+        member inline this.style : SimplePropKey<TabStyle> = SimplePropKey.create "tabView.style"
+        member inline this.tabScrollOffset : SimplePropKey<Int32> = SimplePropKey.create "tabView.tabScrollOffset"
         // Events
-        member inline this.selectedTabChanged : SimplePropertyKey<TabChangedEventArgs->unit> = SimplePropertyKey.create "tabView.selectedTabChanged"
-        member inline this.tabClicked : SimplePropertyKey<TabMouseEventArgs->unit> = SimplePropertyKey.create "tabView.tabClicked"
+        member inline this.selectedTabChanged : SimplePropKey<TabChangedEventArgs->unit> = SimplePropKey.create "tabView.selectedTabChanged"
+        member inline this.tabClicked : SimplePropKey<TabMouseEventArgs->unit> = SimplePropKey.create "tabView.tabClicked"
         // Additional properties
-        member inline this.tabs : SimplePropertyKey<List<ITerminalElement>> = SimplePropertyKey.create "tabView.tabs_view"
-        member inline this.tabs_elements : MultiElementKey<List<ITerminalElement>> = MultiElementKey.create "tabView.tabs_elements"
+        member inline this.tabs : SimplePropKey<List<ITerminalElement>> = SimplePropKey.create "tabView.tabs_view"
+        member inline this.tabs_elements : MultiElementPropKey<List<ITerminalElement>> = MultiElementPropKey.create "tabView.tabs_elements"
 
     // TableView
     type tableViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.cellActivationKey : SimplePropertyKey<KeyCode> = SimplePropertyKey.create "tableView.cellActivationKey"
-        member inline this.collectionNavigator : SimplePropertyKey<ICollectionNavigator> = SimplePropertyKey.create "tableView.collectionNavigator"
-        member inline this.columnOffset : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.columnOffset"
-        member inline this.fullRowSelect : SimplePropertyKey<bool> = SimplePropertyKey.create "tableView.fullRowSelect"
-        member inline this.maxCellWidth : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.maxCellWidth"
-        member inline this.minCellWidth : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.minCellWidth"
-        member inline this.multiSelect : SimplePropertyKey<bool> = SimplePropertyKey.create "tableView.multiSelect"
-        member inline this.nullSymbol : SimplePropertyKey<string> = SimplePropertyKey.create "tableView.nullSymbol"
-        member inline this.rowOffset : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.rowOffset"
-        member inline this.selectedColumn : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.selectedColumn"
-        member inline this.selectedRow : SimplePropertyKey<Int32> = SimplePropertyKey.create "tableView.selectedRow"
-        member inline this.separatorSymbol : SimplePropertyKey<Char> = SimplePropertyKey.create "tableView.separatorSymbol"
-        member inline this.style : SimplePropertyKey<TableStyle> = SimplePropertyKey.create "tableView.style"
-        member inline this.table : SimplePropertyKey<ITableSource> = SimplePropertyKey.create "tableView.table"
+        member inline this.cellActivationKey : SimplePropKey<KeyCode> = SimplePropKey.create "tableView.cellActivationKey"
+        member inline this.collectionNavigator : SimplePropKey<ICollectionNavigator> = SimplePropKey.create "tableView.collectionNavigator"
+        member inline this.columnOffset : SimplePropKey<Int32> = SimplePropKey.create "tableView.columnOffset"
+        member inline this.fullRowSelect : SimplePropKey<bool> = SimplePropKey.create "tableView.fullRowSelect"
+        member inline this.maxCellWidth : SimplePropKey<Int32> = SimplePropKey.create "tableView.maxCellWidth"
+        member inline this.minCellWidth : SimplePropKey<Int32> = SimplePropKey.create "tableView.minCellWidth"
+        member inline this.multiSelect : SimplePropKey<bool> = SimplePropKey.create "tableView.multiSelect"
+        member inline this.nullSymbol : SimplePropKey<string> = SimplePropKey.create "tableView.nullSymbol"
+        member inline this.rowOffset : SimplePropKey<Int32> = SimplePropKey.create "tableView.rowOffset"
+        member inline this.selectedColumn : SimplePropKey<Int32> = SimplePropKey.create "tableView.selectedColumn"
+        member inline this.selectedRow : SimplePropKey<Int32> = SimplePropKey.create "tableView.selectedRow"
+        member inline this.separatorSymbol : SimplePropKey<Char> = SimplePropKey.create "tableView.separatorSymbol"
+        member inline this.style : SimplePropKey<TableStyle> = SimplePropKey.create "tableView.style"
+        member inline this.table : SimplePropKey<ITableSource> = SimplePropKey.create "tableView.table"
         // Events
-        member inline this.cellActivated : SimplePropertyKey<CellActivatedEventArgs->unit> = SimplePropertyKey.create "tableView.cellActivated"
-        member inline this.cellToggled : SimplePropertyKey<CellToggledEventArgs->unit> = SimplePropertyKey.create "tableView.cellToggled"
-        member inline this.selectedCellChanged : SimplePropertyKey<SelectedCellChangedEventArgs->unit> = SimplePropertyKey.create "tableView.selectedCellChanged"
+        member inline this.cellActivated : SimplePropKey<CellActivatedEventArgs->unit> = SimplePropKey.create "tableView.cellActivated"
+        member inline this.cellToggled : SimplePropKey<CellToggledEventArgs->unit> = SimplePropKey.create "tableView.cellToggled"
+        member inline this.selectedCellChanged : SimplePropKey<SelectedCellChangedEventArgs->unit> = SimplePropKey.create "tableView.selectedCellChanged"
 
     // TextValidateField
     type textValidateFieldPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.provider : SimplePropertyKey<ITextValidateProvider> = SimplePropertyKey.create "textValidateField.provider"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "textValidateField.text"
+        member inline this.provider : SimplePropKey<ITextValidateProvider> = SimplePropKey.create "textValidateField.provider"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "textValidateField.text"
 
     // TextView
     type textViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.allowsReturn : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.allowsReturn"
-        member inline this.allowsTab : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.allowsTab"
-        member inline this.cursorPosition : SimplePropertyKey<Point> = SimplePropertyKey.create "textView.cursorPosition"
-        member inline this.inheritsPreviousAttribute : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.inheritsPreviousAttribute"
-        member inline this.isDirty : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.isDirty"
-        member inline this.isSelecting : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.isSelecting"
-        member inline this.leftColumn : SimplePropertyKey<Int32> = SimplePropertyKey.create "textView.leftColumn"
-        member inline this.multiline : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.multiline"
-        member inline this.readOnly : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.readOnly"
-        member inline this.selectionStartColumn : SimplePropertyKey<Int32> = SimplePropertyKey.create "textView.selectionStartColumn"
-        member inline this.selectionStartRow : SimplePropertyKey<Int32> = SimplePropertyKey.create "textView.selectionStartRow"
-        member inline this.selectWordOnlyOnDoubleClick : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.selectWordOnlyOnDoubleClick"
-        member inline this.tabWidth : SimplePropertyKey<Int32> = SimplePropertyKey.create "textView.tabWidth"
-        member inline this.text : SimplePropertyKey<string> = SimplePropertyKey.create "textView.text"
-        member inline this.topRow : SimplePropertyKey<Int32> = SimplePropertyKey.create "textView.topRow"
-        member inline this.used : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.used"
-        member inline this.useSameRuneTypeForWords : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.useSameRuneTypeForWords"
-        member inline this.wordWrap : SimplePropertyKey<bool> = SimplePropertyKey.create "textView.wordWrap"
+        member inline this.allowsReturn : SimplePropKey<bool> = SimplePropKey.create "textView.allowsReturn"
+        member inline this.allowsTab : SimplePropKey<bool> = SimplePropKey.create "textView.allowsTab"
+        member inline this.cursorPosition : SimplePropKey<Point> = SimplePropKey.create "textView.cursorPosition"
+        member inline this.inheritsPreviousAttribute : SimplePropKey<bool> = SimplePropKey.create "textView.inheritsPreviousAttribute"
+        member inline this.isDirty : SimplePropKey<bool> = SimplePropKey.create "textView.isDirty"
+        member inline this.isSelecting : SimplePropKey<bool> = SimplePropKey.create "textView.isSelecting"
+        member inline this.leftColumn : SimplePropKey<Int32> = SimplePropKey.create "textView.leftColumn"
+        member inline this.multiline : SimplePropKey<bool> = SimplePropKey.create "textView.multiline"
+        member inline this.readOnly : SimplePropKey<bool> = SimplePropKey.create "textView.readOnly"
+        member inline this.selectionStartColumn : SimplePropKey<Int32> = SimplePropKey.create "textView.selectionStartColumn"
+        member inline this.selectionStartRow : SimplePropKey<Int32> = SimplePropKey.create "textView.selectionStartRow"
+        member inline this.selectWordOnlyOnDoubleClick : SimplePropKey<bool> = SimplePropKey.create "textView.selectWordOnlyOnDoubleClick"
+        member inline this.tabWidth : SimplePropKey<Int32> = SimplePropKey.create "textView.tabWidth"
+        member inline this.text : SimplePropKey<string> = SimplePropKey.create "textView.text"
+        member inline this.topRow : SimplePropKey<Int32> = SimplePropKey.create "textView.topRow"
+        member inline this.used : SimplePropKey<bool> = SimplePropKey.create "textView.used"
+        member inline this.useSameRuneTypeForWords : SimplePropKey<bool> = SimplePropKey.create "textView.useSameRuneTypeForWords"
+        member inline this.wordWrap : SimplePropKey<bool> = SimplePropKey.create "textView.wordWrap"
         // Events
-        member inline this.contentsChanged : SimplePropertyKey<ContentsChangedEventArgs->unit> = SimplePropertyKey.create "textView.contentsChanged"
-        member inline this.drawNormalColor : SimplePropertyKey<CellEventArgs->unit> = SimplePropertyKey.create "textView.drawNormalColor"
-        member inline this.drawReadOnlyColor : SimplePropertyKey<CellEventArgs->unit> = SimplePropertyKey.create "textView.drawReadOnlyColor"
-        member inline this.drawSelectionColor : SimplePropertyKey<CellEventArgs->unit> = SimplePropertyKey.create "textView.drawSelectionColor"
-        member inline this.drawUsedColor : SimplePropertyKey<CellEventArgs->unit> = SimplePropertyKey.create "textView.drawUsedColor"
-        member inline this.unwrappedCursorPosition : SimplePropertyKey<Point->unit> = SimplePropertyKey.create "textView.unwrappedCursorPosition"
+        member inline this.contentsChanged : SimplePropKey<ContentsChangedEventArgs->unit> = SimplePropKey.create "textView.contentsChanged"
+        member inline this.drawNormalColor : SimplePropKey<CellEventArgs->unit> = SimplePropKey.create "textView.drawNormalColor"
+        member inline this.drawReadOnlyColor : SimplePropKey<CellEventArgs->unit> = SimplePropKey.create "textView.drawReadOnlyColor"
+        member inline this.drawSelectionColor : SimplePropKey<CellEventArgs->unit> = SimplePropKey.create "textView.drawSelectionColor"
+        member inline this.drawUsedColor : SimplePropKey<CellEventArgs->unit> = SimplePropKey.create "textView.drawUsedColor"
+        member inline this.unwrappedCursorPosition : SimplePropKey<Point->unit> = SimplePropKey.create "textView.unwrappedCursorPosition"
         // Additional properties
-        member inline this.textChanged : SimplePropertyKey<string->unit> = SimplePropertyKey.create "textView.textChanged"
+        member inline this.textChanged : SimplePropKey<string->unit> = SimplePropKey.create "textView.textChanged"
 
     // TileView
     type tileViewPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.lineStyle : SimplePropertyKey<LineStyle> = SimplePropertyKey.create "tileView.lineStyle"
-        member inline this.orientation : SimplePropertyKey<Orientation> = SimplePropertyKey.create "tileView.orientation"
-        member inline this.toggleResizable : SimplePropertyKey<KeyCode> = SimplePropertyKey.create "tileView.toggleResizable"
+        member inline this.lineStyle : SimplePropKey<LineStyle> = SimplePropKey.create "tileView.lineStyle"
+        member inline this.orientation : SimplePropKey<Orientation> = SimplePropKey.create "tileView.orientation"
+        member inline this.toggleResizable : SimplePropKey<KeyCode> = SimplePropKey.create "tileView.toggleResizable"
         // Events
-        member inline this.splitterMoved : SimplePropertyKey<SplitterEventArgs->unit> = SimplePropertyKey.create "tileView.splitterMoved"
+        member inline this.splitterMoved : SimplePropKey<SplitterEventArgs->unit> = SimplePropKey.create "tileView.splitterMoved"
 
     // TimeField
     type timeFieldPKeys() =
         inherit textFieldPKeys()
 
         // Properties
-        member inline this.cursorPosition : SimplePropertyKey<Int32> = SimplePropertyKey.create "timeField.cursorPosition"
-        member inline this.isShortFormat : SimplePropertyKey<bool> = SimplePropertyKey.create "timeField.isShortFormat"
-        member inline this.time : SimplePropertyKey<TimeSpan> = SimplePropertyKey.create "timeField.time"
+        member inline this.cursorPosition : SimplePropKey<Int32> = SimplePropKey.create "timeField.cursorPosition"
+        member inline this.isShortFormat : SimplePropKey<bool> = SimplePropKey.create "timeField.isShortFormat"
+        member inline this.time : SimplePropKey<TimeSpan> = SimplePropKey.create "timeField.time"
         // Events
-        member inline this.timeChanged : SimplePropertyKey<DateTimeEventArgs<TimeSpan>->unit> = SimplePropertyKey.create "timeField.timeChanged"
+        member inline this.timeChanged : SimplePropKey<DateTimeEventArgs<TimeSpan>->unit> = SimplePropKey.create "timeField.timeChanged"
 
     // TreeView`1
     type treeViewPKeys<'a when 'a : not struct>() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.allowLetterBasedNavigation : SimplePropertyKey<bool> = SimplePropertyKey.create "treeView.allowLetterBasedNavigation"
-        member inline this.aspectGetter : SimplePropertyKey<AspectGetterDelegate<'a>> = SimplePropertyKey.create "treeView.aspectGetter"
-        member inline this.colorGetter : SimplePropertyKey<Func<'a,Scheme>> = SimplePropertyKey.create "treeView.colorGetter"
-        member inline this.maxDepth : SimplePropertyKey<Int32> = SimplePropertyKey.create "treeView.maxDepth"
-        member inline this.multiSelect : SimplePropertyKey<bool> = SimplePropertyKey.create "treeView.multiSelect"
-        member inline this.objectActivationButton : SimplePropertyKey<MouseFlags option> = SimplePropertyKey.create "treeView.objectActivationButton"
-        member inline this.objectActivationKey : SimplePropertyKey<KeyCode> = SimplePropertyKey.create "treeView.objectActivationKey"
-        member inline this.scrollOffsetHorizontal : SimplePropertyKey<Int32> = SimplePropertyKey.create "treeView.scrollOffsetHorizontal"
-        member inline this.scrollOffsetVertical : SimplePropertyKey<Int32> = SimplePropertyKey.create "treeView.scrollOffsetVertical"
-        member inline this.selectedObject : SimplePropertyKey<'a> = SimplePropertyKey.create "treeView.selectedObject"
-        member inline this.style : SimplePropertyKey<TreeStyle> = SimplePropertyKey.create "treeView.style"
-        member inline this.treeBuilder : SimplePropertyKey<ITreeBuilder<'a>> = SimplePropertyKey.create "treeView.treeBuilder"
+        member inline this.allowLetterBasedNavigation : SimplePropKey<bool> = SimplePropKey.create "treeView.allowLetterBasedNavigation"
+        member inline this.aspectGetter : SimplePropKey<AspectGetterDelegate<'a>> = SimplePropKey.create "treeView.aspectGetter"
+        member inline this.colorGetter : SimplePropKey<Func<'a,Scheme>> = SimplePropKey.create "treeView.colorGetter"
+        member inline this.maxDepth : SimplePropKey<Int32> = SimplePropKey.create "treeView.maxDepth"
+        member inline this.multiSelect : SimplePropKey<bool> = SimplePropKey.create "treeView.multiSelect"
+        member inline this.objectActivationButton : SimplePropKey<MouseFlags option> = SimplePropKey.create "treeView.objectActivationButton"
+        member inline this.objectActivationKey : SimplePropKey<KeyCode> = SimplePropKey.create "treeView.objectActivationKey"
+        member inline this.scrollOffsetHorizontal : SimplePropKey<Int32> = SimplePropKey.create "treeView.scrollOffsetHorizontal"
+        member inline this.scrollOffsetVertical : SimplePropKey<Int32> = SimplePropKey.create "treeView.scrollOffsetVertical"
+        member inline this.selectedObject : SimplePropKey<'a> = SimplePropKey.create "treeView.selectedObject"
+        member inline this.style : SimplePropKey<TreeStyle> = SimplePropKey.create "treeView.style"
+        member inline this.treeBuilder : SimplePropKey<ITreeBuilder<'a>> = SimplePropKey.create "treeView.treeBuilder"
         // Events
-        member inline this.drawLine : SimplePropertyKey<DrawTreeViewLineEventArgs<'a>->unit> = SimplePropertyKey.create "treeView.drawLine"
-        member inline this.objectActivated : SimplePropertyKey<ObjectActivatedEventArgs<'a>->unit> = SimplePropertyKey.create "treeView.objectActivated"
-        member inline this.selectionChanged : SimplePropertyKey<SelectionChangedEventArgs<'a>->unit> = SimplePropertyKey.create "treeView.selectionChanged"
+        member inline this.drawLine : SimplePropKey<DrawTreeViewLineEventArgs<'a>->unit> = SimplePropKey.create "treeView.drawLine"
+        member inline this.objectActivated : SimplePropKey<ObjectActivatedEventArgs<'a>->unit> = SimplePropKey.create "treeView.objectActivated"
+        member inline this.selectionChanged : SimplePropKey<SelectionChangedEventArgs<'a>->unit> = SimplePropKey.create "treeView.selectionChanged"
 
     // TreeView
     // type treeViewPKeys() =
@@ -741,24 +741,24 @@ module internal PKey =
         inherit dialogPKeys()
 
         // Properties
-        member inline this.currentStep : SimplePropertyKey<WizardStep> = SimplePropertyKey.create "wizard.currentStep"
-        member inline this.modal : SimplePropertyKey<bool> = SimplePropertyKey.create "wizard.modal"
+        member inline this.currentStep : SimplePropKey<WizardStep> = SimplePropKey.create "wizard.currentStep"
+        member inline this.modal : SimplePropKey<bool> = SimplePropKey.create "wizard.modal"
         // Events
-        member inline this.cancelled : SimplePropertyKey<WizardButtonEventArgs->unit> = SimplePropertyKey.create "wizard.cancelled"
-        member inline this.finished : SimplePropertyKey<WizardButtonEventArgs->unit> = SimplePropertyKey.create "wizard.finished"
-        member inline this.movingBack : SimplePropertyKey<WizardButtonEventArgs->unit> = SimplePropertyKey.create "wizard.movingBack"
-        member inline this.movingNext : SimplePropertyKey<WizardButtonEventArgs->unit> = SimplePropertyKey.create "wizard.movingNext"
-        member inline this.stepChanged : SimplePropertyKey<StepChangeEventArgs->unit> = SimplePropertyKey.create "wizard.stepChanged"
-        member inline this.stepChanging : SimplePropertyKey<StepChangeEventArgs->unit> = SimplePropertyKey.create "wizard.stepChanging"
+        member inline this.cancelled : SimplePropKey<WizardButtonEventArgs->unit> = SimplePropKey.create "wizard.cancelled"
+        member inline this.finished : SimplePropKey<WizardButtonEventArgs->unit> = SimplePropKey.create "wizard.finished"
+        member inline this.movingBack : SimplePropKey<WizardButtonEventArgs->unit> = SimplePropKey.create "wizard.movingBack"
+        member inline this.movingNext : SimplePropKey<WizardButtonEventArgs->unit> = SimplePropKey.create "wizard.movingNext"
+        member inline this.stepChanged : SimplePropKey<StepChangeEventArgs->unit> = SimplePropKey.create "wizard.stepChanged"
+        member inline this.stepChanging : SimplePropKey<StepChangeEventArgs->unit> = SimplePropKey.create "wizard.stepChanging"
 
     // WizardStep
     type wizardStepPKeys() =
         inherit viewPKeys()
 
         // Properties
-        member inline this.backButtonText : SimplePropertyKey<string> = SimplePropertyKey.create "wizardStep.backButtonText"
-        member inline this.helpText : SimplePropertyKey<string> = SimplePropertyKey.create "wizardStep.helpText"
-        member inline this.nextButtonText : SimplePropertyKey<string> = SimplePropertyKey.create "wizardStep.nextButtonText"
+        member inline this.backButtonText : SimplePropKey<string> = SimplePropKey.create "wizardStep.backButtonText"
+        member inline this.helpText : SimplePropKey<string> = SimplePropKey.create "wizardStep.helpText"
+        member inline this.nextButtonText : SimplePropKey<string> = SimplePropKey.create "wizardStep.nextButtonText"
 
 
     let view = viewPKeys()

@@ -396,7 +396,7 @@ module internal PKey =
          // Properties
          member inline this.action : SimplePropKey<Action> = SimplePropKey.create "shortcut.action"
          member inline this.alignmentModes : SimplePropKey<AlignmentModes> = SimplePropKey.create "shortcut.alignmentModes"
-         member inline this.commandView : SimplePropKey<View> = SimplePropKey.create "shortcut.commandView_view"
+         member inline this.commandView : ViewPropKey<View> = ViewPropKey.create "shortcut.commandView_view"
          member inline this.commandView_element : SingleElementPropKey<ITerminalElement> = SingleElementPropKey.create "shortcut.commandView_element"
          member inline this.forceFocusColors : SimplePropKey<bool> = SimplePropKey.create "shortcut.forceFocusColors"
          member inline this.helpText : SimplePropKey<string> = SimplePropKey.create "shortcut.helpText"
@@ -411,7 +411,7 @@ module internal PKey =
     type menuItemv2PKeys() =
         inherit shortcutPKeys()
         member inline this.command : SimplePropKey< Command> = SimplePropKey.create "menuItemv2.command"
-        member inline this.subMenu: SimplePropKey<Menuv2> = SimplePropKey.create "menuItemv2.subMenu_view"
+        member inline this.subMenu: ViewPropKey<Menuv2> = ViewPropKey.create "menuItemv2.subMenu_view"
         member inline this.subMenu_element : SingleElementPropKey<IMenuv2Element> = SingleElementPropKey.create "menuItemv2.subMenu_element"
         member inline this.targetView : SimplePropKey<View> = SimplePropKey.create "menuItemv2.targetView"
         member inline this.accepted: SimplePropKey<CommandEventArgs -> unit> = SimplePropKey.create "menuItemv2.accepted"
@@ -420,7 +420,7 @@ module internal PKey =
         inherit menuItemv2PKeys()
 
         // Properties
-        member inline this.popoverMenu : SimplePropKey<PopoverMenu> = SimplePropKey.create "menuBarItemv2.popoverMenu_view"
+        member inline this.popoverMenu : ViewPropKey<PopoverMenu> = ViewPropKey.create "menuBarItemv2.popoverMenu_view"
         member inline this.popoverMenu_element : SingleElementPropKey<IPopoverMenuElement> = SingleElementPropKey.create "menuBarItemv2.popoverMenu_element"
         member inline this.popoverMenuOpen : SimplePropKey<bool> = SimplePropKey.create "menuBarItemv2.popoverMenuOpen"
         // Events
@@ -432,7 +432,7 @@ module internal PKey =
         // Properties
         member inline this.key : SimplePropKey<Key> = SimplePropKey.create "popoverMenu.key"
         member inline this.mouseFlags : SimplePropKey<MouseFlags> = SimplePropKey.create "popoverMenu.mouseFlags"
-        member inline this.root : SimplePropKey<Menuv2> = SimplePropKey.create "popoverMenu.root_view"
+        member inline this.root : ViewPropKey<Menuv2> = ViewPropKey.create "popoverMenu.root_view"
         member inline this.root_element : SingleElementPropKey<IMenuv2Element> = SingleElementPropKey.create "popoverMenu.root_element"
         // Events
         member inline this.accepted : SimplePropKey<CommandEventArgs->unit> = SimplePropKey.create "popoverMenu.accepted"
@@ -598,7 +598,7 @@ module internal PKey =
 
         // Properties
         member inline this.displayText : SimplePropKey<string> = SimplePropKey.create "tab.displayText"
-        member inline this.view : SimplePropKey<View> = SimplePropKey.create "tab.view_view"
+        member inline this.view : ViewPropKey<View> = ViewPropKey.create "tab.view_view"
         member inline this.view_element : SingleElementPropKey<ITerminalElement> = SingleElementPropKey.create "tab.view_element"
 
     // TabView
@@ -614,7 +614,7 @@ module internal PKey =
         member inline this.selectedTabChanged : SimplePropKey<TabChangedEventArgs->unit> = SimplePropKey.create "tabView.selectedTabChanged"
         member inline this.tabClicked : SimplePropKey<TabMouseEventArgs->unit> = SimplePropKey.create "tabView.tabClicked"
         // Additional properties
-        member inline this.tabs : SimplePropKey<List<ITerminalElement>> = SimplePropKey.create "tabView.tabs_view"
+        member inline this.tabs : ViewPropKey<List<ITerminalElement>> = ViewPropKey.create "tabView.tabs_view"
         member inline this.tabs_elements : MultiElementPropKey<List<ITerminalElement>> = MultiElementPropKey.create "tabView.tabs_elements"
 
     // TableView

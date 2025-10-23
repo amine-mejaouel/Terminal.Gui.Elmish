@@ -4,15 +4,24 @@ open System.Collections.Generic
 
 [<AutoOpen>]
 module internal PropKey =
-    type IPropKey<'a> =
+    type IPropKey =
         abstract member key: string
+        abstract member isViewKey: bool
+        abstract member isSingleElementKey: bool
+
+    type IPropKey<'a> =
+        inherit IPropKey
+
+    type ISingleElementKey =
+        abstract member viewKey: IPropKey
 
     /// Represents a property in a Terminal.Gui View
+    [<CustomEquality; NoComparison>]
     type SimplePropKey<'a> = private Key of string
     with
         static member create<'a> (key:string) : SimplePropKey<'a> =
             // TODO: should I do the same check for "_view" ?
-            if key.EndsWith "_element" || key.EndsWith "_elements" then
+            if key.EndsWith "_element" || key.EndsWith "_elements" || key.EndsWith "_view" then
                 failwith $"Invalid key: {key}"
             else
                 Key key
@@ -24,9 +33,49 @@ module internal PropKey =
             let (Key key) = this
             key
 
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
         interface IPropKey<'a> with
             member this.key = this.key
+            member this.isViewKey = false
+            member this.isSingleElementKey = false
 
+    [<CustomEquality; NoComparison>]
+    type ViewPropKey<'a> = private Key of string
+    with
+        static member create<'a> (key:string) : ViewPropKey<'a> =
+            if not (key.EndsWith "_view") then
+                failwith $"Invalid key: {key}"
+            else
+                Key key
+
+        static member map (value: ViewPropKey<'a>) : ViewPropKey<'b> =
+            Key value.key
+
+        member this.key =
+            let (Key key) = this
+            key
+
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
+        interface IPropKey<'a> with
+            member this.key = this.key
+            member this.isViewKey = true
+            member this.isSingleElementKey = false
+
+    [<CustomEquality; NoComparison>]
     type SingleElementPropKey<'a> = private Key of string
     with
         static member create<'a> (key:string) : SingleElementPropKey<'a> =
@@ -38,9 +87,26 @@ module internal PropKey =
             let (Key key) = this
             key
 
+        member this.viewKey=
+            ViewPropKey.create (this.key.Replace("_element", "_view")) :> IPropKey
+
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
         interface IPropKey<'a> with
             member this.key = this.key
+            member this.isViewKey = false
+            member this.isSingleElementKey = true
 
+        interface ISingleElementKey with
+            member this.viewKey = this.viewKey
+
+    [<CustomEquality; NoComparison>]
     type MultiElementPropKey<'a> = private Key of string
     with
         static member create<'a> (key:string) : MultiElementPropKey<'a> =
@@ -52,9 +118,23 @@ module internal PropKey =
             let (Key key) = this
             key
 
+        member this.viewKey=
+            ViewPropKey.create (this.key.Replace("_elements", "_view")) :> IPropKey
+
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
         interface IPropKey<'a> with
             member this.key = this.key
+            member this.isViewKey = false
+            member this.isSingleElementKey = false
 
+    [<CustomEquality; NoComparison>]
     type ElementPropKey<'a> =
         | SingleElementKey of SingleElementPropKey<'a>
         | MultiElementKey of MultiElementPropKey<'a>
@@ -76,28 +156,41 @@ module internal PropKey =
             | SingleElementKey key -> key.key
             | MultiElementKey key -> key.key
 
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
         member this.viewKey =
             match this with
-            | SingleElementKey key -> key.key.Replace("_element", "_view")
-            | MultiElementKey key -> key.key.Replace("_elements", "_view")
+            | SingleElementKey key -> key.viewKey
+            | MultiElementKey key -> key.viewKey
 
         interface IPropKey<'a> with
             member this.key = this.key
+            member this.isViewKey = false
+            member this.isSingleElementKey =
+                match this with
+                | SingleElementKey _ -> true
+                | MultiElementKey _ -> false
 
 /// Props object that is still under construction
 type internal Props(?initialProps) =
 
-    member val dict = defaultArg initialProps (Dictionary<_,_>()) with get
+    member val dict = defaultArg initialProps (Dictionary<IPropKey,_>()) with get
 
-    member this.add (k: string, v: obj)  = this.dict.Add(k, v)
-    member this.add<'a> (k: IPropKey<'a>, v: 'a)  = this.dict.Add(k.key, v :> obj)
+    member this.add<'a> (k: IPropKey<'a>, v: 'a)  = this.dict.Add(k, v :> obj)
+    member this.add<'a> (k: IPropKey, v: 'a)  = this.dict.Add(k, v :> obj)
 
     member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
-        match this.dict.TryGetValue k.key with
+        match this.dict.TryGetValue k with
         | true, value -> value |> unbox<'a>
         | false, _ ->
             let value = init()
-            this.dict[k.key] <- value :> obj
+            this.dict[k] <- value :> obj
             value
 
 module internal Props =
@@ -135,7 +228,7 @@ module internal Props =
         result
 
     let tryFind (key: IPropKey<'a>) (props: Props) =
-        match props.dict.TryGetValue key.key with
+        match props.dict.TryGetValue key with
         | true, v -> v |> unbox<'a> |> Some
         | _, _ -> None
 
@@ -154,7 +247,7 @@ module internal Props =
 
     let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k.key
+    let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k
 
     // TODO: remove this and replace usage with TerminalElement.compare where
     let compare (oldProps: Props) (newProps: Props) =
@@ -176,6 +269,11 @@ module internal Props =
         (changedProps, removedProps)
 
     let keys (props: Props) = props.dict.Keys |> Seq.map id
+
+    let filterSingleElementKeys (props: Props) =
+        props.dict.Keys
+        |> Seq.filter _.isSingleElementKey
+        |> Seq.map (fun x -> x :?> ISingleElementKey)
 
     let iter iteration (props: Props) =
         props.dict |> Seq.iter iteration

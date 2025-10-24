@@ -20,7 +20,6 @@ module internal PropKey =
     type SimplePropKey<'a> = private Key of string
     with
         static member create<'a> (key:string) : SimplePropKey<'a> =
-            // TODO: should I do the same check for "_view" ?
             if key.EndsWith "_element" || key.EndsWith "_elements" || key.EndsWith "_view" then
                 failwith $"Invalid key: {key}"
             else

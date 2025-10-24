@@ -281,17 +281,17 @@ type TerminalElement (props: Props) =
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
     override this.update oldView oldProps =
-        let changedProps,unchangedProps,removedProps = this.compare oldProps
+        let c = this.compare oldProps
 
         // foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
         let viewKeysToReinject =
-            unchangedProps
+            c.unchangedProps
             |> Props.filterSingleElementKeys
             |> Seq.map _.viewKey
             |> Seq.toArray
 
         let viewsPropsToReinject, removedProps =
-            removedProps
+            c.removedProps
             |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains(kv.Key))
 
         viewsPropsToReinject
@@ -300,7 +300,7 @@ type TerminalElement (props: Props) =
         )
 
         this.removeProps(oldView, removedProps)
-        this.setProps(oldView, changedProps)
+        this.setProps(oldView, c.changedProps)
         this.view <- oldView
 
     member this.equivalentTo (other: TerminalElement) =
@@ -335,30 +335,32 @@ type TerminalElement (props: Props) =
 
         isEquivalent
 
-    member this.compare (prevProps: Props) =
+    member this.compare (prevProps: Props) : {| changedProps: Props; unchangedProps: Props; removedProps: Props |} =
 
         let remainingOldProps, removedProps =
             prevProps |> Props.partition (fun kv -> this.props |> Props.rawKeyExists kv.Key)
 
-        let changedProps, unchangedProps  =
+        let unchangedProps, changedProps =
             this.props |> Props.partition (fun kv ->
                 match remainingOldProps |> Props.tryFindByRawKey kv.Key with
                 | _ when kv.Key.key = "children" -> // Here we always ignore the 'children' from changed props
-                    false
+                    true
                 | Some (v: obj) when kv.Key.isSingleElementKey ->
                     let curElement = kv.Value :?> TerminalElement
                     let oldElement = v :?> TerminalElement
-                    not (curElement.equivalentTo oldElement)
+                    curElement.equivalentTo oldElement
                 // TODO: comparison is not good here, it can fail for many C# types
                 // TODO: Properties values should be comparable
                 // TODO: should also be able to compare _element props
                 | Some v' when kv.Value = v' ->
-                    false
-                | _ ->
                     true
+                | _ ->
+                    false
             )
 
-        (changedProps, unchangedProps, removedProps)
+        {| changedProps = changedProps
+           unchangedProps = unchangedProps
+           removedProps = removedProps |}
 
     interface IInternalTerminalElement with
         member this.initializeTree(parent) = this.initializeTree(parent)

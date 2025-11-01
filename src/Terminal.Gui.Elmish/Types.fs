@@ -182,7 +182,7 @@ type internal Props(?initialProps) =
     member val dict = defaultArg initialProps (Dictionary<IPropKey,_>()) with get
 
     member this.add<'a> (k: IPropKey<'a>, v: 'a)  = this.dict.Add(k, v :> obj)
-    member this.add<'a> (k: IPropKey, v: 'a)  = this.dict.Add(k, v :> obj)
+    member this.addNonTyped<'a> (k: IPropKey, v: 'a)  = this.dict.Add(k, v :> obj)
 
     member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
         match this.dict.TryGetValue k with
@@ -211,9 +211,9 @@ module internal Props =
 
         for kv in props.dict do
             if predicate kv then
-                first.add (kv.Key, kv.Value)
+                first.addNonTyped (kv.Key, kv.Value)
             else
-                second.add (kv.Key, kv.Value)
+                second.addNonTyped (kv.Key, kv.Value)
 
         first, second
 
@@ -222,7 +222,7 @@ module internal Props =
 
         for kv in props.dict do
             if predicate kv then
-                result.add (kv.Key, kv.Value)
+                result.addNonTyped (kv.Key, kv.Value)
 
         result
 

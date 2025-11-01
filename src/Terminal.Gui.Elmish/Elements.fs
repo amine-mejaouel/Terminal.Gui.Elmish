@@ -49,7 +49,7 @@ type TerminalElement (props: Props) =
         let newView = this.newView()
 
         this.initializeSubElements(newView)
-        |> Seq.iter props.add
+        |> Seq.iter props.addNonTyped
 
         // Here, the "children" view are added to their parent
         parent |> Option.iter (fun p -> p.Add newView |> ignore)
@@ -296,7 +296,7 @@ type TerminalElement (props: Props) =
 
         viewsPropsToReinject
         |> Props.iter (fun kv ->
-            this.props.add(kv.Key, kv.Value)
+            this.props.addNonTyped(kv.Key, kv.Value)
         )
 
         this.removeProps(oldView, removedProps)

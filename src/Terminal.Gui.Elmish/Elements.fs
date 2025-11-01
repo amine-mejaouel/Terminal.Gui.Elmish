@@ -280,20 +280,23 @@ type TerminalElement (props: Props) =
         props |> Props.tryFind PKey.view.visibleChanged |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanged @> element)
         props |> Props.tryFind PKey.view.visibleChanging |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
+    /// Reuse a previous `View`, while updating its properties to match the current TerminalElement properties.
     override this.update oldView oldProps =
         let c = this.compare oldProps
 
-        // foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
+        // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
         let viewKeysToReinject =
             c.unchangedProps
             |> Props.filterSingleElementKeys
             |> Seq.map _.viewKey
             |> Seq.toArray
 
+        // 1 - then we get these Views missing in `this` TerminalElement.
         let viewsPropsToReinject, removedProps =
             c.removedProps
             |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains(kv.Key))
 
+        // 2 - And we add them.
         viewsPropsToReinject
         |> Props.iter (fun kv ->
             this.props.addNonTyped(kv.Key, kv.Value)

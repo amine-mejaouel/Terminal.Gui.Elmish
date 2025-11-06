@@ -10,10 +10,9 @@ open Terminal.Gui.Views
 type internal SubElement =
     {
         ElementKey: ElementPropKey<IInternalTerminalElement>
-        SetParent: bool
     }
 
-type Node = { TerminalElement: IInternalTerminalElement; Parent: View option }
+type internal Node = { TerminalElement: IInternalTerminalElement; Parent: View option }
 
 [<AbstractClass>]
 type TerminalElement (props: Props) =
@@ -47,7 +46,10 @@ type TerminalElement (props: Props) =
 
     abstract newView: unit -> View
 
-    member this.initialize parent =
+    abstract setAsChildOfParentView: bool
+    default _.setAsChildOfParentView = true
+
+    member this.initialize (parent) =
         #if DEBUG
         Diagnostics.Trace.WriteLine $"{this.name} created!"
         #endif
@@ -59,7 +61,9 @@ type TerminalElement (props: Props) =
         |> Seq.iter props.addNonTyped
 
         // Here, the "children" view are added to their parent
-        parent |> Option.iter (fun p -> p.Add newView |> ignore)
+        if this.setAsChildOfParentView then
+            parent |> Option.iter (fun p -> p.Add newView |> ignore)
+
         this.setProps(newView, props)
         this.view <- newView
 
@@ -87,23 +91,13 @@ type TerminalElement (props: Props) =
                 | Some value ->
                     match value with
                     | :? TerminalElement as subElement ->
-                        let parent =
-                            match x.SetParent with
-                            | true -> Some parent
-                            | false -> None
-
-                        subElement.initializeTree parent
+                        subElement.initializeTree (Some parent)
 
                         let viewKey = x.ElementKey.viewKey
 
                         yield viewKey, subElement.view
                     | :? List<IInternalTerminalElement> as elements ->
-                        let parent =
-                            match x.SetParent with
-                            | true -> Some parent
-                            | false -> None
-
-                        elements |> Seq.iter (fun e -> e.initializeTree parent)
+                        elements |> Seq.iter (fun e -> e.initializeTree (Some parent))
 
                         let viewKey = x.ElementKey.viewKey
                         let views = elements |> Seq.map _.view |> Seq.toList
@@ -324,8 +318,8 @@ type TerminalElement (props: Props) =
             match node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual with
             | Some y ->
                 match y with
-                | TPos.Top te -> node.TerminalElement.view.Y <- Pos.Top((te :?> TerminalElement).view)
-                | TPos.Bottom te -> node.TerminalElement.view.Y <- Pos.Bottom((te :?> TerminalElement).view)
+                | TPos.Top te -> node.TerminalElement.view.Y <- Pos.Top((te :?> IInternalTerminalElement).view)
+                | TPos.Bottom te -> node.TerminalElement.view.Y <- Pos.Bottom((te :?> IInternalTerminalElement).view)
             | None ->
                 ()
 
@@ -400,6 +394,7 @@ type TerminalElement (props: Props) =
         member this.props = this.props
         member this.name = this.name
         member this.children = this.children
+        member this.setAsChildOfParentView = this.setAsChildOfParentView
 
 
 module internal ViewElement =
@@ -1350,6 +1345,8 @@ type Menuv2Element(props: Props) =
 
         canUpdateView && canUpdateElement
 
+    override this.setAsChildOfParentView = false
+
     interface IMenuv2Element
 
 
@@ -1384,7 +1381,7 @@ type PopoverMenuElement(props: Props) =
         props |> Props.tryFind PKey.popoverMenu.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.popoverMenu.root_element; SetParent= false }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.popoverMenu.root_element }::base.subElements
 
     override this.newView() = new PopoverMenu()
 
@@ -1426,7 +1423,7 @@ type MenuBarItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element }::base.subElements
 
     override this.newView() = new MenuBarItemv2()
 
@@ -1531,7 +1528,7 @@ type ShortcutElement(props: Props) =
         props |> Props.tryFind PKey.shortcut.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.shortcut.commandView_element; SetParent=true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.shortcut.commandView_element }::base.subElements
 
 
 
@@ -1576,7 +1573,7 @@ type MenuItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.menuItemv2.subMenu_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.menuItemv2.subMenu_element }::base.subElements
 
 
     override this.newView() = new MenuItemv2()
@@ -2188,7 +2185,7 @@ type TabElement(props: Props) =
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.tab.view_element; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.tab.view_element }::base.subElements
 
     override this.newView() = new Tab()
 
@@ -2242,7 +2239,7 @@ type TabViewElement(props: Props) =
                 element.AddTab ((tabItem :?> IInternalTerminalElement).view :?> Tab, false)))
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.tabView.tabs_elements; SetParent= true }::base.subElements
+        { ElementKey= ElementPropKey.from PKey.tabView.tabs_elements }::base.subElements
 
     override this.newView() = new TabView()
 

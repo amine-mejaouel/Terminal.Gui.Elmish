@@ -287,6 +287,7 @@ module Element =
     // TODO:  ie make all classes internal / expose public interface instead
     type internal IInternalTerminalElement =
         inherit ITerminalElement
+        abstract initialize: parent: View option -> unit
         abstract initializeTree: parent: View option -> unit
         // TODO: rename to prevView
         abstract canUpdate: prevElement:View -> oldProps: Props -> bool

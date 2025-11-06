@@ -12,56 +12,41 @@ let mutable private runState: RunState = null
 
 let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model: 'model) dispatch =
 
-    match currentTreeState with
-    | None ->
-        if not unitTestMode then
-            Application.Init()
+    let nextTreeState =
+        match currentTreeState with
+        | None ->
+            if not unitTestMode then
+                Application.Init()
 
-        let startState = view model dispatch :?> IInternalTerminalElement
+            let startState = view model dispatch :?> IInternalTerminalElement
 
-        startState.initializeTree None
-        currentTreeState <- Some startState
+            startState.initializeTree None
 
-        match startState.view with
-        | null ->
-            failwith ("error state not initialized")
-        | topElement ->
-            match topElement with
-            | :? Toplevel as tl ->
-                // let sub =
-                //     try
-                //         program.subscribe model
-                //     with ex ->
-                //         program.onError ("Unable to subscribe:", ex)
-                //         Cmd.none
-                // sub @ cmd |> Cmd.exec syncDispatch
+            match startState.view with
+            | null ->
+                failwith ("error state not initialized")
+            | topElement ->
+                match topElement with
+                | :? Toplevel as tl ->
+                    if not unitTestMode then
+                        toplevel <- tl
+                        runState <- Application.Begin(tl)
+                        Application.RunIteration(&runState, true) |> ignore
+                    else
+                        toplevel <- tl
+                | _ ->
+                    failwith("first element must be a toplevel!")
 
-                // some reflection to set the actual top
-                // let topProp = typeof<Application>.GetProperty("Top")
-                //let currentProp = typeof<Application>.GetProperty("Current")
-                //currentProp.SetValue(null,te)
-                // topProp.SetValue(null,te)
-                //Application.Begin(te) |> ignore
+            startState
 
-                if not unitTestMode then
-                    toplevel <- tl
-                    runState <- Application.Begin(tl)
-                    Application.RunIteration(&runState, true) |> ignore
-                    // Application.RunLoop(runState)
-                    // Application.End(runState)
-                else
-                    toplevel <- tl
-            | _ ->
-                failwith("first element must be a toplevel!")
-    | Some currentState ->
-        let nextTreeState = view model dispatch :?> IInternalTerminalElement
-        Differ.update currentState nextTreeState
-        currentTreeState <- Some nextTreeState
-        if not unitTestMode then
-            Application.RunIteration(&runState, true) |> ignore
+        | Some currentState ->
+            let nextTreeState = view model dispatch :?> IInternalTerminalElement
+            Differ.update currentState nextTreeState
+            nextTreeState
 
-    // if not unitTestMode then
-        // Application.Invoke(fun () -> ())
+    currentTreeState <- Some nextTreeState
+    nextTreeState.layout()
+
     ()
 
 let private terminate model =

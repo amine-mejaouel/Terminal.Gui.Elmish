@@ -20,7 +20,6 @@ open Terminal.Gui.Drawing
 open Terminal.Gui.Drivers
 open Terminal.Gui.Elmish
 open Terminal.Gui
-open Terminal.Gui.Elmish.Elements
 
 open Terminal.Gui.FileServices
 open Terminal.Gui.Input
@@ -30,6 +29,13 @@ open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
 
 open Terminal.Gui.Views
+
+module Pos =
+    let top (elementView: ITerminalElement) =
+        TPos.Top elementView
+
+    let bottom (elementView: ITerminalElement) =
+        TPos.Bottom elementView
 
 // View
 type viewProps() =
@@ -74,6 +80,7 @@ type viewProps() =
     member this.width (value:Dim) = this.props.add (PKey.view.width, value)
     member this.x (value:Pos) = this.props.add (PKey.view.x, value)
     member this.y (value:Pos) = this.props.add (PKey.view.y, value)
+    member this.y (value:TPos) = this.props.add (PKey.view.y_eventual, value)
     // Events
     member this.accepting (handler:HandledEventArgs->unit) = this.props.add (PKey.view.accepting, handler)
     member this.advancingFocus (handler:AdvanceFocusEventArgs->unit) = this.props.add (PKey.view.advancingFocus, handler)

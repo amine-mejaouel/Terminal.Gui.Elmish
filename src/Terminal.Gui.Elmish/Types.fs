@@ -292,6 +292,7 @@ module Element =
         abstract canUpdate: prevElement:View -> oldProps: Props -> bool
         // TODO: rename to prevView
         abstract update: prevElement:View -> oldProps: Props -> unit
+        abstract layout: unit -> unit
         abstract children: List<IInternalTerminalElement> with get
         abstract view: View with get
         abstract props: Props
@@ -314,3 +315,9 @@ module Element =
 
     type ITreeViewElement =
         inherit ITerminalElement
+
+[<RequireQualifiedAccess>]
+type TPos =
+    | Top of ITerminalElement
+    | Bottom of ITerminalElement
+

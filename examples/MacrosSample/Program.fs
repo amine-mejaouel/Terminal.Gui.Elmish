@@ -1,8 +1,10 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System.Collections.Immutable
+open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Configuration
+open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
 open Terminal.Gui.Input
 open Terminal.Gui.ViewBase
@@ -32,71 +34,82 @@ let update (msg: Msg) (model: Model) =
 
 let view (state: Model) (dispatch: Msg -> unit) =
     View.topLevel [
-        View.menuBarv2 (fun p m ->
-            m.menuBarItemv2 (fun p m ->
-                p.title "_File"
+        let menuBarv2 =
+            View.menuBarv2 (fun p m ->
+                m.menuBarItemv2 (fun p m ->
+                    p.title "_File"
 
-                m.menuItems [
-                    View.menuItemv2 (fun p ->
-                        p.title "Quit"
-                        p.helpText "Quit UI Catalog"
-                        p.key Application.QuitKey
-                        p.command Command.Quit
-                    )
-                ]
-            )
-
-            m.menuBarItemv2 (fun p m ->
-                p.title "_Themes"
-
-                m.menuItems [
-                    View.menuItemv2 (fun p ->
-                        p.commandView (
-                            View.checkBox (fun p ->
-                                p.title "Force _16 Colors"
-
-                                p.checkedState (
-                                    if Application.Force16Colors then
-                                        CheckState.Checked
-                                    else
-                                        CheckState.UnChecked
-                                )
-
-                                p.checkedStateChanging (fun args ->
-                                    if
-                                        (Application.Force16Colors
-                                         && args.Result = CheckState.UnChecked
-                                         && not Application.Driver.SupportsTrueColor)
-                                    then
-                                        args.Handled <- true
-                                )
-
-                                p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
-                            )
-                        )
-                    )
-                    View.menuItemv2 (fun p -> p.commandView (View.line []))
-                    if ConfigurationManager.IsEnabled then
+                    m.menuItems [
                         View.menuItemv2 (fun p ->
-                            p.helpText "Cycle Through Themes"
-                            p.key Key.T.WithCtrl
+                            p.title "Quit"
+                            p.helpText "Quit UI Catalog"
+                            p.key Application.QuitKey
+                            p.command Command.Quit)
+                    ])
 
+                m.menuBarItemv2 (fun p m ->
+                    p.title "_Themes"
+
+                    m.menuItems [
+                        View.menuItemv2 (fun p ->
                             p.commandView (
-                                View.optionSelector (fun p ->
-                                    p.highlightStates MouseState.None
-                                    p.options state.AvailableThemes
+                                View.checkBox (fun p ->
+                                    p.title "Force _16 Colors"
 
-                                    p.selectedItemChanged (fun args ->
-                                        if args.SelectedItem.HasValue then
-                                            dispatch (ThemeIndexChanged args.SelectedItem.Value)
+                                    p.checkedState (
+                                        if Application.Force16Colors then
+                                            CheckState.Checked
+                                        else
+                                            CheckState.UnChecked
                                     )
 
-                                    p.selectedItem state.SelectedThemeIndex
+                                    p.checkedStateChanging (fun args ->
+                                        if
+                                            (Application.Force16Colors
+                                             && args.Result = CheckState.UnChecked
+                                             && not Application.Driver.SupportsTrueColor)
+                                        then
+                                            args.Handled <- true
+                                    )
+
+                                    p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
                                 )
                             )
                         )
-                ]
-            )
+                        View.menuItemv2 (fun p -> p.commandView (View.line []))
+                        if ConfigurationManager.IsEnabled then
+                            View.menuItemv2 (fun p ->
+                                p.helpText "Cycle Through Themes"
+                                p.key Key.T.WithCtrl
+
+                                p.commandView (
+                                    View.optionSelector (fun p ->
+                                        p.highlightStates MouseState.None
+                                        p.options state.AvailableThemes
+
+                                        p.selectedItemChanged (fun args ->
+                                            if args.SelectedItem.HasValue then
+                                                dispatch (ThemeIndexChanged args.SelectedItem.Value)
+                                        )
+
+                                        p.selectedItem state.SelectedThemeIndex
+                                    )
+                                )
+                            )
+                    ]))
+
+        menuBarv2
+
+        View.listView (fun p ->
+            p.borderStyle LineStyle.Rounded
+            p.x 0
+            p.y (Pos.bottom(menuBarv2))
+            // p.height (Dim.Fill())
+            // p.width (Dim.Fill())
+            p.source [
+                "Hey"
+                "heylow"
+            ]
         )
     ]
 
@@ -105,18 +118,8 @@ let view (state: Model) (dispatch: Msg -> unit) =
 let main argv =
     ConfigurationManager.Enable(ConfigLocations.All)
 
-    Program.mkProgram init update view
-    |> Program.withSubscription (fun state ->
-        fun dispatch ->
-            async {
-                ()
-            (*while state.Count < 1_000_000 do
-                    do! Async.Sleep 10
-                    dispatch Inc*)
-            }
-            |> Async.StartImmediate
-        |> Cmd.ofSub
-    )
-    |> Program.run
+    ElmishTerminal.mkProgram init update view
+    |> ElmishTerminal.withTermination (fun _ -> false)
+    |> ElmishTerminal.run
 
     0 // return an integer exit code

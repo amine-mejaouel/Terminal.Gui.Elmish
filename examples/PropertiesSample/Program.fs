@@ -9,6 +9,7 @@ open System.Threading.Tasks
 open Terminal.Gui.App
 open Terminal.Gui.Configuration
 open Terminal.Gui.Drawing
+open Elmish
 open Terminal.Gui.Elmish
 open System.IO
 open Terminal.Gui
@@ -122,18 +123,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
 let main argv =
     ConfigurationManager.Enable(ConfigLocations.All)
 
-    Program.mkProgram init update view
-    |> Program.withSubscription (fun state ->
-        fun dispatch ->
-            async {
-                ()
-            (*while state.Count < 1_000_000 do
-                    do! Async.Sleep 10
-                    dispatch Inc*)
-            }
-            |> Async.StartImmediate
-        |> Cmd.ofSub
-    )
-    |> Program.run
+    ElmishTerminal.mkProgram init update view
+    |> ElmishTerminal.run
 
     0 // return an integer exit code

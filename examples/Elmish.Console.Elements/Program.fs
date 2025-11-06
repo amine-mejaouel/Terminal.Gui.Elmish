@@ -8,10 +8,10 @@ open App
 
 [<EntryPoint>]
 let main argv =
-    
 
-    Program.mkProgram init update view 
+
+    ElmishTerminal.mkProgram init update view 
     |> Program.withSubscription (fun _ -> Cmd.ofSub App.timerSubscription)
-    |> Program.run
+    |> ElmishTerminal.run
 
     0 // return an integer exit code

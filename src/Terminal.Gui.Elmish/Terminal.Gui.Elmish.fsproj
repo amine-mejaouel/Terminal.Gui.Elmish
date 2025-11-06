@@ -31,9 +31,15 @@
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+  </ItemGroup>
+  
   <ItemGroup>
     <EmbeddedResource Remove="Scripts\**" />
   </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Interop.fs" />

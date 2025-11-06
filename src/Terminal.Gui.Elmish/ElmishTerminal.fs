@@ -49,8 +49,8 @@ let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model
                     Application.RunIteration(&runState, true) |> ignore
                     // Application.RunLoop(runState)
                     // Application.End(runState)
-                // else
-                    // topView <- (Some topElement)
+                else
+                    toplevel <- tl
             | _ ->
                 failwith("first element must be a toplevel!")
     | Some currentState ->
@@ -72,6 +72,10 @@ let private terminate model =
 
 let mkProgram (init: 'arg -> 'model * Cmd<'msg>) update (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
     Program.mkProgram init update view
+    |> Program.withSetState (setState view)
+
+let mkSimple (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
+    Program.mkSimple init update view
     |> Program.withSetState (setState view)
 
 let withTermination predicate =

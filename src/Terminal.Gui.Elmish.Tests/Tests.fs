@@ -4,10 +4,11 @@ open System.Linq
 open NUnit.Framework
 open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.Views
+open Elmish
 
 [<SetUp>]
 let Setup () =
-    Program.unitTestMode <- true
+    ElmishTerminal.unitTestMode <- true
     ()
 
 let render view =
@@ -17,10 +18,10 @@ let render view =
     let view _ _ =
         view
 
-    Program.mkSimple init update view
-    |> Program.run
+    ElmishTerminal.mkSimple init update view
+    |> ElmishTerminal.run
 
-    Program.topView.Value
+    ElmishTerminal.toplevel
 
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =
@@ -45,7 +46,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
                     )
                 ]
             )
-        ]
+        ] :?> IInternalTerminalElement
 
     let menuBarv2Element = view.children.Single() :?> MenuBarv2Element
     let menuBarItemv2Element =
@@ -55,6 +56,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     let popoverMenu =
         menuBarItemv2Element.props
         |> Props.find PKey.menuBarItemv2.popoverMenu_element
+        :?> PopoverMenuElement
     let popoverMenuRoot =
         popoverMenu.props
         |> Props.find PKey.popoverMenu.root_element
@@ -85,7 +87,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
                     ]
                 )
             )
-        ]
+        ] :?> IInternalTerminalElement
 
     let menuBarv2Element = view.children.Single() :?> MenuBarv2Element
     let menuBarItemv2Element =
@@ -95,6 +97,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     let popoverMenu =
         menuBarItemv2Element.props
         |> Props.find PKey.menuBarItemv2.popoverMenu_element
+        :?> PopoverMenuElement
     let popoverMenuRoot =
         popoverMenu.props
         |> Props.find PKey.popoverMenu.root_element

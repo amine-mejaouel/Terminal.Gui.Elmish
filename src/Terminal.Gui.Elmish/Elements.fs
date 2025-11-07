@@ -7,15 +7,16 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
-type SubElement =
+type internal SubElement =
     {
-        ElementKey: ElementPropKey<ITerminalElement>
+        ElementKey: ElementPropKey<IInternalTerminalElement>
         SetParent: bool
     }
 
-type Node = { TerminalElement: TerminalElement; Parent: View option }
+type Node = { TerminalElement: IInternalTerminalElement; Parent: View option }
 
-and [<AbstractClass>] TerminalElement (props: Props) =
+[<AbstractClass>]
+type TerminalElement (props: Props) =
 
     let rec traverseTree
                 (nodes: ((* Element *) IInternalTerminalElement * (* Parent *) View option) list)
@@ -25,7 +26,7 @@ and [<AbstractClass>] TerminalElement (props: Props) =
         | [] ->
             ()
         | (curTerminalElement, curParent) :: remainingNodes ->
-            let curNode = { TerminalElement = curTerminalElement :?> TerminalElement; Parent = curParent }
+            let curNode = { TerminalElement = curTerminalElement; Parent = curParent }
 
             traverse curNode
 
@@ -96,16 +97,16 @@ and [<AbstractClass>] TerminalElement (props: Props) =
                         let viewKey = x.ElementKey.viewKey
 
                         yield viewKey, subElement.view
-                    | :? List<ITerminalElement> as elements ->
+                    | :? List<IInternalTerminalElement> as elements ->
                         let parent =
                             match x.SetParent with
                             | true -> Some parent
                             | false -> None
 
-                        elements |> Seq.iter (fun e -> (e :?> TerminalElement).initializeTree parent)
+                        elements |> Seq.iter (fun e -> e.initializeTree parent)
 
                         let viewKey = x.ElementKey.viewKey
-                        let views = elements |> Seq.map (fun e -> (e :?> TerminalElement).view) |> Seq.toList
+                        let views = elements |> Seq.map _.view |> Seq.toList
 
                         yield viewKey, views
                     | _ ->
@@ -390,6 +391,7 @@ and [<AbstractClass>] TerminalElement (props: Props) =
            removedProps = removedProps |}
 
     interface IInternalTerminalElement with
+        member this.initialize(parent) = this.initialize(parent)
         member this.initializeTree(parent) = this.initializeTree(parent)
         member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
         member this.update prevElement oldProps = this.update prevElement oldProps

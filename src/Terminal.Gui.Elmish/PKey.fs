@@ -65,6 +65,7 @@ module internal PKey =
         member val width : SimplePropKey<Dim> = SimplePropKey.create "view.width"
         member val x : SimplePropKey<Pos> = SimplePropKey.create "view.x"
         member val y : SimplePropKey<Pos> = SimplePropKey.create "view.y"
+        member val y_eventual : SimplePropKey<TPos> = SimplePropKey.create "view.y_eventual"
         // Events
         member val accepting : SimplePropKey<HandledEventArgs->unit> = SimplePropKey.create "view.accepting"
         member val advancingFocus : SimplePropKey<AdvanceFocusEventArgs->unit> = SimplePropKey.create "view.advancingFocus"

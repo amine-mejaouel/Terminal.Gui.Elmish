@@ -13,20 +13,26 @@ type SubElement =
         SetParent: bool
     }
 
-[<AbstractClass>]
-type TerminalElement (props: Props) =
-    [<TailCall>]
-    let rec initializeTreeLoop (nodes: ((* Element *) IInternalTerminalElement * (* Parent *) View option) list) =
+type Node = { TerminalElement: TerminalElement; Parent: View option }
+
+and [<AbstractClass>] TerminalElement (props: Props) =
+
+    let rec traverseTree
+                (nodes: ((* Element *) IInternalTerminalElement * (* Parent *) View option) list)
+                (traverse: Node -> unit) =
+
         match nodes with
         | [] ->
             ()
-        | (curNode, curParent) :: remainingNodes ->
-            let curNode = (curNode :?> TerminalElement)
-            curNode.initialize curParent
-            let childNodes =
-                curNode.children |> Seq.map (fun e -> (e, Some curNode.view)) |> List.ofSeq
+        | (curTerminalElement, curParent) :: remainingNodes ->
+            let curNode = { TerminalElement = curTerminalElement :?> TerminalElement; Parent = curParent }
 
-            initializeTreeLoop (childNodes @ remainingNodes)
+            traverse curNode
+
+            let childNodes =
+                curNode.TerminalElement.children |> Seq.map (fun e -> (e, Some curNode.TerminalElement.view)) |> List.ofSeq
+
+            traverseTree (childNodes @ remainingNodes) traverse
 
     member this.props = props
     member val parent: View option = None with get, set
@@ -56,12 +62,18 @@ type TerminalElement (props: Props) =
         this.setProps(newView, props)
         this.view <- newView
 
-    abstract update: prevElement:View -> oldProps: Props -> unit
     abstract canUpdate: prevElement:View -> oldProps: Props -> bool
+    abstract update: prevElement:View -> oldProps: Props -> unit
+
+    abstract layout: unit -> unit
+
     abstract name: string
 
     member this.initializeTree(parent: View option) : unit =
-        initializeTreeLoop [(this, parent)]
+        let traverse (node: Node) =
+            node.TerminalElement.initialize node.Parent
+
+        traverseTree [(this, parent)] traverse
 
     /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
     member this.initializeSubElements parent : (IPropKey * obj) seq =
@@ -306,6 +318,18 @@ type TerminalElement (props: Props) =
         this.setProps(oldView, c.changedProps)
         this.view <- oldView
 
+    override this.layout () =
+        let layout (node: Node) =
+            match node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual with
+            | Some y ->
+                match y with
+                | TPos.Top te -> node.TerminalElement.view.Y <- Pos.Top((te :?> TerminalElement).view)
+                | TPos.Bottom te -> node.TerminalElement.view.Y <- Pos.Bottom((te :?> TerminalElement).view)
+            | None ->
+                ()
+
+        traverseTree [(this, None)] layout
+
     member this.equivalentTo (other: TerminalElement) =
         let mutable isEquivalent = true
 
@@ -369,6 +393,7 @@ type TerminalElement (props: Props) =
         member this.initializeTree(parent) = this.initializeTree(parent)
         member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
         member this.update prevElement oldProps = this.update prevElement oldProps
+        member this.layout () = this.layout()
         member this.view with get() = this.view
         member this.props = this.props
         member this.name = this.name

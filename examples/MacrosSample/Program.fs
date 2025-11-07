@@ -103,9 +103,9 @@ let view (state: Model) (dispatch: Msg -> unit) =
         View.listView (fun p ->
             p.borderStyle LineStyle.Rounded
             p.x 0
-            p.y (Pos.bottom(menuBarv2))
-            // p.height (Dim.Fill())
-            // p.width (Dim.Fill())
+            p.y (Pos.bottom menuBarv2)
+            p.height (Dim.Fill())
+            p.width (Dim.Fill())
             p.source [
                 "Hey"
                 "heylow"

@@ -7,30 +7,25 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
-type internal SubElement =
-    {
-        ElementKey: ElementPropKey<IInternalTerminalElement>
-    }
-
-type internal Node = { TerminalElement: IInternalTerminalElement; Parent: View option }
+type internal TreeNode = { TerminalElement: IInternalTerminalElement; Parent: View option }
 
 [<AbstractClass>]
 type TerminalElement (props: Props) =
 
     let rec traverseTree
-                (nodes: ((* Element *) IInternalTerminalElement * (* Parent *) View option) list)
-                (traverse: Node -> unit) =
+                (nodes: TreeNode list)
+                (traverse: TreeNode -> unit) =
 
         match nodes with
         | [] ->
             ()
-        | (curTerminalElement, curParent) :: remainingNodes ->
-            let curNode = { TerminalElement = curTerminalElement; Parent = curParent }
+        | cur :: remainingNodes ->
+            let curNode = { TerminalElement = cur.TerminalElement; Parent = cur.Parent }
 
             traverse curNode
 
             let childNodes =
-                curNode.TerminalElement.children |> Seq.map (fun e -> (e, Some curNode.TerminalElement.view)) |> List.ofSeq
+                curNode.TerminalElement.children |> Seq.map (fun e -> { TerminalElement = e; Parent = Some curNode.TerminalElement.view }) |> List.ofSeq
 
             traverseTree (childNodes @ remainingNodes) traverse
 
@@ -41,7 +36,7 @@ type TerminalElement (props: Props) =
         props
         |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
-    abstract subElements: SubElement list
+    abstract subElements: ElementPropKey<IInternalTerminalElement> list
     default _.subElements = []
 
     abstract newView: unit -> View
@@ -75,16 +70,16 @@ type TerminalElement (props: Props) =
     abstract name: string
 
     member this.initializeTree(parent: View option) : unit =
-        let traverse (node: Node) =
+        let traverse (node: TreeNode) =
             node.TerminalElement.initialize node.Parent
 
-        traverseTree [(this, parent)] traverse
+        traverseTree [{ TerminalElement = this; Parent = parent }] traverse
 
     /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
     member this.initializeSubElements parent : (IPropKey * obj) seq =
         seq {
             for x in this.subElements do
-                match props |> Props.tryFindByRawKey<obj> x.ElementKey with
+                match props |> Props.tryFindByRawKey<obj> x with
 
                 | None -> ()
 
@@ -93,13 +88,13 @@ type TerminalElement (props: Props) =
                     | :? TerminalElement as subElement ->
                         subElement.initializeTree (Some parent)
 
-                        let viewKey = x.ElementKey.viewKey
+                        let viewKey = x.viewKey
 
                         yield viewKey, subElement.view
                     | :? List<IInternalTerminalElement> as elements ->
                         elements |> Seq.iter (fun e -> e.initializeTree (Some parent))
 
-                        let viewKey = x.ElementKey.viewKey
+                        let viewKey = x.viewKey
                         let views = elements |> Seq.map _.view |> Seq.toList
 
                         yield viewKey, views
@@ -314,7 +309,7 @@ type TerminalElement (props: Props) =
         this.view <- oldView
 
     override this.layout () =
-        let layout (node: Node) =
+        let layout (node: TreeNode) =
             match node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual with
             | Some y ->
                 match y with
@@ -323,7 +318,7 @@ type TerminalElement (props: Props) =
             | None ->
                 ()
 
-        traverseTree [(this, None)] layout
+        traverseTree [{ TerminalElement = this; Parent = this.parent }] layout
 
     member this.equivalentTo (other: TerminalElement) =
         let mutable isEquivalent = true
@@ -1381,7 +1376,7 @@ type PopoverMenuElement(props: Props) =
         props |> Props.tryFind PKey.popoverMenu.keyChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.popoverMenu.root_element }::base.subElements
+        ElementPropKey.from PKey.popoverMenu.root_element :: base.subElements
 
     override this.newView() = new PopoverMenu()
 
@@ -1423,7 +1418,7 @@ type MenuBarItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element }::base.subElements
+        ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element :: base.subElements
 
     override this.newView() = new MenuBarItemv2()
 
@@ -1528,7 +1523,7 @@ type ShortcutElement(props: Props) =
         props |> Props.tryFind PKey.shortcut.orientationChanging |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.shortcut.commandView_element }::base.subElements
+        ElementPropKey.from PKey.shortcut.commandView_element :: base.subElements
 
 
 
@@ -1573,7 +1568,7 @@ type MenuItemv2Element(props: Props) =
         props |> Props.tryFind PKey.menuItemv2.accepted |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.menuItemv2.subMenu_element }::base.subElements
+        ElementPropKey.from PKey.menuItemv2.subMenu_element :: base.subElements
 
 
     override this.newView() = new MenuItemv2()
@@ -2185,7 +2180,7 @@ type TabElement(props: Props) =
         props |> Props.tryFind PKey.tab.displayText |> Option.iter (fun v -> element.DisplayText <- v )
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.tab.view_element }::base.subElements
+        ElementPropKey.from PKey.tab.view_element :: base.subElements
 
     override this.newView() = new Tab()
 
@@ -2239,7 +2234,7 @@ type TabViewElement(props: Props) =
                 element.AddTab ((tabItem :?> IInternalTerminalElement).view :?> Tab, false)))
 
     override this.subElements =
-        { ElementKey= ElementPropKey.from PKey.tabView.tabs_elements }::base.subElements
+        ElementPropKey.from PKey.tabView.tabs_elements :: base.subElements
 
     override this.newView() = new TabView()
 

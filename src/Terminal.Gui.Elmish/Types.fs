@@ -298,6 +298,7 @@ module Element =
         abstract view: View with get
         abstract props: Props
         abstract name: string
+        abstract setAsChildOfParentView: bool
 
     type IMenuv2Element =
         inherit ITerminalElement

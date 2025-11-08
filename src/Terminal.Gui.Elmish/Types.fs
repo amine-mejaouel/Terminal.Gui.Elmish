@@ -320,6 +320,13 @@ module Element =
 
 [<RequireQualifiedAccess>]
 type TPos =
+    | X of ITerminalElement
+    | Y of ITerminalElement
     | Top of ITerminalElement
     | Bottom of ITerminalElement
+    | Left of ITerminalElement
+    | Right of ITerminalElement
+    | Absolute of position: int
+    | AnchorEnd of offset: int option
+    | Center
 

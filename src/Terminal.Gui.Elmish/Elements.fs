@@ -309,14 +309,26 @@ type TerminalElement (props: Props) =
         this.view <- oldView
 
     override this.layout () =
-        let layout (node: TreeNode) =
-            match node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual with
-            | Some y ->
-                match y with
-                | TPos.Top te -> node.TerminalElement.view.Y <- Pos.Top((te :?> IInternalTerminalElement).view)
-                | TPos.Bottom te -> node.TerminalElement.view.Y <- Pos.Bottom((te :?> IInternalTerminalElement).view)
+
+        let applyPos (apply: Pos -> unit) pos =
+            match pos with
+            | Some posValue ->
+                // TODO: There is still some Pos.* function that needs to be implemented.
+                match posValue with
+                | TPos.X te -> apply (Pos.X((te :?> IInternalTerminalElement).view))
+                | TPos.Y te -> apply (Pos.Y((te :?> IInternalTerminalElement).view))
+                | TPos.Top te -> apply (Pos.Top((te :?> IInternalTerminalElement).view))
+                | TPos.Bottom te -> apply (Pos.Bottom((te :?> IInternalTerminalElement).view))
+                | TPos.Left te -> apply (Pos.Left((te :?> IInternalTerminalElement).view))
+                | TPos.Right te -> apply (Pos.Right((te :?> IInternalTerminalElement).view))
+                | TPos.Absolute position -> apply (Pos.Absolute(position))
+                | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
+                | TPos.Center -> apply (Pos.Center())
             | None ->
                 ()
+
+        let layout (node: TreeNode) =
+            node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual |> applyPos (fun pos -> node.TerminalElement.view.Y <- pos)
 
         traverseTree [{ TerminalElement = this; Parent = this.parent }] layout
 

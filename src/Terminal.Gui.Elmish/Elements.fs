@@ -308,6 +308,9 @@ type TerminalElement (props: Props) =
         this.setProps(oldView, c.changedProps)
         this.view <- oldView
 
+    /// <summary>
+    /// <seealso cref="DelayedPosKey"/>
+    /// </summary>
     override this.layout () =
 
         let applyPos (apply: Pos -> unit) pos =
@@ -328,7 +331,8 @@ type TerminalElement (props: Props) =
                 ()
 
         let layout (node: TreeNode) =
-            node.TerminalElement.props |> Props.tryFind PKey.view.y_eventual |> applyPos (fun pos -> node.TerminalElement.view.Y <- pos)
+            node.TerminalElement.props |> Props.tryFind PKey.view.x_delayedPos |> applyPos (fun pos -> node.TerminalElement.view.X <- pos)
+            node.TerminalElement.props |> Props.tryFind PKey.view.y_delayedPos |> applyPos (fun pos -> node.TerminalElement.view.Y <- pos)
 
         traverseTree [{ TerminalElement = this; Parent = this.parent }] layout
 

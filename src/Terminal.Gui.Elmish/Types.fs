@@ -2,8 +2,24 @@ namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
 
+type ITerminalElement = interface end
+
+[<RequireQualifiedAccess>]
+type TPos =
+    | X of ITerminalElement
+    | Y of ITerminalElement
+    | Top of ITerminalElement
+    | Bottom of ITerminalElement
+    | Left of ITerminalElement
+    | Right of ITerminalElement
+    | Absolute of position: int
+    | AnchorEnd of offset: int option
+    | Center
+
 [<AutoOpen>]
 module internal PropKey =
+
+    /// Inheritors should override both of `Equals` and `GetHashCode` efficiently because Props are held in a dictionary and accessed frequently
     type IPropKey =
         abstract member key: string
         abstract member isViewKey: bool
@@ -176,6 +192,37 @@ module internal PropKey =
                 | SingleElementKey _ -> true
                 | MultiElementKey _ -> false
 
+    /// Used for positions that should be set in the IInternalTerminalElement.layout() stage,
+    /// Which comes after the IInternalTerminalElement.update and initializeTree calls.
+    ///
+    /// This is because `Pos` can take a view as input, and in the `Elmish.view` we may still didn't create the TerminalElement.view object.
+    /// So we delay the setting of the position once we have all the views at disposal.
+    [<CustomEquality; NoComparison>]
+    type DelayedPosKey = private Key of string
+    with
+
+        static member create (key:string) : DelayedPosKey =
+            if key.EndsWith "_delayedPos" then
+                Key key
+            else failwith $"Invalid key: {key}"
+
+        member private this.key =
+            let (Key key) = this
+            key
+
+        override this.GetHashCode() = this.key.GetHashCode()
+        override this.Equals(obj) =
+            match obj with
+            | :? IPropKey as x ->
+                this.key.Equals(x.key)
+            | _ ->
+                false
+
+        interface IPropKey<TPos> with
+            member this.key = this.key
+            member this.isViewKey = false
+            member this.isSingleElementKey = false
+
 /// Props object that is still under construction
 type internal Props(?initialProps) =
 
@@ -279,7 +326,6 @@ module internal Props =
 
 [<AutoOpen>]
 module Element =
-    type ITerminalElement = interface end
 
     open Terminal.Gui.ViewBase
 
@@ -317,16 +363,4 @@ module Element =
 
     type ITreeViewElement =
         inherit ITerminalElement
-
-[<RequireQualifiedAccess>]
-type TPos =
-    | X of ITerminalElement
-    | Y of ITerminalElement
-    | Top of ITerminalElement
-    | Bottom of ITerminalElement
-    | Left of ITerminalElement
-    | Right of ITerminalElement
-    | Absolute of position: int
-    | AnchorEnd of offset: int option
-    | Center
 

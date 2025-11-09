@@ -64,8 +64,9 @@ module internal PKey =
         member val wantMousePositionReports : SimplePropKey<bool> = SimplePropKey.create "view.wantMousePositionReports"
         member val width : SimplePropKey<Dim> = SimplePropKey.create "view.width"
         member val x : SimplePropKey<Pos> = SimplePropKey.create "view.x"
+        member val x_delayedPos: DelayedPosKey = DelayedPosKey.create "view.x_delayedPos"
         member val y : SimplePropKey<Pos> = SimplePropKey.create "view.y"
-        member val y_eventual : SimplePropKey<TPos> = SimplePropKey.create "view.y_eventual"
+        member val y_delayedPos: DelayedPosKey = DelayedPosKey.create "view.y_delayedPos"
         // Events
         member val accepting : SimplePropKey<HandledEventArgs->unit> = SimplePropKey.create "view.accepting"
         member val advancingFocus : SimplePropKey<AdvanceFocusEventArgs->unit> = SimplePropKey.create "view.advancingFocus"

@@ -79,8 +79,9 @@ type viewProps() =
     member this.wantMousePositionReports (value:bool) = this.props.add (PKey.view.wantMousePositionReports, value)
     member this.width (value:Dim) = this.props.add (PKey.view.width, value)
     member this.x (value:Pos) = this.props.add (PKey.view.x, value)
+    member this.x (value:TPos) = this.props.add (PKey.view.x_delayedPos, value)
     member this.y (value:Pos) = this.props.add (PKey.view.y, value)
-    member this.y (value:TPos) = this.props.add (PKey.view.y_eventual, value)
+    member this.y (value:TPos) = this.props.add (PKey.view.y_delayedPos, value)
     // Events
     member this.accepting (handler:HandledEventArgs->unit) = this.props.add (PKey.view.accepting, handler)
     member this.advancingFocus (handler:AdvanceFocusEventArgs->unit) = this.props.add (PKey.view.advancingFocus, handler)

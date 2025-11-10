@@ -33,84 +33,102 @@ let update (msg: Msg) (model: Model) =
     model, Cmd.none
 
 let view (state: Model) (dispatch: Msg -> unit) =
-    View.topLevel [
-        let menuBarv2 =
-            View.menuBarv2 (fun p m ->
-                m.menuBarItemv2 (fun p m ->
-                    p.title "_File"
+    let menuBarv2 =
+        View.menuBarv2 (fun p m ->
+            m.menuBarItemv2 (fun p m ->
+                p.title "_File"
 
-                    m.menuItems [
+                m.menuItems [
+                    View.menuItemv2 (fun p ->
+                        p.title "Quit"
+                        p.helpText "Quit UI Catalog"
+                        p.key Application.QuitKey
+                        p.command Command.Quit)
+                ])
+
+            m.menuBarItemv2 (fun p m ->
+                p.title "_Themes"
+
+                m.menuItems [
+                    View.menuItemv2 (fun p ->
+                        p.commandView (
+                            View.checkBox (fun p ->
+                                p.title "Force _16 Colors"
+
+                                p.checkedState (
+                                    if Application.Force16Colors then
+                                        CheckState.Checked
+                                    else
+                                        CheckState.UnChecked
+                                )
+
+                                p.checkedStateChanging (fun args ->
+                                    if
+                                        (Application.Force16Colors
+                                         && args.Result = CheckState.UnChecked
+                                         && not Application.Driver.SupportsTrueColor)
+                                    then
+                                        args.Handled <- true
+                                )
+
+                                p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
+                            )
+                        )
+                    )
+                    View.menuItemv2 (fun p -> p.commandView (View.line []))
+                    if ConfigurationManager.IsEnabled then
                         View.menuItemv2 (fun p ->
-                            p.title "Quit"
-                            p.helpText "Quit UI Catalog"
-                            p.key Application.QuitKey
-                            p.command Command.Quit)
-                    ])
+                            p.helpText "Cycle Through Themes"
+                            p.key Key.T.WithCtrl
 
-                m.menuBarItemv2 (fun p m ->
-                    p.title "_Themes"
-
-                    m.menuItems [
-                        View.menuItemv2 (fun p ->
                             p.commandView (
-                                View.checkBox (fun p ->
-                                    p.title "Force _16 Colors"
+                                View.optionSelector (fun p ->
+                                    p.highlightStates MouseState.None
+                                    p.options state.AvailableThemes
 
-                                    p.checkedState (
-                                        if Application.Force16Colors then
-                                            CheckState.Checked
-                                        else
-                                            CheckState.UnChecked
+                                    p.selectedItemChanged (fun args ->
+                                        if args.SelectedItem.HasValue then
+                                            dispatch (ThemeIndexChanged args.SelectedItem.Value)
                                     )
 
-                                    p.checkedStateChanging (fun args ->
-                                        if
-                                            (Application.Force16Colors
-                                             && args.Result = CheckState.UnChecked
-                                             && not Application.Driver.SupportsTrueColor)
-                                        then
-                                            args.Handled <- true
-                                    )
-
-                                    p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
+                                    p.selectedItem state.SelectedThemeIndex
                                 )
                             )
                         )
-                        View.menuItemv2 (fun p -> p.commandView (View.line []))
-                        if ConfigurationManager.IsEnabled then
-                            View.menuItemv2 (fun p ->
-                                p.helpText "Cycle Through Themes"
-                                p.key Key.T.WithCtrl
+                ]))
 
-                                p.commandView (
-                                    View.optionSelector (fun p ->
-                                        p.highlightStates MouseState.None
-                                        p.options state.AvailableThemes
-
-                                        p.selectedItemChanged (fun args ->
-                                            if args.SelectedItem.HasValue then
-                                                dispatch (ThemeIndexChanged args.SelectedItem.Value)
-                                        )
-
-                                        p.selectedItem state.SelectedThemeIndex
-                                    )
-                                )
-                            )
-                    ]))
-
-        menuBarv2
-
+    let categoriesListView =
         View.listView (fun p ->
             p.borderStyle LineStyle.Rounded
             p.x 0
-            p.y (Pos.bottom menuBarv2)
+            p.y (TPos.Bottom menuBarv2)
             p.height (Dim.Fill())
-            p.width (Dim.Fill())
+            p.width (Dim.Auto())
+            p.title "_Categories"
             p.source [
                 "Hey"
                 "heylow"
             ]
         )
+
+    let scenariosListView =
+        View.listView (fun p ->
+            p.borderStyle LineStyle.Rounded
+            p.x (TPos.Right categoriesListView)
+            p.y (TPos.Bottom menuBarv2)
+            p.height (Dim.Fill())
+            p.width (Dim.Fill())
+            p.title "_Scenarios"
+            p.source [
+                "Hey"
+                "heylow"
+            ]
+        )
+
+    View.topLevel [
+        menuBarv2
+        categoriesListView
+        scenariosListView
     ]
 
 

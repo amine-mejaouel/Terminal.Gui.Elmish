@@ -30,13 +30,6 @@ open Terminal.Gui.ViewBase
 
 open Terminal.Gui.Views
 
-module Pos =
-    let top (elementView: ITerminalElement) =
-        TPos.Top elementView
-
-    let bottom (elementView: ITerminalElement) =
-        TPos.Bottom elementView
-
 // View
 type viewProps() =
     member val internal props = Props()

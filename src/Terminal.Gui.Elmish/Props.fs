@@ -994,6 +994,12 @@ type optionSelectorProps() =
   member this.cursor(value: int) =
     this.props.add (PKey.optionSelector.cursor, value)
 
+// FlagSelector
+type flagSelectorProps() =
+  inherit selectorBaseProps()
+  // Properties
+  member this.value(value: int) =
+    this.props.add (PKey.flagSelector.value, value)
 
 // Padding
 type paddingProps() =

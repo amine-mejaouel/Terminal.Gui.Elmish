@@ -597,6 +597,11 @@ type View =
     set (view)
     OptionSelectorElement(view.props) :> ITerminalElement
 
+  static member flagSelector(set: flagSelectorProps -> unit) =
+    let view = flagSelectorProps ()
+    set (view)
+    FlagSelectorElement(view.props) :> ITerminalElement
+
   /// <seealso cref="Terminal.Gui.Padding"/>
   static member padding(set: paddingProps -> unit) =
     let view = paddingProps ()

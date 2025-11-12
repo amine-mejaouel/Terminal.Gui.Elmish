@@ -478,6 +478,12 @@ module internal PKey =
     //Properties
     member val cursor: SimplePropKey<int> = SimplePropKey.create "optionSelector.cursor"
 
+  // FlagSelector
+  type flagSelectorPKeys() =
+    inherit selectorBasePKeys()
+    //Properties
+    member val value: SimplePropKey<int> = SimplePropKey.create "flagSelector.value"
+
   // Padding
   type paddingPKeys() =
     inherit adornmentPKeys()
@@ -803,6 +809,7 @@ module internal PKey =
   let openDialog = openDialogPKeys ()
   let selectorBase = selectorBasePKeys ()
   let optionSelector = optionSelectorPKeys ()
+  let flagSelector = flagSelectorPKeys ()
   let padding = paddingPKeys ()
   let progressBar = progressBarPKeys ()
   let radioGroup = radioGroupPKeys ()

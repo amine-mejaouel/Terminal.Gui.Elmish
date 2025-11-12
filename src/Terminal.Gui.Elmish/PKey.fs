@@ -680,7 +680,7 @@ module internal PKey =
     member val isShortFormat: SimplePropKey<bool> = SimplePropKey.create "timeField.isShortFormat"
     member val time: SimplePropKey<TimeSpan> = SimplePropKey.create "timeField.time"
     // Events
-    member val timeChanged: SimplePropKey<DateTimeEventArgs<TimeSpan> -> unit> = SimplePropKey.create "timeField.timeChanged"
+    member val timeChanged: SimplePropKey<EventArgs<TimeSpan> -> unit> = SimplePropKey.create "timeField.timeChanged"
 
   // TreeView`1
   type treeViewPKeys<'a when 'a: not struct>() =

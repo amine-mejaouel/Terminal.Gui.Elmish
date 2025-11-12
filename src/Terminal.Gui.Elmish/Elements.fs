@@ -61,7 +61,7 @@ type TerminalElement(props: Props) =
 
     let newView = this.newView ()
 
-    this.initializeSubElements (newView)
+    this.initializeSubElements newView
     |> Seq.iter props.addNonTyped
 
     // Here, the "children" view are added to their parent
@@ -823,7 +823,7 @@ type TerminalElement(props: Props) =
     // 1 - then we get these Views missing in `this` TerminalElement.
     let viewsPropsToReinject, removedProps =
       c.removedProps
-      |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains (kv.Key))
+      |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains kv.Key)
 
     // 2 - And we add them.
     viewsPropsToReinject
@@ -946,8 +946,8 @@ type TerminalElement(props: Props) =
     |}
 
   interface IInternalTerminalElement with
-    member this.initialize(parent) = this.initialize (parent)
-    member this.initializeTree(parent) = this.initializeTree (parent)
+    member this.initialize(parent) = this.initialize parent
+    member this.initializeTree(parent) = this.initializeTree parent
     member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
     member this.update prevElement oldProps = this.update prevElement oldProps
     member this.layout() = this.layout ()

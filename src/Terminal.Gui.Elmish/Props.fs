@@ -1384,7 +1384,7 @@ type timeFieldProps() =
   member this.time(value: TimeSpan) =
     this.props.add (PKey.timeField.time, value)
   // Events
-  member this.timeChanged(handler: DateTimeEventArgs<TimeSpan> -> unit) =
+  member this.timeChanged(handler: EventArgs<TimeSpan> -> unit) =
     this.props.add (PKey.timeField.timeChanged, handler)
 
 // TreeView`1

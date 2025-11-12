@@ -422,28 +422,6 @@ type View =
     setProps view
     LineElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.LineView"/>
-  static member lineView(set: lineViewProps -> unit) =
-    let view = lineViewProps ()
-    set view
-    LineViewElement(view.props) :> ITerminalElement
-
-  static member lineView(children: ITerminalElement list) =
-    let view = lineViewProps ()
-    view.children children
-    LineViewElement(view.props) :> ITerminalElement
-
-  static member lineView(x: int, y: int, title: string) =
-    let setProps =
-      fun (p: lineViewProps) ->
-        p.x (Pos.Absolute(x))
-        p.y (Pos.Absolute(y))
-        p.title title
-
-    let view = lineViewProps ()
-    setProps view
-    LineViewElement(view.props) :> ITerminalElement
-
   /// <seealso cref="Terminal.Gui.ListView"/>
   static member listView(set: listViewProps -> unit) =
     let view = listViewProps ()

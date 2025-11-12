@@ -114,14 +114,26 @@ let view (state: Model) (dispatch: Msg -> unit) =
     )
 
   let scenariosListView =
-    View.listView (fun p ->
+    View.frameView (fun p ->
       p.borderStyle LineStyle.Rounded
       p.x (TPos.Right categoriesListView)
       p.y (TPos.Bottom menuBarv2)
       p.height (Dim.Fill())
       p.width (Dim.Fill())
       p.title "_Scenarios"
-      p.source [ "Hey"; "heylow" ]
+      p.children [
+        let label = View.label (fun p -> p.title "TextView:")
+        let textView =
+          View.textView (fun p ->
+            p.text "This is a TextView"
+            p.y (TPos.Bottom label)
+            p.height 2
+            p.width (Dim.Percent 100)
+          )
+
+        label
+        textView
+      ]
     )
 
   View.topLevel [

@@ -2,13 +2,13 @@
 printfn "Hello from F#"
 
 open System
-open System.Diagnostics;
+open System.Diagnostics
 
 //Trace.Listeners.Add(new ConsoleTraceListener());
 #if DEBUG
-    Trace.WriteLine("write line");
+Trace.WriteLine("write line")
 #endif
 
-Console.WriteLine("console");
+Console.WriteLine("console")
 
 Console.ReadLine() |> ignore

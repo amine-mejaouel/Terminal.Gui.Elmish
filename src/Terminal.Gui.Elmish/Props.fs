@@ -1369,22 +1369,6 @@ type textViewProps() =
   member this.textChanged(value: string -> unit) =
     this.props.add (PKey.textView.textChanged, value)
 
-// TileView
-type tileViewProps() =
-  inherit viewProps()
-
-  // Properties
-  member this.lineStyle(value: LineStyle) =
-    this.props.add (PKey.tileView.lineStyle, value)
-
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.tileView.orientation, value)
-
-  member this.toggleResizable(value: KeyCode) =
-    this.props.add (PKey.tileView.toggleResizable, value)
-  // Events
-  member this.splitterMoved(handler: SplitterEventArgs -> unit) =
-    this.props.add (PKey.tileView.splitterMoved, handler)
 
 // TimeField
 type timeFieldProps() =

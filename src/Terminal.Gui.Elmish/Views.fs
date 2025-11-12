@@ -960,28 +960,6 @@ type View =
     setProps view
     TextViewElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.TileView"/>
-  static member tileView(set: tileViewProps -> unit) =
-    let view = tileViewProps ()
-    set (view)
-    TileViewElement(view.props) :> ITerminalElement
-
-  static member tileView(children: ITerminalElement list) =
-    let view = tileViewProps ()
-    view.children children
-    TileViewElement(view.props) :> ITerminalElement
-
-  static member tileView(x: int, y: int, title: string) =
-    let setProps =
-      fun (p: tileViewProps) ->
-        p.x (Pos.Absolute(x))
-        p.y (Pos.Absolute(y))
-        p.title title
-
-    let view = tileViewProps ()
-    setProps view
-    TileViewElement(view.props) :> ITerminalElement
-
   /// <seealso cref="Terminal.Gui.TimeField"/>
   static member timeField(set: timeFieldProps -> unit) =
     let view = timeFieldProps ()

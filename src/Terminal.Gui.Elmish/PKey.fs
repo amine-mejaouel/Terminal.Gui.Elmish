@@ -671,17 +671,6 @@ module internal PKey =
     // Additional properties
     member val textChanged: SimplePropKey<string -> unit> = SimplePropKey.create "textView.textChanged"
 
-  // TileView
-  type tileViewPKeys() =
-    inherit viewPKeys()
-
-    // Properties
-    member val lineStyle: SimplePropKey<LineStyle> = SimplePropKey.create "tileView.lineStyle"
-    member val orientation: SimplePropKey<Orientation> = SimplePropKey.create "tileView.orientation"
-    member val toggleResizable: SimplePropKey<KeyCode> = SimplePropKey.create "tileView.toggleResizable"
-    // Events
-    member val splitterMoved: SimplePropKey<SplitterEventArgs -> unit> = SimplePropKey.create "tileView.splitterMoved"
-
   // TimeField
   type timeFieldPKeys() =
     inherit textFieldPKeys()
@@ -806,7 +795,6 @@ module internal PKey =
     textValidateFieldPKeys ()
 
   let textView = textViewPKeys ()
-  let tileView = tileViewPKeys ()
   let timeField = timeFieldPKeys ()
 
   let treeView<'a when 'a: not struct> =

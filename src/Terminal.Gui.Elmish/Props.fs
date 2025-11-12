@@ -765,23 +765,6 @@ type lineProps() =
   member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.line.orientationChanging, handler)
 
-// LineView
-type lineViewProps() =
-  inherit viewProps()
-
-  // Properties
-  member this.endingAnchor(value: Rune option) =
-    this.props.add (PKey.lineView.endingAnchor, value)
-
-  member this.lineRune(value: Rune) =
-    this.props.add (PKey.lineView.lineRune, value)
-
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.lineView.orientation, value)
-
-  member this.startingAnchor(value: Rune option) =
-    this.props.add (PKey.lineView.startingAnchor, value)
-
 // ListView
 type listViewProps() =
   inherit viewProps()

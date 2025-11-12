@@ -338,16 +338,6 @@ module internal PKey =
     member val orientationChanged: SimplePropKey<Orientation -> unit> = SimplePropKey.create "line.orientationChanged"
     member val orientationChanging: SimplePropKey<App.CancelEventArgs<Orientation> -> unit> = SimplePropKey.create "line.orientationChanging"
 
-  // LineView
-  type lineViewPKeys() =
-    inherit viewPKeys()
-
-    // Properties
-    member val endingAnchor: SimplePropKey<Rune option> = SimplePropKey.create "lineView.endingAnchor"
-    member val lineRune: SimplePropKey<Rune> = SimplePropKey.create "lineView.lineRune"
-    member val orientation: SimplePropKey<Orientation> = SimplePropKey.create "lineView.orientation"
-    member val startingAnchor: SimplePropKey<Rune option> = SimplePropKey.create "lineView.startingAnchor"
-
   // ListView
   type listViewPKeys() =
     inherit viewPKeys()
@@ -788,7 +778,6 @@ module internal PKey =
     legendAnnotationPKeys ()
 
   let line = linePKeys ()
-  let lineView = lineViewPKeys ()
   let listView = listViewPKeys ()
   let margin = marginPKeys ()
   let menuv2 = menuv2PKeys ()

@@ -500,23 +500,6 @@ module internal PKey =
     member val segmentCharacter: SimplePropKey<Rune> = SimplePropKey.create "progressBar.segmentCharacter"
     member val text: SimplePropKey<string> = SimplePropKey.create "progressBar.text"
 
-  // RadioGroup
-  type radioGroupPKeys() =
-    inherit viewPKeys()
-
-    // Properties
-    member val assignHotKeysToRadioLabels: SimplePropKey<bool> = SimplePropKey.create "radioGroup.assignHotKeysToRadioLabels"
-    member val cursor: SimplePropKey<Int32> = SimplePropKey.create "radioGroup.cursor"
-    member val doubleClickAccepts: SimplePropKey<bool> = SimplePropKey.create "radioGroup.doubleClickAccepts"
-    member val horizontalSpace: SimplePropKey<Int32> = SimplePropKey.create "radioGroup.horizontalSpace"
-    member val orientation: SimplePropKey<Orientation> = SimplePropKey.create "radioGroup.orientation"
-    member val radioLabels: SimplePropKey<string list> = SimplePropKey.create "radioGroup.radioLabels"
-    member val selectedItem: SimplePropKey<Int32> = SimplePropKey.create "radioGroup.selectedItem"
-    // Events
-    member val orientationChanged: SimplePropKey<Orientation -> unit> = SimplePropKey.create "radioGroup.orientationChanged"
-    member val orientationChanging: SimplePropKey<App.CancelEventArgs<Orientation> -> unit> = SimplePropKey.create "radioGroup.orientationChanging"
-    member val selectedItemChanged: SimplePropKey<SelectedItemChangedArgs -> unit> = SimplePropKey.create "radioGroup.selectedItemChanged"
-
   // SaveDialog
   // No properties or events SaveDialog
 
@@ -812,7 +795,6 @@ module internal PKey =
   let flagSelector = flagSelectorPKeys ()
   let padding = paddingPKeys ()
   let progressBar = progressBarPKeys ()
-  let radioGroup = radioGroupPKeys ()
   let scrollBar = scrollBarPKeys ()
   let scrollSlider = scrollSliderPKeys ()
   let slider<'a> = sliderPKeys<'a> ()

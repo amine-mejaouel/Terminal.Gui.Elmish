@@ -1028,40 +1028,6 @@ type progressBarProps() =
   member this.text(value: string) =
     this.props.add (PKey.progressBar.text, value)
 
-// RadioGroup
-type radioGroupProps() =
-  inherit viewProps()
-
-  // Properties
-  member this.assignHotKeysToRadioLabels(value: bool) =
-    this.props.add (PKey.radioGroup.assignHotKeysToRadioLabels, value)
-
-  member this.cursor(value: Int32) =
-    this.props.add (PKey.radioGroup.cursor, value)
-
-  member this.doubleClickAccepts(value: bool) =
-    this.props.add (PKey.radioGroup.doubleClickAccepts, value)
-
-  member this.horizontalSpace(value: Int32) =
-    this.props.add (PKey.radioGroup.horizontalSpace, value)
-
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.radioGroup.orientation, value)
-
-  member this.radioLabels(value: string list) =
-    this.props.add (PKey.radioGroup.radioLabels, value)
-
-  member this.selectedItem(value: Int32) =
-    this.props.add (PKey.radioGroup.selectedItem, value)
-  // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
-    this.props.add (PKey.radioGroup.orientationChanged, handler)
-
-  member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.radioGroup.orientationChanging, handler)
-
-  member this.selectedItemChanged(handler: SelectedItemChangedArgs -> unit) =
-    this.props.add (PKey.radioGroup.selectedItemChanged, handler)
 
 // SaveDialog
 // No properties or events SaveDialog

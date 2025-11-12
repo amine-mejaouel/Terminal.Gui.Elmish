@@ -646,28 +646,6 @@ type View =
     setProps view
     ProgressBarElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.RadioGroup"/>
-  static member radioGroup(set: radioGroupProps -> unit) =
-    let view = radioGroupProps ()
-    set (view)
-    RadioGroupElement(view.props) :> ITerminalElement
-
-  static member radioGroup(children: ITerminalElement list) =
-    let view = radioGroupProps ()
-    view.children children
-    RadioGroupElement(view.props) :> ITerminalElement
-
-  static member radioGroup(x: int, y: int, title: string) =
-    let setProps =
-      fun (p: radioGroupProps) ->
-        p.x (Pos.Absolute(x))
-        p.y (Pos.Absolute(y))
-        p.title title
-
-    let view = radioGroupProps ()
-    setProps view
-    RadioGroupElement(view.props) :> ITerminalElement
-
   /// <seealso cref="Terminal.Gui.SaveDialog"/>
   static member saveDialog(set: saveDialogProps -> unit) =
     let view = saveDialogProps ()

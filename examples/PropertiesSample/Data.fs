@@ -1,9 +1,10 @@
-﻿module Data 
+﻿module Data
 
 open System.Data
 open System.IO
 
-let xml = """
+let xml =
+  """
 
 <NewDataSet>
 <xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="NewDataSet">
@@ -124,9 +125,8 @@ let xml = """
 
     """
 
-let table = 
-    use sr = new StringReader(xml)
-    let dt = new DataTable()
-    dt.ReadXml(sr) |> ignore
-    dt
-
+let table =
+  use sr = new StringReader(xml)
+  let dt = new DataTable()
+  dt.ReadXml(sr) |> ignore
+  dt

@@ -2,365 +2,373 @@ namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
 
-type ITerminalElement = interface end
+type ITerminalElement =
+  interface
+  end
 
 [<RequireQualifiedAccess>]
 type TPos =
-    | X of ITerminalElement
-    | Y of ITerminalElement
-    | Top of ITerminalElement
-    | Bottom of ITerminalElement
-    | Left of ITerminalElement
-    | Right of ITerminalElement
-    | Absolute of position: int
-    | AnchorEnd of offset: int option
-    | Center
+  | X of ITerminalElement
+  | Y of ITerminalElement
+  | Top of ITerminalElement
+  | Bottom of ITerminalElement
+  | Left of ITerminalElement
+  | Right of ITerminalElement
+  | Absolute of position: int
+  | AnchorEnd of offset: int option
+  | Center
 
 [<AutoOpen>]
 module internal PropKey =
 
-    /// Inheritors should override both of `Equals` and `GetHashCode` efficiently because Props are held in a dictionary and accessed frequently
-    type IPropKey =
-        abstract member key: string
-        abstract member isViewKey: bool
-        abstract member isSingleElementKey: bool
+  /// Inheritors should override both of `Equals` and `GetHashCode` efficiently because Props are held in a dictionary and accessed frequently
+  type IPropKey =
+    abstract member key: string
+    abstract member isViewKey: bool
+    abstract member isSingleElementKey: bool
 
-    type IPropKey<'a> =
-        inherit IPropKey
+  type IPropKey<'a> =
+    inherit IPropKey
 
-    type ISingleElementKey =
-        abstract member viewKey: IPropKey
+  type ISingleElementKey =
+    abstract member viewKey: IPropKey
 
-    /// Represents a property in a Terminal.Gui View
-    [<CustomEquality; NoComparison>]
-    type SimplePropKey<'a> = private Key of string
-    with
-        static member create<'a> (key:string) : SimplePropKey<'a> =
-            if key.EndsWith "_element" || key.EndsWith "_elements" || key.EndsWith "_view" then
-                failwith $"Invalid key: {key}"
-            else
-                Key key
+  /// Represents a property in a Terminal.Gui View
+  [<CustomEquality; NoComparison>]
+  type SimplePropKey<'a> =
+    private
+    | Key of string
+    static member create<'a>(key: string) : SimplePropKey<'a> =
+      if
+        key.EndsWith "_element"
+        || key.EndsWith "_elements"
+        || key.EndsWith "_view"
+      then
+        failwith $"Invalid key: {key}"
+      else
+        Key key
 
-        static member map (value: SimplePropKey<'a>) : SimplePropKey<'b> =
-            Key value.key
+    static member map(value: SimplePropKey<'a>) : SimplePropKey<'b> = Key value.key
 
-        member this.key =
-            let (Key key) = this
-            key
+    member this.key =
+      let (Key key) = this
+      key
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+    override this.GetHashCode() = this.key.GetHashCode()
 
-        interface IPropKey<'a> with
-            member this.key = this.key
-            member this.isViewKey = false
-            member this.isSingleElementKey = false
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
 
-    [<CustomEquality; NoComparison>]
-    type ViewPropKey<'a> = private Key of string
-    with
-        static member create<'a> (key:string) : ViewPropKey<'a> =
-            if not (key.EndsWith "_view") then
-                failwith $"Invalid key: {key}"
-            else
-                Key key
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
+      member this.isSingleElementKey = false
 
-        static member map (value: ViewPropKey<'a>) : ViewPropKey<'b> =
-            Key value.key
+  [<CustomEquality; NoComparison>]
+  type ViewPropKey<'a> =
+    private
+    | Key of string
+    static member create<'a>(key: string) : ViewPropKey<'a> =
+      if not (key.EndsWith "_view") then
+        failwith $"Invalid key: {key}"
+      else
+        Key key
 
-        member this.key =
-            let (Key key) = this
-            key
+    static member map(value: ViewPropKey<'a>) : ViewPropKey<'b> = Key value.key
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+    member this.key =
+      let (Key key) = this
+      key
 
-        interface IPropKey<'a> with
-            member this.key = this.key
-            member this.isViewKey = true
-            member this.isSingleElementKey = false
+    override this.GetHashCode() = this.key.GetHashCode()
 
-    [<CustomEquality; NoComparison>]
-    type SingleElementPropKey<'a> = private Key of string
-    with
-        static member create<'a> (key:string) : SingleElementPropKey<'a> =
-            if key.EndsWith "_element" then
-                Key key
-            else failwith $"Invalid key: {key}"
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
 
-        member this.key =
-            let (Key key) = this
-            key
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = true
+      member this.isSingleElementKey = false
 
-        member this.viewKey=
-            ViewPropKey.create (this.key.Replace("_element", "_view")) :> IPropKey
+  [<CustomEquality; NoComparison>]
+  type SingleElementPropKey<'a> =
+    private
+    | Key of string
+    static member create<'a>(key: string) : SingleElementPropKey<'a> =
+      if key.EndsWith "_element" then
+        Key key
+      else
+        failwith $"Invalid key: {key}"
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+    member this.key =
+      let (Key key) = this
+      key
 
-        interface IPropKey<'a> with
-            member this.key = this.key
-            member this.isViewKey = false
-            member this.isSingleElementKey = true
+    member this.viewKey =
+      ViewPropKey.create (this.key.Replace("_element", "_view")) :> IPropKey
 
-        interface ISingleElementKey with
-            member this.viewKey = this.viewKey
+    override this.GetHashCode() = this.key.GetHashCode()
 
-    [<CustomEquality; NoComparison>]
-    type MultiElementPropKey<'a> = private Key of string
-    with
-        static member create<'a> (key:string) : MultiElementPropKey<'a> =
-            if key.EndsWith "_elements" then
-                Key key
-            else failwith $"Invalid key: {key}"
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
 
-        member this.key =
-            let (Key key) = this
-            key
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
+      member this.isSingleElementKey = true
 
-        member this.viewKey=
-            ViewPropKey.create (this.key.Replace("_elements", "_view")) :> IPropKey
+    interface ISingleElementKey with
+      member this.viewKey = this.viewKey
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+  [<CustomEquality; NoComparison>]
+  type MultiElementPropKey<'a> =
+    private
+    | Key of string
+    static member create<'a>(key: string) : MultiElementPropKey<'a> =
+      if key.EndsWith "_elements" then
+        Key key
+      else
+        failwith $"Invalid key: {key}"
 
-        interface IPropKey<'a> with
-            member this.key = this.key
-            member this.isViewKey = false
-            member this.isSingleElementKey = false
+    member this.key =
+      let (Key key) = this
+      key
 
-    [<CustomEquality; NoComparison>]
-    type ElementPropKey<'a> =
-        | SingleElementKey of SingleElementPropKey<'a>
-        | MultiElementKey of MultiElementPropKey<'a>
+    member this.viewKey =
+      ViewPropKey.create (this.key.Replace("_elements", "_view")) :> IPropKey
 
-        static member createSingleElementKey<'a> (key: string) : ElementPropKey<'a> =
-            SingleElementKey(SingleElementPropKey.create<'a> key)
+    override this.GetHashCode() = this.key.GetHashCode()
 
-        static member createMultiElementKey<'a> (key: string) : ElementPropKey<'a> =
-            MultiElementKey(MultiElementPropKey.create<'a> key)
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
 
-        static member from (singleElementKey: SingleElementPropKey<'a>) : ElementPropKey<'b> =
-            ElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
+      member this.isSingleElementKey = false
 
-        static member from (multiElementKey: MultiElementPropKey<'a>) : ElementPropKey<'b> =
-            ElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
+  [<CustomEquality; NoComparison>]
+  type ElementPropKey<'a> =
+    | SingleElementKey of SingleElementPropKey<'a>
+    | MultiElementKey of MultiElementPropKey<'a>
 
-        member this.key =
-            match this with
-            | SingleElementKey key -> key.key
-            | MultiElementKey key -> key.key
+    static member createSingleElementKey<'a>(key: string) : ElementPropKey<'a> =
+      SingleElementKey(SingleElementPropKey.create<'a> key)
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+    static member createMultiElementKey<'a>(key: string) : ElementPropKey<'a> =
+      MultiElementKey(MultiElementPropKey.create<'a> key)
 
-        member this.viewKey =
-            match this with
-            | SingleElementKey key -> key.viewKey
-            | MultiElementKey key -> key.viewKey
+    static member from(singleElementKey: SingleElementPropKey<'a>) : ElementPropKey<'b> =
+      ElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
 
-        interface IPropKey<'a> with
-            member this.key = this.key
-            member this.isViewKey = false
-            member this.isSingleElementKey =
-                match this with
-                | SingleElementKey _ -> true
-                | MultiElementKey _ -> false
+    static member from(multiElementKey: MultiElementPropKey<'a>) : ElementPropKey<'b> =
+      ElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
 
-    /// Used for positions that should be set in the IInternalTerminalElement.layout() stage,
-    /// Which comes after the IInternalTerminalElement.update and initializeTree calls.
-    ///
-    /// This is because `Pos` can take a view as input, and in the `Elmish.view` we may still didn't create the TerminalElement.view object.
-    /// So we delay the setting of the position once we have all the views at disposal.
-    [<CustomEquality; NoComparison>]
-    type DelayedPosKey = private Key of string
-    with
+    member this.key =
+      match this with
+      | SingleElementKey key -> key.key
+      | MultiElementKey key -> key.key
 
-        static member create (key:string) : DelayedPosKey =
-            if key.EndsWith "_delayedPos" then
-                Key key
-            else failwith $"Invalid key: {key}"
+    override this.GetHashCode() = this.key.GetHashCode()
 
-        member private this.key =
-            let (Key key) = this
-            key
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
 
-        override this.GetHashCode() = this.key.GetHashCode()
-        override this.Equals(obj) =
-            match obj with
-            | :? IPropKey as x ->
-                this.key.Equals(x.key)
-            | _ ->
-                false
+    member this.viewKey =
+      match this with
+      | SingleElementKey key -> key.viewKey
+      | MultiElementKey key -> key.viewKey
 
-        interface IPropKey<TPos> with
-            member this.key = this.key
-            member this.isViewKey = false
-            member this.isSingleElementKey = false
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
+
+      member this.isSingleElementKey =
+        match this with
+        | SingleElementKey _ -> true
+        | MultiElementKey _ -> false
+
+  /// Used for positions that should be set in the IInternalTerminalElement.layout() stage,
+  /// Which comes after the IInternalTerminalElement.update and initializeTree calls.
+  ///
+  /// This is because `Pos` can take a view as input, and in the `Elmish.view` we may still didn't create the TerminalElement.view object.
+  /// So we delay the setting of the position once we have all the views at disposal.
+  [<CustomEquality; NoComparison>]
+  type DelayedPosKey =
+    private
+    | Key of string
+
+    static member create(key: string) : DelayedPosKey =
+      if key.EndsWith "_delayedPos" then
+        Key key
+      else
+        failwith $"Invalid key: {key}"
+
+    member private this.key =
+      let (Key key) = this
+      key
+
+    override this.GetHashCode() = this.key.GetHashCode()
+
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
+
+    interface IPropKey<TPos> with
+      member this.key = this.key
+      member this.isViewKey = false
+      member this.isSingleElementKey = false
 
 /// Props object that is still under construction
 type internal Props(?initialProps) =
 
-    member val dict = defaultArg initialProps (Dictionary<IPropKey,_>()) with get
+  member val dict = defaultArg initialProps (Dictionary<IPropKey, _>()) with get
 
-    member this.add<'a> (k: IPropKey<'a>, v: 'a)  = this.dict.Add(k, v :> obj)
-    member this.addNonTyped<'a> (k: IPropKey, v: 'a)  = this.dict.Add(k, v :> obj)
+  member this.add<'a>(k: IPropKey<'a>, v: 'a) = this.dict.Add(k, v :> obj)
+  member this.addNonTyped<'a>(k: IPropKey, v: 'a) = this.dict.Add(k, v :> obj)
 
-    member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
-        match this.dict.TryGetValue k with
-        | true, value -> value |> unbox<'a>
-        | false, _ ->
-            let value = init()
-            this.dict[k] <- value :> obj
-            value
+  member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
+    match this.dict.TryGetValue k with
+    | true, value -> value |> unbox<'a>
+    | false, _ ->
+      let value = init ()
+      this.dict[k] <- value :> obj
+      value
 
 module internal Props =
-    let merge (props': Props) (props'': Props) =
-        let result = Dictionary()
-        let addToResult (source: Props) =
-            source.dict |> Seq.iter (fun kv -> result.Add(kv.Key, kv.Value))
+  let merge (props': Props) (props'': Props) =
+    let result = Dictionary()
 
-        addToResult props'
-        addToResult props''
+    let addToResult (source: Props) =
+      source.dict
+      |> Seq.iter (fun kv -> result.Add(kv.Key, kv.Value))
 
-        Props(result)
+    addToResult props'
+    addToResult props''
 
-    /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
-    /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
-    let partition predicate (props: Props) =
-        let first = Props()
-        let second = Props()
+    Props(result)
 
-        for kv in props.dict do
-            if predicate kv then
-                first.addNonTyped (kv.Key, kv.Value)
-            else
-                second.addNonTyped (kv.Key, kv.Value)
+  /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
+  /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
+  let partition predicate (props: Props) =
+    let first = Props()
+    let second = Props()
 
-        first, second
+    for kv in props.dict do
+      if predicate kv then
+        first.addNonTyped (kv.Key, kv.Value)
+      else
+        second.addNonTyped (kv.Key, kv.Value)
 
-    let filter predicate (props: Props) =
-        let result = Props()
+    first, second
 
-        for kv in props.dict do
-            if predicate kv then
-                result.addNonTyped (kv.Key, kv.Value)
+  let filter predicate (props: Props) =
+    let result = Props()
 
-        result
+    for kv in props.dict do
+      if predicate kv then
+        result.addNonTyped (kv.Key, kv.Value)
 
-    let tryFind (key: IPropKey<'a>) (props: Props) =
-        match props.dict.TryGetValue key with
-        | true, v -> v |> unbox<'a> |> Some
-        | _, _ -> None
+    result
 
-    let tryFindByRawKey<'a> key (props: Props) =
-        match props.dict.TryGetValue key with
-        | true, v -> v |> unbox<'a> |> Some
-        | _, _ -> None
+  let tryFind (key: IPropKey<'a>) (props: Props) =
+    match props.dict.TryGetValue key with
+    | true, v -> v |> unbox<'a> |> Some
+    | _, _ -> None
 
-    let find key (props: Props) =
-        match tryFind key props with
-        | Some v -> v
-        | None -> failwith $"Failed to find '{key}'"
+  let tryFindByRawKey<'a> key (props: Props) =
+    match props.dict.TryGetValue key with
+    | true, v -> v |> unbox<'a> |> Some
+    | _, _ -> None
 
-    let tryFindWithDefault (key: SimplePropKey<'a>) defaultValue props =
-        props |> tryFind key |> Option.defaultValue defaultValue
+  let find key (props: Props) =
+    match tryFind key props with
+    | Some v -> v
+    | None -> failwith $"Failed to find '{key}'"
 
-    let rawKeyExists k (p: Props) = p.dict.ContainsKey k
+  let tryFindWithDefault (key: SimplePropKey<'a>) defaultValue props =
+    props
+    |> tryFind key
+    |> Option.defaultValue defaultValue
 
-    let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k
+  let rawKeyExists k (p: Props) = p.dict.ContainsKey k
 
-    // TODO: remove this and replace usage with TerminalElement.compare where
-    let compare (oldProps: Props) (newProps: Props) =
+  let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k
 
-        let remainingOldProps, removedProps =
-            oldProps |> partition (fun kv -> newProps |> rawKeyExists kv.Key)
+  // TODO: remove this and replace usage with TerminalElement.compare where
+  let compare (oldProps: Props) (newProps: Props) =
 
-        let changedProps =
-            newProps |> filter (fun kv ->
-                match remainingOldProps |> tryFindByRawKey kv.Key with
-                | _ when kv.Value = "children" ->
-                    false
-                | Some v' when kv.Value = v' ->
-                    false
-                | _ ->
-                    true
-            )
+    let remainingOldProps, removedProps =
+      oldProps
+      |> partition (fun kv -> newProps |> rawKeyExists kv.Key)
 
-        (changedProps, removedProps)
+    let changedProps =
+      newProps
+      |> filter (fun kv ->
+        match remainingOldProps |> tryFindByRawKey kv.Key with
+        | _ when kv.Value = "children" -> false
+        | Some v' when kv.Value = v' -> false
+        | _ -> true
+      )
 
-    let keys (props: Props) = props.dict.Keys |> Seq.map id
+    (changedProps, removedProps)
 
-    let filterSingleElementKeys (props: Props) =
-        props.dict.Keys
-        |> Seq.filter _.isSingleElementKey
-        |> Seq.map (fun x -> x :?> ISingleElementKey)
+  let keys (props: Props) = props.dict.Keys |> Seq.map id
 
-    let iter iteration (props: Props) =
-        props.dict |> Seq.iter iteration
+  let filterSingleElementKeys (props: Props) =
+    props.dict.Keys
+    |> Seq.filter _.isSingleElementKey
+    |> Seq.map (fun x -> x :?> ISingleElementKey)
+
+  let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 
 [<AutoOpen>]
 module Element =
 
-    open Terminal.Gui.ViewBase
+  open Terminal.Gui.ViewBase
 
-    // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
-    // TODO:  ie make all classes internal / expose public interface instead
-    type internal IInternalTerminalElement =
-        inherit ITerminalElement
-        abstract initialize: parent: View option -> unit
-        abstract initializeTree: parent: View option -> unit
-        // TODO: rename to prevView
-        abstract canUpdate: prevElement:View -> oldProps: Props -> bool
-        // TODO: rename to prevView
-        abstract update: prevElement:View -> oldProps: Props -> unit
-        abstract layout: unit -> unit
-        abstract children: List<IInternalTerminalElement> with get
-        abstract view: View with get
-        abstract props: Props
-        abstract name: string
-        abstract setAsChildOfParentView: bool
+  // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
+  // TODO:  ie make all classes internal / expose public interface instead
+  type internal IInternalTerminalElement =
+    inherit ITerminalElement
+    abstract initialize: parent: View option -> unit
+    abstract initializeTree: parent: View option -> unit
+    // TODO: rename to prevView
+    abstract canUpdate: prevElement: View -> oldProps: Props -> bool
+    // TODO: rename to prevView
+    abstract update: prevElement: View -> oldProps: Props -> unit
+    abstract layout: unit -> unit
+    abstract children: List<IInternalTerminalElement> with get
+    abstract view: View with get
+    abstract props: Props
+    abstract name: string
+    abstract setAsChildOfParentView: bool
 
-    type IMenuv2Element =
-        inherit ITerminalElement
+  type IMenuv2Element =
+    inherit ITerminalElement
 
-    type IPopoverMenuElement =
-        inherit ITerminalElement
+  type IPopoverMenuElement =
+    inherit ITerminalElement
 
-    type IMenuBarItemv2Element =
-        inherit ITerminalElement
+  type IMenuBarItemv2Element =
+    inherit ITerminalElement
 
-    type INumericUpDownElement =
-        inherit ITerminalElement
+  type INumericUpDownElement =
+    inherit ITerminalElement
 
-    type ISliderElement =
-        inherit ITerminalElement
+  type ISliderElement =
+    inherit ITerminalElement
 
-    type ITreeViewElement =
-        inherit ITerminalElement
-
+  type ITreeViewElement =
+    inherit ITerminalElement

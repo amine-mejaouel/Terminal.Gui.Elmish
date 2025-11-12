@@ -3208,6 +3208,48 @@ type OptionSelectorElement(props: Props) =
 
     canUpdateView && canUpdateElement
 
+// FlagSelector
+type FlagSelectorElement(props: Props) =
+  inherit SelectorBaseElement(props)
+
+  override this.removeProps(element: View, props: Props) =
+    base.removeProps (element, props)
+    let element = element :?> FlagSelector
+
+    // Properties
+    props
+    |> Props.tryFind PKey.flagSelector.value
+    |> Option.iter (fun _ -> element.Value <- Unchecked.defaultof<_>)
+
+  override _.name = $"FlagSelector"
+
+  override this.setProps(element: View, props: Props) =
+    base.setProps (element, props)
+
+    let element = element :?> FlagSelector
+
+    // Properties
+    props
+    |> Props.tryFind PKey.flagSelector.value
+    |> Option.iter (fun v -> element.Value <- v)
+
+  override this.newView() = new FlagSelector()
+
+  override this.canUpdate prevElement oldProps =
+    let changedProps, removedProps =
+      Props.compare oldProps props
+
+    let removedProps =
+      removedProps
+      |> Props.filter (not << _.Key.isViewKey)
+
+    let canUpdateView =
+      ViewElement.canUpdate prevElement changedProps removedProps
+
+    let canUpdateElement = true
+
+    canUpdateView && canUpdateElement
+
 
 // Padding
 type PaddingElement(props: Props) =

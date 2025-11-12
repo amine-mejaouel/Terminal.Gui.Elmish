@@ -212,8 +212,6 @@ module internal PKey =
     inherit viewPKeys()
     // Properties
     member val autocomplete: SimplePropKey<IAutocomplete> = SimplePropKey.create "textField.autocomplete"
-    member val caption: SimplePropKey<string> = SimplePropKey.create "textField.caption"
-    member val captionColor: SimplePropKey<Terminal.Gui.Drawing.Color> = SimplePropKey.create "textField.captionColor"
     member val cursorPosition: SimplePropKey<Int32> = SimplePropKey.create "textField.cursorPosition"
     member val readOnly: SimplePropKey<bool> = SimplePropKey.create "textField.readOnly"
     member val secret: SimplePropKey<bool> = SimplePropKey.create "textField.secret"

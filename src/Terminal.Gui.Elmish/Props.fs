@@ -541,12 +541,6 @@ type textFieldProps() =
   member this.autocomplete(value: IAutocomplete) =
     this.props.add (PKey.textField.autocomplete, value)
 
-  member this.caption(value: string) =
-    this.props.add (PKey.textField.caption, value)
-
-  member this.captionColor(value: Terminal.Gui.Drawing.Color) =
-    this.props.add (PKey.textField.captionColor, value)
-
   member this.cursorPosition(value: Int32) =
     this.props.add (PKey.textField.cursorPosition, value)
 

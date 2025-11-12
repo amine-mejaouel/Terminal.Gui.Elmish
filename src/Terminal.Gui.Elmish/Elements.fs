@@ -4268,14 +4268,6 @@ type TextFieldElement(props: Props) =
     |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.textField.caption
-    |> Option.iter (fun _ -> element.Caption <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.textField.captionColor
-    |> Option.iter (fun _ -> element.CaptionColor <- Unchecked.defaultof<_>)
-
-    props
     |> Props.tryFind PKey.textField.cursorPosition
     |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
 
@@ -4322,14 +4314,6 @@ type TextFieldElement(props: Props) =
     props
     |> Props.tryFind PKey.textField.autocomplete
     |> Option.iter (fun v -> element.Autocomplete <- v)
-
-    props
-    |> Props.tryFind PKey.textField.caption
-    |> Option.iter (fun v -> element.Caption <- v)
-
-    props
-    |> Props.tryFind PKey.textField.captionColor
-    |> Option.iter (fun v -> element.CaptionColor <- v)
 
     props
     |> Props.tryFind PKey.textField.cursorPosition

@@ -949,33 +949,51 @@ type openDialogProps() =
   member this.openMode(value: OpenMode) =
     this.props.add (PKey.openDialog.openMode, value)
 
-// OptionSelector
-type optionSelectorProps() =
+// SelectorBase
+type [<AbstractClass>] selectorBaseProps() =
   inherit viewProps()
-  //Properties
-  member this.assignHotKeysToCheckBoxes(value: bool) =
-    this.props.add (PKey.optionSelector.assignHotKeysToCheckBoxes, value)
-
+  // IOrientation
   member this.orientation(value: Orientation) =
-    this.props.add (PKey.optionSelector.orientation, value)
+    this.props.add (PKey.orientationInterface.orientation, value)
 
-  member this.options(value: IReadOnlyList<string>) =
-    this.props.add (PKey.optionSelector.options, value)
-
-  member this.options(value: string list) =
-    this.props.add (PKey.optionSelector.options, (value :> IReadOnlyList<string>))
-
-  member this.selectedItem(value: Int32) =
-    this.props.add (PKey.optionSelector.selectedItem, value)
-  // Events
   member this.orientationChanged(value: Orientation -> unit) =
-    this.props.add (PKey.optionSelector.orientationChanged, value)
+    this.props.add (PKey.orientationInterface.orientationChanged, value)
 
   member this.orientationChanging(value: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.optionSelector.orientationChanging, value)
+    this.props.add (PKey.orientationInterface.orientationChanging, value)
 
-  member this.selectedItemChanged(value: SelectedItemChangedArgs -> unit) =
-    this.props.add (PKey.optionSelector.selectedItemChanged, value)
+  // Properties
+  member this.assignHotKeys(value: bool) =
+    this.props.add (PKey.optionSelector.assignHotKeys, value)
+
+  member this.doubleClickAccepts(value: bool) =
+    this.props.add (PKey.optionSelector.doubleClickAccepts, value)
+
+  member this.horizontalSpace(value: int) =
+    this.props.add (PKey.optionSelector.horizontalSpace, value)
+
+  member this.labels(value: IReadOnlyList<string>) =
+    this.props.add (PKey.optionSelector.labels, value)
+
+  member this.styles(value: SelectorStyles) =
+    this.props.add (PKey.optionSelector.styles, value)
+
+  member this.usedHotKeys(value: HashSet<Key>) =
+    this.props.add (PKey.optionSelector.usedHotKeys, value)
+
+  member this.value(value: int option) =
+    this.props.add (PKey.optionSelector.value, value |> Option.toNullable)
+
+  member this.values(value: IReadOnlyList<int>) =
+    this.props.add (PKey.optionSelector.values, value)
+
+// OptionSelector
+type optionSelectorProps() =
+  inherit selectorBaseProps()
+  // Properties
+  member this.cursor(value: int) =
+    this.props.add (PKey.optionSelector.cursor, value)
+
 
 // Padding
 type paddingProps() =

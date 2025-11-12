@@ -581,7 +581,7 @@ type dateFieldProps() =
   member this.date(value: DateTime) =
     this.props.add (PKey.dateField.date, value)
   // Events
-  member this.dateChanged(handler: DateTimeEventArgs<DateTime> -> unit) =
+  member this.dateChanged(handler: EventArgs<DateTime> -> unit) =
     this.props.add (PKey.dateField.dateChanged, handler)
 
 // DatePicker

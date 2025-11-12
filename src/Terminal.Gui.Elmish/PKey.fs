@@ -231,7 +231,7 @@ module internal PKey =
     member val cursorPosition: SimplePropKey<Int32> = SimplePropKey.create "dateField.cursorPosition"
     member val date: SimplePropKey<DateTime> = SimplePropKey.create "dateField.date"
     // Events
-    member val dateChanged: SimplePropKey<DateTimeEventArgs<DateTime> -> unit> = SimplePropKey.create "dateField.dateChanged"
+    member val dateChanged: SimplePropKey<EventArgs<DateTime> -> unit> = SimplePropKey.create "dateField.dateChanged"
 
   // DatePicker
   type datePickerPKeys() =

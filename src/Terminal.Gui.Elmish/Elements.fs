@@ -3039,58 +3039,145 @@ type OrientationInterface =
   static member removeProps (element: IOrientation) (props: Props) =
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector.orientation
+    |> Props.tryFind PKey.orientationInterface.orientation
     |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+
     // Events
     props
-    |> Props.tryFind PKey.optionSelector.orientationChanged
+    |> Props.tryFind PKey.orientationInterface.orientationChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
 
     props
-    |> Props.tryFind PKey.optionSelector.orientationChanging
+    |> Props.tryFind PKey.orientationInterface.orientationChanging
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
 
   static member setProps (element: IOrientation) (props: Props) =
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector.orientation
+    |> Props.tryFind PKey.orientationInterface.orientation
     |> Option.iter (fun v -> element.Orientation <- v)
+
     // Events
     props
-    |> Props.tryFind PKey.optionSelector.orientationChanged
+    |> Props.tryFind PKey.orientationInterface.orientationChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
 
     props
-    |> Props.tryFind PKey.optionSelector.orientationChanging
+    |> Props.tryFind PKey.orientationInterface.orientationChanging
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
-
-// OptionSelector
-type OptionSelectorElement(props: Props) =
+// SelectorBase
+type internal SelectorBaseElement(props: Props) =
   inherit TerminalElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> OptionSelector
+    let element = element :?> SelectorBase
     // Interfaces
     OrientationInterface.removeProps element props
 
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector.assignHotKeysToCheckBoxes
-    |> Option.iter (fun _ -> element.AssignHotKeysToCheckBoxes <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.selectorBase.assignHotKeys
+    |> Option.iter (fun _ -> element.AssignHotKeys <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.optionSelector.options
-    |> Option.iter (fun _ -> element.Options <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.selectorBase.doubleClickAccepts
+    |> Option.iter (fun _ -> element.DoubleClickAccepts <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.optionSelector.selectedItem
-    |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.selectorBase.horizontalSpace
+    |> Option.iter (fun _ -> element.HorizontalSpace <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.selectorBase.labels
+    |> Option.iter (fun _ -> element.Labels <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.selectorBase.styles
+    |> Option.iter (fun _ -> element.Styles <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.selectorBase.usedHotKeys
+    |> Option.iter (fun _ -> element.UsedHotKeys <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.selectorBase.value
+    |> Option.iter (fun _ -> element.Value <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.selectorBase.values
+    |> Option.iter (fun _ -> element.Values <- Unchecked.defaultof<_>)
+
     // Events
     props
-    |> Props.tryFind PKey.optionSelector.selectedItemChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SelectedItemChanged @> element)
+    |> Props.tryFind PKey.selectorBase.valueChanged
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ValueChanged @> element)
+
+  override _.name = "SelectorBase"
+
+  override this.setProps(element: View, props: Props) =
+    base.setProps (element, props)
+
+    let element = element :?> SelectorBase
+
+    // Interfaces
+    OrientationInterface.setProps element props
+
+    // Properties
+    props
+    |> Props.tryFind PKey.selectorBase.assignHotKeys
+    |> Option.iter (fun v -> element.AssignHotKeys <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.doubleClickAccepts
+    |> Option.iter (fun v -> element.DoubleClickAccepts <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.horizontalSpace
+    |> Option.iter (fun v -> element.HorizontalSpace <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.labels
+    |> Option.iter (fun v -> element.Labels <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.styles
+    |> Option.iter (fun v -> element.Styles <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.usedHotKeys
+    |> Option.iter (fun v -> element.UsedHotKeys <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.value
+    |> Option.iter (fun v -> element.Value <- v)
+
+    props
+    |> Props.tryFind PKey.selectorBase.values
+    |> Option.iter (fun v -> element.Values <- v)
+
+    // Events
+    props
+    |> Props.tryFind PKey.selectorBase.valueChanged
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.ValueChanged @> v element)
+
+  override this.newView() = raise (NotImplementedException())
+
+  override this.canUpdate _ _ = raise (NotImplementedException())
+
+// OptionSelector
+type OptionSelectorElement(props: Props) =
+  inherit SelectorBaseElement(props)
+
+  override this.removeProps(element: View, props: Props) =
+    base.removeProps (element, props)
+    let element = element :?> OptionSelector
+
+    // Properties
+    props
+    |> Props.tryFind PKey.optionSelector.cursor
+    |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_>)
 
   override _.name = $"OptionSelector"
 
@@ -3099,26 +3186,10 @@ type OptionSelectorElement(props: Props) =
 
     let element = element :?> OptionSelector
 
-    // Interfaces
-    OrientationInterface.setProps element props
-
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector.assignHotKeysToCheckBoxes
-    |> Option.iter (fun v -> element.AssignHotKeysToCheckBoxes <- v)
-
-    props
-    |> Props.tryFind PKey.optionSelector.options
-    |> Option.iter (fun v -> element.Options <- v)
-
-    props
-    |> Props.tryFind PKey.optionSelector.selectedItem
-    |> Option.iter (fun v -> element.SelectedItem <- v)
-    // Events
-    props
-    |> Props.tryFind PKey.optionSelector.selectedItemChanged
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
-
+    |> Props.tryFind PKey.optionSelector.cursor
+    |> Option.iter (fun v -> element.Cursor <- v)
 
   override this.newView() = new OptionSelector()
 

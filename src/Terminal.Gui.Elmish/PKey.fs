@@ -23,6 +23,7 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 /// Properties key index
+[<RequireQualifiedAccess>]
 module internal PKey =
 
   type viewPKeys() =
@@ -455,18 +456,27 @@ module internal PKey =
     // Properties
     member val openMode: SimplePropKey<OpenMode> = SimplePropKey.create "openDialog.openMode"
 
+  // SelectorBase
+  type selectorBasePKeys() =
+    inherit viewPKeys()
+
+    //Properties
+    member val assignHotKeys: SimplePropKey<bool> = SimplePropKey.create "selectorBase.assignHotKeys"
+    member val doubleClickAccepts: SimplePropKey<bool> = SimplePropKey.create "selectorBase.doubleClickAccepts"
+    member val horizontalSpace: SimplePropKey<int> = SimplePropKey.create "selectorBase.horizontalSpace"
+    member val labels: SimplePropKey<IReadOnlyList<string>> = SimplePropKey.create "selectorBase.labels"
+    member val styles: SimplePropKey<SelectorStyles> = SimplePropKey.create "selectorBase.styles"
+    member val usedHotKeys: SimplePropKey<HashSet<Key>> = SimplePropKey.create "selectorBase.usedHotKeys"
+    member val value: SimplePropKey<Nullable<int>> = SimplePropKey.create "selectorBase.value"
+    member val values: SimplePropKey<IReadOnlyList<int>> = SimplePropKey.create "selectorBase.values"
+    // Events
+    member val valueChanged: SimplePropKey<EventArgs<Nullable<int>> -> unit> = SimplePropKey.create "selectorBase.valueChanged"
+
   // OptionSelector
   type optionSelectorPKeys() =
-    inherit viewPKeys()
+    inherit selectorBasePKeys()
     //Properties
-    member val assignHotKeysToCheckBoxes: SimplePropKey<bool> = SimplePropKey.create "optionSelector.assignHotKeysToCheckBoxes"
-    member val orientation: SimplePropKey<Orientation> = SimplePropKey.create "optionSelector.orientation"
-    member val options: SimplePropKey<IReadOnlyList<string>> = SimplePropKey.create "optionSelector.options"
-    member val selectedItem: SimplePropKey<Int32> = SimplePropKey.create "optionSelector.selectedItem"
-    // Events
-    member val orientationChanged: SimplePropKey<Orientation -> unit> = SimplePropKey.create "optionSelector.orientationChanged"
-    member val orientationChanging: SimplePropKey<CancelEventArgs<Orientation> -> unit> = SimplePropKey.create "optionSelector.orientationChanging"
-    member val selectedItemChanged: SimplePropKey<SelectedItemChangedArgs -> unit> = SimplePropKey.create "optionSelector.selectedItemChanged"
+    member val cursor: SimplePropKey<int> = SimplePropKey.create "optionSelector.cursor"
 
   // Padding
   type paddingPKeys() =
@@ -791,6 +801,7 @@ module internal PKey =
     numericUpDownPKeys<'a> ()
 
   let openDialog = openDialogPKeys ()
+  let selectorBase = selectorBasePKeys ()
   let optionSelector = optionSelectorPKeys ()
   let padding = paddingPKeys ()
   let progressBar = progressBarPKeys ()
@@ -817,3 +828,11 @@ module internal PKey =
   let window = windowPKeys ()
   let wizard = wizardPKeys ()
   let wizardStep = wizardStepPKeys ()
+
+  // IOrientation
+  module internal orientationInterface =
+    // Properties
+    let orientation : SimplePropKey<Orientation> = SimplePropKey.create "orientation.orientation"
+    // Events
+    let orientationChanged: SimplePropKey<Orientation -> unit> = SimplePropKey.create "orientation.orientationChanged"
+    let orientationChanging: SimplePropKey<CancelEventArgs<Orientation> -> unit> = SimplePropKey.create "orientation.orientationChanging"

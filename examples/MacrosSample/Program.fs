@@ -87,14 +87,14 @@ let view (state: Model) (dispatch: Msg -> unit) =
               p.commandView (
                 View.optionSelector (fun p ->
                   p.highlightStates MouseState.None
-                  p.options state.AvailableThemes
+                  p.labels state.AvailableThemes
 
-                  p.selectedItemChanged (fun args ->
-                    if args.SelectedItem.HasValue then
-                      dispatch (ThemeIndexChanged args.SelectedItem.Value)
+                  p.valueChanged (fun args ->
+                    if args.Value.HasValue then
+                      dispatch (ThemeIndexChanged args.Value.Value)
                   )
 
-                  p.selectedItem state.SelectedThemeIndex
+                  p.value (Some state.SelectedThemeIndex)
                 )
               )
             )

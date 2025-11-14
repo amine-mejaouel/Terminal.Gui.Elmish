@@ -981,6 +981,10 @@ type [<AbstractClass>] selectorBaseProps() =
   member this.values(value: IReadOnlyList<int>) =
     this.props.add (PKey.optionSelector.values, value)
 
+  // Events
+  member this.valueChanged(value: EventArgs<Nullable<int>> -> unit) =
+    this.props.add (PKey.optionSelector.valueChanged, value)
+
 // OptionSelector
 type optionSelectorProps() =
   inherit selectorBaseProps()

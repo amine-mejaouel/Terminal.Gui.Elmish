@@ -11,16 +11,11 @@ let mutable private currentTreeState: IInternalTerminalElement option =
 
 let mutable toplevel: Toplevel = null
 
-let mutable private runState: RunState =
-  null
-
 let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model: 'model) dispatch =
 
   let nextTreeState =
     match currentTreeState with
     | None ->
-      if not unitTestMode then
-        Application.Init()
 
       let startState =
         view model dispatch :?> IInternalTerminalElement
@@ -32,13 +27,6 @@ let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model
       | topElement ->
         match topElement with
         | :? Toplevel as tl ->
-          if not unitTestMode then
-            toplevel <- tl
-            runState <- Application.Begin(tl)
-
-            Application.RunIteration(&runState, true)
-            |> ignore
-          else
             toplevel <- tl
         | _ -> failwith ("first element must be a toplevel!")
 
@@ -58,7 +46,6 @@ let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model
 
 let private terminate model =
   if not unitTestMode then
-    Application.End(runState)
     toplevel.Dispose()
     Application.Shutdown()
 
@@ -74,10 +61,11 @@ let withTermination predicate =
   Program.withTermination predicate terminate
 
 let run program =
+
   if not unitTestMode then
     Application.Init()
 
   Program.run program
 
   if not unitTestMode then
-    Application.RunLoop(runState)
+    Application.Run(toplevel)

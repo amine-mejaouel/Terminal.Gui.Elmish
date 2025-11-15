@@ -3035,6 +3035,7 @@ type OpenDialogElement(props: Props) =
     canUpdateView && canUpdateElement
 
 
+// TODO: replace direct orientation usage with this type in the Element.fs
 type OrientationInterface =
   static member removeProps (element: IOrientation) (props: Props) =
     // Properties

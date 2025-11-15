@@ -593,6 +593,7 @@ type View =
     OpenDialogElement(view.props) :> ITerminalElement
 
   static member optionSelector(set: optionSelectorProps -> unit) =
+    // TODO: rename view -> props everywhere in the file
     let view = optionSelectorProps ()
     set (view)
     OptionSelectorElement(view.props) :> ITerminalElement

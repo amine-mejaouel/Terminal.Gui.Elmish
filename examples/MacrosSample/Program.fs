@@ -1,6 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System.Collections.Immutable
+open System.IO
 open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Configuration
@@ -59,7 +60,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
                 p.title "Force _16 Colors"
 
                 p.checkedState (
-                  if Application.Force16Colors then
+                  if ApplicationImpl.Instance.Force16Colors then
                     CheckState.Checked
                   else
                     CheckState.UnChecked
@@ -67,14 +68,14 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
                 p.checkedStateChanging (fun args ->
                   if
-                    (Application.Force16Colors
+                    (ApplicationImpl.Instance.Force16Colors
                      && args.Result = CheckState.UnChecked
-                     && not Application.Driver.SupportsTrueColor)
+                     && not ApplicationImpl.Instance.Driver.SupportsTrueColor)
                   then
                     args.Handled <- true
                 )
 
-                p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
+                p.checkedStateChanged (fun args -> ApplicationImpl.Instance.Force16Colors <- args.Value = CheckState.Checked)
               )
             )
           )

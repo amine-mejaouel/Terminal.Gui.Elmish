@@ -1117,14 +1117,14 @@ type View =
 
 module Dialogs =
   let showWizard (wizard: Wizard) =
-    Application.Run(wizard)
+    ApplicationImpl.Instance.Run(wizard)
     wizard.Dispose()
     ()
 
 
   let openFileDialog title =
     use dia = new OpenDialog(Title = title)
-    Application.Run(dia)
+    ApplicationImpl.Instance.Run(dia)
     dia.Dispose()
     //Application.Top.Remove(dia) |> ignore
     if dia.Canceled then

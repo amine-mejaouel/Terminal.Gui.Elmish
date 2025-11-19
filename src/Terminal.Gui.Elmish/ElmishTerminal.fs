@@ -47,7 +47,7 @@ let private setState (view: 'model -> Dispatch<'cmd> -> ITerminalElement) (model
 let private terminate model =
   if not unitTestMode then
     toplevel.Dispose()
-    Application.Shutdown()
+    ApplicationImpl.Instance.Shutdown()
 
 let mkProgram (init: 'arg -> 'model * Cmd<'msg>) update (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
   Program.mkProgram init update view
@@ -63,9 +63,9 @@ let withTermination predicate =
 let run program =
 
   if not unitTestMode then
-    Application.Init()
+    ApplicationImpl.Instance.Init()
 
   Program.run program
 
   if not unitTestMode then
-    Application.Run(toplevel)
+    ApplicationImpl.Instance.Run(toplevel)

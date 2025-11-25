@@ -8,7 +8,7 @@ open Terminal.Gui.Views
 
 type internal OuterModel<'model> = {
   mutable CurrentTreeState: IInternalTerminalElement option
-  mutable TopLevel: Toplevel option
+  TopLevel: TaskCompletionSource<Toplevel>
   Termination: TaskCompletionSource
   InnerModel: 'model
 }
@@ -19,7 +19,7 @@ module OuterModel =
       let innerModel, cmd = init arg
       let internalModel = {
         CurrentTreeState = None
-        TopLevel = None
+        TopLevel = TaskCompletionSource<Toplevel>()
         Termination = TaskCompletionSource()
         InnerModel = innerModel
       }
@@ -39,7 +39,7 @@ module OuterModel =
       let innerModel = init arg
       let internalModel = {
         CurrentTreeState = None
-        TopLevel = None
+        TopLevel = TaskCompletionSource<Toplevel>()
         Termination = TaskCompletionSource()
         InnerModel = innerModel
       }
@@ -74,7 +74,7 @@ let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalEle
       | topElement ->
         match topElement with
         | :? Toplevel as tl ->
-            model.TopLevel <- Some tl
+            model.TopLevel.SetResult(tl)
         | _ -> failwith ("first element must be a toplevel!")
 
       startState
@@ -93,7 +93,7 @@ let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalEle
 
 let private terminate model =
   if not unitTestMode then
-    model.TopLevel |> Option.iter _.Dispose()
+    model.TopLevel.Task.Result.Dispose()
     ApplicationImpl.Instance.Shutdown()
     model.Termination.SetResult()
 
@@ -125,7 +125,8 @@ let run (ElmishTerminalProgram program) =
     let run (model: OuterModel<_>) =
       let start dispatch =
           task {
-            ApplicationImpl.Instance.Run(model.TopLevel.Value)
+            let! toplevel = model.TopLevel.Task
+            ApplicationImpl.Instance.Run(toplevel)
             waitForStart.SetResult()
             waitForTermination <- model.Termination
           } |> ignore

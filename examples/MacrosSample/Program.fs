@@ -134,7 +134,10 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
         label
         textView
-        SampleComponent._component
+        SampleComponent._component (fun p ->
+          // TODO-ELMISH-COMPONENT: Failing case where the ElmishComponent tries to set the Pos before the view is rendered
+          p.y (TPos.Bottom textView)
+        )
       ]
     )
 

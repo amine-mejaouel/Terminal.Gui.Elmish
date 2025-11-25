@@ -4,6 +4,9 @@ open System
 open System.Threading.Tasks
 open Elmish
 
+
+// TODO-ELMISH-COMPONENT: Code too similar to ElmishTerminal -> refactor
+
 type internal OuterModel<'model> = {
   mutable CurrentTreeState: IInternalTerminalElement option
   TopView: TaskCompletionSource<Terminal.Gui.ViewBase.View>

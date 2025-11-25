@@ -134,6 +134,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
         label
         textView
+        SampleComponent._component
       ]
     )
 

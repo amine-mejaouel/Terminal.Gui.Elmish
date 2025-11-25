@@ -50,6 +50,7 @@
     <Compile Include="Views.fs" />
     <Compile Include="TreeDiff.fs" />
     <Compile Include="ElmishTerminal.fs" />
+    <Compile Include="ElmishComponent.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png">

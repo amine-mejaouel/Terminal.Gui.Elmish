@@ -14,35 +14,40 @@ type internal OuterModel<'model> = {
 }
 
 module OuterModel =
-  let internal wrapInit (init : 'arg -> 'model * Cmd<'msg>) =
+  let internal wrapInit (init: 'arg -> 'model * Cmd<'msg>) =
     fun (arg: 'arg) ->
       let innerModel, cmd = init arg
+
       let internalModel = {
         CurrentTreeState = None
         TopLevel = TaskCompletionSource<Toplevel>()
         Termination = TaskCompletionSource()
         InnerModel = innerModel
       }
+
       internalModel, cmd
 
   let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : 'msg -> OuterModel<'model> -> OuterModel<'model> * Cmd<'msg> =
     fun (msg: 'msg) (model: OuterModel<'model>) ->
-      let innerModel, cmd = update msg model.InnerModel
+      let innerModel, cmd =
+        update msg model.InnerModel
+
       { model with InnerModel = innerModel }, cmd
 
   let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : OuterModel<'model> -> Dispatch<'msg> -> ITerminalElement =
-    fun (model: OuterModel<'model>) (dispatch: Dispatch<'msg>) ->
-      view model.InnerModel dispatch
+    fun (model: OuterModel<'model>) (dispatch: Dispatch<'msg>) -> view model.InnerModel dispatch
 
-  let internal wrapSimpleInit (init : 'arg -> 'model) =
+  let internal wrapSimpleInit (init: 'arg -> 'model) =
     fun (arg: 'arg) ->
       let innerModel = init arg
+
       let internalModel = {
         CurrentTreeState = None
         TopLevel = TaskCompletionSource<Toplevel>()
         Termination = TaskCompletionSource()
         InnerModel = innerModel
       }
+
       internalModel
 
   let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : 'msg -> OuterModel<'model> -> OuterModel<'model> =
@@ -51,8 +56,7 @@ module OuterModel =
       { model with InnerModel = innerModel }
 
   let internal wrapSubscribe (subscribe: 'model -> _) : OuterModel<'model> -> _ =
-    fun outerModel ->
-      subscribe outerModel.InnerModel
+    fun outerModel -> subscribe outerModel.InnerModel
 
 type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = private ElmishTerminalProgram of Program<'arg, OuterModel<'model>, 'msg, 'view>
 
@@ -73,8 +77,7 @@ let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalEle
       | null -> failwith ("error state not initialized")
       | topElement ->
         match topElement with
-        | :? Toplevel as tl ->
-            model.TopLevel.SetResult(tl)
+        | :? Toplevel as tl -> model.TopLevel.SetResult(tl)
         | _ -> failwith ("first element must be a toplevel!")
 
       startState
@@ -119,32 +122,34 @@ let withTermination predicate (ElmishTerminalProgram program) =
 
 let run (ElmishTerminalProgram program) =
 
-    let waitForStart = TaskCompletionSource()
-    let mutable waitForTermination = null
+  let waitForStart = TaskCompletionSource()
+  let mutable waitForTermination = null
 
-    let run (model: OuterModel<_>) =
-      let start dispatch =
-          task {
-            let! toplevel = model.TopLevel.Task
-            ApplicationImpl.Instance.Run(toplevel)
-            waitForStart.SetResult()
-            waitForTermination <- model.Termination
-          } |> ignore
-          { new IDisposable with
-            // TODO: implement disposal
-              member _.Dispose() = () }
-      start
+  let run (model: OuterModel<_>) =
+    let start dispatch =
+      task {
+        let! toplevel = model.TopLevel.Task
+        ApplicationImpl.Instance.Run(toplevel)
+        waitForStart.SetResult()
+        waitForTermination <- model.Termination
+      }
+      |> ignore
 
-    let subscribe model =
-        [ ["run"], run model ]
+      { new IDisposable with
+          // TODO: implement disposal
+          member _.Dispose() = ()
+      }
 
-    if not unitTestMode then
-        ApplicationImpl.Instance.Init()
+    start
 
-    program
-    |> Program.withSubscription subscribe
-    |> Program.run
+  let subscribe model = [ [ "run" ], run model ]
 
-    waitForStart.Task.GetAwaiter().GetResult()
-    waitForTermination.Task.GetAwaiter().GetResult()
+  if not unitTestMode then
+    ApplicationImpl.Instance.Init()
 
+  program
+  |> Program.withSubscription subscribe
+  |> Program.run
+
+  waitForStart.Task.GetAwaiter().GetResult()
+  waitForTermination.Task.GetAwaiter().GetResult()

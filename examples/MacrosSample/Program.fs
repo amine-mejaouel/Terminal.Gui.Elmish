@@ -1,7 +1,6 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System.Collections.Immutable
-open System.IO
 open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Configuration

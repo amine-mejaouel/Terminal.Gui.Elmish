@@ -1,3 +1,4 @@
+[<RequireQualifiedAccess>]
 module Terminal.Gui.Elmish.ElmishTerminal
 
 open System
@@ -6,11 +7,17 @@ open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Views
 
-type internal OuterModel<'model> = {
+[<RequireQualifiedAccess>]
+type internal TopView =
+  | Toplevel of Toplevel
+  | View of Terminal.Gui.ViewBase.View
+
+type internal InternalModel<'model> = {
   mutable CurrentTreeState: IInternalTerminalElement option
-  TopLevel: TaskCompletionSource<Toplevel>
+  TopView: TaskCompletionSource<TopView>
   Termination: TaskCompletionSource
-  InnerModel: 'model
+  /// Elmish model provided to the Program by the library caller.
+  ClientModel: 'model
 }
 
 module OuterModel =
@@ -20,22 +27,22 @@ module OuterModel =
 
       let internalModel = {
         CurrentTreeState = None
-        TopLevel = TaskCompletionSource<Toplevel>()
+        TopView = TaskCompletionSource<TopView>()
         Termination = TaskCompletionSource()
-        InnerModel = innerModel
+        ClientModel = innerModel
       }
 
       internalModel, cmd
 
-  let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : 'msg -> OuterModel<'model> -> OuterModel<'model> * Cmd<'msg> =
-    fun (msg: 'msg) (model: OuterModel<'model>) ->
+  let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : 'msg -> InternalModel<'model> -> InternalModel<'model> * Cmd<'msg> =
+    fun (msg: 'msg) (model: InternalModel<'model>) ->
       let innerModel, cmd =
-        update msg model.InnerModel
+        update msg model.ClientModel
 
-      { model with InnerModel = innerModel }, cmd
+      { model with ClientModel = innerModel }, cmd
 
-  let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : OuterModel<'model> -> Dispatch<'msg> -> ITerminalElement =
-    fun (model: OuterModel<'model>) (dispatch: Dispatch<'msg>) -> view model.InnerModel dispatch
+  let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : InternalModel<'model> -> Dispatch<'msg> -> ITerminalElement =
+    fun (model: InternalModel<'model>) (dispatch: Dispatch<'msg>) -> view model.ClientModel dispatch
 
   let internal wrapSimpleInit (init: 'arg -> 'model) =
     fun (arg: 'arg) ->

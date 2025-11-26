@@ -30,6 +30,6 @@ let _component (set: Props -> unit) =
       p.mouseClick (fun _ -> dispatch ChangeText)
     )
 
-  ElmishComponent.mkSimple init update view
-  |> ElmishComponent.run
+  ElmishTerminal.mkSimple init update view
+  |> ElmishTerminal.runComponent
 

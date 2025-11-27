@@ -30,15 +30,28 @@ module internal PropKey =
   type IPropKey<'a> =
     inherit IPropKey
 
-  type ISingleElementKey =
+  type ISimplePropKey<'a> =
+    inherit IPropKey<'a>
+
+  type IViewPropKey<'a> =
+    inherit IPropKey<'a>
+
+  type ISingleElementPropKey<'a> =
+    inherit IPropKey<'a>
     abstract member viewKey: IPropKey
+
+  type IMultiElementPropKey<'a> =
+    inherit IPropKey<'a>
+
+  type IDelayedPosKey =
+    inherit IPropKey<TPos>
 
   /// Represents a property in a Terminal.Gui View
   [<CustomEquality; NoComparison>]
-  type SimplePropKey<'a> =
+  type private SimplePropKey<'a> =
     private
     | Key of string
-    static member create<'a>(key: string) : SimplePropKey<'a> =
+    static member create<'a>(key: string) : ISimplePropKey<'a> =
       if
         key.EndsWith "_element"
         || key.EndsWith "_elements"
@@ -61,16 +74,16 @@ module internal PropKey =
       | :? IPropKey as x -> this.key.Equals(x.key)
       | _ -> false
 
-    interface IPropKey<'a> with
+    interface ISimplePropKey<'a> with
       member this.key = this.key
       member this.isViewKey = false
       member this.isSingleElementKey = false
 
   [<CustomEquality; NoComparison>]
-  type ViewPropKey<'a> =
+  type private ViewPropKey<'a> =
     private
     | Key of string
-    static member create<'a>(key: string) : ViewPropKey<'a> =
+    static member create<'a>(key: string) : IViewPropKey<'a> =
       if not (key.EndsWith "_view") then
         failwith $"Invalid key: {key}"
       else
@@ -89,16 +102,16 @@ module internal PropKey =
       | :? IPropKey as x -> this.key.Equals(x.key)
       | _ -> false
 
-    interface IPropKey<'a> with
+    interface IViewPropKey<'a> with
       member this.key = this.key
       member this.isViewKey = true
       member this.isSingleElementKey = false
 
   [<CustomEquality; NoComparison>]
-  type SingleElementPropKey<'a> =
+  type private SingleElementPropKey<'a> =
     private
     | Key of string
-    static member create<'a>(key: string) : SingleElementPropKey<'a> =
+    static member create<'a>(key: string) : ISingleElementPropKey<'a> =
       if key.EndsWith "_element" then
         Key key
       else
@@ -118,19 +131,17 @@ module internal PropKey =
       | :? IPropKey as x -> this.key.Equals(x.key)
       | _ -> false
 
-    interface IPropKey<'a> with
+    interface ISingleElementPropKey<'a> with
       member this.key = this.key
       member this.isViewKey = false
       member this.isSingleElementKey = true
-
-    interface ISingleElementKey with
       member this.viewKey = this.viewKey
 
   [<CustomEquality; NoComparison>]
-  type MultiElementPropKey<'a> =
+  type private MultiElementPropKey<'a> =
     private
     | Key of string
-    static member create<'a>(key: string) : MultiElementPropKey<'a> =
+    static member create<'a>(key: string) : IMultiElementPropKey<'a> =
       if key.EndsWith "_elements" then
         Key key
       else
@@ -150,53 +161,10 @@ module internal PropKey =
       | :? IPropKey as x -> this.key.Equals(x.key)
       | _ -> false
 
-    interface IPropKey<'a> with
+    interface IMultiElementPropKey<'a> with
       member this.key = this.key
       member this.isViewKey = false
       member this.isSingleElementKey = false
-
-  [<CustomEquality; NoComparison>]
-  type ElementPropKey<'a> =
-    | SingleElementKey of SingleElementPropKey<'a>
-    | MultiElementKey of MultiElementPropKey<'a>
-
-    static member createSingleElementKey<'a>(key: string) : ElementPropKey<'a> =
-      SingleElementKey(SingleElementPropKey.create<'a> key)
-
-    static member createMultiElementKey<'a>(key: string) : ElementPropKey<'a> =
-      MultiElementKey(MultiElementPropKey.create<'a> key)
-
-    static member from(singleElementKey: SingleElementPropKey<'a>) : ElementPropKey<'b> =
-      ElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
-
-    static member from(multiElementKey: MultiElementPropKey<'a>) : ElementPropKey<'b> =
-      ElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
-
-    member this.key =
-      match this with
-      | SingleElementKey key -> key.key
-      | MultiElementKey key -> key.key
-
-    override this.GetHashCode() = this.key.GetHashCode()
-
-    override this.Equals(obj) =
-      match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
-      | _ -> false
-
-    member this.viewKey =
-      match this with
-      | SingleElementKey key -> key.viewKey
-      | MultiElementKey key -> key.viewKey
-
-    interface IPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-
-      member this.isSingleElementKey =
-        match this with
-        | SingleElementKey _ -> true
-        | MultiElementKey _ -> false
 
   /// Used for positions that should be set in the IInternalTerminalElement.layout() stage,
   /// Which comes after the IInternalTerminalElement.update and initializeTree calls.
@@ -204,11 +172,11 @@ module internal PropKey =
   /// This is because `Pos` can take a view as input, and in the `Elmish.view` we may still didn't create the TerminalElement.view object.
   /// So we delay the setting of the position once we have all the views at disposal.
   [<CustomEquality; NoComparison>]
-  type DelayedPosKey =
+  type private DelayedPosKey =
     private
     | Key of string
 
-    static member create(key: string) : DelayedPosKey =
+    static member create(key: string) : IDelayedPosKey =
       if key.EndsWith "_delayedPos" then
         Key key
       else
@@ -225,10 +193,20 @@ module internal PropKey =
       | :? IPropKey as x -> this.key.Equals(x.key)
       | _ -> false
 
-    interface IPropKey<TPos> with
+    interface IDelayedPosKey with
       member this.key = this.key
       member this.isViewKey = false
       member this.isSingleElementKey = false
+
+  [<RequireQualifiedAccess>]
+  module PropKey =
+    type Create =
+      static member singleElement key = SingleElementPropKey.create key
+      static member multiElement key = MultiElementPropKey.create key
+      static member simple key = SimplePropKey.create key
+      static member view key = ViewPropKey.create key
+      static member delayedPos key = DelayedPosKey.create key
+
 
 /// Props object that is still under construction
 type internal Props(?initialProps) =
@@ -297,7 +275,7 @@ module internal Props =
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  let tryFindWithDefault (key: SimplePropKey<'a>) defaultValue props =
+  let tryFindWithDefault (key: ISimplePropKey<'a>) defaultValue props =
     props
     |> tryFind key
     |> Option.defaultValue defaultValue
@@ -329,7 +307,7 @@ module internal Props =
   let filterSingleElementKeys (props: Props) =
     props.dict.Keys
     |> Seq.filter _.isSingleElementKey
-    |> Seq.map (fun x -> x :?> ISingleElementKey)
+    |> Seq.map (fun x -> x :?> ISingleElementPropKey<_>)
 
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 

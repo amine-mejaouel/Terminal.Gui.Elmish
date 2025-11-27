@@ -7,10 +7,53 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
-type internal TreeNode = {
+type TreeNode = {
   TerminalElement: IInternalTerminalElement
   Parent: View option
 }
+
+[<CustomEquality; NoComparison>]
+type SubElementPropKey<'a> =
+  | SingleElementKey of ISingleElementPropKey<'a>
+  | MultiElementKey of IMultiElementPropKey<'a>
+
+  static member createSingleElementKey<'a>(key: string) : SubElementPropKey<'a> =
+    SingleElementKey(PropKey.Create.singleElement<'a> key)
+
+  static member createMultiElementKey<'a>(key: string) : SubElementPropKey<'a> =
+    MultiElementKey(PropKey.Create.multiElement<'a> key)
+
+  static member from(singleElementKey: ISingleElementPropKey<'a>) : SubElementPropKey<'b> =
+    SubElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
+
+  static member from(multiElementKey: IMultiElementPropKey<'a>) : SubElementPropKey<'b> =
+    SubElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
+
+  member this.key =
+    match this with
+    | SingleElementKey key -> key.key
+    | MultiElementKey key -> key.key
+
+  override this.GetHashCode() = this.key.GetHashCode()
+
+  override this.Equals(obj) =
+    match obj with
+    | :? IPropKey as x -> this.key.Equals(x.key)
+    | _ -> false
+
+  member this.viewKey =
+    match this with
+    | SingleElementKey key -> key.viewKey
+    | MultiElementKey _ -> raise (InvalidOperationException())
+
+  interface IPropKey<'a> with
+    member this.key = this.key
+    member this.isViewKey = false
+
+    member this.isSingleElementKey =
+      match this with
+      | SingleElementKey _ -> true
+      | MultiElementKey _ -> false
 
 [<AbstractClass>]
 type TerminalElement(props: Props) =
@@ -45,7 +88,7 @@ type TerminalElement(props: Props) =
     props
     |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
-  abstract subElements: ElementPropKey<IInternalTerminalElement> list
+  abstract subElements: SubElementPropKey<IInternalTerminalElement> list
   default _.subElements = []
 
   abstract newView: unit -> View
@@ -2554,7 +2597,7 @@ type PopoverMenuElement(props: Props) =
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
   override this.subElements =
-    ElementPropKey.from PKey.popoverMenu.root_element
+    SubElementPropKey.from PKey.popoverMenu.root_element
     :: base.subElements
 
   override this.newView() = new PopoverMenu()
@@ -2617,7 +2660,7 @@ type MenuBarItemv2Element(props: Props) =
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
   override this.subElements =
-    ElementPropKey.from PKey.menuBarItemv2.popoverMenu_element
+    SubElementPropKey.from PKey.menuBarItemv2.popoverMenu_element
     :: base.subElements
 
   override this.newView() = new MenuBarItemv2()
@@ -2804,7 +2847,7 @@ type ShortcutElement(props: Props) =
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
   override this.subElements =
-    ElementPropKey.from PKey.shortcut.commandView_element
+    SubElementPropKey.from PKey.shortcut.commandView_element
     :: base.subElements
 
 
@@ -2874,7 +2917,7 @@ type MenuItemv2Element(props: Props) =
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
   override this.subElements =
-    ElementPropKey.from PKey.menuItemv2.subMenu_element
+    SubElementPropKey.from PKey.menuItemv2.subMenu_element
     :: base.subElements
 
 
@@ -3969,7 +4012,7 @@ type TabElement(props: Props) =
     |> Option.iter (fun v -> element.DisplayText <- v)
 
   override this.subElements =
-    ElementPropKey.from PKey.tab.view_element
+    SubElementPropKey.from PKey.tab.view_element
     :: base.subElements
 
   override this.newView() = new Tab()
@@ -4064,7 +4107,7 @@ type TabViewElement(props: Props) =
     )
 
   override this.subElements =
-    ElementPropKey.from PKey.tabView.tabs_elements
+    SubElementPropKey.from PKey.tabView.tabs_elements
     :: base.subElements
 
   override this.newView() = new TabView()

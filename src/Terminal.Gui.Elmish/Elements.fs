@@ -147,8 +147,8 @@ type TerminalElement(props: Props) =
     this.setProps (newView, props)
     this.view <- newView
 
-  abstract canUpdate: prevElement: View -> oldProps: Props -> bool
-  abstract update: prevElement: View -> oldProps: Props -> unit
+  abstract canUpdate: prevView: View -> oldProps: Props -> bool
+  abstract update: prevView: View -> oldProps: Props -> unit
 
   abstract name: string
 
@@ -892,7 +892,7 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
   /// Reuse a previous `View`, while updating its properties to match the current TerminalElement properties.
-  override this.update oldView oldProps =
+  override this.update prevView oldProps =
     let c = this.compare oldProps
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
@@ -911,9 +911,9 @@ type TerminalElement(props: Props) =
     viewsPropsToReinject
     |> Props.iter (fun kv -> this.props.addNonTyped (kv.Key, kv.Value))
 
-    this.removeProps (oldView, removedProps)
-    this.setProps (oldView, c.changedProps)
-    this.view <- oldView
+    this.removeProps (prevView, removedProps)
+    this.setProps (prevView, c.changedProps)
+    this.view <- prevView
 
 
   member this.equivalentTo(other: TerminalElement) =
@@ -995,8 +995,8 @@ type TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
-    member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
-    member this.update prevElement oldProps = this.update prevElement oldProps
+    member this.canUpdate prevView oldProps = this.canUpdate prevView oldProps
+    member this.update prevView oldProps = this.update prevView oldProps
     member this.view = this.view
     member this.props = this.props
     member this.name = this.name
@@ -1132,7 +1132,7 @@ type AdornmentElement(props: Props) =
 
   override this.newView() = new Adornment()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1141,7 +1141,7 @@ type AdornmentElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1197,7 +1197,7 @@ type BarElement(props: Props) =
 
   override this.newView() = new Bar()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1206,7 +1206,7 @@ type BarElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1248,7 +1248,7 @@ type BorderElement(props: Props) =
 
   override this.newView() = new Border()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1257,7 +1257,7 @@ type BorderElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1331,7 +1331,7 @@ type ButtonElement(props: Props) =
 
   override this.newView() = new Button()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1340,7 +1340,7 @@ type ButtonElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1422,7 +1422,7 @@ type CheckBoxElement(props: Props) =
 
   override this.newView() = new CheckBox()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1431,7 +1431,7 @@ type CheckBoxElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1481,7 +1481,7 @@ type ColorPickerElement(props: Props) =
 
   override this.newView() = new ColorPicker()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1490,7 +1490,7 @@ type ColorPickerElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1556,7 +1556,7 @@ type ColorPicker16Element(props: Props) =
 
   override this.newView() = new ColorPicker16()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1565,7 +1565,7 @@ type ColorPicker16Element(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1671,7 +1671,7 @@ type ComboBoxElement(props: Props) =
 
   override this.newView() = new ComboBox()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1680,7 +1680,7 @@ type ComboBoxElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1738,7 +1738,7 @@ type DateFieldElement(props: Props) =
 
   override this.newView() = new DateField()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1747,7 +1747,7 @@ type DateFieldElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1789,7 +1789,7 @@ type DatePickerElement(props: Props) =
 
   override this.newView() = new DatePicker()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1798,7 +1798,7 @@ type DatePickerElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1848,7 +1848,7 @@ type DialogElement(props: Props) =
 
   override this.newView() = new Dialog()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1857,7 +1857,7 @@ type DialogElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1947,7 +1947,7 @@ type FileDialogElement(props: Props) =
 
   override this.newView() = new FileDialog()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1956,7 +1956,7 @@ type FileDialogElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -1978,7 +1978,7 @@ type FrameViewElement(props: Props) =
 
   override this.newView() = new FrameView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -1987,7 +1987,7 @@ type FrameViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2069,7 +2069,7 @@ type GraphViewElement(props: Props) =
 
   override this.newView() = new GraphView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2078,7 +2078,7 @@ type GraphViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2160,7 +2160,7 @@ type HexViewElement(props: Props) =
 
   override this.newView() = new HexView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2169,7 +2169,7 @@ type HexViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2211,7 +2211,7 @@ type LabelElement(props: Props) =
 
   override this.newView() = new Label()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2220,7 +2220,7 @@ type LabelElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2242,7 +2242,7 @@ type LegendAnnotationElement(props: Props) =
 
   override this.newView() = new LegendAnnotation()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2251,7 +2251,7 @@ type LegendAnnotationElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2301,7 +2301,7 @@ type LineElement(props: Props) =
 
   override this.newView() = new Line()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2310,7 +2310,7 @@ type LineElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2415,7 +2415,7 @@ type ListViewElement(props: Props) =
 
   override this.newView() = new ListView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2424,7 +2424,7 @@ type ListViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2458,7 +2458,7 @@ type MarginElement(props: Props) =
 
   override this.newView() = new Margin()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2467,7 +2467,7 @@ type MarginElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2526,7 +2526,7 @@ type Menuv2Element(props: Props) =
 
   override this.newView() = new Menuv2()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2535,7 +2535,7 @@ type Menuv2Element(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2607,7 +2607,7 @@ type PopoverMenuElement(props: Props) =
 
   override this.newView() = new PopoverMenu()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2616,7 +2616,7 @@ type PopoverMenuElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2670,7 +2670,7 @@ type MenuBarItemv2Element(props: Props) =
 
   override this.newView() = new MenuBarItemv2()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2679,7 +2679,7 @@ type MenuBarItemv2Element(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2731,7 +2731,7 @@ type MenuBarv2Element(props: Props) =
 
   override this.newView() = new MenuBarv2()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2740,7 +2740,7 @@ type MenuBarv2Element(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2858,7 +2858,7 @@ type ShortcutElement(props: Props) =
 
   override this.newView() = new Shortcut()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2867,7 +2867,7 @@ type ShortcutElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -2929,7 +2929,7 @@ type MenuItemv2Element(props: Props) =
   override this.newView() = new MenuItemv2()
 
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -2938,7 +2938,7 @@ type MenuItemv2Element(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3018,7 +3018,7 @@ type NumericUpDownElement<'a>(props: Props) =
 
   override this.newView() = new NumericUpDown<'a>()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3027,7 +3027,7 @@ type NumericUpDownElement<'a>(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3067,7 +3067,7 @@ type OpenDialogElement(props: Props) =
 
   override this.newView() = new OpenDialog()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3076,7 +3076,7 @@ type OpenDialogElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3242,7 +3242,7 @@ type OptionSelectorElement(props: Props) =
 
   override this.newView() = new OptionSelector()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3251,7 +3251,7 @@ type OptionSelectorElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3284,7 +3284,7 @@ type FlagSelectorElement(props: Props) =
 
   override this.newView() = new FlagSelector()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3293,7 +3293,7 @@ type FlagSelectorElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3313,7 +3313,7 @@ type PaddingElement(props: Props) =
 
   override this.newView() = new Padding()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3322,7 +3322,7 @@ type PaddingElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3396,7 +3396,7 @@ type ProgressBarElement(props: Props) =
 
   override this.newView() = new ProgressBar()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3405,7 +3405,7 @@ type ProgressBarElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3427,7 +3427,7 @@ type SaveDialogElement(props: Props) =
 
   override this.newView() = new SaveDialog()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3436,7 +3436,7 @@ type SaveDialogElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3542,7 +3542,7 @@ type ScrollBarElement(props: Props) =
 
   override this.newView() = new ScrollBar()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3551,7 +3551,7 @@ type ScrollBarElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3657,7 +3657,7 @@ type ScrollSliderElement(props: Props) =
 
   override this.newView() = new ScrollSlider()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3666,7 +3666,7 @@ type ScrollSliderElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3827,7 +3827,7 @@ type SliderElement<'a>(props: Props) =
 
   override this.newView() = new Slider<'a>()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3836,7 +3836,7 @@ type SliderElement<'a>(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3858,7 +3858,7 @@ type SliderElement(props: Props) =
 
   override this.newView() = new Slider()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3867,7 +3867,7 @@ type SliderElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3941,7 +3941,7 @@ type SpinnerViewElement(props: Props) =
 
   override this.newView() = new SpinnerView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3950,7 +3950,7 @@ type SpinnerViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -3972,7 +3972,7 @@ type StatusBarElement(props: Props) =
 
   override this.newView() = new StatusBar()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -3981,7 +3981,7 @@ type StatusBarElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4022,7 +4022,7 @@ type TabElement(props: Props) =
 
   override this.newView() = new Tab()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4031,7 +4031,7 @@ type TabElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4117,7 +4117,7 @@ type TabViewElement(props: Props) =
 
   override this.newView() = new TabView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4126,7 +4126,7 @@ type TabViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4288,7 +4288,7 @@ type TableViewElement(props: Props) =
 
   override this.newView() = new TableView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4297,7 +4297,7 @@ type TableViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4403,7 +4403,7 @@ type TextFieldElement(props: Props) =
 
   override this.newView() = new TextField()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4412,7 +4412,7 @@ type TextFieldElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4454,7 +4454,7 @@ type TextValidateFieldElement(props: Props) =
 
   override this.newView() = new TextValidateField()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4463,7 +4463,7 @@ type TextValidateFieldElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4693,7 +4693,7 @@ type TextViewElement(props: Props) =
 
   override this.newView() = new TextView()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4702,7 +4702,7 @@ type TextViewElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4760,7 +4760,7 @@ type TimeFieldElement(props: Props) =
 
   override this.newView() = new TimeField()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4769,7 +4769,7 @@ type TimeFieldElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -4875,7 +4875,7 @@ type ToplevelElement(props: Props) =
 
   override this.newView() = new Toplevel()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -4884,7 +4884,7 @@ type ToplevelElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -5028,7 +5028,7 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
 
   override this.newView() = new TreeView<'a>()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -5037,7 +5037,7 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -5064,7 +5064,7 @@ type WindowElement(props: Props) =
 
   override this.newView() = new Window()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -5073,7 +5073,7 @@ type WindowElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -5163,7 +5163,7 @@ type WizardElement(props: Props) =
 
   override this.newView() = new Wizard()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -5172,7 +5172,7 @@ type WizardElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -5222,7 +5222,7 @@ type WizardStepElement(props: Props) =
 
   override this.newView() = new WizardStep()
 
-  override this.canUpdate prevElement oldProps =
+  override this.canUpdate prevView oldProps =
     let changedProps, removedProps =
       Props.compare oldProps props
 
@@ -5231,7 +5231,7 @@ type WizardStepElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevElement changedProps removedProps
+      ViewElement.canUpdate prevView changedProps removedProps
 
     let canUpdateElement = true
 

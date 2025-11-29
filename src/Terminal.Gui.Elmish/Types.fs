@@ -320,10 +320,8 @@ module Element =
     inherit ITerminalElement
     abstract initialize: parent: View option -> unit
     abstract initializeTree: parent: View option -> unit
-    // TODO: rename to prevView
-    abstract canUpdate: prevElement: View -> oldProps: Props -> bool
-    // TODO: rename to prevView
-    abstract update: prevElement: View -> oldProps: Props -> unit
+    abstract canUpdate: prevView: View -> oldProps: Props -> bool
+    abstract update: prevView: View -> oldProps: Props -> unit
     abstract onDrawComplete: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get

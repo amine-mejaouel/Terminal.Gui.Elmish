@@ -147,6 +147,7 @@ type viewProps() =
 
   member this.y(value: TPos) =
     this.props.add (PKey.view.y_delayedPos, value)
+
   // Events
   member this.accepting(handler: HandledEventArgs -> unit) =
     this.props.add (PKey.view.accepting, handler)

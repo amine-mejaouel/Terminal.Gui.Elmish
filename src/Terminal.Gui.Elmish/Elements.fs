@@ -80,9 +80,41 @@ type TerminalElement(props: Props) =
 
       traverseTree (childNodes @ remainingNodes) traverse
 
+  let onDrawCompleteEvent = Event<View>()
+
+  let applyPos (apply: Pos -> unit) targetPos =
+    // TODO: There is still some Pos.* function that needs to be implemented.
+    match targetPos with
+    | TPos.X te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.X(view)))
+    | TPos.Y te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Y(view)))
+    | TPos.Top te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Top(view)))
+    | TPos.Bottom te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Bottom(view)))
+    | TPos.Left te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Left(view)))
+    | TPos.Right te ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Right(view)))
+    | TPos.Absolute position -> apply (Pos.Absolute(position))
+    | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
+    | TPos.Center -> apply (Pos.Center())
+
   member this.props = props
   member val parent: View option = None with get, set
-  member val view: View = null with get, set
+
+  member val private _view: View = null with get, set
+  member this.view
+    with get() =
+      this._view
+    and set value =
+      this._view <- value
+      // TODO: Maybe rely on the already existent property for the event handler
+      // TODO: thing is, when removing properties it's also removing the event handler added here.
+      // TODO: probably events props should be handled more precisely, keeping track of the subscript of one View in its TerminalElement.
+      // No risk of memory leaks here, since the event subscriber (`drawCompleteEvent` here) outlasts the event publisher.
+      this._view.DrawComplete.Add(fun _ -> onDrawCompleteEvent.Trigger this._view)
 
   member _.children: List<IInternalTerminalElement> =
     props
@@ -117,8 +149,6 @@ type TerminalElement(props: Props) =
 
   abstract canUpdate: prevElement: View -> oldProps: Props -> bool
   abstract update: prevElement: View -> oldProps: Props -> unit
-
-  abstract layout: unit -> unit
 
   abstract name: string
 
@@ -508,6 +538,15 @@ type TerminalElement(props: Props) =
     |> Props.tryFind PKey.view.visibleChanging
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanging @> (fun _ -> v ()) element)
 
+    // Custom Props
+    props
+    |> Props.tryFind PKey.view.x_delayedPos
+    |> Option.iter (applyPos (fun pos -> element.X <- pos))
+
+    props
+    |> Props.tryFind PKey.view.y_delayedPos
+    |> Option.iter (applyPos (fun pos -> element.Y <- pos))
+
   abstract removeProps: element: View * props: Props -> unit
 
   default this.removeProps(element: View, props: Props) =
@@ -876,44 +915,6 @@ type TerminalElement(props: Props) =
     this.setProps (oldView, c.changedProps)
     this.view <- oldView
 
-  /// <summary>
-  /// <seealso cref="DelayedPosKey"/>
-  /// </summary>
-  override this.layout() =
-
-    let applyPos (apply: Pos -> unit) pos =
-      match pos with
-      | Some posValue ->
-        // TODO: There is still some Pos.* function that needs to be implemented.
-        match posValue with
-        | TPos.X te -> apply (Pos.X((te :?> IInternalTerminalElement).view))
-        | TPos.Y te -> apply (Pos.Y((te :?> IInternalTerminalElement).view))
-        | TPos.Top te -> apply (Pos.Top((te :?> IInternalTerminalElement).view))
-        | TPos.Bottom te -> apply (Pos.Bottom((te :?> IInternalTerminalElement).view))
-        | TPos.Left te -> apply (Pos.Left((te :?> IInternalTerminalElement).view))
-        | TPos.Right te -> apply (Pos.Right((te :?> IInternalTerminalElement).view))
-        | TPos.Absolute position -> apply (Pos.Absolute(position))
-        | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
-        | TPos.Center -> apply (Pos.Center())
-      | None -> ()
-
-    let layout (node: TreeNode) =
-      node.TerminalElement.props
-      |> Props.tryFind PKey.view.x_delayedPos
-      |> applyPos (fun pos -> node.TerminalElement.view.X <- pos)
-
-      node.TerminalElement.props
-      |> Props.tryFind PKey.view.y_delayedPos
-      |> applyPos (fun pos -> node.TerminalElement.view.Y <- pos)
-
-    traverseTree
-      [
-        {
-          TerminalElement = this
-          Parent = this.parent
-        }
-      ]
-      layout
 
   member this.equivalentTo(other: TerminalElement) =
     let mutable isEquivalent = true
@@ -967,7 +968,7 @@ type TerminalElement(props: Props) =
       this.props
       |> Props.partition (fun kv ->
         match remainingOldProps |> Props.tryFindByRawKey kv.Key with
-        | _ when kv.Key.key = "children" -> // Here we always ignore the 'children' from changed props
+        | _ when kv.Key.key = "children" -> // Here we always consider the 'children' unchanged
           true
         | Some(v: obj) when kv.Key.isSingleElementKey ->
           let curElement =
@@ -988,12 +989,14 @@ type TerminalElement(props: Props) =
       removedProps = removedProps
     |}
 
+  [<CLIEvent>]
+  member this.onDrawComplete = onDrawCompleteEvent.Publish
+
   interface IInternalTerminalElement with
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
     member this.canUpdate prevElement oldProps = this.canUpdate prevElement oldProps
     member this.update prevElement oldProps = this.update prevElement oldProps
-    member this.layout() = this.layout ()
     member this.view = this.view
     member this.props = this.props
     member this.name = this.name
@@ -1001,6 +1004,8 @@ type TerminalElement(props: Props) =
 
     member this.setAsChildOfParentView =
       this.setAsChildOfParentView
+
+    member this.onDrawComplete = this.onDrawComplete
 
 
 module internal ViewElement =

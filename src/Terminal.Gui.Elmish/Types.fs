@@ -166,11 +166,9 @@ module internal PropKey =
       member this.isViewKey = false
       member this.isSingleElementKey = false
 
-  /// Used for positions that should be set in the IInternalTerminalElement.layout() stage,
-  /// Which comes after the IInternalTerminalElement.update and initializeTree calls.
-  ///
-  /// This is because `Pos` can take a view as input, and in the `Elmish.view` we may still didn't create the TerminalElement.view object.
-  /// So we delay the setting of the position once we have all the views at disposal.
+  /// Mainly used for positions that are relative to other views.
+  /// These positions take in a `ITerminalElement` as parameter.
+  /// Evaluating such positions will be done on the `View.OnDrawComplete` event.
   [<CustomEquality; NoComparison>]
   type private DelayedPosKey =
     private
@@ -326,7 +324,7 @@ module Element =
     abstract canUpdate: prevElement: View -> oldProps: Props -> bool
     // TODO: rename to prevView
     abstract update: prevElement: View -> oldProps: Props -> unit
-    abstract layout: unit -> unit
+    abstract onDrawComplete: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get
     abstract props: Props

@@ -153,6 +153,6 @@ let main argv =
 
   ElmishTerminal.mkProgram init update view
   |> ElmishTerminal.withTermination (fun _ -> false)
-  |> ElmishTerminal.run
+  |> ElmishTerminal.runTerminal
 
   0 // return an integer exit code

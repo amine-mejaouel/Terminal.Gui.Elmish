@@ -18,7 +18,7 @@ let render view =
   let view _ _ = view
 
   ElmishTerminal.mkSimple init update view
-  |> ElmishTerminal.run
+  |> ElmishTerminal.runTerminal
 
   ElmishTerminal.toplevel
 

@@ -124,6 +124,6 @@ let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
   ElmishTerminal.mkProgram init update view
-  |> ElmishTerminal.run
+  |> ElmishTerminal.runTerminal
 
   0 // return an integer exit code

@@ -8,13 +8,13 @@ open Terminal.Gui.App
 open Terminal.Gui.Views
 
 [<RequireQualifiedAccess>]
-type internal TopView =
+type internal RootView =
   | Toplevel of Toplevel
   | View of Terminal.Gui.ViewBase.View
 
 type internal InternalModel<'model> = {
   mutable CurrentTreeState: IInternalTerminalElement option
-  TopView: TaskCompletionSource<TopView>
+  RootView: TaskCompletionSource<RootView>
   Termination: TaskCompletionSource
   /// Elmish model provided to the Program by the library caller.
   ClientModel: 'model
@@ -27,7 +27,7 @@ module OuterModel =
 
       let internalModel = {
         CurrentTreeState = None
-        TopView = TaskCompletionSource<TopView>()
+        RootView = TaskCompletionSource<RootView>()
         Termination = TaskCompletionSource()
         ClientModel = innerModel
       }
@@ -50,26 +50,26 @@ module OuterModel =
 
       let internalModel = {
         CurrentTreeState = None
-        TopLevel = TaskCompletionSource<Toplevel>()
+        RootView = TaskCompletionSource<RootView>()
         Termination = TaskCompletionSource()
-        InnerModel = innerModel
+        ClientModel = innerModel
       }
 
       internalModel
 
-  let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : 'msg -> OuterModel<'model> -> OuterModel<'model> =
-    fun (msg: 'msg) (model: OuterModel<'model>) ->
-      let innerModel = update msg model.InnerModel
-      { model with InnerModel = innerModel }
+  let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : 'msg -> InternalModel<'model> -> InternalModel<'model> =
+    fun (msg: 'msg) (model: InternalModel<'model>) ->
+      let innerModel = update msg model.ClientModel
+      { model with ClientModel = innerModel }
 
-  let internal wrapSubscribe (subscribe: 'model -> _) : OuterModel<'model> -> _ =
-    fun outerModel -> subscribe outerModel.InnerModel
+  let internal wrapSubscribe (subscribe: 'model -> _) : InternalModel<'model> -> _ =
+    fun outerModel -> subscribe outerModel.ClientModel
 
-type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = private ElmishTerminalProgram of Program<'arg, OuterModel<'model>, 'msg, 'view>
+type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = private ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
 
 let mutable unitTestMode = false
 
-let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: OuterModel<'model>) dispatch =
+let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
 
   let nextTreeState =
     match model.CurrentTreeState with
@@ -81,11 +81,9 @@ let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalEle
       startState.initializeTree None
 
       match startState.view with
-      | null -> failwith ("error state not initialized")
-      | topElement ->
-        match topElement with
-        | :? Toplevel as tl -> model.TopLevel.SetResult(tl)
-        | _ -> failwith ("first element must be a toplevel!")
+      | null -> failwith "error state not initialized"
+      | :? Toplevel as tl -> model.RootView.SetResult(RootView.Toplevel tl)
+      | view -> model.RootView.SetResult(RootView.View view)
 
       startState
 
@@ -97,15 +95,19 @@ let private setState (view: OuterModel<'model> -> Dispatch<'cmd> -> ITerminalEle
       nextTreeState
 
   model.CurrentTreeState <- Some nextTreeState
-  nextTreeState.layout ()
 
   ()
 
 let private terminate model =
   if not unitTestMode then
-    model.TopLevel.Task.Result.Dispose()
-    ApplicationImpl.Instance.Shutdown()
-    model.Termination.SetResult()
+    match model.RootView.Task.Result with
+    | RootView.Toplevel tl ->
+      tl.Dispose()
+      ApplicationImpl.Instance.Shutdown()
+    | RootView.View _ ->
+      ()
+
+  model.Termination.SetResult()
 
 let mkProgram (init: 'arg -> 'model * Cmd<'msg>) (update: 'msg -> 'model -> 'model * Cmd<'msg>) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
   Program.mkProgram (OuterModel.wrapInit init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
@@ -127,20 +129,29 @@ let withTermination predicate (ElmishTerminalProgram program) =
   |> Program.withTermination predicate terminate
   |> ElmishTerminalProgram
 
-let run (ElmishTerminalProgram program) =
+let runTerminal (ElmishTerminalProgram program) =
 
   let waitForStart = TaskCompletionSource()
   let mutable waitForTermination = null
 
-  let run (model: OuterModel<_>) =
+  let runTerminal (model: InternalModel<_>) =
     let start dispatch =
-      task {
-        let! toplevel = model.TopLevel.Task
-        ApplicationImpl.Instance.Run(toplevel)
-        waitForStart.SetResult()
-        waitForTermination <- model.Termination
-      }
-      |> ignore
+      (task {
+        let! toplevel = model.RootView.Task
+        match toplevel with
+        | RootView.Toplevel toplevel
+            // Ensure application is not already started
+            when ApplicationImpl.Instance.Current = null->
+          if not unitTestMode then
+            ApplicationImpl.Instance.Init()
+          ApplicationImpl.Instance.Run(toplevel)
+          waitForStart.SetResult()
+          waitForTermination <- model.Termination
+        | _ ->
+          failwith (
+            "`run` is meant to be used for Terminal Elmish loop. " +
+            "For Terminal components with separate Elmish loop, use `runComponent`.")
+      }).GetAwaiter().GetResult()
 
       { new IDisposable with
           // TODO: implement disposal
@@ -149,10 +160,7 @@ let run (ElmishTerminalProgram program) =
 
     start
 
-  let subscribe model = [ [ "run" ], run model ]
-
-  if not unitTestMode then
-    ApplicationImpl.Instance.Init()
+  let subscribe model = [ [ "runTerminal" ], runTerminal model ]
 
   program
   |> Program.withSubscription subscribe
@@ -160,3 +168,33 @@ let run (ElmishTerminalProgram program) =
 
   waitForStart.Task.GetAwaiter().GetResult()
   waitForTermination.Task.GetAwaiter().GetResult()
+
+let runComponent (ElmishTerminalProgram program) : ITerminalElement =
+
+  let waitForView = TaskCompletionSource()
+  let mutable view: ITerminalElement = Unchecked.defaultof<_>
+
+  let runComponent (model: InternalModel<_>) =
+    let start dispatch =
+      (task {
+        // On program startup, Wait for the Elmish loop to take care of creating the root view.
+        let! _ = model.RootView.Task
+        view <- model.CurrentTreeState.Value :> ITerminalElement
+        waitForView.SetResult()
+      }).GetAwaiter().GetResult()
+
+      { new IDisposable with
+          // TODO: implement disposal
+          member _.Dispose() = ()
+      }
+
+    start
+
+  let subscribe model = [ [ "runComponent" ], runComponent model ]
+
+  program
+  |> Program.withSubscription subscribe
+  |> Program.run
+
+  waitForView.Task.GetAwaiter().GetResult()
+  view

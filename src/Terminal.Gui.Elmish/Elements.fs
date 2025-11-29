@@ -212,12 +212,12 @@ type TerminalElement(props: Props) =
     this.setProps (newView, props)
     this.view <- newView
 
-  abstract canUpdate: prevView: View -> oldProps: Props -> bool
-  abstract update: prevView: View -> oldProps: Props -> unit
+  abstract canUpdate: prevView: View -> prevProps: Props -> bool
+  abstract update: prevView: View -> prevProps: Props -> unit
 
-  default this.canUpdate prevView oldProps =
+  default this.canUpdate prevView prevProps =
     let changedProps, removedProps =
-      Props.compare oldProps props
+      Props.compare prevProps props
 
     let removedProps =
       removedProps
@@ -972,8 +972,8 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
   /// Reuse a previous `View`, while updating its properties to match the current TerminalElement properties.
-  override this.update prevView oldProps =
-    let c = this.compare oldProps
+  override this.update prevView prevProps =
+    let c = this.compare prevProps
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let viewKeysToReinject =
@@ -1075,8 +1075,8 @@ type TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
-    member this.canUpdate prevView oldProps = this.canUpdate prevView oldProps
-    member this.update prevView oldProps = this.update prevView oldProps
+    member this.canUpdate prevView prevProps = this.canUpdate prevView prevProps
+    member this.update prevView prevProps = this.update prevView prevProps
     member this.view = this.view
     member this.props = this.props
     member this.name = this.name

@@ -53,40 +53,40 @@ module internal Differ =
     if cve1 <> cve2 then Some() else None
 
   // TODO: Could be nice if this can be turned into a TailCall
-  let rec update (rootTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
-    match rootTree, newTree with
+  let rec update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
+    match prevTree, newTree with
     | rt, nt when rt.name <> nt.name ->
       let parent =
-        rootTree.view |> Interop.getParent
+        prevTree.view |> Interop.getParent
 
       parent
-      |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+      |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
 
-      rootTree.view.Dispose()
+      prevTree.view.Dispose()
 #if DEBUG
-      System.Diagnostics.Trace.WriteLine($"{rootTree.name} removed and disposed!")
+      System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
 #endif
       newTree.initializeTree parent
     | OnlyPropsChanged ->
-      if newTree.canUpdate rootTree.view rootTree.props then
-        newTree.update rootTree.view rootTree.props
+      if newTree.canReuseView prevTree.view prevTree.props then
+        newTree.reuseView prevTree.view prevTree.props
       else
         let parent =
-          rootTree.view |> Interop.getParent
+          prevTree.view |> Interop.getParent
 
         parent
-        |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+        |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
 
-        disposeTree rootTree.view
-        rootTree.view.RemoveAll() |> ignore
-        rootTree.view.Dispose()
+        disposeTree prevTree.view
+        prevTree.view.RemoveAll() |> ignore
+        prevTree.view.Dispose()
 #if DEBUG
-        System.Diagnostics.Trace.WriteLine($"{rootTree.name} removed and disposed!")
+        System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
 #endif
         newTree.initializeTree parent
 
       let sortedRootChildren =
-        rootTree.children
+        prevTree.children
         |> Seq.toList
         |> List.sortBy (fun v -> v.name)
 
@@ -98,23 +98,23 @@ module internal Differ =
       (sortedRootChildren, sortedNewChildren)
       ||> List.iter2 (fun rt nt -> update rt nt)
     | ChildsDifferent ->
-      if newTree.canUpdate rootTree.view rootTree.props then
-        newTree.update rootTree.view rootTree.props
+      if newTree.canReuseView prevTree.view prevTree.props then
+        newTree.reuseView prevTree.view prevTree.props
       else
         let parent =
-          rootTree.view |> Interop.getParent
+          prevTree.view |> Interop.getParent
 
         parent
-        |> Option.iter (fun p -> p.Remove rootTree.view |> ignore)
+        |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
 
-        rootTree.view.Dispose()
+        prevTree.view.Dispose()
 #if DEBUG
-        System.Diagnostics.Trace.WriteLine($"{rootTree.name} removed and disposed!")
+        System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
 #endif
         newTree.initializeTree parent
 
       let sortedRootChildren =
-        rootTree.children
+        prevTree.children
         |> Seq.toList
         |> List.sortBy (fun v -> v.name)
 
@@ -155,11 +155,11 @@ module internal Differ =
             else
               // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
               // don't know
-              if rootTree.view.SubViews.Count = 0 then
-                rootTree.view.CanFocus <- true
+              if prevTree.view.SubViews.Count = 0 then
+                prevTree.view.CanFocus <- true
 
               let newElem =
-                ne.initializeTree (Some rootTree.view)
+                ne.initializeTree (Some prevTree.view)
 
               newElem
 #if DEBUG
@@ -174,7 +174,7 @@ module internal Differ =
               update re newElements.[idx]
             else
               // the rest we remove
-              re.view |> rootTree.view.Remove |> ignore
+              re.view |> prevTree.view.Remove |> ignore
               re.view.Dispose()
 #if DEBUG
               System.Diagnostics.Trace.WriteLine($"child {re.name} removed and disposed!")

@@ -212,10 +212,10 @@ type TerminalElement(props: Props) =
     this.setProps (newView, props)
     this.view <- newView
 
-  abstract canUpdate: prevView: View -> prevProps: Props -> bool
-  abstract update: prevView: View -> prevProps: Props -> unit
+  abstract canReuseView: prevView: View -> prevProps: Props -> bool
+  abstract reuseView: prevView: View -> prevProps: Props -> unit
 
-  default this.canUpdate prevView prevProps =
+  default this.canReuseView prevView prevProps =
     let changedProps, removedProps =
       Props.compare prevProps props
 
@@ -972,23 +972,23 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
   /// Reuse a previous `View`, while updating its properties to match the current TerminalElement properties.
-  override this.update prevView prevProps =
+  override this.reuseView prevView prevProps =
     let c = this.compare prevProps
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
-    let viewKeysToReinject =
+    let view_PropKeys_ToReinject =
       c.unchangedProps
       |> Props.filterSingleElementKeys
       |> Seq.map _.viewKey
       |> Seq.toArray
 
     // 1 - then we get these Views missing in `this` TerminalElement.
-    let viewsPropsToReinject, removedProps =
+    let view_Props_ToReinject, removedProps =
       c.removedProps
-      |> Props.partition (fun kv -> viewKeysToReinject |> Array.contains kv.Key)
+      |> Props.partition (fun kv -> view_PropKeys_ToReinject |> Array.contains kv.Key)
 
     // 2 - And we add them.
-    viewsPropsToReinject
+    view_Props_ToReinject
     |> Props.iter (fun kv -> this.props.addNonTyped (kv.Key, kv.Value))
 
     this.removeProps (prevView, removedProps)
@@ -1075,8 +1075,8 @@ type TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
-    member this.canUpdate prevView prevProps = this.canUpdate prevView prevProps
-    member this.update prevView prevProps = this.update prevView prevProps
+    member this.canReuseView prevView prevProps = this.canReuseView prevView prevProps
+    member this.reuseView prevView prevProps = this.reuseView prevView prevProps
     member this.view = this.view
     member this.props = this.props
     member this.name = this.name
@@ -2791,7 +2791,7 @@ type internal SelectorBaseElement(props: Props) =
 
   override this.newView() = raise (NotImplementedException())
 
-  override this.canUpdate _ _ = raise (NotImplementedException())
+  override this.canReuseView _ _ = raise (NotImplementedException())
 
 // OptionSelector
 type OptionSelectorElement(props: Props) =

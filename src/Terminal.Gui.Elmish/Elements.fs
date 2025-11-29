@@ -185,8 +185,8 @@ type TerminalElement(props: Props) =
     props
     |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
-  abstract subElements: SubElementPropKey<IInternalTerminalElement> list
-  default _.subElements = []
+  abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
+  default _.SubElements_PropKeys = []
 
   abstract newView: unit -> View
 
@@ -248,7 +248,7 @@ type TerminalElement(props: Props) =
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.initializeSubElements parent : (IPropKey * obj) seq =
     seq {
-      for x in this.subElements do
+      for x in this.SubElements_PropKeys do
         match props |> Props.tryFindByRawKey<obj> x with
 
         | None -> ()
@@ -2285,9 +2285,9 @@ type PopoverMenuElement(props: Props) =
     |> Props.tryFind PKey.popoverMenu.keyChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.popoverMenu.root_element
-    :: base.subElements
+    :: base.SubElements_PropKeys
 
   override this.newView() = new PopoverMenu()
 
@@ -2334,9 +2334,9 @@ type MenuBarItemv2Element(props: Props) =
     |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuBarItemv2.popoverMenu_element
-    :: base.subElements
+    :: base.SubElements_PropKeys
 
   override this.newView() = new MenuBarItemv2()
 
@@ -2482,6 +2482,7 @@ type ShortcutElement(props: Props) =
     props
     |> Props.tryFind PKey.shortcut.minimumKeyTextSize
     |> Option.iter (fun v -> element.MinimumKeyTextSize <- v)
+
     // Events
     props
     |> Props.tryFind PKey.shortcut.orientationChanged
@@ -2491,10 +2492,9 @@ type ShortcutElement(props: Props) =
     |> Props.tryFind PKey.shortcut.orientationChanging
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.OrientationChanging @> v element)
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.shortcut.commandView_element
-    :: base.subElements
-
+    :: base.SubElements_PropKeys
 
   override this.newView() = new Shortcut()
 
@@ -2545,9 +2545,9 @@ type MenuItemv2Element(props: Props) =
     |> Props.tryFind PKey.menuItemv2.accepted
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuItemv2.subMenu_element
-    :: base.subElements
+    :: base.SubElements_PropKeys
 
 
   override this.newView() = new MenuItemv2()
@@ -3424,9 +3424,9 @@ type TabElement(props: Props) =
     |> Props.tryFind PKey.tab.displayText
     |> Option.iter (fun v -> element.DisplayText <- v)
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.tab.view_element
-    :: base.subElements
+    :: base.SubElements_PropKeys
 
   override this.newView() = new Tab()
 
@@ -3503,9 +3503,9 @@ type TabViewElement(props: Props) =
       |> Seq.iter (fun tabItem -> element.AddTab((tabItem :?> IInternalTerminalElement).view :?> Tab, false))
     )
 
-  override this.subElements =
+  override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.tabView.tabs_elements
-    :: base.subElements
+    :: base.SubElements_PropKeys
 
   override this.newView() = new TabView()
 

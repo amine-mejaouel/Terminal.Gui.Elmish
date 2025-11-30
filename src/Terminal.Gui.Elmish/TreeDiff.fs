@@ -69,7 +69,7 @@ module internal Differ =
       newTree.initializeTree parent
     | OnlyPropsChanged ->
       if newTree.canReuseView prevTree.view prevTree.props then
-        newTree.reuseView prevTree.view prevTree.props
+        newTree.reuse prevTree.view prevTree.props
       else
         let parent =
           prevTree.view |> Interop.getParent
@@ -99,7 +99,7 @@ module internal Differ =
       ||> List.iter2 (fun rt nt -> update rt nt)
     | ChildsDifferent ->
       if newTree.canReuseView prevTree.view prevTree.props then
-        newTree.reuseView prevTree.view prevTree.props
+        newTree.reuse prevTree.view prevTree.props
       else
         let parent =
           prevTree.view |> Interop.getParent

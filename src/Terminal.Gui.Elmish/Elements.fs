@@ -57,7 +57,7 @@ type SubElementPropKey<'a> =
 
 module internal ViewElement =
 
-  let canUpdate (view: View) (props: Props) (removedProps: Props) =
+  let canReuseView (view: View) (props: Props) (removedProps: Props) =
     let isPosCompatible (a: Pos) (b: Pos) =
       let nameA = a.GetType().Name
       let nameB = b.GetType().Name
@@ -110,6 +110,8 @@ module internal ViewElement =
       |> Props.exists PKey.view.height
       |> not
 
+    // TODO: is this still relevant ?
+    // TODO: should check if every check is still needed to reuse the view
     [
       positionX
       positionY
@@ -213,7 +215,7 @@ type TerminalElement(props: Props) =
     this.view <- newView
 
   abstract canReuseView: prevView: View -> prevProps: Props -> bool
-  abstract reuseView: prevView: View -> prevProps: Props -> unit
+  abstract reuse: prevView: View -> prevProps: Props -> unit
 
   default this.canReuseView prevView prevProps =
     let changedProps, removedProps =
@@ -224,7 +226,7 @@ type TerminalElement(props: Props) =
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canUpdate prevView changedProps removedProps
+      ViewElement.canReuseView prevView changedProps removedProps
 
     let canUpdateElement = true
 
@@ -971,8 +973,10 @@ type TerminalElement(props: Props) =
     |> Props.tryFind PKey.view.visibleChanging
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
 
-  /// Reuse a previous `View`, while updating its properties to match the current TerminalElement properties.
-  override this.reuseView prevView prevProps =
+  /// Reuses:
+  /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
+  /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
+  override this.reuse prevView prevProps =
     let c = this.compare prevProps
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
@@ -1076,7 +1080,7 @@ type TerminalElement(props: Props) =
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
     member this.canReuseView prevView prevProps = this.canReuseView prevView prevProps
-    member this.reuseView prevView prevProps = this.reuseView prevView prevProps
+    member this.reuse prevView prevProps = this.reuse prevView prevProps
     member this.view = this.view
     member this.props = this.props
     member this.name = this.name

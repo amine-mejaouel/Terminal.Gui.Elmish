@@ -321,7 +321,7 @@ module Element =
     abstract initialize: parent: View option -> unit
     abstract initializeTree: parent: View option -> unit
     abstract canReuseView: prevView: View -> prevProps: Props -> bool
-    abstract reuseView: prevView: View -> prevProps: Props -> unit
+    abstract reuse: prevView: View -> prevProps: Props -> unit
     abstract onDrawComplete: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get

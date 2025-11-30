@@ -137,31 +137,29 @@ let runTerminal (ElmishTerminalProgram program) =
 
   let runTerminal (model: InternalModel<_>) =
     let start dispatch =
-      (task {
-        let! toplevel = model.RootView.Task
-        match toplevel with
-        | RootView.Toplevel toplevel
-            // Ensure the application is not already started
-            when ApplicationImpl.Instance.Current = null->
-          if not unitTestMode then
-            Task.Run(fun () ->
-              (
-                try
-                  ApplicationImpl.Instance.Init()
-                  ApplicationImpl.Instance.Run(toplevel)
-                  running.SetResult()
-                with ex -> running.SetException ex
-              )
-              , TaskCreationOptions.LongRunning
-            ) |> ignore
+      let toplevel = model.RootView.Task.GetAwaiter().GetResult()
+      match toplevel with
+      | RootView.Toplevel toplevel
+          // Ensure the application is not already started
+          when ApplicationImpl.Instance.Current = null->
+        if not unitTestMode then
+          Task.Run(fun () ->
+            (
+              try
+                ApplicationImpl.Instance.Init()
+                ApplicationImpl.Instance.Run(toplevel)
+                running.SetResult()
+              with ex -> running.SetException ex
+            )
+            , TaskCreationOptions.LongRunning
+          ) |> ignore
 
-          waitForStart.SetResult()
-          waitForTermination <- model.Termination
-        | _ ->
-          failwith (
-            "`run` is meant to be used for Terminal Elmish loop. " +
-            "For Terminal components with separate Elmish loop, use `runComponent`.")
-      }).GetAwaiter().GetResult()
+        waitForStart.SetResult()
+        waitForTermination <- model.Termination
+      | _ ->
+        failwith (
+          "`run` is meant to be used for Terminal Elmish loop. " +
+          "For Terminal components with separate Elmish loop, use `runComponent`.")
 
       { new IDisposable with member _.Dispose() = () }
 

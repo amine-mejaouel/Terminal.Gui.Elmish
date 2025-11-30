@@ -29,7 +29,8 @@ let init () =
 
 let update (msg: Msg) (model: Model) =
   match msg with
-  | ThemeIndexChanged index -> ThemeManager.Theme <- model.AvailableThemes[index]
+  | ThemeIndexChanged index ->
+      ThemeManager.Theme <- model.AvailableThemes[index]
 
   model, Cmd.none
 
@@ -152,6 +153,7 @@ let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
   ElmishTerminal.mkProgram init update view
+  // TODO: Implement base termination delegate on the library + allow client to extend it here
   |> ElmishTerminal.withTermination (fun _ -> false)
   |> ElmishTerminal.runTerminal
 

@@ -132,6 +132,7 @@ let withTermination predicate (ElmishTerminalProgram program) =
 let runTerminal (ElmishTerminalProgram program) =
 
   let waitForStart = TaskCompletionSource()
+  let running = TaskCompletionSource()
   let mutable waitForTermination = null
 
   let runTerminal (model: InternalModel<_>) =
@@ -140,11 +141,20 @@ let runTerminal (ElmishTerminalProgram program) =
         let! toplevel = model.RootView.Task
         match toplevel with
         | RootView.Toplevel toplevel
-            // Ensure application is not already started
+            // Ensure the application is not already started
             when ApplicationImpl.Instance.Current = null->
           if not unitTestMode then
-            ApplicationImpl.Instance.Init()
-          ApplicationImpl.Instance.Run(toplevel)
+            Task.Run(fun () ->
+              (
+                try
+                  ApplicationImpl.Instance.Init()
+                  ApplicationImpl.Instance.Run(toplevel)
+                  running.SetResult()
+                with ex -> running.SetException ex
+              )
+              , TaskCreationOptions.LongRunning
+            ) |> ignore
+
           waitForStart.SetResult()
           waitForTermination <- model.Termination
         | _ ->
@@ -167,7 +177,7 @@ let runTerminal (ElmishTerminalProgram program) =
   |> Program.run
 
   waitForStart.Task.GetAwaiter().GetResult()
-  waitForTermination.Task.GetAwaiter().GetResult()
+  Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()
 
 let runComponent (ElmishTerminalProgram program) : ITerminalElement =
 

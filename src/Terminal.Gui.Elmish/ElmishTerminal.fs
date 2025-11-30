@@ -163,10 +163,7 @@ let runTerminal (ElmishTerminalProgram program) =
             "For Terminal components with separate Elmish loop, use `runComponent`.")
       }).GetAwaiter().GetResult()
 
-      { new IDisposable with
-          // TODO: implement disposal
-          member _.Dispose() = ()
-      }
+      { new IDisposable with member _.Dispose() = () }
 
     start
 
@@ -193,10 +190,7 @@ let runComponent (ElmishTerminalProgram program) : ITerminalElement =
         waitForView.SetResult()
       }).GetAwaiter().GetResult()
 
-      { new IDisposable with
-          // TODO: implement disposal
-          member _.Dispose() = ()
-      }
+      { new IDisposable with member _.Dispose() = () }
 
     start
 

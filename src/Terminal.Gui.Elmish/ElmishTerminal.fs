@@ -13,6 +13,7 @@ type internal RootView =
   | View of Terminal.Gui.ViewBase.View
 
 type internal InternalModel<'model> = {
+  Application: IApplication
   mutable CurrentTreeState: IInternalTerminalElement option
   RootView: TaskCompletionSource<RootView>
   Termination: TaskCompletionSource
@@ -26,6 +27,7 @@ module OuterModel =
       let innerModel, cmd = init arg
 
       let internalModel = {
+        Application = Application.Create()
         CurrentTreeState = None
         RootView = TaskCompletionSource<RootView>()
         Termination = TaskCompletionSource()
@@ -49,6 +51,7 @@ module OuterModel =
       let innerModel = init arg
 
       let internalModel = {
+        Application = Application.Create()
         CurrentTreeState = None
         RootView = TaskCompletionSource<RootView>()
         Termination = TaskCompletionSource()
@@ -103,7 +106,7 @@ let private terminate model =
     match model.RootView.Task.Result with
     | RootView.Toplevel tl ->
       tl.Dispose()
-      ApplicationImpl.Instance.Shutdown()
+      model.Application.Shutdown()
     | RootView.View _ ->
       ()
 
@@ -139,15 +142,13 @@ let runTerminal (ElmishTerminalProgram program) =
     let start dispatch =
       let toplevel = model.RootView.Task.GetAwaiter().GetResult()
       match toplevel with
-      | RootView.Toplevel toplevel
-          // Ensure the application is not already started
-          when ApplicationImpl.Instance.Current = null->
+      | RootView.Toplevel toplevel ->
         if not unitTestMode then
           Task.Run(fun () ->
             (
               try
-                ApplicationImpl.Instance.Init()
-                ApplicationImpl.Instance.Run(toplevel)
+                model.Application.Init()
+                model.Application.Run(toplevel)
                 running.SetResult()
               with ex -> running.SetException ex
             )

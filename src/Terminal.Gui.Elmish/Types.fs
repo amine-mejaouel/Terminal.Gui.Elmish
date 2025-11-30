@@ -36,9 +36,13 @@ module internal PropKey =
   type IViewPropKey<'a> =
     inherit IPropKey<'a>
 
-  type ISingleElementPropKey<'a> =
-    inherit IPropKey<'a>
+  type ISingleElementPropKey =
+    inherit IPropKey
     abstract member viewKey: IPropKey
+
+  type ISingleElementPropKey<'a> =
+    inherit ISingleElementPropKey
+    inherit IPropKey<'a>
 
   type IMultiElementPropKey<'a> =
     inherit IPropKey<'a>
@@ -305,7 +309,7 @@ module internal Props =
   let filterSingleElementKeys (props: Props) =
     props.dict.Keys
     |> Seq.filter _.isSingleElementKey
-    |> Seq.map (fun x -> x :?> ISingleElementPropKey<_>)
+    |> Seq.map (fun x -> x :?> ISingleElementPropKey)
 
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 

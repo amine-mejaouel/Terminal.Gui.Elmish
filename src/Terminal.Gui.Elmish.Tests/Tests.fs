@@ -17,10 +17,12 @@ let render view =
 
   let view _ _ = view
 
-  ElmishTerminal.mkSimple init update view
-  |> ElmishTerminal.runTerminal
+  let terminalElement =
+    ElmishTerminal.mkSimple init update view
+    |> ElmishTerminal.runComponent
+    :?> IInternalTerminalElement
 
-  ElmishTerminal.toplevel
+  terminalElement.view
 
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =

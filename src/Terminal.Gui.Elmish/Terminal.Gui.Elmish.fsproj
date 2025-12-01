@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Terminal.Gui.Elmish</RootNamespace>
     <AssemblyName>Terminal.Gui.Elmish</AssemblyName>
@@ -27,19 +28,15 @@
     <PackageReleaseNotes>Alpha of Terminal.Gui v2 (develop.2329)</PackageReleaseNotes>
     <Version>3.0.0-v2-develop.2329-v1</Version>
     <TargetFramework>net8.0</TargetFramework>
-
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
-  
   <ItemGroup>
     <EmbeddedResource Remove="Scripts\**" />
   </ItemGroup>
-  
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Interop.fs" />
@@ -60,24 +57,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <Content Include="paket.references" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Elmish" Version="5.0.2" />
-    <PackageReference Include="Terminal.Gui" Version="2.0.0-develop.4639" />
-    <PackageReference Update="FSharp.Core" Version="8.0.301" />
-    <PackageReference Include="ColorHelper" Version="[1.8.1,2)" />
-
-    <!-- maybe alpha stuff -->
-    <PackageReference Include="JetBrains.Annotations" Version="[2025.2.2,)" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="[4.10,5)" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="[4.10,5)" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.10,5)" PrivateAssets="all" />
-    <!-- Enable Nuget Source Link for github -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="[8,9)" PrivateAssets="all" />
-    <PackageReference Include="System.IO.Abstractions" Version="[22.0.16,23)" />
-    <PackageReference Include="System.Text.Json" Version="8.0.6" />
-    <PackageReference Include="Wcwidth" Version="[3,)" />
-  </ItemGroup>
-
-  
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

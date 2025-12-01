@@ -28,18 +28,18 @@ let render view =
 let ``Using properties syntax: Menu should be correctly set`` () =
   let view =
     View.topLevel [
-      View.menuBarv2 (fun p m ->
+      View.menuBar (fun p m ->
         p.menus [
-          View.menuBarItemv2 (fun p ->
+          View.menuBarItem (fun p ->
             p.title "MenuBarItem"
 
             p.popoverMenu (
               View.popoverMenu (fun p ->
                 p.root (
-                  View.menuv2 (fun p ->
+                  View.menu (fun p ->
                     p.children [
-                      View.menuItemv2 (fun p -> p.title "MenuItem 0")
-                      View.menuItemv2 (fun p -> p.title "MenuItem 1")
+                      View.menuItem (fun p -> p.title "MenuItem 0")
+                      View.menuItem (fun p -> p.title "MenuItem 1")
                     ]
                   )
                 )
@@ -51,18 +51,18 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     ]
     :?> IInternalTerminalElement
 
-  let menuBarv2Element =
-    view.children.Single() :?> MenuBarv2Element
+  let menuBarElement =
+    view.children.Single() :?> MenuBarElement
 
-  let menuBarItemv2Element =
-    (menuBarv2Element.props
-     |> Props.find PKey.menuBarv2.children)
+  let menuBarItemElement =
+    (menuBarElement.props
+     |> Props.find PKey.menuBar.children)
       .Single()
-    :?> MenuBarItemv2Element
+    :?> MenuBarItemElement
 
   let popoverMenu =
-    menuBarItemv2Element.props
-    |> Props.find PKey.menuBarItemv2.popoverMenu_element
+    menuBarItemElement.props
+    |> Props.find PKey.menuBarItem.popoverMenu_element
     :?> PopoverMenuElement
 
   let popoverMenuRoot =
@@ -72,17 +72,17 @@ let ``Using properties syntax: Menu should be correctly set`` () =
   let view = view |> render
 
   let menuBar =
-    (view.SubViews |> Seq.head) :?> MenuBarv2
+    (view.SubViews |> Seq.head) :?> MenuBar
 
   let menuBarItem =
-    (menuBar.SubViews |> Seq.head) :?> MenuBarItemv2
+    (menuBar.SubViews |> Seq.head) :?> MenuBarItem
 
   let popoverMenuRoot =
     menuBarItem.PopoverMenu.Root
 
   let menuItems =
     popoverMenuRoot.SubViews
-    |> Seq.map unbox<MenuItemv2>
+    |> Seq.map unbox<MenuItem>
     |> Seq.toArray
 
   Assert.That(menuItems[0].Title, Is.EqualTo("MenuItem 0"))
@@ -92,31 +92,31 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 let ``Using macros syntax: Menu should be correctly set`` () =
   let view =
     View.topLevel [
-      View.menuBarv2 (fun p m ->
-        m.menuBarItemv2 (fun p m ->
+      View.menuBar (fun p m ->
+        m.menuBarItem (fun p m ->
           p.title "MenuBarItem"
 
           m.menuItems [
-            View.menuItemv2 (fun p -> p.title "MenuItem 0")
-            View.menuItemv2 (fun p -> p.title "MenuItem 1")
+            View.menuItem (fun p -> p.title "MenuItem 0")
+            View.menuItem (fun p -> p.title "MenuItem 1")
           ]
         )
       )
     ]
     :?> IInternalTerminalElement
 
-  let menuBarv2Element =
-    view.children.Single() :?> MenuBarv2Element
+  let menuBarElement =
+    view.children.Single() :?> MenuBarElement
 
-  let menuBarItemv2Element =
-    (menuBarv2Element.props
-     |> Props.find PKey.menuBarv2.children)
+  let menuBarItemElement =
+    (menuBarElement.props
+     |> Props.find PKey.menuBar.children)
       .Single()
-    :?> MenuBarItemv2Element
+    :?> MenuBarItemElement
 
   let popoverMenu =
-    menuBarItemv2Element.props
-    |> Props.find PKey.menuBarItemv2.popoverMenu_element
+    menuBarItemElement.props
+    |> Props.find PKey.menuBarItem.popoverMenu_element
     :?> PopoverMenuElement
 
   let popoverMenuRoot =
@@ -127,17 +127,17 @@ let ``Using macros syntax: Menu should be correctly set`` () =
   let view = view |> render
 
   let menuBar =
-    (view.SubViews |> Seq.head) :?> MenuBarv2
+    (view.SubViews |> Seq.head) :?> MenuBar
 
   let menuBarItem =
-    (menuBar.SubViews |> Seq.head) :?> MenuBarItemv2
+    (menuBar.SubViews |> Seq.head) :?> MenuBarItem
 
   let popoverMenuRoot =
     menuBarItem.PopoverMenu.Root
 
   let menuItems =
     popoverMenuRoot.SubViews
-    |> Seq.map unbox<MenuItemv2>
+    |> Seq.map unbox<MenuItem>
     |> Seq.toArray
 
   Assert.That(menuItems[0].Title, Is.EqualTo("MenuItem 0"))

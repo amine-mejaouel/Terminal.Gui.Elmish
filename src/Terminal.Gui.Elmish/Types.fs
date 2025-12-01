@@ -333,13 +333,13 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
 
-  type IMenuv2Element =
+  type IMenuElement =
     inherit ITerminalElement
 
   type IPopoverMenuElement =
     inherit ITerminalElement
 
-  type IMenuBarItemv2Element =
+  type IMenuBarItemElement =
     inherit ITerminalElement
 
   type INumericUpDownElement =

@@ -361,25 +361,25 @@ module internal PKey =
     // Properties
     member val shadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "margin.shadowStyle"
 
-  type menuv2PKeys() =
+  type menuPKeys() =
     inherit barPKeys()
 
     // Properties
-    member val selectedMenuItem: ISimplePropKey<MenuItemv2> = PropKey.Create.simple "menuv2.selectedMenuItem"
-    member val superMenuItem: ISimplePropKey<MenuItemv2> = PropKey.Create.simple "menuv2.superMenuItem"
+    member val selectedMenuItem: ISimplePropKey<MenuItem> = PropKey.Create.simple "menu.selectedMenuItem"
+    member val superMenuItem: ISimplePropKey<MenuItem> = PropKey.Create.simple "menu.superMenuItem"
     // Events
-    member val accepted: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "menuv2.accepted"
-    member val selectedMenuItemChanged: ISimplePropKey<MenuItemv2 -> unit> = PropKey.Create.simple "menuv2.selectedMenuItemChanged"
+    member val accepted: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "menu.accepted"
+    member val selectedMenuItemChanged: ISimplePropKey<MenuItem -> unit> = PropKey.Create.simple "menu.selectedMenuItemChanged"
 
-  // MenuBarV2
-  type menuBarv2PKeys() =
-    inherit menuv2PKeys()
+  // MenuBar
+  type menuBarPKeys() =
+    inherit menuPKeys()
 
     // Properties
-    member val key: ISimplePropKey<Key> = PropKey.Create.simple "menuBarv2.key"
-    member val menus: ISimplePropKey<MenuBarItemv2 array> = PropKey.Create.simple "view.menus"
+    member val key: ISimplePropKey<Key> = PropKey.Create.simple "menuBar.key"
+    member val menus: ISimplePropKey<MenuBarItem array> = PropKey.Create.simple "view.menus"
     // Events
-    member val keyChanged: ISimplePropKey<KeyChangedEventArgs -> unit> = PropKey.Create.simple "menuBarv2.keyChanged"
+    member val keyChanged: ISimplePropKey<KeyChangedEventArgs -> unit> = PropKey.Create.simple "menuBar.keyChanged"
 
   type shortcutPKeys() =
     inherit viewPKeys()
@@ -399,23 +399,23 @@ module internal PKey =
     member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "shortcut.orientationChanged"
     member val orientationChanging: ISimplePropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "shortcut.orientationChanging"
 
-  type menuItemv2PKeys() =
+  type menuItemPKeys() =
     inherit shortcutPKeys()
-    member val command: ISimplePropKey<Command> = PropKey.Create.simple "menuItemv2.command"
-    member val subMenu: IViewPropKey<Menuv2> = PropKey.Create.view "menuItemv2.subMenu_view"
-    member val subMenu_element: ISingleElementPropKey<IMenuv2Element> = PropKey.Create.singleElement "menuItemv2.subMenu_element"
-    member val targetView: ISimplePropKey<View> = PropKey.Create.simple "menuItemv2.targetView"
-    member val accepted: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "menuItemv2.accepted"
+    member val command: ISimplePropKey<Command> = PropKey.Create.simple "menuItem.command"
+    member val subMenu: IViewPropKey<Menu> = PropKey.Create.view "menuItem.subMenu_view"
+    member val subMenu_element: ISingleElementPropKey<IMenuElement> = PropKey.Create.singleElement "menuItem.subMenu_element"
+    member val targetView: ISimplePropKey<View> = PropKey.Create.simple "menuItem.targetView"
+    member val accepted: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "menuItem.accepted"
 
-  type menuBarItemv2PKeys() =
-    inherit menuItemv2PKeys()
+  type menuBarItemPKeys() =
+    inherit menuItemPKeys()
 
     // Properties
-    member val popoverMenu: IViewPropKey<PopoverMenu> = PropKey.Create.view "menuBarItemv2.popoverMenu_view"
-    member val popoverMenu_element: ISingleElementPropKey<IPopoverMenuElement> = PropKey.Create.singleElement "menuBarItemv2.popoverMenu_element"
-    member val popoverMenuOpen: ISimplePropKey<bool> = PropKey.Create.simple "menuBarItemv2.popoverMenuOpen"
+    member val popoverMenu: IViewPropKey<PopoverMenu> = PropKey.Create.view "menuBarItem.popoverMenu_view"
+    member val popoverMenu_element: ISingleElementPropKey<IPopoverMenuElement> = PropKey.Create.singleElement "menuBarItem.popoverMenu_element"
+    member val popoverMenuOpen: ISimplePropKey<bool> = PropKey.Create.simple "menuBarItem.popoverMenuOpen"
     // Events
-    member val popoverMenuOpenChanged: ISimplePropKey<bool -> unit> = PropKey.Create.simple "menuBarItemv2.popoverMenuOpenChanged"
+    member val popoverMenuOpenChanged: ISimplePropKey<bool -> unit> = PropKey.Create.simple "menuBarItem.popoverMenuOpenChanged"
 
   type popoverMenuPKeys() =
     inherit viewPKeys()
@@ -423,8 +423,8 @@ module internal PKey =
     // Properties
     member val key: ISimplePropKey<Key> = PropKey.Create.simple "popoverMenu.key"
     member val mouseFlags: ISimplePropKey<MouseFlags> = PropKey.Create.simple "popoverMenu.mouseFlags"
-    member val root: IViewPropKey<Menuv2> = PropKey.Create.view "popoverMenu.root_view"
-    member val root_element: ISingleElementPropKey<IMenuv2Element> = PropKey.Create.singleElement "popoverMenu.root_element"
+    member val root: IViewPropKey<Menu> = PropKey.Create.view "popoverMenu.root_view"
+    member val root_element: ISingleElementPropKey<IMenuElement> = PropKey.Create.singleElement "popoverMenu.root_element"
     // Events
     member val accepted: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "popoverMenu.accepted"
     member val keyChanged: ISimplePropKey<KeyChangedEventArgs -> unit> = PropKey.Create.simple "popoverMenu.keyChanged"
@@ -766,11 +766,11 @@ module internal PKey =
   let line = linePKeys ()
   let listView = listViewPKeys ()
   let margin = marginPKeys ()
-  let menuv2 = menuv2PKeys ()
-  let menuBarv2 = menuBarv2PKeys ()
+  let menu = menuPKeys ()
+  let menuBar = menuBarPKeys ()
   let shortcut = shortcutPKeys ()
-  let menuItemv2 = menuItemv2PKeys ()
-  let menuBarItemv2 = menuBarItemv2PKeys ()
+  let menuItem = menuItemPKeys ()
+  let menuBarItem = menuBarItemPKeys ()
   let popoverMenu = popoverMenuPKeys ()
 
   let numericUpDown<'a> =

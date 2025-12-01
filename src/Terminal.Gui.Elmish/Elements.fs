@@ -2176,62 +2176,62 @@ type MarginElement(props: Props) =
 
   override this.newView() = new Margin()
 
-// Menuv2
-type Menuv2Element(props: Props) =
+// Menu
+type MenuElement(props: Props) =
   inherit TerminalElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> Menuv2
+    let element = element :?> Menu
     // Properties
     props
-    |> Props.tryFind PKey.menuv2.selectedMenuItem
+    |> Props.tryFind PKey.menu.selectedMenuItem
     |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.menuv2.superMenuItem
+    |> Props.tryFind PKey.menu.superMenuItem
     |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
     // Events
     props
-    |> Props.tryFind PKey.menuv2.accepted
+    |> Props.tryFind PKey.menu.accepted
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     props
-    |> Props.tryFind PKey.menuv2.selectedMenuItemChanged
+    |> Props.tryFind PKey.menu.selectedMenuItemChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
 
     ()
 
-  override _.name = $"Menuv2"
+  override _.name = $"Menu"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> Menuv2
+    let element = element :?> Menu
 
     // Properties
     props
-    |> Props.tryFind PKey.menuv2.selectedMenuItem
+    |> Props.tryFind PKey.menu.selectedMenuItem
     |> Option.iter (fun v -> element.SelectedMenuItem <- v)
 
     props
-    |> Props.tryFind PKey.menuv2.superMenuItem
+    |> Props.tryFind PKey.menu.superMenuItem
     |> Option.iter (fun v -> element.SuperMenuItem <- v)
     // Events
     props
-    |> Props.tryFind PKey.menuv2.accepted
+    |> Props.tryFind PKey.menu.accepted
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
     props
-    |> Props.tryFind PKey.menuv2.selectedMenuItemChanged
+    |> Props.tryFind PKey.menu.selectedMenuItemChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
 
-  override this.newView() = new Menuv2()
+  override this.newView() = new Menu()
 
 
   override this.setAsChildOfParentView = false
 
-  interface IMenuv2Element
+  interface IMenuElement
 
 
 type PopoverMenuElement(props: Props) =
@@ -2298,98 +2298,98 @@ type PopoverMenuElement(props: Props) =
 
   interface IPopoverMenuElement
 
-// MenuBarItemv2
-type MenuBarItemv2Element(props: Props) =
+// MenuBarItem
+type MenuBarItemElement(props: Props) =
   inherit TerminalElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> MenuBarItemv2
+    let element = element :?> MenuBarItem
     // Properties
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenu
+    |> Props.tryFind PKey.menuBarItem.popoverMenu
     |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpen
+    |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
     |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_>)
     // Events
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged
+    |> Props.tryFind PKey.menuBarItem.popoverMenuOpenChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.PopoverMenuOpenChanged @> element)
 
-  override this.name = "MenuBarItemv2"
+  override this.name = "MenuBarItem"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> MenuBarItemv2
+    let element = element :?> MenuBarItem
 
     // Properties
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenu
+    |> Props.tryFind PKey.menuBarItem.popoverMenu
     |> Option.iter (fun v -> element.PopoverMenu <- v)
 
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpen
+    |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
     |> Option.iter (fun v -> element.PopoverMenuOpen <- v)
     // Events
     props
-    |> Props.tryFind PKey.menuBarItemv2.popoverMenuOpenChanged
+    |> Props.tryFind PKey.menuBarItem.popoverMenuOpenChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
 
   override this.SubElements_PropKeys =
-    SubElementPropKey.from PKey.menuBarItemv2.popoverMenu_element
+    SubElementPropKey.from PKey.menuBarItem.popoverMenu_element
     :: base.SubElements_PropKeys
 
-  override this.newView() = new MenuBarItemv2()
+  override this.newView() = new MenuBarItem()
 
 
-  interface IMenuBarItemv2Element
+  interface IMenuBarItemElement
 
 // MenuBar
-type MenuBarv2Element(props: Props) =
+type MenuBarElement(props: Props) =
   inherit TerminalElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> MenuBarv2
+    let element = element :?> MenuBar
     // Properties
     props
-    |> Props.tryFind PKey.menuBarv2.key
+    |> Props.tryFind PKey.menuBar.key
     |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
-    // NOTE: No need to handle `Menus: MenuBarItemv2Element list` property here,
+    // NOTE: No need to handle `Menus: MenuBarItemElement list` property here,
     //       as it already registered as "children" property.
     //       And "children" properties are handled by the TreeDiff initializeTree function
 
     // Events
     props
-    |> Props.tryFind PKey.menuBarv2.keyChanged
+    |> Props.tryFind PKey.menuBar.keyChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.KeyChanged @> element)
 
-  override _.name = $"MenuBarv2"
+  override _.name = $"MenuBar"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> MenuBarv2
+    let element = element :?> MenuBar
 
     // Properties
     props
-    |> Props.tryFind PKey.menuBarv2.key
+    |> Props.tryFind PKey.menuBar.key
     |> Option.iter (fun v -> element.Key <- v)
 
-    // NOTE: No need to handle `Menus: MenuBarItemv2Element list` property here,
+    // NOTE: No need to handle `Menus: MenuBarItemElement list` property here,
     //       as it already registered as "children" property.
     //       And "children" properties are handled by the TreeDiff initializeTree function
 
     // Events
     props
-    |> Props.tryFind PKey.menuBarv2.keyChanged
+    |> Props.tryFind PKey.menuBar.keyChanged
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.KeyChanged @> v element)
 
-  override this.newView() = new MenuBarv2()
+  override this.newView() = new MenuBar()
 
 // Shortcut
 type ShortcutElement(props: Props) =
@@ -2502,59 +2502,59 @@ type ShortcutElement(props: Props) =
 
   override this.newView() = new Shortcut()
 
-type MenuItemv2Element(props: Props) =
+type MenuItemElement(props: Props) =
   inherit ShortcutElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> MenuItemv2
+    let element = element :?> MenuItem
     // Properties
     props
-    |> Props.tryFind PKey.menuItemv2.command
+    |> Props.tryFind PKey.menuItem.command
     |> Option.iter (fun _ -> Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.menuItemv2.subMenu
+    |> Props.tryFind PKey.menuItem.subMenu
     |> Option.iter (fun _ -> Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.menuItemv2.targetView
+    |> Props.tryFind PKey.menuItem.targetView
     |> Option.iter (fun _ -> Unchecked.defaultof<_>)
     // Events
     props
-    |> Props.tryFind PKey.menuItemv2.accepted
+    |> Props.tryFind PKey.menuItem.accepted
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Accepted @> element)
 
-  override _.name = $"MenuItemv2"
+  override _.name = $"MenuItem"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> MenuItemv2
+    let element = element :?> MenuItem
 
     // Properties
     props
-    |> Props.tryFind PKey.menuItemv2.command
+    |> Props.tryFind PKey.menuItem.command
     |> Option.iter (fun v -> element.Command <- v)
 
     props
-    |> Props.tryFind PKey.menuItemv2.subMenu
+    |> Props.tryFind PKey.menuItem.subMenu
     |> Option.iter (fun v -> element.SubMenu <- v)
 
     props
-    |> Props.tryFind PKey.menuItemv2.targetView
+    |> Props.tryFind PKey.menuItem.targetView
     |> Option.iter (fun v -> element.TargetView <- v)
     // Events
     props
-    |> Props.tryFind PKey.menuItemv2.accepted
+    |> Props.tryFind PKey.menuItem.accepted
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.Accepted @> v element)
 
   override this.SubElements_PropKeys =
-    SubElementPropKey.from PKey.menuItemv2.subMenu_element
+    SubElementPropKey.from PKey.menuItem.subMenu_element
     :: base.SubElements_PropKeys
 
 
-  override this.newView() = new MenuItemv2()
+  override this.newView() = new MenuItem()
 
 // NumericUpDown<'a>
 type NumericUpDownElement<'a>(props: Props) =

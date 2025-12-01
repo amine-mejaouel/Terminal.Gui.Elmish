@@ -466,65 +466,65 @@ type View =
     setProps view
     MarginElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.MenuBarv2"/>
-  static member menuBarv2(set: menuBarv2Props -> menuBarv2Macros -> unit) =
-    let props = menuBarv2Props ()
-    let macros = menuBarv2Macros (props)
+  /// <seealso cref="Terminal.Gui.MenuBar"/>
+  static member menuBar(set: menuBarProps -> menuBarMacros -> unit) =
+    let props = menuBarProps ()
+    let macros = menuBarMacros (props)
     set props macros
-    MenuBarv2Element(props.props) :> ITerminalElement
+    MenuBarElement(props.props) :> ITerminalElement
 
-  static member menuBarv2(children: ITerminalElement list) =
-    let view = menuBarv2Props ()
+  static member menuBar(children: ITerminalElement list) =
+    let view = menuBarProps ()
     view.children children
-    MenuBarv2Element(view.props) :> ITerminalElement
+    MenuBarElement(view.props) :> ITerminalElement
 
-  static member menuBarv2(x: int, y: int, title: string) =
+  static member menuBar(x: int, y: int, title: string) =
     let setProps =
-      fun (p: menuBarv2Props) ->
+      fun (p: menuBarProps) ->
         p.x (Pos.Absolute(x))
         p.y (Pos.Absolute(y))
         p.title title
 
-    let view = menuBarv2Props ()
+    let view = menuBarProps ()
     setProps view
-    MenuBarv2Element(view.props) :> ITerminalElement
+    MenuBarElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.Menuv2"/>
-  static member menuv2(set: menuv2Props -> unit) =
-    let view = menuv2Props ()
+  /// <seealso cref="Terminal.Gui.Menu"/>
+  static member menu(set: menuProps -> unit) =
+    let view = menuProps ()
     set (view)
-    Menuv2Element(view.props) :> IMenuv2Element
+    MenuElement(view.props) :> IMenuElement
 
-  static member menuv2(children: ITerminalElement list) =
-    let view = menuv2Props ()
+  static member menu(children: ITerminalElement list) =
+    let view = menuProps ()
     view.children children
-    Menuv2Element(view.props) :> ITerminalElement
+    MenuElement(view.props) :> ITerminalElement
 
-  static member menuv2(x: int, y: int, title: string) =
+  static member menu(x: int, y: int, title: string) =
     let setProps =
-      fun (p: menuv2Props) ->
+      fun (p: menuProps) ->
         p.x (Pos.Absolute(x))
         p.y (Pos.Absolute(y))
         p.title title
 
-    let view = menuv2Props ()
+    let view = menuProps ()
     setProps view
-    Menuv2Element(view.props) :> ITerminalElement
+    MenuElement(view.props) :> ITerminalElement
 
-  static member menuBarItemv2(set: menuBarItemv2Props -> unit) =
-    let view = menuBarItemv2Props ()
+  static member menuBarItem(set: menuBarItemProps -> unit) =
+    let view = menuBarItemProps ()
     set (view)
-    MenuBarItemv2Element(view.props) :> IMenuBarItemv2Element
+    MenuBarItemElement(view.props) :> IMenuBarItemElement
 
   static member popoverMenu(set: popoverMenuProps -> unit) =
     let view = popoverMenuProps ()
     set (view)
     PopoverMenuElement(view.props) :> IPopoverMenuElement
 
-  static member menuItemv2(set: menuItemv2Props -> unit) =
-    let view = menuItemv2Props ()
+  static member menuItem(set: menuItemProps -> unit) =
+    let view = menuItemProps ()
     set (view)
-    MenuItemv2Element(view.props) :> ITerminalElement
+    MenuItemElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.NumericUpDown"/>
   static member numericUpDown(set: numericUpDownProps -> unit) =

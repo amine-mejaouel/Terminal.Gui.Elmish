@@ -1,15 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
-        <DefineConstants>DEBUG;TRACE;</DefineConstants>
-        <RootNamespace>Terminal.Gui.Elemish.Generator</RootNamespace>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Include="Program.fs"/>
-        <None Include="repl.fsx" />
-    </ItemGroup>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <RootNamespace>Terminal.Gui.Elemish.Generator</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+    <None Include="repl.fsx" />
+  </ItemGroup>
+  <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

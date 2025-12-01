@@ -803,33 +803,33 @@ type marginProps() =
   member this.shadowStyle(value: ShadowStyle) =
     this.props.add (PKey.margin.shadowStyle, value)
 
-type menuv2Props() =
+type menuProps() =
   inherit barProps()
 
   // Properties
-  member this.selectedMenuItem(value: MenuItemv2) =
-    this.props.add (PKey.menuv2.selectedMenuItem, value)
+  member this.selectedMenuItem(value: MenuItem) =
+    this.props.add (PKey.menu.selectedMenuItem, value)
 
-  member this.superMenuItem(value: MenuItemv2) =
-    this.props.add (PKey.menuv2.superMenuItem, value)
+  member this.superMenuItem(value: MenuItem) =
+    this.props.add (PKey.menu.superMenuItem, value)
   // Events
   member this.accepted(value: CommandEventArgs -> unit) =
-    this.props.add (PKey.menuv2.accepted, value)
+    this.props.add (PKey.menu.accepted, value)
 
-  member this.selectedMenuItemChanged(value: MenuItemv2 -> unit) =
-    this.props.add (PKey.menuv2.selectedMenuItemChanged, value)
+  member this.selectedMenuItemChanged(value: MenuItem -> unit) =
+    this.props.add (PKey.menu.selectedMenuItemChanged, value)
 
-// MenuBarV2
-type menuBarv2Props() =
-  inherit menuv2Props()
+// MenuBar
+type menuBarProps() =
+  inherit menuProps()
 
   // Properties
   member this.key(value: Key) =
-    this.props.add (PKey.menuBarv2.key, value)
+    this.props.add (PKey.menuBar.key, value)
 
-  member this.menus(value: IMenuBarItemv2Element list) =
+  member this.menus(value: IMenuBarItemElement list) =
     this.props.add (
-      PKey.menuBarv2.children,
+      PKey.menuBar.children,
       List<_>(
         value
         |> Seq.map (fun v -> v :?> IInternalTerminalElement)
@@ -837,7 +837,7 @@ type menuBarv2Props() =
     )
   // Events
   member this.keyChanged(handler: KeyChangedEventArgs -> unit) =
-    this.props.add (PKey.menuBarv2.keyChanged, handler)
+    this.props.add (PKey.menuBar.keyChanged, handler)
 
 type shortcutProps() =
   inherit viewProps()
@@ -876,26 +876,26 @@ type shortcutProps() =
   member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.shortcut.orientationChanging, handler)
 
-type menuItemv2Props() =
+type menuItemProps() =
   inherit shortcutProps()
 
   member this.command(value: Command) =
-    this.props.add (PKey.menuItemv2.command, value)
+    this.props.add (PKey.menuItem.command, value)
 
-  member this.submenu(value: IMenuv2Element) =
-    this.props.add (PKey.menuItemv2.subMenu_element, value)
+  member this.submenu(value: IMenuElement) =
+    this.props.add (PKey.menuItem.subMenu_element, value)
 
   member this.accepted(value: CommandEventArgs -> unit) =
-    this.props.add (PKey.menuItemv2.accepted, value)
+    this.props.add (PKey.menuItem.accepted, value)
 
-type menuBarItemv2Props() =
-  inherit menuItemv2Props()
+type menuBarItemProps() =
+  inherit menuItemProps()
 
   member this.popoverMenu(value: IPopoverMenuElement) =
-    this.props.add (PKey.menuBarItemv2.popoverMenu_element, value)
+    this.props.add (PKey.menuBarItem.popoverMenu_element, value)
 
   member this.popoverMenuOpen(value: bool) =
-    this.props.add (PKey.menuBarItemv2.popoverMenuOpen, value)
+    this.props.add (PKey.menuBarItem.popoverMenuOpen, value)
 
 type popoverMenuProps() =
   inherit viewProps()
@@ -903,7 +903,7 @@ type popoverMenuProps() =
   member this.key(value: Key) =
     this.props.add (PKey.popoverMenu.key, value)
 
-  member this.root(value: IMenuv2Element) =
+  member this.root(value: IMenuElement) =
     this.props.add (PKey.popoverMenu.root_element, value)
 
 // NumericUpDown`1

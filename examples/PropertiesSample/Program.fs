@@ -28,17 +28,17 @@ let update (msg: Msg) (model: Model) = (), Cmd.none
 
 let view (state: Model) (dispatch: Msg -> unit) =
   View.topLevel [
-    View.menuBarv2 (fun p m ->
+    View.menuBar (fun p m ->
       p.menus [
-        View.menuBarItemv2 (fun p ->
+        View.menuBarItem (fun p ->
           p.title "_File"
 
           p.popoverMenu (
             View.popoverMenu (fun p ->
               p.root (
-                View.menuv2 (fun p ->
+                View.menu (fun p ->
                   p.children [
-                    View.menuItemv2 (fun p ->
+                    View.menuItem (fun p ->
                       p.title "Quit"
                       p.helpText "Quit UI Catalog"
                       p.key Application.QuitKey
@@ -50,15 +50,15 @@ let view (state: Model) (dispatch: Msg -> unit) =
             )
           )
         )
-        View.menuBarItemv2 (fun p ->
+        View.menuBarItem (fun p ->
           p.title "_Themes"
 
           p.popoverMenu (
             View.popoverMenu (fun p ->
               p.root (
-                View.menuv2 (fun p ->
+                View.menu (fun p ->
                   p.children [
-                    View.menuItemv2 (fun p ->
+                    View.menuItem (fun p ->
                       p.commandView (
                         View.checkBox (fun p ->
                           p.title "Force _16 Colors"
@@ -84,9 +84,9 @@ let view (state: Model) (dispatch: Msg -> unit) =
                         )
                       )
                     )
-                    View.menuItemv2 (fun p -> p.commandView (View.line []))
+                    View.menuItem (fun p -> p.commandView (View.line []))
                     if ConfigurationManager.IsEnabled then
-                      View.menuItemv2 (fun p ->
+                      View.menuItem (fun p ->
                         p.helpText "Cycle Through Themes"
                         p.key Key.T.WithCtrl
 

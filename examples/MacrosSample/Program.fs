@@ -35,13 +35,13 @@ let update (msg: Msg) (model: Model) =
   model, Cmd.none
 
 let view (state: Model) (dispatch: Msg -> unit) =
-  let menuBarv2 =
-    View.menuBarv2 (fun p m ->
-      m.menuBarItemv2 (fun p m ->
+  let menuBar =
+    View.menuBar (fun p m ->
+      m.menuBarItem (fun p m ->
         p.title "_File"
 
         m.menuItems [
-          View.menuItemv2 (fun p ->
+          View.menuItem (fun p ->
             p.title "Quit"
             p.helpText "Quit UI Catalog"
             p.key Application.QuitKey
@@ -50,11 +50,11 @@ let view (state: Model) (dispatch: Msg -> unit) =
         ]
       )
 
-      m.menuBarItemv2 (fun p m ->
+      m.menuBarItem (fun p m ->
         p.title "_Themes"
 
         m.menuItems [
-          View.menuItemv2 (fun p ->
+          View.menuItem (fun p ->
             p.commandView (
               View.checkBox (fun p ->
                 p.title "Force _16 Colors"
@@ -79,9 +79,9 @@ let view (state: Model) (dispatch: Msg -> unit) =
               )
             )
           )
-          View.menuItemv2 (fun p -> p.commandView (View.line []))
+          View.menuItem (fun p -> p.commandView (View.line []))
           if ConfigurationManager.IsEnabled then
-            View.menuItemv2 (fun p ->
+            View.menuItem (fun p ->
               p.helpText "Cycle Through Themes"
               p.key Key.T.WithCtrl
 
@@ -107,7 +107,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
     View.listView (fun p ->
       p.borderStyle LineStyle.Rounded
       p.x 0
-      p.y (TPos.Bottom menuBarv2)
+      p.y (TPos.Bottom menuBar)
       p.height (Dim.Fill())
       p.width (Dim.Auto())
       p.title "_Categories"
@@ -118,7 +118,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
     View.frameView (fun p ->
       p.borderStyle LineStyle.Rounded
       p.x (TPos.Right categoriesListView)
-      p.y (TPos.Bottom menuBarv2)
+      p.y (TPos.Bottom menuBar)
       p.height (Dim.Fill())
       p.width (Dim.Fill())
       p.title "_Scenarios"
@@ -142,7 +142,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
     )
 
   View.topLevel [
-    menuBarv2
+    menuBar
     categoriesListView
     scenariosListView
   ]

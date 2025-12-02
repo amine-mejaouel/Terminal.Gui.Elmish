@@ -4086,11 +4086,11 @@ type RunnableElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.runnable.isModal
-    |> Option.iter (fun _ -> element.SetIsModal(Unchecked.defaultof<_>))
+    |> Option.iter (fun _ -> element.SetIsModal(false))
 
     props
     |> Props.tryFind PKey.runnable.isRunning
-    |> Option.iter (fun _ -> element.SetIsRunning(Unchecked.defaultof<_>))
+    |> Option.iter (fun _ -> element.SetIsRunning(false))
     // Events
     props
     |> Props.tryFind PKey.runnable.isRunningChanging

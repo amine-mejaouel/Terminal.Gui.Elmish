@@ -5,12 +5,12 @@ open System
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
-open Terminal.Gui.Views
+open Terminal.Gui.ViewBase
 
 [<RequireQualifiedAccess>]
 type internal RootView =
-  | Runnable of Terminal.Gui.ViewBase.Runnable
-  | View of Terminal.Gui.ViewBase.View
+  | Runnable of Runnable
+  | View of View
 
 type internal InternalModel<'model> = {
   Application: IApplication

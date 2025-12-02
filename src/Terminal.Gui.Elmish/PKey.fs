@@ -246,6 +246,8 @@ module internal PKey =
     // Properties
     member val isModal: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isModal"
     member val isRunning: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isRunning"
+    member val stopRequested: ISimplePropKey<bool> = PropKey.Create.simple "runnable.stopRequested"
+    member val result: ISimplePropKey<obj> = PropKey.Create.simple "runnable.result"
     // Events
     member val isRunningChanging: ISimplePropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanging"
     member val isRunningChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanged"
@@ -706,7 +708,7 @@ module internal PKey =
 
   // Window
   type windowPKeys() =
-    inherit toplevelPKeys()
+    inherit runnablePKeys()
   // No properties or events Window
 
   // Wizard

@@ -4082,15 +4082,24 @@ type RunnableElement(props: Props) =
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> Terminal.Gui.ViewBase.Runnable
+    let element = element :?> Runnable
     // Properties
     props
     |> Props.tryFind PKey.runnable.isModal
-    |> Option.iter (fun _ -> element.SetIsModal(false))
+    |> Option.iter (fun _ -> element.SetIsModal(Unchecked.defaultof<_>))
 
     props
     |> Props.tryFind PKey.runnable.isRunning
-    |> Option.iter (fun _ -> element.SetIsRunning(false))
+    |> Option.iter (fun _ -> element.SetIsRunning(Unchecked.defaultof<_>))
+
+    props
+    |> Props.tryFind PKey.runnable.stopRequested
+    |> Option.iter (fun _ -> element.StopRequested <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.runnable.result
+    |> Option.iter (fun _ -> element.Result <- Unchecked.defaultof<_>)
+
     // Events
     props
     |> Props.tryFind PKey.runnable.isRunningChanging
@@ -4109,7 +4118,7 @@ type RunnableElement(props: Props) =
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> Terminal.Gui.ViewBase.Runnable
+    let element = element :?> Runnable
 
     // Properties
     props
@@ -4119,6 +4128,15 @@ type RunnableElement(props: Props) =
     props
     |> Props.tryFind PKey.runnable.isRunning
     |> Option.iter (fun v -> element.SetIsRunning(v))
+
+    props
+    |> Props.tryFind PKey.runnable.stopRequested
+    |> Option.iter (fun v -> element.StopRequested <- v)
+
+    props
+    |> Props.tryFind PKey.runnable.result
+    |> Option.iter (fun v -> element.Result <- v)
+
     // Events
     props
     |> Props.tryFind PKey.runnable.isRunningChanging
@@ -4133,7 +4151,7 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun v -> Interop.setEventHandler <@ element.IsModalChanged @> v element)
 
 
-  override this.newView() = new Terminal.Gui.ViewBase.Runnable()
+  override this.newView() = new Runnable()
 
 
 // TreeView<'a when 'a : not struct>
@@ -4310,7 +4328,7 @@ type WizardElement(props: Props) =
 
     props
     |> Props.tryFind PKey.wizard.modal
-    |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SetIsModal(Unchecked.defaultof<_>))
     // Events
     props
     |> Props.tryFind PKey.wizard.cancelled

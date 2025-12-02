@@ -605,13 +605,13 @@ type runnableProps() =
   member this.isRunning(value: bool) =
     this.props.add (PKey.runnable.isRunning, value)
   // Events
-  member this.isRunningChanging(handler: EventHandler<CancelEventArgs<bool>>) =
+  member this.isRunningChanging(handler: CancelEventArgs<bool> -> unit) =
     this.props.add (PKey.runnable.isRunningChanging, handler)
 
-  member this.isRunningChanged(handler: EventHandler<EventArgs<bool>>) =
+  member this.isRunningChanged(handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.runnable.isRunningChanged, handler)
 
-  member this.isModalChanged(handler: EventHandler<EventArgs<bool>>) =
+  member this.isModalChanged(handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.runnable.isModalChanged, handler)
 
 // Dialog

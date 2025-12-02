@@ -103,8 +103,10 @@ ElmishTerminal.mkProgram init update view
 ```
 
 ## CI/CD
-- Travis CI (`.travis.yml`) - Linux builds with .NET 6.0.300
+- Travis CI (`.travis.yml`) - Linux builds (configured with .NET 6.0.300, but current project requires .NET 8.0+)
 - AppVeyor (`appveyor.yml`) - Windows builds
+
+**Note:** The Travis CI configuration uses an outdated .NET version. The current codebase requires .NET 8.0+ to build properly.
 
 ## Documentation
 Documentation uses MkDocs with Material theme:

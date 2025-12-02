@@ -61,6 +61,12 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Terminal.Gui.Elmish.Tests",
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MacrosSample", "examples\MacrosSample\MacrosSample.fsproj", "{E0E22EF6-37C8-4203-81B0-7398F899374C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{948761AA-68F5-433D-9019-E8CCD79A9910}"
+	ProjectSection(SolutionItems) = preProject
+		.github\copilot-instructions.md = .github\copilot-instructions.md
+		.github\ISSUE_TEMPLATE.md = .github\ISSUE_TEMPLATE.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

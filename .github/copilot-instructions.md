@@ -1,7 +1,7 @@
 # Copilot Coding Agent Instructions for Terminal.Gui.Elmish
 
 ## Repository Overview
-Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Terminal.Gui](https://github.com/migueldeicaza/gui.cs) library. It provides a Feliz-style DSL for building terminal UI applications using the Elm architecture pattern.
+Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Terminal.Gui](https://github.com/migueldeicaza/gui.cs) library. It provides a DSL for building terminal UI applications using the Elm architecture pattern.
 
 **Key technologies:**
 - Language: F#
@@ -16,15 +16,15 @@ Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Termin
 - .NET SDK 8.0 or higher (the project uses `net8.0` and `net9.0` target frameworks)
 - Paket tool for dependency management
 
-### Step 1: Install Paket
-**Always install Paket first before restoring or building:**
+### Step 1: Restore dotnet tools
+**This will install Paket if not already installed.**
 ```bash
-dotnet tool install paket --tool-path .paket
+dotnet tool restore
 ```
 
 ### Step 2: Restore Dependencies
 ```bash
-.paket/paket restore
+dotnet paket restore
 ```
 This restores packages defined in `paket.dependencies` and `paket.lock`.
 
@@ -46,6 +46,11 @@ dotnet build src/Terminal.Gui.Elmish.Tests/Terminal.Gui.Elmish.Tests.fsproj
 ```bash
 dotnet test src/Terminal.Gui.Elmish.Tests/Terminal.Gui.Elmish.Tests.fsproj
 ```
+
+## Paket considerations
+- To find which package version is used, first check `paket.dependencies` of the given project.
+- Identify the group of the package (if any).
+- With the group known, check `paket.lock` for the resolved version.
 
 ## Project Structure
 
@@ -118,13 +123,13 @@ cd docs && mkdocs serve
 ## Troubleshooting
 
 ### "paket: not found" Error
-Run `dotnet tool install paket --tool-path .paket` before building.
+Run `dotnet tool restore` before building.
 
 ### Target Framework Mismatch
 The main library uses `net8.0`. Tests and some examples use `net9.0`. Ensure compatible .NET SDK.
 
 ### Build Warnings
-The project uses prerelease Terminal.Gui (`2.0.0-develop.4639`). Warnings about prerelease packages are expected.
+The project uses prerelease Terminal.Gui. Warnings about prerelease packages are expected.
 
 ## Trust These Instructions
 These instructions are validated. Only search the repository if information is incomplete or found to be in error.

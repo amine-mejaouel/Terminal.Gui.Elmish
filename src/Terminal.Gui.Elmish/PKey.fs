@@ -247,9 +247,9 @@ module internal PKey =
     member val isModal: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isModal"
     member val isRunning: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isRunning"
     // Events
-    member val isRunningChanging: ISimplePropKey<EventHandler<CancelEventArgs<bool>>> = PropKey.Create.simple "runnable.isRunningChanging"
-    member val isRunningChanged: ISimplePropKey<EventHandler<EventArgs<bool>>> = PropKey.Create.simple "runnable.isRunningChanged"
-    member val isModalChanged: ISimplePropKey<EventHandler<EventArgs<bool>>> = PropKey.Create.simple "runnable.isModalChanged"
+    member val isRunningChanging: ISimplePropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanging"
+    member val isRunningChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanged"
+    member val isModalChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isModalChanged"
 
   // Dialog
   type dialogPKeys() =

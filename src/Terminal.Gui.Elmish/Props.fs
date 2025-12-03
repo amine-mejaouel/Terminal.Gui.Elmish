@@ -604,6 +604,13 @@ type runnableProps() =
 
   member this.isRunning(value: bool) =
     this.props.add (PKey.runnable.isRunning, value)
+
+  member this.stopRequested(value: bool) =
+    this.props.add (PKey.runnable.stopRequested, value)
+
+  member this.result(value) =
+    this.props.add (PKey.runnable.result, value)
+
   // Events
   member this.isRunningChanging(handler: CancelEventArgs<bool> -> unit) =
     this.props.add (PKey.runnable.isRunningChanging, handler)
@@ -1434,7 +1441,7 @@ type treeViewProps() =
 
 // Window
 type windowProps() =
-  inherit toplevelProps()
+  inherit runnableProps()
 // No properties or events Window
 
 // Wizard

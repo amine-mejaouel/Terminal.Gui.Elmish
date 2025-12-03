@@ -4368,7 +4368,7 @@ type WizardElement(props: Props) =
 
     props
     |> Props.tryFind PKey.wizard.modal
-    |> Option.iter (fun v -> element.Modal <- v)
+    |> Option.iter (fun v -> element.SetIsModal(v))
     // Events
     props
     |> Props.tryFind PKey.wizard.cancelled

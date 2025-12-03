@@ -106,7 +106,7 @@ let private terminate model =
     match model.RootView.Task.Result with
     | RootView.Runnable r ->
       r.Dispose()
-      model.Application.Shutdown()
+      model.Application.RequestStop()
     | RootView.View _ ->
       ()
 

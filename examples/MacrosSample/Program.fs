@@ -143,7 +143,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
       ]
     )
 
-  View.topLevel [
+  View.runnable [
     menuBar
     categoriesListView
     scenariosListView

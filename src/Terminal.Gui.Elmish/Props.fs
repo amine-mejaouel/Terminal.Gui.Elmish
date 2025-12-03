@@ -595,43 +595,35 @@ type datePickerProps() =
   member this.date(value: DateTime) =
     this.props.add (PKey.datePicker.date, value)
 
-// Toplevel
-type toplevelProps() =
+// Runnable
+type runnableProps() =
   inherit viewProps()
   // Properties
-  member this.modal(value: bool) =
-    this.props.add (PKey.toplevel.modal, value)
+  member this.isModal(value: bool) =
+    this.props.add (PKey.runnable.isModal, value)
 
-  member this.running(value: bool) =
-    this.props.add (PKey.toplevel.running, value)
+  member this.isRunning(value: bool) =
+    this.props.add (PKey.runnable.isRunning, value)
+
+  member this.stopRequested(value: bool) =
+    this.props.add (PKey.runnable.stopRequested, value)
+
+  member this.result(value) =
+    this.props.add (PKey.runnable.result, value)
+
   // Events
-  member this.activate(handler: ToplevelEventArgs -> unit) =
-    this.props.add (PKey.toplevel.activate, handler)
+  member this.isRunningChanging(handler: CancelEventArgs<bool> -> unit) =
+    this.props.add (PKey.runnable.isRunningChanging, handler)
 
-  member this.closed(handler: ToplevelEventArgs -> unit) =
-    this.props.add (PKey.toplevel.closed, handler)
+  member this.isRunningChanged(handler: EventArgs<bool> -> unit) =
+    this.props.add (PKey.runnable.isRunningChanged, handler)
 
-  member this.closing(handler: ToplevelClosingEventArgs -> unit) =
-    this.props.add (PKey.toplevel.closing, handler)
-
-  member this.deactivate(handler: ToplevelEventArgs -> unit) =
-    this.props.add (PKey.toplevel.deactivate, handler)
-
-  member this.loaded(handler: unit -> unit) =
-    this.props.add (PKey.toplevel.loaded, handler)
-
-  member this.ready(handler: unit -> unit) =
-    this.props.add (PKey.toplevel.ready, handler)
-
-  member this.sizeChanging(handler: SizeChangedEventArgs -> unit) =
-    this.props.add (PKey.toplevel.sizeChanging, handler)
-
-  member this.unloaded(handler: unit -> unit) =
-    this.props.add (PKey.toplevel.unloaded, handler)
+  member this.isModalChanged(handler: EventArgs<bool> -> unit) =
+    this.props.add (PKey.runnable.isModalChanged, handler)
 
 // Dialog
 type dialogProps() =
-  inherit toplevelProps()
+  inherit runnableProps()
   // Properties
   member this.buttonAlignment(value: Alignment) =
     this.props.add (PKey.dialog.buttonAlignment, value)
@@ -1449,7 +1441,7 @@ type treeViewProps() =
 
 // Window
 type windowProps() =
-  inherit toplevelProps()
+  inherit runnableProps()
 // No properties or events Window
 
 // Wizard

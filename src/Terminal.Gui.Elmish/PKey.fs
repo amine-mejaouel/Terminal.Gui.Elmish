@@ -240,25 +240,22 @@ module internal PKey =
     member val culture: ISimplePropKey<CultureInfo> = PropKey.Create.simple "datePicker.culture"
     member val date: ISimplePropKey<DateTime> = PropKey.Create.simple "datePicker.date"
 
-  // Toplevel
-  type toplevelPKeys() =
+  // Runnable
+  type runnablePKeys() =
     inherit viewPKeys()
     // Properties
-    member val modal: ISimplePropKey<bool> = PropKey.Create.simple "toplevel.modal"
-    member val running: ISimplePropKey<bool> = PropKey.Create.simple "toplevel.running"
+    member val isModal: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isModal"
+    member val isRunning: ISimplePropKey<bool> = PropKey.Create.simple "runnable.isRunning"
+    member val stopRequested: ISimplePropKey<bool> = PropKey.Create.simple "runnable.stopRequested"
+    member val result: ISimplePropKey<obj> = PropKey.Create.simple "runnable.result"
     // Events
-    member val activate: ISimplePropKey<ToplevelEventArgs -> unit> = PropKey.Create.simple "toplevel.activate"
-    member val closed: ISimplePropKey<ToplevelEventArgs -> unit> = PropKey.Create.simple "toplevel.closed"
-    member val closing: ISimplePropKey<ToplevelClosingEventArgs -> unit> = PropKey.Create.simple "toplevel.closing"
-    member val deactivate: ISimplePropKey<ToplevelEventArgs -> unit> = PropKey.Create.simple "toplevel.deactivate"
-    member val loaded: ISimplePropKey<unit -> unit> = PropKey.Create.simple "toplevel.loaded"
-    member val ready: ISimplePropKey<unit -> unit> = PropKey.Create.simple "toplevel.ready"
-    member val sizeChanging: ISimplePropKey<SizeChangedEventArgs -> unit> = PropKey.Create.simple "toplevel.sizeChanging"
-    member val unloaded: ISimplePropKey<unit -> unit> = PropKey.Create.simple "toplevel.unloaded"
+    member val isRunningChanging: ISimplePropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanging"
+    member val isRunningChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isRunningChanged"
+    member val isModalChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "runnable.isModalChanged"
 
   // Dialog
   type dialogPKeys() =
-    inherit toplevelPKeys()
+    inherit runnablePKeys()
     // Properties
     member val buttonAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "dialog.buttonAlignment"
     member val buttonAlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "dialog.buttonAlignmentModes"
@@ -711,7 +708,7 @@ module internal PKey =
 
   // Window
   type windowPKeys() =
-    inherit toplevelPKeys()
+    inherit runnablePKeys()
   // No properties or events Window
 
   // Wizard
@@ -751,7 +748,7 @@ module internal PKey =
   let textField = textFieldPKeys ()
   let dateField = dateFieldPKeys ()
   let datePicker = datePickerPKeys ()
-  let toplevel = toplevelPKeys ()
+  let runnable = runnablePKeys ()
   let dialog = dialogPKeys ()
   let fileDialog = fileDialogPKeys ()
   let saveDialog = saveDialogPKeys ()

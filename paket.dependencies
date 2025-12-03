@@ -1,11 +1,11 @@
-source https://www.nuget.org/api/v2
+source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Core 8.0.301
 nuget Elmish 5.0.2
 nuget Terminal.Gui 2.0.0-develop.4650 prerelease
 
 group test
-    source https://www.nuget.org/api/v2
+    source https://api.nuget.org/v3/index.json
     nuget Microsoft.NET.Test.Sdk
     nuget coverlet.collector
     nuget NUnit

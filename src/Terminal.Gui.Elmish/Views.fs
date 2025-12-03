@@ -1147,21 +1147,12 @@ module Dialogs =
       file
 
 
+  [<System.Obsolete("MessageBox API changed in Terminal.Gui v2 - requires IApplication parameter. Use MessageBox.Query(app, ...) directly.")>]
   let messageBox (width: int) height title text (buttons: string list) =
-    let result =
-      MessageBox.Query(width, height, title, text, buttons |> List.toArray)
-
-    match buttons with
-    | [] -> ""
-    | _ when result < 0 || result > buttons.Length - 1 -> ""
-    | _ -> buttons.[result]
+    failwith "messageBox helper is obsolete - use MessageBox.Query(app, width, height, title, text, buttons) directly"
 
 
+  [<System.Obsolete("MessageBox API changed in Terminal.Gui v2 - requires IApplication parameter. Use MessageBox.ErrorQuery(app, ...) directly.")>]
   let errorBox (width: int) height title text (buttons: string list) =
-    let result =
-      MessageBox.ErrorQuery(width, height, title, text, buttons |> List.toArray)
+    failwith "errorBox helper is obsolete - use MessageBox.ErrorQuery(app, width, height, title, text, buttons) directly"
 
-    match buttons with
-    | [] -> ""
-    | _ when result < 0 || result > buttons.Length - 1 -> ""
-    | _ -> buttons.[result]

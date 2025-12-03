@@ -1,7 +1,7 @@
 # Copilot Coding Agent Instructions for Terminal.Gui.Elmish
 
 ## Repository Overview
-Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Terminal.Gui](https://github.com/migueldeicaza/gui.cs) library. It provides a DSL for building terminal UI applications using the Elm architecture pattern.
+Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) library. It provides a DSL for building terminal UI applications using the Elm architecture pattern.
 
 **Key technologies:**
 - Language: F#

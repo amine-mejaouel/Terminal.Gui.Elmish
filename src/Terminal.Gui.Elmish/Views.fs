@@ -16,20 +16,6 @@ open Terminal.Gui.Views
 
 type View =
 
-  /// <summary>Backward compatibility: topLevel is an alias for runnable.</summary>
-  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
-  static member topLevel(children: ITerminalElement list) =
-    let view = runnableProps ()
-    view.children children
-    RunnableElement(view.props) :> ITerminalElement
-
-  /// <summary>Backward compatibility: topLevel is an alias for runnable.</summary>
-  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
-  static member topLevel(set: runnableProps -> unit) =
-    let view = runnableProps ()
-    set view
-    RunnableElement(view.props) :> ITerminalElement
-
   /// <seealso cref="Terminal.Gui.Adornment"/>
   static member adornment(set: adornmentProps -> unit) =
     let view = adornmentProps ()
@@ -1145,14 +1131,4 @@ module Dialogs =
         )
 
       file
-
-
-  [<System.Obsolete("MessageBox API changed in Terminal.Gui v2 - requires IApplication parameter. Use MessageBox.Query(app, ...) directly.")>]
-  let messageBox (width: int) height title text (buttons: string list) =
-    failwith "messageBox helper is obsolete - use MessageBox.Query(app, width, height, title, text, buttons) directly"
-
-
-  [<System.Obsolete("MessageBox API changed in Terminal.Gui v2 - requires IApplication parameter. Use MessageBox.ErrorQuery(app, ...) directly.")>]
-  let errorBox (width: int) height title text (buttons: string list) =
-    failwith "errorBox helper is obsolete - use MessageBox.ErrorQuery(app, width, height, title, text, buttons) directly"
 

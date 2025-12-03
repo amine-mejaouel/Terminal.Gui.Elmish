@@ -16,12 +16,15 @@ open Terminal.Gui.Views
 
 type View =
 
-  // Backward compatibility: topLevel is an alias for runnable
+  /// <summary>Backward compatibility: topLevel is an alias for runnable.</summary>
+  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
   static member topLevel(children: ITerminalElement list) =
     let view = runnableProps ()
     view.children children
     RunnableElement(view.props) :> ITerminalElement
 
+  /// <summary>Backward compatibility: topLevel is an alias for runnable.</summary>
+  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
   static member topLevel(set: runnableProps -> unit) =
     let view = runnableProps ()
     set view

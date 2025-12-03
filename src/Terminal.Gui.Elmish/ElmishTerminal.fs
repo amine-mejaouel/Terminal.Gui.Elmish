@@ -9,7 +9,7 @@ open Terminal.Gui.Views
 
 [<RequireQualifiedAccess>]
 type internal RootView =
-  | Toplevel of Toplevel
+  | Runnable of Terminal.Gui.ViewBase.Runnable
   | View of Terminal.Gui.ViewBase.View
 
 type internal InternalModel<'model> = {
@@ -85,7 +85,7 @@ let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminal
 
       match startState.view with
       | null -> failwith "error state not initialized"
-      | :? Toplevel as tl -> model.RootView.SetResult(RootView.Toplevel tl)
+      | :? Terminal.Gui.ViewBase.Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
       | view -> model.RootView.SetResult(RootView.View view)
 
       startState
@@ -104,8 +104,8 @@ let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminal
 let private terminate model =
   if not unitTestMode then
     match model.RootView.Task.Result with
-    | RootView.Toplevel tl ->
-      tl.Dispose()
+    | RootView.Runnable r ->
+      r.Dispose()
       model.Application.Shutdown()
     | RootView.View _ ->
       ()
@@ -140,15 +140,15 @@ let runTerminal (ElmishTerminalProgram program) =
 
   let runTerminal (model: InternalModel<_>) =
     let start dispatch =
-      let toplevel = model.RootView.Task.GetAwaiter().GetResult()
-      match toplevel with
-      | RootView.Toplevel toplevel ->
+      let rootView = model.RootView.Task.GetAwaiter().GetResult()
+      match rootView with
+      | RootView.Runnable runnable ->
         if not unitTestMode then
           Task.Run(fun () ->
             (
               try
                 model.Application.Init()
-                model.Application.Run(toplevel)
+                model.Application.Run(runnable)
                 running.SetResult()
               with ex -> running.SetException ex
             )

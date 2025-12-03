@@ -17,14 +17,14 @@ open Terminal.Gui.Views
 type View =
 
   static member topLevel(children: ITerminalElement list) =
-    let view = toplevelProps ()
+    let view = runnableProps ()
     view.children children
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
-  static member topLevel(set: toplevelProps -> unit) =
-    let view = toplevelProps ()
+  static member topLevel(set: runnableProps -> unit) =
+    let view = runnableProps ()
     set view
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.Adornment"/>
   static member adornment(set: adornmentProps -> unit) =
@@ -983,27 +983,27 @@ type View =
     setProps view
     TimeFieldElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.Toplevel"/>
-  static member toplevel(set: toplevelProps -> unit) =
-    let view = toplevelProps ()
+  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
+  static member runnable(set: runnableProps -> unit) =
+    let view = runnableProps ()
     set (view)
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
-  static member toplevel(children: ITerminalElement list) =
-    let view = toplevelProps ()
+  static member runnable(children: ITerminalElement list) =
+    let view = runnableProps ()
     view.children children
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
-  static member toplevel(x: int, y: int, title: string) =
+  static member runnable(x: int, y: int, title: string) =
     let setProps =
-      fun (p: toplevelProps) ->
+      fun (p: runnableProps) ->
         p.x (Pos.Absolute(x))
         p.y (Pos.Absolute(y))
         p.title title
 
-    let view = toplevelProps ()
+    let view = runnableProps ()
     setProps view
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.TreeView"/>
   static member treeView(set: treeViewProps -> unit) =

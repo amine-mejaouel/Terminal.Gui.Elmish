@@ -11,16 +11,18 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type Model = {
+  Application: IApplication
   AvailableThemes: IImmutableList<string>
   SelectedThemeIndex: int
 }
 
 type Msg = ThemeIndexChanged of index: int
 
-let init () =
+let init application =
   let themes = ThemeManager.GetThemeNames()
 
   let model = {
+    Application = application
     AvailableThemes = themes
     SelectedThemeIndex = themes.IndexOf(ThemeManager.GetCurrentThemeName())
   }
@@ -60,7 +62,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
                 p.title "Force _16 Colors"
 
                 p.checkedState (
-                  if ApplicationImpl.Instance.Force16Colors then
+                  if state.Application.Force16Colors then
                     CheckState.Checked
                   else
                     CheckState.UnChecked
@@ -68,14 +70,14 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
                 p.checkedStateChanging (fun args ->
                   if
-                    (ApplicationImpl.Instance.Force16Colors
+                    (state.Application.Force16Colors
                      && args.Result = CheckState.UnChecked
-                     && not ApplicationImpl.Instance.Driver.SupportsTrueColor)
+                     && not state.Application.Driver.SupportsTrueColor)
                   then
                     args.Handled <- true
                 )
 
-                p.checkedStateChanged (fun args -> ApplicationImpl.Instance.Force16Colors <- args.Value = CheckState.Checked)
+                p.checkedStateChanged (fun args -> state.Application.Force16Colors <- args.Value = CheckState.Checked)
               )
             )
           )

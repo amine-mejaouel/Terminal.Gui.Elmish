@@ -5,16 +5,16 @@ open System
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
-open Terminal.Gui.Views
+open Terminal.Gui.ViewBase
 
 [<RequireQualifiedAccess>]
 type internal RootView =
-  | Toplevel of Toplevel
-  | View of Terminal.Gui.ViewBase.View
+  | Runnable of Runnable
+  | View of View
 
 type internal InternalModel<'model> = {
-  Application: IApplication
   mutable CurrentTreeState: IInternalTerminalElement option
+  mutable Application: IApplication
   RootView: TaskCompletionSource<RootView>
   Termination: TaskCompletionSource
   /// Elmish model provided to the Program by the library caller.
@@ -85,7 +85,7 @@ let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminal
 
       match startState.view with
       | null -> failwith "error state not initialized"
-      | :? Toplevel as tl -> model.RootView.SetResult(RootView.Toplevel tl)
+      | :? Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
       | view -> model.RootView.SetResult(RootView.View view)
 
       startState
@@ -104,9 +104,9 @@ let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminal
 let private terminate model =
   if not unitTestMode then
     match model.RootView.Task.Result with
-    | RootView.Toplevel tl ->
-      tl.Dispose()
-      model.Application.Shutdown()
+    | RootView.Runnable r ->
+      r.Dispose()
+      model.Application.RequestStop()
     | RootView.View _ ->
       ()
 
@@ -138,17 +138,20 @@ let runTerminal (ElmishTerminalProgram program) =
   let running = TaskCompletionSource()
   let mutable waitForTermination = null
 
+  let application = Application.Create()
+
   let runTerminal (model: InternalModel<_>) =
     let start dispatch =
-      let toplevel = model.RootView.Task.GetAwaiter().GetResult()
-      match toplevel with
-      | RootView.Toplevel toplevel ->
+      let rootView = model.RootView.Task.GetAwaiter().GetResult()
+      match rootView with
+      | RootView.Runnable runnable ->
         if not unitTestMode then
           Task.Run(fun () ->
             (
               try
-                model.Application.Init()
-                model.Application.Run(toplevel)
+                model.Application <- application
+                model.Application.Init() |> ignore
+                model.Application.Run(runnable) |> ignore
                 running.SetResult()
               with ex -> running.SetException ex
             )
@@ -170,7 +173,7 @@ let runTerminal (ElmishTerminalProgram program) =
 
   program
   |> Program.withSubscription subscribe
-  |> Program.run
+  |> Program.runWith application
 
   waitForStart.Task.GetAwaiter().GetResult()
   Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()

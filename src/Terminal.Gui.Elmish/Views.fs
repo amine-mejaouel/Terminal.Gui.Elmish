@@ -16,16 +16,6 @@ open Terminal.Gui.Views
 
 type View =
 
-  static member topLevel(children: ITerminalElement list) =
-    let view = toplevelProps ()
-    view.children children
-    ToplevelElement(view.props) :> ITerminalElement
-
-  static member topLevel(set: toplevelProps -> unit) =
-    let view = toplevelProps ()
-    set view
-    ToplevelElement(view.props) :> ITerminalElement
-
   /// <seealso cref="Terminal.Gui.Adornment"/>
   static member adornment(set: adornmentProps -> unit) =
     let view = adornmentProps ()
@@ -469,7 +459,7 @@ type View =
   /// <seealso cref="Terminal.Gui.MenuBar"/>
   static member menuBar(set: menuBarProps -> menuBarMacros -> unit) =
     let props = menuBarProps ()
-    let macros = menuBarMacros (props)
+    let macros = menuBarMacros props
     set props macros
     MenuBarElement(props.props) :> ITerminalElement
 
@@ -492,7 +482,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Menu"/>
   static member menu(set: menuProps -> unit) =
     let view = menuProps ()
-    set (view)
+    set view
     MenuElement(view.props) :> IMenuElement
 
   static member menu(children: ITerminalElement list) =
@@ -513,23 +503,23 @@ type View =
 
   static member menuBarItem(set: menuBarItemProps -> unit) =
     let view = menuBarItemProps ()
-    set (view)
+    set view
     MenuBarItemElement(view.props) :> IMenuBarItemElement
 
   static member popoverMenu(set: popoverMenuProps -> unit) =
     let view = popoverMenuProps ()
-    set (view)
+    set view
     PopoverMenuElement(view.props) :> IPopoverMenuElement
 
   static member menuItem(set: menuItemProps -> unit) =
     let view = menuItemProps ()
-    set (view)
+    set view
     MenuItemElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.NumericUpDown"/>
   static member numericUpDown(set: numericUpDownProps -> unit) =
     let view = numericUpDownProps ()
-    set (view)
+    set view
     NumericUpDownElement(view.props) :> ITerminalElement
 
   static member numericUpDown(children: ITerminalElement list) =
@@ -551,7 +541,7 @@ type View =
   /// <seealso cref="Terminal.Gui.NumericUpDown"/>
   static member numericUpDown<'a>(set: numericUpDownProps<'a> -> unit) =
     let view = numericUpDownProps<'a> ()
-    set (view)
+    set view
     NumericUpDownElement<'a>(view.props) :> INumericUpDownElement
 
   static member numericUpDown<'a>(children: ITerminalElement list) =
@@ -573,7 +563,7 @@ type View =
   /// <seealso cref="Terminal.Gui.OpenDialog"/>
   static member openDialog(set: openDialogProps -> unit) =
     let view = openDialogProps ()
-    set (view)
+    set view
     OpenDialogElement(view.props) :> ITerminalElement
 
   static member openDialog(children: ITerminalElement list) =
@@ -595,18 +585,18 @@ type View =
   static member optionSelector(set: optionSelectorProps -> unit) =
     // TODO: rename view -> props everywhere in the file
     let view = optionSelectorProps ()
-    set (view)
+    set view
     OptionSelectorElement(view.props) :> ITerminalElement
 
   static member flagSelector(set: flagSelectorProps -> unit) =
     let view = flagSelectorProps ()
-    set (view)
+    set view
     FlagSelectorElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.Padding"/>
   static member padding(set: paddingProps -> unit) =
     let view = paddingProps ()
-    set (view)
+    set view
     PaddingElement(view.props) :> ITerminalElement
 
   static member padding(children: ITerminalElement list) =
@@ -628,7 +618,7 @@ type View =
   /// <seealso cref="Terminal.Gui.ProgressBar"/>
   static member progressBar(set: progressBarProps -> unit) =
     let view = progressBarProps ()
-    set (view)
+    set view
     ProgressBarElement(view.props) :> ITerminalElement
 
   static member progressBar(children: ITerminalElement list) =
@@ -650,7 +640,7 @@ type View =
   /// <seealso cref="Terminal.Gui.SaveDialog"/>
   static member saveDialog(set: saveDialogProps -> unit) =
     let view = saveDialogProps ()
-    set (view)
+    set view
     SaveDialogElement(view.props) :> ITerminalElement
 
   static member saveDialog(children: ITerminalElement list) =
@@ -672,7 +662,7 @@ type View =
   /// <seealso cref="Terminal.Gui.ScrollBar"/>
   static member scrollBar(set: scrollBarProps -> unit) =
     let view = scrollBarProps ()
-    set (view)
+    set view
     ScrollBarElement(view.props) :> ITerminalElement
 
   static member scrollBar(children: ITerminalElement list) =
@@ -694,7 +684,7 @@ type View =
   /// <seealso cref="Terminal.Gui.ScrollSlider"/>
   static member scrollSlider(set: scrollSliderProps -> unit) =
     let view = scrollSliderProps ()
-    set (view)
+    set view
     ScrollSliderElement(view.props) :> ITerminalElement
 
   static member scrollSlider(children: ITerminalElement list) =
@@ -716,7 +706,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Shortcut"/>
   static member shortcut(set: shortcutProps -> unit) =
     let view = shortcutProps ()
-    set (view)
+    set view
     ShortcutElement(view.props) :> ITerminalElement
 
   static member shortcut(children: ITerminalElement list) =
@@ -738,7 +728,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Slider"/>
   static member slider(set: sliderProps -> unit) =
     let view = sliderProps ()
-    set (view)
+    set view
     SliderElement(view.props) :> ITerminalElement
 
   static member slider(children: ITerminalElement list) =
@@ -761,7 +751,7 @@ type View =
   static member slider<'a>(set: sliderProps<'a> -> unit) =
     let view = sliderProps<'a> ()
 
-    set (view)
+    set view
     SliderElement<'a>(view.props)
     : ISliderElement
 
@@ -788,7 +778,7 @@ type View =
   /// <seealso cref="Terminal.Gui.SpinnerView"/>
   static member spinnerView(set: spinnerViewProps -> unit) =
     let view = spinnerViewProps ()
-    set (view)
+    set view
     SpinnerViewElement(view.props) :> ITerminalElement
 
   static member spinnerView(children: ITerminalElement list) =
@@ -810,7 +800,7 @@ type View =
   /// <seealso cref="Terminal.Gui.StatusBar"/>
   static member statusBar(set: statusBarProps -> unit) =
     let view = statusBarProps ()
-    set (view)
+    set view
     StatusBarElement(view.props) :> ITerminalElement
 
   static member statusBar(children: ITerminalElement list) =
@@ -832,7 +822,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Tab"/>
   static member tab(set: tabProps -> unit) =
     let view = tabProps ()
-    set (view)
+    set view
     TabElement(view.props) :> ITerminalElement
 
   static member tab(children: ITerminalElement list) =
@@ -854,7 +844,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TabView"/>
   static member tabView(set: tabViewProps -> unit) =
     let view = tabViewProps ()
-    set (view)
+    set view
     TabViewElement(view.props) :> ITerminalElement
 
   static member tabView(children: ITerminalElement list) =
@@ -876,7 +866,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TableView"/>
   static member tableView(set: tableViewProps -> unit) =
     let view = tableViewProps ()
-    set (view)
+    set view
     TableViewElement(view.props) :> ITerminalElement
 
   static member tableView(children: ITerminalElement list) =
@@ -898,7 +888,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TextField"/>
   static member textField(set: textFieldProps -> unit) =
     let view = textFieldProps ()
-    set (view)
+    set view
     TextFieldElement(view.props) :> ITerminalElement
 
   static member textField(children: ITerminalElement list) =
@@ -920,7 +910,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TextValidateField"/>
   static member textValidateField(set: textValidateFieldProps -> unit) =
     let view = textValidateFieldProps ()
-    set (view)
+    set view
     TextValidateFieldElement(view.props) :> ITerminalElement
 
   static member textValidateField(children: ITerminalElement list) =
@@ -942,7 +932,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TextView"/>
   static member textView(set: textViewProps -> unit) =
     let view = textViewProps ()
-    set (view)
+    set view
     TextViewElement(view.props) :> ITerminalElement
 
   static member textView(children: ITerminalElement list) =
@@ -964,7 +954,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TimeField"/>
   static member timeField(set: timeFieldProps -> unit) =
     let view = timeFieldProps ()
-    set (view)
+    set view
     TimeFieldElement(view.props) :> ITerminalElement
 
   static member timeField(children: ITerminalElement list) =
@@ -983,32 +973,32 @@ type View =
     setProps view
     TimeFieldElement(view.props) :> ITerminalElement
 
-  /// <seealso cref="Terminal.Gui.Toplevel"/>
-  static member toplevel(set: toplevelProps -> unit) =
-    let view = toplevelProps ()
-    set (view)
-    ToplevelElement(view.props) :> ITerminalElement
+  /// <seealso cref="Terminal.Gui.ViewBase.Runnable"/>
+  static member runnable(set: runnableProps -> unit) =
+    let view = runnableProps ()
+    set view
+    RunnableElement(view.props) :> ITerminalElement
 
-  static member toplevel(children: ITerminalElement list) =
-    let view = toplevelProps ()
+  static member runnable(children: ITerminalElement list) =
+    let view = runnableProps ()
     view.children children
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
-  static member toplevel(x: int, y: int, title: string) =
+  static member runnable(x: int, y: int, title: string) =
     let setProps =
-      fun (p: toplevelProps) ->
+      fun (p: runnableProps) ->
         p.x (Pos.Absolute(x))
         p.y (Pos.Absolute(y))
         p.title title
 
-    let view = toplevelProps ()
+    let view = runnableProps ()
     setProps view
-    ToplevelElement(view.props) :> ITerminalElement
+    RunnableElement(view.props) :> ITerminalElement
 
   /// <seealso cref="Terminal.Gui.TreeView"/>
   static member treeView(set: treeViewProps -> unit) =
     let view = treeViewProps ()
-    set (view)
+    set view
     TreeViewElement(view.props) :> ITerminalElement
 
   static member treeView(children: ITerminalElement list) =
@@ -1030,7 +1020,7 @@ type View =
   /// <seealso cref="Terminal.Gui.TreeView"/>
   static member treeView<'a when 'a: not struct>(set: treeViewProps<'a> -> unit) =
     let view = treeViewProps<'a> ()
-    set (view)
+    set view
     TreeViewElement<'a>(view.props) :> ITreeViewElement
 
   static member treeView<'a when 'a: not struct>(children: ITerminalElement list) =
@@ -1052,7 +1042,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Window"/>
   static member window(set: windowProps -> unit) =
     let view = windowProps ()
-    set (view)
+    set view
     WindowElement(view.props) :> ITerminalElement
 
   static member window(children: ITerminalElement list) =
@@ -1074,7 +1064,7 @@ type View =
   /// <seealso cref="Terminal.Gui.Wizard"/>
   static member wizard(set: wizardProps -> unit) =
     let view = wizardProps ()
-    set (view)
+    set view
     WizardElement(view.props) :> ITerminalElement
 
   static member wizard(children: ITerminalElement list) =
@@ -1096,7 +1086,7 @@ type View =
   /// <seealso cref="Terminal.Gui.WizardStep"/>
   static member wizardStep(set: wizardStepProps -> unit) =
     let view = wizardStepProps ()
-    set (view)
+    set view
     WizardStepElement(view.props) :> ITerminalElement
 
   static member wizardStep(children: ITerminalElement list) =
@@ -1117,14 +1107,14 @@ type View =
 
 module Dialogs =
   let showWizard (wizard: Wizard) =
-    ApplicationImpl.Instance.Run(wizard)
+    ApplicationImpl.Instance.Run(wizard) |> ignore
     wizard.Dispose()
     ()
 
 
   let openFileDialog title =
     use dia = new OpenDialog(Title = title)
-    ApplicationImpl.Instance.Run(dia)
+    ApplicationImpl.Instance.Run(dia) |> ignore
     dia.Dispose()
     //Application.Top.Remove(dia) |> ignore
     if dia.Canceled then
@@ -1142,22 +1132,3 @@ module Dialogs =
 
       file
 
-
-  let messageBox (width: int) height title text (buttons: string list) =
-    let result =
-      MessageBox.Query(width, height, title, text, buttons |> List.toArray)
-
-    match buttons with
-    | [] -> ""
-    | _ when result < 0 || result > buttons.Length - 1 -> ""
-    | _ -> buttons.[result]
-
-
-  let errorBox (width: int) height title text (buttons: string list) =
-    let result =
-      MessageBox.ErrorQuery(width, height, title, text, buttons |> List.toArray)
-
-    match buttons with
-    | [] -> ""
-    | _ when result < 0 || result > buttons.Length - 1 -> ""
-    | _ -> buttons.[result]

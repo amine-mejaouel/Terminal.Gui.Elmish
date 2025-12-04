@@ -4076,104 +4076,82 @@ type TimeFieldElement(props: Props) =
 
   override this.newView() = new TimeField()
 
-// Toplevel
-type ToplevelElement(props: Props) =
+// Runnable
+type RunnableElement(props: Props) =
   inherit TerminalElement(props)
 
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
-    let element = element :?> Toplevel
+    let element = element :?> Runnable
     // Properties
     props
-    |> Props.tryFind PKey.toplevel.modal
-    |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.runnable.isModal
+    |> Option.iter (fun _ -> element.SetIsModal(Unchecked.defaultof<_>))
 
     props
-    |> Props.tryFind PKey.toplevel.running
-    |> Option.iter (fun _ -> element.Running <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.runnable.isRunning
+    |> Option.iter (fun _ -> element.SetIsRunning(Unchecked.defaultof<_>))
+
+    props
+    |> Props.tryFind PKey.runnable.stopRequested
+    |> Option.iter (fun _ -> element.StopRequested <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.runnable.result
+    |> Option.iter (fun _ -> element.Result <- Unchecked.defaultof<_>)
+
     // Events
     props
-    |> Props.tryFind PKey.toplevel.activate
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Activate @> element)
+    |> Props.tryFind PKey.runnable.isRunningChanging
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.IsRunningChanging @> element)
 
     props
-    |> Props.tryFind PKey.toplevel.closed
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Closed @> element)
+    |> Props.tryFind PKey.runnable.isRunningChanged
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.IsRunningChanged @> element)
 
     props
-    |> Props.tryFind PKey.toplevel.closing
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Closing @> element)
+    |> Props.tryFind PKey.runnable.isModalChanged
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.IsModalChanged @> element)
 
-    props
-    |> Props.tryFind PKey.toplevel.deactivate
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Deactivate @> element)
-
-    props
-    |> Props.tryFind PKey.toplevel.loaded
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Loaded @> element)
-
-    props
-    |> Props.tryFind PKey.toplevel.ready
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Ready @> element)
-
-    props
-    |> Props.tryFind PKey.toplevel.sizeChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SizeChanging @> element)
-
-    props
-    |> Props.tryFind PKey.toplevel.unloaded
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Unloaded @> element)
-
-  override _.name = $"Toplevel"
+  override _.name = $"Runnable"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
-    let element = element :?> Toplevel
+    let element = element :?> Runnable
 
     // Properties
     props
-    |> Props.tryFind PKey.toplevel.modal
-    |> Option.iter (fun v -> element.Modal <- v)
+    |> Props.tryFind PKey.runnable.isModal
+    |> Option.iter (fun v -> element.SetIsModal(v))
 
     props
-    |> Props.tryFind PKey.toplevel.running
-    |> Option.iter (fun v -> element.Running <- v)
+    |> Props.tryFind PKey.runnable.isRunning
+    |> Option.iter (fun v -> element.SetIsRunning(v))
+
+    props
+    |> Props.tryFind PKey.runnable.stopRequested
+    |> Option.iter (fun v -> element.StopRequested <- v)
+
+    props
+    |> Props.tryFind PKey.runnable.result
+    |> Option.iter (fun v -> element.Result <- v)
+
     // Events
     props
-    |> Props.tryFind PKey.toplevel.activate
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Activate @> v element)
+    |> Props.tryFind PKey.runnable.isRunningChanging
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.IsRunningChanging @> v element)
 
     props
-    |> Props.tryFind PKey.toplevel.closed
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Closed @> v element)
+    |> Props.tryFind PKey.runnable.isRunningChanged
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.IsRunningChanged @> v element)
 
     props
-    |> Props.tryFind PKey.toplevel.closing
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Closing @> v element)
-
-    props
-    |> Props.tryFind PKey.toplevel.deactivate
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Deactivate @> v element)
-
-    props
-    |> Props.tryFind PKey.toplevel.loaded
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Loaded @> (fun _ -> v ()) element)
-
-    props
-    |> Props.tryFind PKey.toplevel.ready
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Ready @> (fun _ -> v ()) element)
-
-    props
-    |> Props.tryFind PKey.toplevel.sizeChanging
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.SizeChanging @> v element)
-
-    props
-    |> Props.tryFind PKey.toplevel.unloaded
-    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Unloaded @> (fun _ -> v ()) element)
+    |> Props.tryFind PKey.runnable.isModalChanged
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.IsModalChanged @> v element)
 
 
-  override this.newView() = new Toplevel()
+  override this.newView() = new Runnable()
 
 
 // TreeView<'a when 'a : not struct>
@@ -4350,7 +4328,7 @@ type WizardElement(props: Props) =
 
     props
     |> Props.tryFind PKey.wizard.modal
-    |> Option.iter (fun _ -> element.Modal <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SetIsModal(Unchecked.defaultof<_>))
     // Events
     props
     |> Props.tryFind PKey.wizard.cancelled
@@ -4390,7 +4368,7 @@ type WizardElement(props: Props) =
 
     props
     |> Props.tryFind PKey.wizard.modal
-    |> Option.iter (fun v -> element.Modal <- v)
+    |> Option.iter (fun v -> element.SetIsModal(v))
     // Events
     props
     |> Props.tryFind PKey.wizard.cancelled

@@ -281,6 +281,11 @@ type TerminalElement(props: Props) =
   static member logEvent(propertyName: string, eventType: string) =
     eventLog.[propertyName] <- eventType
 
+  static member clearEventLog() =
+    eventLog.Clear()
+
+  static member EventLog = eventLog
+
   abstract setProps: element: View * props: Props -> unit
 
   default this.setProps(element: View, props: Props) =

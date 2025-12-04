@@ -1107,14 +1107,18 @@ type View =
 
 module Dialogs =
   let showWizard (wizard: Wizard) =
-    ApplicationImpl.Instance.Run(wizard) |> ignore
+    // TODO: this component should be tested
+    // TODO: probably here and elmish component could be used
+    // ApplicationImpl.Instance.Run(wizard) |> ignore
     wizard.Dispose()
     ()
 
 
   let openFileDialog title =
     use dia = new OpenDialog(Title = title)
-    ApplicationImpl.Instance.Run(dia) |> ignore
+    // TODO: this component should be tested
+    // TODO: probably here and elmish component could be used
+    // ApplicationImpl.Instance.Run(dia) |> ignore
     dia.Dispose()
     //Application.Top.Remove(dia) |> ignore
     if dia.Canceled then

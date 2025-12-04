@@ -8,12 +8,17 @@ type private Msg =
 
 type private ComponentModel = { Text: string }
 
-type Props() =
-  // TODO-ELMISH-COMPONENT: raw properties should not be visible.
+type IProps =
+  abstract member y: TPos -> unit
+
+type private Props() =
   member val y_value: TPos option = None with get, set
   member this.y (pos: TPos) = this.y_value <- Some pos
 
-let _component (set: Props -> unit) =
+  interface IProps with
+    member this.y pos = this.y pos
+
+let _component (set: IProps -> unit) =
 
   let props = Props()
   set props

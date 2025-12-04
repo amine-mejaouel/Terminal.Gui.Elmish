@@ -52,13 +52,13 @@ module internal Differ =
 
     if cve1 <> cve2 then Some() else None
 
-  // Tail-recursive version using an explicit work stack
+  // Tail-recursive version using an explicit work queue
   let update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
-    let workStack = System.Collections.Generic.Stack<IInternalTerminalElement * IInternalTerminalElement>()
-    workStack.Push((prevTree, newTree))
+    let workQueue = System.Collections.Generic.Queue<IInternalTerminalElement * IInternalTerminalElement>()
+    workQueue.Enqueue((prevTree, newTree))
     
-    while workStack.Count > 0 do
-      let (prevTree, newTree) = workStack.Pop()
+    while workQueue.Count > 0 do
+      let (prevTree, newTree) = workQueue.Dequeue()
       
       match prevTree, newTree with
       | rt, nt when rt.name <> nt.name ->
@@ -101,9 +101,9 @@ module internal Differ =
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
-        // Push child updates onto the stack in reverse order to maintain processing order
+        // Enqueue child updates to maintain processing order
         (sortedRootChildren, sortedNewChildren)
-        ||> List.iter2 (fun rt nt -> workStack.Push((rt, nt)))
+        ||> List.iter2 (fun rt nt -> workQueue.Enqueue((rt, nt)))
       | ChildsDifferent ->
         if newTree.canReuseView prevTree.view prevTree.props then
           newTree.reuse prevTree.view prevTree.props
@@ -158,7 +158,7 @@ module internal Differ =
             newElements
             |> List.iteri (fun idx ne ->
               if (idx + 1 <= rootElements.Length) then
-                workStack.Push((rootElements.[idx], ne))
+                workQueue.Enqueue((rootElements.[idx], ne))
               else
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
@@ -178,7 +178,7 @@ module internal Differ =
             rootElements
             |> List.iteri (fun idx re ->
               if (idx + 1 <= newElements.Length) then
-                workStack.Push((re, newElements.[idx]))
+                workQueue.Enqueue((re, newElements.[idx]))
               else
                 // the rest we remove
                 re.view |> prevTree.view.Remove |> ignore

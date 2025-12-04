@@ -125,7 +125,7 @@ module internal ViewElement =
 [<AbstractClass>]
 type TerminalElement(props: Props) =
 
-  static let eventLog = Dictionary<string, string>()
+  let setEventHandlers = Collections.Generic.HashSet<string>()
 
   let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
 
@@ -278,13 +278,14 @@ type TerminalElement(props: Props) =
           | _ -> failwith "Out of range subElement type"
     }
 
-  static member logEvent(propertyName: string, eventType: string) =
-    eventLog.[propertyName] <- eventType
+  member this.trackEventHandler(eventName: string) =
+    setEventHandlers.Add(eventName) |> ignore
 
-  static member clearEventLog() =
-    eventLog.Clear()
+  member this.removeTrackedEventHandler(eventName: string) =
+    setEventHandlers.Remove(eventName) |> ignore
 
-  static member EventLog = eventLog
+  member this.isEventHandlerTracked(eventName: string) =
+    setEventHandlers.Contains(eventName)
 
   abstract setProps: element: View * props: Props -> unit
 
@@ -292,1030 +293,890 @@ type TerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.view.arrangement
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("arrangement", "set")
-      element.Arrangement <- v)
+    |> Option.iter (fun v -> element.Arrangement <- v)
 
     props
     |> Props.tryFind PKey.view.borderStyle
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("borderStyle", "set")
-      element.BorderStyle <- v)
+    |> Option.iter (fun v -> element.BorderStyle <- v)
 
     props
     |> Props.tryFind PKey.view.canFocus
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("canFocus", "set")
-      element.CanFocus <- v)
+    |> Option.iter (fun v -> element.CanFocus <- v)
 
     props
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("contentSizeTracksViewport", "set")
-      element.ContentSizeTracksViewport <- v)
+    |> Option.iter (fun v -> element.ContentSizeTracksViewport <- v)
 
     props
     |> Props.tryFind PKey.view.cursorVisibility
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("cursorVisibility", "set")
-      element.CursorVisibility <- v)
+    |> Option.iter (fun v -> element.CursorVisibility <- v)
 
     props
     |> Props.tryFind PKey.view.data
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("data", "set")
-      element.Data <- v)
+    |> Option.iter (fun v -> element.Data <- v)
 
     props
     |> Props.tryFind PKey.view.enabled
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("enabled", "set")
-      element.Enabled <- v)
+    |> Option.iter (fun v -> element.Enabled <- v)
 
     props
     |> Props.tryFind PKey.view.frame
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("frame", "set")
-      element.Frame <- v)
+    |> Option.iter (fun v -> element.Frame <- v)
 
     props
     |> Props.tryFind PKey.view.hasFocus
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hasFocus", "set")
-      element.HasFocus <- v)
+    |> Option.iter (fun v -> element.HasFocus <- v)
 
     props
     |> Props.tryFind PKey.view.height
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("height", "set")
-      element.Height <- v)
+    |> Option.iter (fun v -> element.Height <- v)
 
     props
     |> Props.tryFind PKey.view.highlightStates
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("highlightStates", "set")
-      element.HighlightStates <- v)
+    |> Option.iter (fun v -> element.HighlightStates <- v)
 
     props
     |> Props.tryFind PKey.view.hotKey
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hotKey", "set")
-      element.HotKey <- v)
+    |> Option.iter (fun v -> element.HotKey <- v)
 
     props
     |> Props.tryFind PKey.view.hotKeySpecifier
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hotKeySpecifier", "set")
-      element.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> element.HotKeySpecifier <- v)
 
     props
     |> Props.tryFind PKey.view.id
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("id", "set")
-      element.Id <- v)
+    |> Option.iter (fun v -> element.Id <- v)
 
     props
     |> Props.tryFind PKey.view.isInitialized
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("isInitialized", "set")
-      element.IsInitialized <- v)
+    |> Option.iter (fun v -> element.IsInitialized <- v)
 
     props
     |> Props.tryFind PKey.view.mouseHeldDown
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseHeldDown", "set")
-      element.MouseHeldDown <- v)
+    |> Option.iter (fun v -> element.MouseHeldDown <- v)
 
     props
     |> Props.tryFind PKey.view.needsDraw
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("needsDraw", "set")
-      element.NeedsDraw <- v)
+    |> Option.iter (fun v -> element.NeedsDraw <- v)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("preserveTrailingSpaces", "set")
-      element.PreserveTrailingSpaces <- v)
+    |> Option.iter (fun v -> element.PreserveTrailingSpaces <- v)
 
     props
     |> Props.tryFind PKey.view.schemeName
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("schemeName", "set")
-      element.SchemeName <- v)
+    |> Option.iter (fun v -> element.SchemeName <- v)
 
     props
     |> Props.tryFind PKey.view.shadowStyle
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("shadowStyle", "set")
-      element.ShadowStyle <- v)
+    |> Option.iter (fun v -> element.ShadowStyle <- v)
 
     props
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("superViewRendersLineCanvas", "set")
-      element.SuperViewRendersLineCanvas <- v)
+    |> Option.iter (fun v -> element.SuperViewRendersLineCanvas <- v)
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("tabStop", "set")
-      element.TabStop <- v |> Option.toNullable)
+    |> Option.iter (fun v -> element.TabStop <- v |> Option.toNullable)
 
     props
     |> Props.tryFind PKey.view.text
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("text", "set")
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
     props
     |> Props.tryFind PKey.view.textAlignment
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("textAlignment", "set")
-      element.TextAlignment <- v)
+    |> Option.iter (fun v -> element.TextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.textDirection
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("textDirection", "set")
-      element.TextDirection <- v)
+    |> Option.iter (fun v -> element.TextDirection <- v)
 
     props
     |> Props.tryFind PKey.view.title
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("title", "set")
-      element.Title <- v)
+    |> Option.iter (fun v -> element.Title <- v)
 
     props
     |> Props.tryFind PKey.view.validatePosDim
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("validatePosDim", "set")
-      element.ValidatePosDim <- v)
+    |> Option.iter (fun v -> element.ValidatePosDim <- v)
 
     props
     |> Props.tryFind PKey.view.verticalTextAlignment
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("verticalTextAlignment", "set")
-      element.VerticalTextAlignment <- v)
+    |> Option.iter (fun v -> element.VerticalTextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.viewport
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("viewport", "set")
-      element.Viewport <- v)
+    |> Option.iter (fun v -> element.Viewport <- v)
 
     props
     |> Props.tryFind PKey.view.viewportSettings
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("viewportSettings", "set")
-      element.ViewportSettings <- v)
+    |> Option.iter (fun v -> element.ViewportSettings <- v)
 
     props
     |> Props.tryFind PKey.view.visible
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("visible", "set")
-      element.Visible <- v)
+    |> Option.iter (fun v -> element.Visible <- v)
 
     props
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("wantContinuousButtonPressed", "set")
-      element.WantContinuousButtonPressed <- v)
+    |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v)
 
     props
     |> Props.tryFind PKey.view.wantMousePositionReports
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("wantMousePositionReports", "set")
-      element.WantMousePositionReports <- v)
+    |> Option.iter (fun v -> element.WantMousePositionReports <- v)
 
     props
     |> Props.tryFind PKey.view.width
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("width", "set")
-      element.Width <- v)
+    |> Option.iter (fun v -> element.Width <- v)
 
     props
     |> Props.tryFind PKey.view.x
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("x", "set")
-      element.X <- v)
+    |> Option.iter (fun v -> element.X <- v)
 
     props
     |> Props.tryFind PKey.view.y
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("y", "set")
-      element.Y <- v)
+    |> Option.iter (fun v -> element.Y <- v)
     // Events
     props
     |> Props.tryFind PKey.view.accepting
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("accepting", "set")
-      Interop.setEventHandler <@ element.Accepting @> v element)
+      Interop.setEventHandler <@ element.Accepting @> v element
+      this.trackEventHandler("accepting"))
 
     props
     |> Props.tryFind PKey.view.advancingFocus
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("advancingFocus", "set")
-      Interop.setEventHandler <@ element.AdvancingFocus @> v element)
+      Interop.setEventHandler <@ element.AdvancingFocus @> v element
+      this.trackEventHandler("advancingFocus"))
 
     props
     |> Props.tryFind PKey.view.borderStyleChanged
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("borderStyleChanged", "set")
-      Interop.setEventHandler <@ element.BorderStyleChanged @> v element)
+      Interop.setEventHandler <@ element.BorderStyleChanged @> v element
+      this.trackEventHandler("borderStyleChanged"))
 
     props
     |> Props.tryFind PKey.view.canFocusChanged
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("canFocusChanged", "set")
-      Interop.setEventHandler <@ element.CanFocusChanged @> (fun _ -> v ()) element)
+      Interop.setEventHandler <@ element.CanFocusChanged @> (fun _ -> v ()) element
+      this.trackEventHandler("canFocusChanged"))
 
     props
     |> Props.tryFind PKey.view.clearedViewport
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("clearedViewport", "set")
-      Interop.setEventHandler <@ element.ClearedViewport @> v element)
+      Interop.setEventHandler <@ element.ClearedViewport @> v element
+      this.trackEventHandler("clearedViewport"))
 
     props
+
+
     |> Props.tryFind PKey.view.clearingViewport
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("clearingViewport", "set")
-      Interop.setEventHandler <@ element.ClearingViewport @> v element)
+
+
+      Interop.setEventHandler <@ element.ClearingViewport @> v element
+
+
+      this.trackEventHandler("clearingViewport"))
 
     props
+
+
     |> Props.tryFind PKey.view.commandNotBound
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("commandNotBound", "set")
-      Interop.setEventHandler <@ element.CommandNotBound @> v element)
+
+
+      Interop.setEventHandler <@ element.CommandNotBound @> v element
+
+
+      this.trackEventHandler("commandNotBound"))
 
     props
+
+
     |> Props.tryFind PKey.view.contentSizeChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("contentSizeChanged", "set")
-      Interop.setEventHandler <@ element.ContentSizeChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.ContentSizeChanged @> v element
+
+
+      this.trackEventHandler("contentSizeChanged"))
 
     props
     |> Props.tryFind PKey.view.disposing
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("disposing", "set")
-      Interop.setEventHandler <@ element.Disposing @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Disposing @> (fun _ -> v ()) element)
 
     props
+
+
     |> Props.tryFind PKey.view.drawComplete
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("drawComplete", "set")
-      Interop.setEventHandler <@ element.DrawComplete @> v element)
+
+
+      Interop.setEventHandler <@ element.DrawComplete @> v element
+
+
+      this.trackEventHandler("drawComplete"))
 
     props
+
+
     |> Props.tryFind PKey.view.drawingContent
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("drawingContent", "set")
-      Interop.setEventHandler <@ element.DrawingContent @> v element)
+
+
+      Interop.setEventHandler <@ element.DrawingContent @> v element
+
+
+      this.trackEventHandler("drawingContent"))
 
     props
+
+
     |> Props.tryFind PKey.view.drawingSubViews
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("drawingSubViews", "set")
-      Interop.setEventHandler <@ element.DrawingSubViews @> v element)
+
+
+      Interop.setEventHandler <@ element.DrawingSubViews @> v element
+
+
+      this.trackEventHandler("drawingSubViews"))
 
     props
+
+
     |> Props.tryFind PKey.view.drawingText
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("drawingText", "set")
-      Interop.setEventHandler <@ element.DrawingText @> v element)
+
+
+      Interop.setEventHandler <@ element.DrawingText @> v element
+
+
+      this.trackEventHandler("drawingText"))
 
     props
     |> Props.tryFind PKey.view.enabledChanged
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("enabledChanged", "set")
-      Interop.setEventHandler <@ element.EnabledChanged @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.EnabledChanged @> (fun _ -> v ()) element)
 
     props
+
+
     |> Props.tryFind PKey.view.focusedChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("focusedChanged", "set")
-      Interop.setEventHandler <@ element.FocusedChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.FocusedChanged @> v element
+
+
+      this.trackEventHandler("focusedChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.frameChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("frameChanged", "set")
-      Interop.setEventHandler <@ element.FrameChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.FrameChanged @> v element
+
+
+      this.trackEventHandler("frameChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.gettingAttributeForRole
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("gettingAttributeForRole", "set")
-      Interop.setEventHandler <@ element.GettingAttributeForRole @> v element)
+
+
+      Interop.setEventHandler <@ element.GettingAttributeForRole @> v element
+
+
+      this.trackEventHandler("gettingAttributeForRole"))
 
     props
+
+
     |> Props.tryFind PKey.view.gettingScheme
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("gettingScheme", "set")
-      Interop.setEventHandler <@ element.GettingScheme @> v element)
+
+
+      Interop.setEventHandler <@ element.GettingScheme @> v element
+
+
+      this.trackEventHandler("gettingScheme"))
 
     props
+
+
     |> Props.tryFind PKey.view.handlingHotKey
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("handlingHotKey", "set")
-      Interop.setEventHandler <@ element.HandlingHotKey @> v element)
+
+
+      Interop.setEventHandler <@ element.HandlingHotKey @> v element
+
+
+      this.trackEventHandler("handlingHotKey"))
 
     props
+
+
     |> Props.tryFind PKey.view.hasFocusChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hasFocusChanged", "set")
-      Interop.setEventHandler <@ element.HasFocusChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.HasFocusChanged @> v element
+
+
+      this.trackEventHandler("hasFocusChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.hasFocusChanging
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hasFocusChanging", "set")
-      Interop.setEventHandler <@ element.HasFocusChanging @> v element)
+
+
+      Interop.setEventHandler <@ element.HasFocusChanging @> v element
+
+
+      this.trackEventHandler("hasFocusChanging"))
 
     props
+
+
     |> Props.tryFind PKey.view.hotKeyChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("hotKeyChanged", "set")
-      Interop.setEventHandler <@ element.HotKeyChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.HotKeyChanged @> v element
+
+
+      this.trackEventHandler("hotKeyChanged"))
 
     props
     |> Props.tryFind PKey.view.initialized
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("initialized", "set")
-      Interop.setEventHandler <@ element.Initialized @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Initialized @> (fun _ -> v ()) element)
 
     props
+
+
     |> Props.tryFind PKey.view.keyDown
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("keyDown", "set")
-      Interop.setEventHandler <@ element.KeyDown @> v element)
+
+
+      Interop.setEventHandler <@ element.KeyDown @> v element
+
+
+      this.trackEventHandler("keyDown"))
 
     props
+
+
     |> Props.tryFind PKey.view.keyDownNotHandled
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("keyDownNotHandled", "set")
-      Interop.setEventHandler <@ element.KeyDownNotHandled @> v element)
+
+
+      Interop.setEventHandler <@ element.KeyDownNotHandled @> v element
+
+
+      this.trackEventHandler("keyDownNotHandled"))
 
     props
+
+
     |> Props.tryFind PKey.view.keyUp
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("keyUp", "set")
-      Interop.setEventHandler <@ element.KeyUp @> v element)
+
+
+      Interop.setEventHandler <@ element.KeyUp @> v element
+
+
+      this.trackEventHandler("keyUp"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseClick
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseClick", "set")
-      Interop.setEventHandler <@ element.MouseClick @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseClick @> v element
+
+
+      this.trackEventHandler("mouseClick"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseEnter
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseEnter", "set")
-      Interop.setEventHandler <@ element.MouseEnter @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseEnter @> v element
+
+
+      this.trackEventHandler("mouseEnter"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseEvent
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseEvent", "set")
-      Interop.setEventHandler <@ element.MouseEvent @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseEvent @> v element
+
+
+      this.trackEventHandler("mouseEvent"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseLeave
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseLeave", "set")
-      Interop.setEventHandler <@ element.MouseLeave @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseLeave @> v element
+
+
+      this.trackEventHandler("mouseLeave"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseStateChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseStateChanged", "set")
-      Interop.setEventHandler <@ element.MouseStateChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseStateChanged @> v element
+
+
+      this.trackEventHandler("mouseStateChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.mouseWheel
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("mouseWheel", "set")
-      Interop.setEventHandler <@ element.MouseWheel @> v element)
+
+
+      Interop.setEventHandler <@ element.MouseWheel @> v element
+
+
+      this.trackEventHandler("mouseWheel"))
 
     props
+
+
     |> Props.tryFind PKey.view.removed
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("removed", "set")
-      Interop.setEventHandler <@ element.Removed @> v element)
+
+
+      Interop.setEventHandler <@ element.Removed @> v element
+
+
+      this.trackEventHandler("removed"))
 
     props
+
+
     |> Props.tryFind PKey.view.schemeChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("schemeChanged", "set")
-      Interop.setEventHandler <@ element.SchemeChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.SchemeChanged @> v element
+
+
+      this.trackEventHandler("schemeChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.schemeChanging
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("schemeChanging", "set")
-      Interop.setEventHandler <@ element.SchemeChanging @> v element)
+
+
+      Interop.setEventHandler <@ element.SchemeChanging @> v element
+
+
+      this.trackEventHandler("schemeChanging"))
 
     props
+
+
     |> Props.tryFind PKey.view.schemeNameChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("schemeNameChanged", "set")
-      Interop.setEventHandler <@ element.SchemeNameChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.SchemeNameChanged @> v element
+
+
+      this.trackEventHandler("schemeNameChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.schemeNameChanging
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("schemeNameChanging", "set")
-      Interop.setEventHandler <@ element.SchemeNameChanging @> v element)
+
+
+      Interop.setEventHandler <@ element.SchemeNameChanging @> v element
+
+
+      this.trackEventHandler("schemeNameChanging"))
 
     props
+
+
     |> Props.tryFind PKey.view.selecting
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("selecting", "set")
-      Interop.setEventHandler <@ element.Selecting @> v element)
+
+
+      Interop.setEventHandler <@ element.Selecting @> v element
+
+
+      this.trackEventHandler("selecting"))
 
     props
+
+
     |> Props.tryFind PKey.view.subViewAdded
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("subViewAdded", "set")
-      Interop.setEventHandler <@ element.SubViewAdded @> v element)
+
+
+      Interop.setEventHandler <@ element.SubViewAdded @> v element
+
+
+      this.trackEventHandler("subViewAdded"))
 
     props
+
+
     |> Props.tryFind PKey.view.subViewLayout
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("subViewLayout", "set")
-      Interop.setEventHandler <@ element.SubViewLayout @> v element)
+
+
+      Interop.setEventHandler <@ element.SubViewLayout @> v element
+
+
+      this.trackEventHandler("subViewLayout"))
 
     props
+
+
     |> Props.tryFind PKey.view.subViewRemoved
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("subViewRemoved", "set")
-      Interop.setEventHandler <@ element.SubViewRemoved @> v element)
+
+
+      Interop.setEventHandler <@ element.SubViewRemoved @> v element
+
+
+      this.trackEventHandler("subViewRemoved"))
 
     props
+
+
     |> Props.tryFind PKey.view.subViewsLaidOut
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("subViewsLaidOut", "set")
-      Interop.setEventHandler <@ element.SubViewsLaidOut @> v element)
+
+
+      Interop.setEventHandler <@ element.SubViewsLaidOut @> v element
+
+
+      this.trackEventHandler("subViewsLaidOut"))
 
     props
+
+
     |> Props.tryFind PKey.view.superViewChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("superViewChanged", "set")
-      Interop.setEventHandler <@ element.SuperViewChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.SuperViewChanged @> v element
+
+
+      this.trackEventHandler("superViewChanged"))
 
     props
     |> Props.tryFind PKey.view.textChanged
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("textChanged", "set")
-      Interop.setEventHandler <@ element.TextChanged @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.TextChanged @> (fun _ -> v ()) element)
 
     props
+
+
     |> Props.tryFind PKey.view.titleChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("titleChanged", "set")
-      Interop.setEventHandler <@ element.TitleChanged @> (fun arg -> v arg.Value) element)
+
+
+      Interop.setEventHandler <@ element.TitleChanged @> (fun arg -> v arg.Value) element
+
+
+      this.trackEventHandler("titleChanged"))
 
     props
+
+
     |> Props.tryFind PKey.view.titleChanging
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("titleChanging", "set")
-      Interop.setEventHandler <@ element.TitleChanging @> v element)
+
+
+      Interop.setEventHandler <@ element.TitleChanging @> v element
+
+
+      this.trackEventHandler("titleChanging"))
 
     props
+
+
     |> Props.tryFind PKey.view.viewportChanged
+
+
     |> Option.iter (fun v -> 
-      TerminalElement.logEvent("viewportChanged", "set")
-      Interop.setEventHandler <@ element.ViewportChanged @> v element)
+
+
+      Interop.setEventHandler <@ element.ViewportChanged @> v element
+
+
+      this.trackEventHandler("viewportChanged"))
 
     props
     |> Props.tryFind PKey.view.visibleChanged
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("visibleChanged", "set")
-      Interop.setEventHandler <@ element.VisibleChanged @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanged @> (fun _ -> v ()) element)
 
     props
     |> Props.tryFind PKey.view.visibleChanging
-    |> Option.iter (fun v -> 
-      TerminalElement.logEvent("visibleChanging", "set")
-      Interop.setEventHandler <@ element.VisibleChanging @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.VisibleChanging @> (fun _ -> v ()) element)
 
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
-    |> Option.iter (fun v ->
-      TerminalElement.logEvent("x_delayedPos", "set")
-      applyPos (fun pos -> element.X <- pos) v)
+    |> Option.iter (applyPos (fun pos -> element.X <- pos))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (fun v ->
-      TerminalElement.logEvent("y_delayedPos", "set")
-      applyPos (fun pos -> element.Y <- pos) v)
+    |> Option.iter (applyPos (fun pos -> element.Y <- pos))
 
   abstract removeProps: element: View * props: Props -> unit
 
   default this.removeProps(element: View, props: Props) =
     // Properties
     props
-
     |> Props.tryFind PKey.view.arrangement
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("arrangement", "removed")
-
-      element.Arrangement <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Arrangement <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.borderStyle
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("borderStyle", "removed")
-
-
-      element.BorderStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BorderStyle <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.canFocus
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("canFocus", "removed")
-
-
-      element.CanFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CanFocus <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("contentSizeTracksViewport", "removed")
-
-
-      element.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.cursorVisibility
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cursorVisibility", "removed")
-
-
-      element.CursorVisibility <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CursorVisibility <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.data
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("data", "removed")
-
-
-      element.Data <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Data <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.enabled
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("enabled", "removed")
-
-
-      element.Enabled <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Enabled <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.frame
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("frame", "removed")
-
-
-      element.Frame <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Frame <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.hasFocus
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("hasFocus", "removed")
-
-
-      element.HasFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HasFocus <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.height
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("height", "removed")
-
-
-      element.Height <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Height <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.highlightStates
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("highlightStates", "removed")
-
-
-      element.HighlightStates <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HighlightStates <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.hotKey
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("hotKey", "removed")
-
-
-      element.HotKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HotKey <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.hotKeySpecifier
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("hotKeySpecifier", "removed")
-
-
-      element.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.id
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("id", "removed")
-
-
-      element.Id <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Id <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.isInitialized
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("isInitialized", "removed")
-
-
-      element.IsInitialized <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.IsInitialized <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.mouseHeldDown
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("mouseHeldDown", "removed")
-
-
-      element.MouseHeldDown <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MouseHeldDown <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.needsDraw
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("needsDraw", "removed")
-
-
-      element.NeedsDraw <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.NeedsDraw <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("preserveTrailingSpaces", "removed")
-
-
-      element.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.schemeName
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("schemeName", "removed")
-
-
-      element.SchemeName <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SchemeName <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.shadowStyle
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("shadowStyle", "removed")
-
-
-      element.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("superViewRendersLineCanvas", "removed")
-
-
-      element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.tabStop
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("tabStop", "removed")
-
-
-      element.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
+    |> Option.iter (fun _ -> element.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
 
     props
-
-
     |> Props.tryFind PKey.view.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.textAlignment
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("textAlignment", "removed")
-
-
-      element.TextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TextAlignment <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.textDirection
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("textDirection", "removed")
-
-
-      element.TextDirection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TextDirection <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.title
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("title", "removed")
-
-
-      element.Title <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Title <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.validatePosDim
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("validatePosDim", "removed")
-
-
-      element.ValidatePosDim <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ValidatePosDim <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.verticalTextAlignment
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("verticalTextAlignment", "removed")
-
-
-      element.VerticalTextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.VerticalTextAlignment <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.viewport
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("viewport", "removed")
-
-
-      element.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Viewport <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.viewportSettings
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("viewportSettings", "removed")
-
-
-      element.ViewportSettings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ViewportSettings <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.visible
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("visible", "removed")
-
-
-      element.Visible <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Visible <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("wantContinuousButtonPressed", "removed")
-
-
-      element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.wantMousePositionReports
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("wantMousePositionReports", "removed")
-
-
-      element.WantMousePositionReports <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.WantMousePositionReports <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.width
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("width", "removed")
-
-
-      element.Width <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Width <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.x
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("x", "removed")
-
-
-      element.X <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.X <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.view.y
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("y", "removed")
-
-
-      element.Y <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Y <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -1323,9 +1184,11 @@ type TerminalElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("accepting", "removed")
+      if this.isEventHandlerTracked("accepting") then
 
-      Interop.removeEventHandler <@ element.Accepting @> element)
+        Interop.removeEventHandler <@ element.Accepting @> element
+
+        this.removeTrackedEventHandler("accepting"))
 
     props
 
@@ -1336,10 +1199,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("advancingFocus", "removed")
+      if this.isEventHandlerTracked("advancingFocus") then
 
 
-      Interop.removeEventHandler <@ element.AdvancingFocus @> element)
+        Interop.removeEventHandler <@ element.AdvancingFocus @> element
+
+
+        this.removeTrackedEventHandler("advancingFocus"))
 
     props
 
@@ -1350,10 +1216,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("borderStyleChanged", "removed")
+      if this.isEventHandlerTracked("borderStyleChanged") then
 
 
-      Interop.removeEventHandler <@ element.BorderStyleChanged @> element)
+        Interop.removeEventHandler <@ element.BorderStyleChanged @> element
+
+
+        this.removeTrackedEventHandler("borderStyleChanged"))
 
     props
 
@@ -1364,10 +1233,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("canFocusChanged", "removed")
+      if this.isEventHandlerTracked("canFocusChanged") then
 
 
-      Interop.removeEventHandler <@ element.CanFocusChanged @> element)
+        Interop.removeEventHandler <@ element.CanFocusChanged @> element
+
+
+        this.removeTrackedEventHandler("canFocusChanged"))
 
     props
 
@@ -1378,10 +1250,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("clearedViewport", "removed")
+      if this.isEventHandlerTracked("clearedViewport") then
 
 
-      Interop.removeEventHandler <@ element.ClearedViewport @> element)
+        Interop.removeEventHandler <@ element.ClearedViewport @> element
+
+
+        this.removeTrackedEventHandler("clearedViewport"))
 
     props
 
@@ -1392,10 +1267,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("clearingViewport", "removed")
+      if this.isEventHandlerTracked("clearingViewport") then
 
 
-      Interop.removeEventHandler <@ element.ClearingViewport @> element)
+        Interop.removeEventHandler <@ element.ClearingViewport @> element
+
+
+        this.removeTrackedEventHandler("clearingViewport"))
 
     props
 
@@ -1406,10 +1284,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("commandNotBound", "removed")
+      if this.isEventHandlerTracked("commandNotBound") then
 
 
-      Interop.removeEventHandler <@ element.CommandNotBound @> element)
+        Interop.removeEventHandler <@ element.CommandNotBound @> element
+
+
+        this.removeTrackedEventHandler("commandNotBound"))
 
     props
 
@@ -1420,10 +1301,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("contentSizeChanged", "removed")
+      if this.isEventHandlerTracked("contentSizeChanged") then
 
 
-      Interop.removeEventHandler <@ element.ContentSizeChanged @> element)
+        Interop.removeEventHandler <@ element.ContentSizeChanged @> element
+
+
+        this.removeTrackedEventHandler("contentSizeChanged"))
 
     props
 
@@ -1434,10 +1318,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("disposing", "removed")
+      if this.isEventHandlerTracked("disposing") then
 
 
-      Interop.removeEventHandler <@ element.Disposing @> element)
+        Interop.removeEventHandler <@ element.Disposing @> element
+
+
+        this.removeTrackedEventHandler("disposing"))
 
     props
 
@@ -1448,10 +1335,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawComplete", "removed")
+      if this.isEventHandlerTracked("drawComplete") then
 
 
-      Interop.removeEventHandler <@ element.DrawComplete @> element)
+        Interop.removeEventHandler <@ element.DrawComplete @> element
+
+
+        this.removeTrackedEventHandler("drawComplete"))
 
     props
 
@@ -1462,10 +1352,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawingContent", "removed")
+      if this.isEventHandlerTracked("drawingContent") then
 
 
-      Interop.removeEventHandler <@ element.DrawingContent @> element)
+        Interop.removeEventHandler <@ element.DrawingContent @> element
+
+
+        this.removeTrackedEventHandler("drawingContent"))
 
     props
 
@@ -1476,10 +1369,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawingSubViews", "removed")
+      if this.isEventHandlerTracked("drawingSubViews") then
 
 
-      Interop.removeEventHandler <@ element.DrawingSubViews @> element)
+        Interop.removeEventHandler <@ element.DrawingSubViews @> element
+
+
+        this.removeTrackedEventHandler("drawingSubViews"))
 
     props
 
@@ -1490,10 +1386,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawingText", "removed")
+      if this.isEventHandlerTracked("drawingText") then
 
 
-      Interop.removeEventHandler <@ element.DrawingText @> element)
+        Interop.removeEventHandler <@ element.DrawingText @> element
+
+
+        this.removeTrackedEventHandler("drawingText"))
 
     props
 
@@ -1504,10 +1403,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("enabledChanged", "removed")
+      if this.isEventHandlerTracked("enabledChanged") then
 
 
-      Interop.removeEventHandler <@ element.EnabledChanged @> element)
+        Interop.removeEventHandler <@ element.EnabledChanged @> element
+
+
+        this.removeTrackedEventHandler("enabledChanged"))
 
     props
 
@@ -1518,10 +1420,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("focusedChanged", "removed")
+      if this.isEventHandlerTracked("focusedChanged") then
 
 
-      Interop.removeEventHandler <@ element.FocusedChanged @> element)
+        Interop.removeEventHandler <@ element.FocusedChanged @> element
+
+
+        this.removeTrackedEventHandler("focusedChanged"))
 
     props
 
@@ -1532,10 +1437,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("frameChanged", "removed")
+      if this.isEventHandlerTracked("frameChanged") then
 
 
-      Interop.removeEventHandler <@ element.FrameChanged @> element)
+        Interop.removeEventHandler <@ element.FrameChanged @> element
+
+
+        this.removeTrackedEventHandler("frameChanged"))
 
     props
 
@@ -1546,10 +1454,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("gettingAttributeForRole", "removed")
+      if this.isEventHandlerTracked("gettingAttributeForRole") then
 
 
-      Interop.removeEventHandler <@ element.GettingAttributeForRole @> element)
+        Interop.removeEventHandler <@ element.GettingAttributeForRole @> element
+
+
+        this.removeTrackedEventHandler("gettingAttributeForRole"))
 
     props
 
@@ -1560,10 +1471,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("gettingScheme", "removed")
+      if this.isEventHandlerTracked("gettingScheme") then
 
 
-      Interop.removeEventHandler <@ element.GettingScheme @> element)
+        Interop.removeEventHandler <@ element.GettingScheme @> element
+
+
+        this.removeTrackedEventHandler("gettingScheme"))
 
     props
 
@@ -1574,10 +1488,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("handlingHotKey", "removed")
+      if this.isEventHandlerTracked("handlingHotKey") then
 
 
-      Interop.removeEventHandler <@ element.HandlingHotKey @> element)
+        Interop.removeEventHandler <@ element.HandlingHotKey @> element
+
+
+        this.removeTrackedEventHandler("handlingHotKey"))
 
     props
 
@@ -1588,10 +1505,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("hasFocusChanged", "removed")
+      if this.isEventHandlerTracked("hasFocusChanged") then
 
 
-      Interop.removeEventHandler <@ element.HasFocusChanged @> element)
+        Interop.removeEventHandler <@ element.HasFocusChanged @> element
+
+
+        this.removeTrackedEventHandler("hasFocusChanged"))
 
     props
 
@@ -1602,10 +1522,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("hasFocusChanging", "removed")
+      if this.isEventHandlerTracked("hasFocusChanging") then
 
 
-      Interop.removeEventHandler <@ element.HasFocusChanging @> element)
+        Interop.removeEventHandler <@ element.HasFocusChanging @> element
+
+
+        this.removeTrackedEventHandler("hasFocusChanging"))
 
     props
 
@@ -1616,10 +1539,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("hotKeyChanged", "removed")
+      if this.isEventHandlerTracked("hotKeyChanged") then
 
 
-      Interop.removeEventHandler <@ element.HotKeyChanged @> element)
+        Interop.removeEventHandler <@ element.HotKeyChanged @> element
+
+
+        this.removeTrackedEventHandler("hotKeyChanged"))
 
     props
 
@@ -1630,10 +1556,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("initialized", "removed")
+      if this.isEventHandlerTracked("initialized") then
 
 
-      Interop.removeEventHandler <@ element.Initialized @> element)
+        Interop.removeEventHandler <@ element.Initialized @> element
+
+
+        this.removeTrackedEventHandler("initialized"))
 
     props
 
@@ -1644,10 +1573,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("keyDown", "removed")
+      if this.isEventHandlerTracked("keyDown") then
 
 
-      Interop.removeEventHandler <@ element.KeyDown @> element)
+        Interop.removeEventHandler <@ element.KeyDown @> element
+
+
+        this.removeTrackedEventHandler("keyDown"))
 
     props
 
@@ -1658,10 +1590,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("keyDownNotHandled", "removed")
+      if this.isEventHandlerTracked("keyDownNotHandled") then
 
 
-      Interop.removeEventHandler <@ element.KeyDownNotHandled @> element)
+        Interop.removeEventHandler <@ element.KeyDownNotHandled @> element
+
+
+        this.removeTrackedEventHandler("keyDownNotHandled"))
 
     props
 
@@ -1672,10 +1607,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("keyUp", "removed")
+      if this.isEventHandlerTracked("keyUp") then
 
 
-      Interop.removeEventHandler <@ element.KeyUp @> element)
+        Interop.removeEventHandler <@ element.KeyUp @> element
+
+
+        this.removeTrackedEventHandler("keyUp"))
 
     props
 
@@ -1686,10 +1624,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseClick", "removed")
+      if this.isEventHandlerTracked("mouseClick") then
 
 
-      Interop.removeEventHandler <@ element.MouseClick @> element)
+        Interop.removeEventHandler <@ element.MouseClick @> element
+
+
+        this.removeTrackedEventHandler("mouseClick"))
 
     props
 
@@ -1700,10 +1641,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseEnter", "removed")
+      if this.isEventHandlerTracked("mouseEnter") then
 
 
-      Interop.removeEventHandler <@ element.MouseEnter @> element)
+        Interop.removeEventHandler <@ element.MouseEnter @> element
+
+
+        this.removeTrackedEventHandler("mouseEnter"))
 
     props
 
@@ -1714,10 +1658,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseEvent", "removed")
+      if this.isEventHandlerTracked("mouseEvent") then
 
 
-      Interop.removeEventHandler <@ element.MouseEvent @> element)
+        Interop.removeEventHandler <@ element.MouseEvent @> element
+
+
+        this.removeTrackedEventHandler("mouseEvent"))
 
     props
 
@@ -1728,10 +1675,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseLeave", "removed")
+      if this.isEventHandlerTracked("mouseLeave") then
 
 
-      Interop.removeEventHandler <@ element.MouseLeave @> element)
+        Interop.removeEventHandler <@ element.MouseLeave @> element
+
+
+        this.removeTrackedEventHandler("mouseLeave"))
 
     props
 
@@ -1742,10 +1692,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseStateChanged", "removed")
+      if this.isEventHandlerTracked("mouseStateChanged") then
 
 
-      Interop.removeEventHandler <@ element.MouseStateChanged @> element)
+        Interop.removeEventHandler <@ element.MouseStateChanged @> element
+
+
+        this.removeTrackedEventHandler("mouseStateChanged"))
 
     props
 
@@ -1756,10 +1709,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("mouseWheel", "removed")
+      if this.isEventHandlerTracked("mouseWheel") then
 
 
-      Interop.removeEventHandler <@ element.MouseWheel @> element)
+        Interop.removeEventHandler <@ element.MouseWheel @> element
+
+
+        this.removeTrackedEventHandler("mouseWheel"))
 
     props
 
@@ -1770,10 +1726,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("removed", "removed")
+      if this.isEventHandlerTracked("removed") then
 
 
-      Interop.removeEventHandler <@ element.Removed @> element)
+        Interop.removeEventHandler <@ element.Removed @> element
+
+
+        this.removeTrackedEventHandler("removed"))
 
     props
 
@@ -1784,10 +1743,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("schemeChanged", "removed")
+      if this.isEventHandlerTracked("schemeChanged") then
 
 
-      Interop.removeEventHandler <@ element.SchemeChanged @> element)
+        Interop.removeEventHandler <@ element.SchemeChanged @> element
+
+
+        this.removeTrackedEventHandler("schemeChanged"))
 
     props
 
@@ -1798,10 +1760,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("schemeChanging", "removed")
+      if this.isEventHandlerTracked("schemeChanging") then
 
 
-      Interop.removeEventHandler <@ element.SchemeChanging @> element)
+        Interop.removeEventHandler <@ element.SchemeChanging @> element
+
+
+        this.removeTrackedEventHandler("schemeChanging"))
 
     props
 
@@ -1812,10 +1777,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("schemeNameChanged", "removed")
+      if this.isEventHandlerTracked("schemeNameChanged") then
 
 
-      Interop.removeEventHandler <@ element.SchemeNameChanged @> element)
+        Interop.removeEventHandler <@ element.SchemeNameChanged @> element
+
+
+        this.removeTrackedEventHandler("schemeNameChanged"))
 
     props
 
@@ -1826,10 +1794,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("schemeNameChanging", "removed")
+      if this.isEventHandlerTracked("schemeNameChanging") then
 
 
-      Interop.removeEventHandler <@ element.SchemeNameChanging @> element)
+        Interop.removeEventHandler <@ element.SchemeNameChanging @> element
+
+
+        this.removeTrackedEventHandler("schemeNameChanging"))
 
     props
 
@@ -1840,10 +1811,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("selecting", "removed")
+      if this.isEventHandlerTracked("selecting") then
 
 
-      Interop.removeEventHandler <@ element.Selecting @> element)
+        Interop.removeEventHandler <@ element.Selecting @> element
+
+
+        this.removeTrackedEventHandler("selecting"))
 
     props
 
@@ -1854,10 +1828,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("subViewAdded", "removed")
+      if this.isEventHandlerTracked("subViewAdded") then
 
 
-      Interop.removeEventHandler <@ element.SubViewAdded @> element)
+        Interop.removeEventHandler <@ element.SubViewAdded @> element
+
+
+        this.removeTrackedEventHandler("subViewAdded"))
 
     props
 
@@ -1868,10 +1845,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("subViewLayout", "removed")
+      if this.isEventHandlerTracked("subViewLayout") then
 
 
-      Interop.removeEventHandler <@ element.SubViewLayout @> element)
+        Interop.removeEventHandler <@ element.SubViewLayout @> element
+
+
+        this.removeTrackedEventHandler("subViewLayout"))
 
     props
 
@@ -1882,10 +1862,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("subViewRemoved", "removed")
+      if this.isEventHandlerTracked("subViewRemoved") then
 
 
-      Interop.removeEventHandler <@ element.SubViewRemoved @> element)
+        Interop.removeEventHandler <@ element.SubViewRemoved @> element
+
+
+        this.removeTrackedEventHandler("subViewRemoved"))
 
     props
 
@@ -1896,10 +1879,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("subViewsLaidOut", "removed")
+      if this.isEventHandlerTracked("subViewsLaidOut") then
 
 
-      Interop.removeEventHandler <@ element.SubViewsLaidOut @> element)
+        Interop.removeEventHandler <@ element.SubViewsLaidOut @> element
+
+
+        this.removeTrackedEventHandler("subViewsLaidOut"))
 
     props
 
@@ -1910,10 +1896,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("superViewChanged", "removed")
+      if this.isEventHandlerTracked("superViewChanged") then
 
 
-      Interop.removeEventHandler <@ element.SuperViewChanged @> element)
+        Interop.removeEventHandler <@ element.SuperViewChanged @> element
+
+
+        this.removeTrackedEventHandler("superViewChanged"))
 
     props
 
@@ -1924,10 +1913,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("textChanged", "removed")
+      if this.isEventHandlerTracked("textChanged") then
 
 
-      Interop.removeEventHandler <@ element.TextChanged @> element)
+        Interop.removeEventHandler <@ element.TextChanged @> element
+
+
+        this.removeTrackedEventHandler("textChanged"))
 
     props
 
@@ -1938,10 +1930,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("titleChanged", "removed")
+      if this.isEventHandlerTracked("titleChanged") then
 
 
-      Interop.removeEventHandler <@ element.TitleChanged @> element)
+        Interop.removeEventHandler <@ element.TitleChanged @> element
+
+
+        this.removeTrackedEventHandler("titleChanged"))
 
     props
 
@@ -1952,10 +1947,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("titleChanging", "removed")
+      if this.isEventHandlerTracked("titleChanging") then
 
 
-      Interop.removeEventHandler <@ element.TitleChanging @> element)
+        Interop.removeEventHandler <@ element.TitleChanging @> element
+
+
+        this.removeTrackedEventHandler("titleChanging"))
 
     props
 
@@ -1966,10 +1964,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("viewportChanged", "removed")
+      if this.isEventHandlerTracked("viewportChanged") then
 
 
-      Interop.removeEventHandler <@ element.ViewportChanged @> element)
+        Interop.removeEventHandler <@ element.ViewportChanged @> element
+
+
+        this.removeTrackedEventHandler("viewportChanged"))
 
     props
 
@@ -1980,10 +1981,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("visibleChanged", "removed")
+      if this.isEventHandlerTracked("visibleChanged") then
 
 
-      Interop.removeEventHandler <@ element.VisibleChanged @> element)
+        Interop.removeEventHandler <@ element.VisibleChanged @> element
+
+
+        this.removeTrackedEventHandler("visibleChanged"))
 
     props
 
@@ -1994,10 +1998,13 @@ type TerminalElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("visibleChanging", "removed")
+      if this.isEventHandlerTracked("visibleChanging") then
 
 
-      Interop.removeEventHandler <@ element.VisibleChanging @> element)
+        Interop.removeEventHandler <@ element.VisibleChanging @> element
+
+
+        this.removeTrackedEventHandler("visibleChanging"))
 
   /// Reuses:
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
@@ -2127,56 +2134,20 @@ type AdornmentElement(props: Props) =
     let element = element :?> Adornment
     // Properties
     props
-
     |> Props.tryFind PKey.adornment.diagnostics
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("diagnostics", "removed")
-
-      element.Diagnostics <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Diagnostics <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.adornment.superViewRendersLineCanvas
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("superViewRendersLineCanvas", "removed")
-
-
-      element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.adornment.thickness
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("thickness", "removed")
-
-
-      element.Thickness <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Thickness <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.adornment.viewport
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("viewport", "removed")
-
-
-      element.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Viewport <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -2184,9 +2155,11 @@ type AdornmentElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("thicknessChanged", "removed")
+      if this.isEventHandlerTracked("thicknessChanged") then
 
-      Interop.removeEventHandler <@ element.ThicknessChanged @> element)
+        Interop.removeEventHandler <@ element.ThicknessChanged @> element
+
+        this.removeTrackedEventHandler("thicknessChanged"))
 
   override _.name = $"Adornment"
 
@@ -2197,66 +2170,24 @@ type AdornmentElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.adornment.diagnostics
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("diagnostics", "set")
-
-      element.Diagnostics <- v)
+    |> Option.iter (fun v -> element.Diagnostics <- v)
 
     props
-
-
     |> Props.tryFind PKey.adornment.superViewRendersLineCanvas
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("superViewRendersLineCanvas", "set")
-
-
-      element.SuperViewRendersLineCanvas <- v)
+    |> Option.iter (fun v -> element.SuperViewRendersLineCanvas <- v)
 
     props
-
-
     |> Props.tryFind PKey.adornment.thickness
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("thickness", "set")
-
-
-      element.Thickness <- v)
+    |> Option.iter (fun v -> element.Thickness <- v)
 
     props
-
-
     |> Props.tryFind PKey.adornment.viewport
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("viewport", "set")
-
-
-      element.Viewport <- v)
+    |> Option.iter (fun v -> element.Viewport <- v)
     // Events
     props
-
     |> Props.tryFind PKey.adornment.thicknessChanged
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("thicknessChanged", "set")
-
-      Interop.setEventHandler <@ element.ThicknessChanged @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.ThicknessChanged @> (fun _ -> v ()) element)
 
   override this.newView() = new Adornment()
 
@@ -2270,28 +2201,12 @@ type BarElement(props: Props) =
     let element = element :?> Bar
     // Properties
     props
-
     |> Props.tryFind PKey.bar.alignmentModes
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("alignmentModes", "removed")
-
-      element.AlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.bar.orientation
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("orientation", "removed")
-
-
-      element.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -2299,9 +2214,11 @@ type BarElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -2312,10 +2229,13 @@ type BarElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
   override _.name = $"Bar"
 
@@ -2325,28 +2245,12 @@ type BarElement(props: Props) =
     let element = element :?> Bar
     // Properties
     props
-
     |> Props.tryFind PKey.bar.alignmentModes
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("alignmentModes", "set")
-
-      element.AlignmentModes <- v)
+    |> Option.iter (fun v -> element.AlignmentModes <- v)
 
     props
-
-
     |> Props.tryFind PKey.bar.orientation
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("orientation", "set")
-
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
     // Events
     props
 
@@ -2354,9 +2258,9 @@ type BarElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -2367,10 +2271,10 @@ type BarElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
 
   override this.newView() = new Bar()
@@ -2384,28 +2288,12 @@ type BorderElement(props: Props) =
     let element = element :?> Border
     // Properties
     props
-
     |> Props.tryFind PKey.border.lineStyle
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("lineStyle", "removed")
-
-      element.LineStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.LineStyle <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.border.settings
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("settings", "removed")
-
-
-      element.Settings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Settings <- Unchecked.defaultof<_>)
 
   override _.name = $"Border"
 
@@ -2416,28 +2304,12 @@ type BorderElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.border.lineStyle
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("lineStyle", "set")
-
-      element.LineStyle <- v)
+    |> Option.iter (fun v -> element.LineStyle <- v)
 
     props
-
-
     |> Props.tryFind PKey.border.settings
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("settings", "set")
-
-
-      element.Settings <- v)
+    |> Option.iter (fun v -> element.Settings <- v)
 
 
   override this.newView() = new Border()
@@ -2451,80 +2323,28 @@ type ButtonElement(props: Props) =
     let element = element :?> Button
     // Properties
     props
-
     |> Props.tryFind PKey.button.hotKeySpecifier
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("hotKeySpecifier", "removed")
-
-      element.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.button.isDefault
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("isDefault", "removed")
-
-
-      element.IsDefault <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.IsDefault <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.button.noDecorations
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("noDecorations", "removed")
-
-
-      element.NoDecorations <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.NoDecorations <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.button.noPadding
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("noPadding", "removed")
-
-
-      element.NoPadding <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.NoPadding <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.button.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
     // Events
     props
-
     |> Props.tryFind PKey.button.wantContinuousButtonPressed
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("wantContinuousButtonPressed", "removed")
-
-      element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
 
   override _.name = $"Button"
 
@@ -2535,80 +2355,28 @@ type ButtonElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.button.hotKeySpecifier
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("hotKeySpecifier", "set")
-
-      element.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> element.HotKeySpecifier <- v)
 
     props
-
-
     |> Props.tryFind PKey.button.isDefault
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("isDefault", "set")
-
-
-      element.IsDefault <- v)
+    |> Option.iter (fun v -> element.IsDefault <- v)
 
     props
-
-
     |> Props.tryFind PKey.button.noDecorations
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("noDecorations", "set")
-
-
-      element.NoDecorations <- v)
+    |> Option.iter (fun v -> element.NoDecorations <- v)
 
     props
-
-
     |> Props.tryFind PKey.button.noPadding
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("noPadding", "set")
-
-
-      element.NoPadding <- v)
+    |> Option.iter (fun v -> element.NoPadding <- v)
 
     props
-
-
     |> Props.tryFind PKey.button.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
     // Events
     props
-
     |> Props.tryFind PKey.button.wantContinuousButtonPressed
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("wantContinuousButtonPressed", "set")
-
-      element.WantContinuousButtonPressed <- v)
+    |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v)
 
 
   override this.newView() = new Button()
@@ -2622,70 +2390,24 @@ type CheckBoxElement(props: Props) =
     let element = element :?> CheckBox
     // Properties
     props
-
     |> Props.tryFind PKey.checkBox.allowCheckStateNone
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("allowCheckStateNone", "removed")
-
-      element.AllowCheckStateNone <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowCheckStateNone <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.checkedState
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("checkedState", "removed")
-
-
-      element.CheckedState <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CheckedState <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.hotKeySpecifier
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("hotKeySpecifier", "removed")
-
-
-      element.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.radioStyle
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("radioStyle", "removed")
-
-
-      element.RadioStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.RadioStyle <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -2693,9 +2415,11 @@ type CheckBoxElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("checkedStateChanging", "removed")
+      if this.isEventHandlerTracked("checkedStateChanging") then
 
-      Interop.removeEventHandler <@ element.CheckedStateChanging @> element)
+        Interop.removeEventHandler <@ element.CheckedStateChanging @> element
+
+        this.removeTrackedEventHandler("checkedStateChanging"))
 
     props
 
@@ -2706,10 +2430,13 @@ type CheckBoxElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("checkedStateChanged", "removed")
+      if this.isEventHandlerTracked("checkedStateChanged") then
 
 
-      Interop.removeEventHandler <@ element.CheckedStateChanged @> element)
+        Interop.removeEventHandler <@ element.CheckedStateChanged @> element
+
+
+        this.removeTrackedEventHandler("checkedStateChanged"))
 
   override _.name = $"CheckBox"
 
@@ -2720,70 +2447,24 @@ type CheckBoxElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.checkBox.allowCheckStateNone
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("allowCheckStateNone", "set")
-
-      element.AllowCheckStateNone <- v)
+    |> Option.iter (fun v -> element.AllowCheckStateNone <- v)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.checkedState
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("checkedState", "set")
-
-
-      element.CheckedState <- v)
+    |> Option.iter (fun v -> element.CheckedState <- v)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.hotKeySpecifier
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("hotKeySpecifier", "set")
-
-
-      element.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> element.HotKeySpecifier <- v)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.radioStyle
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("radioStyle", "set")
-
-
-      element.RadioStyle <- v)
+    |> Option.iter (fun v -> element.RadioStyle <- v)
 
     props
-
-
     |> Props.tryFind PKey.checkBox.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
     // Events
     props
 
@@ -2791,9 +2472,9 @@ type CheckBoxElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("checkedStateChanging", "set")
+      Interop.setEventHandler <@ element.CheckedStateChanging @> v element
 
-      Interop.setEventHandler <@ element.CheckedStateChanging @> v element)
+      this.trackEventHandler("checkedStateChanging"))
 
     props
 
@@ -2804,10 +2485,10 @@ type CheckBoxElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("checkedStateChanged", "set")
+      Interop.setEventHandler <@ element.CheckedStateChanged @> v element
 
 
-      Interop.setEventHandler <@ element.CheckedStateChanged @> v element)
+      this.trackEventHandler("checkedStateChanged"))
 
 
   override this.newView() = new CheckBox()
@@ -2821,28 +2502,12 @@ type ColorPickerElement(props: Props) =
     let element = element :?> ColorPicker
     // Properties
     props
-
     |> Props.tryFind PKey.colorPicker.selectedColor
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("selectedColor", "removed")
-
-      element.SelectedColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker.style
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("style", "removed")
-
-
-      element.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -2850,9 +2515,11 @@ type ColorPickerElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("colorChanged", "removed")
+      if this.isEventHandlerTracked("colorChanged") then
 
-      Interop.removeEventHandler <@ element.ColorChanged @> element)
+        Interop.removeEventHandler <@ element.ColorChanged @> element
+
+        this.removeTrackedEventHandler("colorChanged"))
 
   override _.name = $"ColorPicker"
 
@@ -2863,28 +2530,12 @@ type ColorPickerElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.colorPicker.selectedColor
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("selectedColor", "set")
-
-      element.SelectedColor <- v)
+    |> Option.iter (fun v -> element.SelectedColor <- v)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker.style
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("style", "set")
-
-
-      element.Style <- v)
+    |> Option.iter (fun v -> element.Style <- v)
     // Events
     props
 
@@ -2892,9 +2543,9 @@ type ColorPickerElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("colorChanged", "set")
+      Interop.setEventHandler <@ element.ColorChanged @> v element
 
-      Interop.setEventHandler <@ element.ColorChanged @> v element)
+      this.trackEventHandler("colorChanged"))
 
 
   override this.newView() = new ColorPicker()
@@ -2908,56 +2559,20 @@ type ColorPicker16Element(props: Props) =
     let element = element :?> ColorPicker16
     // Properties
     props
-
     |> Props.tryFind PKey.colorPicker16.boxHeight
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("boxHeight", "removed")
-
-      element.BoxHeight <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BoxHeight <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.boxWidth
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("boxWidth", "removed")
-
-
-      element.BoxWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BoxWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.cursor
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cursor", "removed")
-
-
-      element.Cursor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.selectedColor
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedColor", "removed")
-
-
-      element.SelectedColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedColor <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -2965,9 +2580,11 @@ type ColorPicker16Element(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("colorChanged", "removed")
+      if this.isEventHandlerTracked("colorChanged") then
 
-      Interop.removeEventHandler <@ element.ColorChanged @> element)
+        Interop.removeEventHandler <@ element.ColorChanged @> element
+
+        this.removeTrackedEventHandler("colorChanged"))
 
   override _.name = $"ColorPicker16"
 
@@ -2978,56 +2595,20 @@ type ColorPicker16Element(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.colorPicker16.boxHeight
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("boxHeight", "set")
-
-      element.BoxHeight <- v)
+    |> Option.iter (fun v -> element.BoxHeight <- v)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.boxWidth
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("boxWidth", "set")
-
-
-      element.BoxWidth <- v)
+    |> Option.iter (fun v -> element.BoxWidth <- v)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.cursor
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("cursor", "set")
-
-
-      element.Cursor <- v)
+    |> Option.iter (fun v -> element.Cursor <- v)
 
     props
-
-
     |> Props.tryFind PKey.colorPicker16.selectedColor
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedColor", "set")
-
-
-      element.SelectedColor <- v)
+    |> Option.iter (fun v -> element.SelectedColor <- v)
     // Events
     props
 
@@ -3035,9 +2616,9 @@ type ColorPicker16Element(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("colorChanged", "set")
+      Interop.setEventHandler <@ element.ColorChanged @> v element
 
-      Interop.setEventHandler <@ element.ColorChanged @> v element)
+      this.trackEventHandler("colorChanged"))
 
 
   override this.newView() = new ColorPicker16()
@@ -3051,74 +2632,28 @@ type ComboBoxElement(props: Props) =
     let element = element :?> ComboBox
     // Properties
     props
-
     |> Props.tryFind PKey.comboBox.hideDropdownListOnClick
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("hideDropdownListOnClick", "removed")
-
-      element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HideDropdownListOnClick <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.readOnly
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("readOnly", "removed")
-
-
-      element.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.searchText
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("searchText", "removed")
-
-
-      element.SearchText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SearchText <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.selectedItem
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedItem", "removed")
-
-
-      element.SelectedItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.comboBox.source
     |> Option.iter (fun _ -> element.SetSource Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -3126,9 +2661,11 @@ type ComboBoxElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("collapsed", "removed")
+      if this.isEventHandlerTracked("collapsed") then
 
-      Interop.removeEventHandler <@ element.Collapsed @> element)
+        Interop.removeEventHandler <@ element.Collapsed @> element
+
+        this.removeTrackedEventHandler("collapsed"))
 
     props
 
@@ -3139,10 +2676,13 @@ type ComboBoxElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("expanded", "removed")
+      if this.isEventHandlerTracked("expanded") then
 
 
-      Interop.removeEventHandler <@ element.Expanded @> element)
+        Interop.removeEventHandler <@ element.Expanded @> element
+
+
+        this.removeTrackedEventHandler("expanded"))
 
     props
 
@@ -3153,10 +2693,13 @@ type ComboBoxElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("openSelectedItem", "removed")
+      if this.isEventHandlerTracked("openSelectedItem") then
 
 
-      Interop.removeEventHandler <@ element.OpenSelectedItem @> element)
+        Interop.removeEventHandler <@ element.OpenSelectedItem @> element
+
+
+        this.removeTrackedEventHandler("openSelectedItem"))
 
     props
 
@@ -3167,10 +2710,13 @@ type ComboBoxElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("selectedItemChanged", "removed")
+      if this.isEventHandlerTracked("selectedItemChanged") then
 
 
-      Interop.removeEventHandler <@ element.SelectedItemChanged @> element)
+        Interop.removeEventHandler <@ element.SelectedItemChanged @> element
+
+
+        this.removeTrackedEventHandler("selectedItemChanged"))
 
   override _.name = $"ComboBox"
 
@@ -3181,98 +2727,36 @@ type ComboBoxElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.comboBox.hideDropdownListOnClick
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("hideDropdownListOnClick", "set")
-
-      element.HideDropdownListOnClick <- v)
+    |> Option.iter (fun v -> element.HideDropdownListOnClick <- v)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.readOnly
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("readOnly", "set")
-
-
-      element.ReadOnly <- v)
+    |> Option.iter (fun v -> element.ReadOnly <- v)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.searchText
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("searchText", "set")
-
-
-      element.SearchText <- v)
+    |> Option.iter (fun v -> element.SearchText <- v)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.selectedItem
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedItem", "set")
-
-
-      element.SelectedItem <- v)
+    |> Option.iter (fun v -> element.SelectedItem <- v)
 
     props
     |> Props.tryFind PKey.comboBox.source
     |> Option.iter (fun v -> element.SetSource(ObservableCollection(v)))
 
     props
-
-
     |> Props.tryFind PKey.comboBox.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
     // Events
     props
-
     |> Props.tryFind PKey.comboBox.collapsed
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("collapsed", "set")
-
-      Interop.setEventHandler <@ element.Collapsed @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Collapsed @> (fun _ -> v ()) element)
 
     props
-
-
     |> Props.tryFind PKey.comboBox.expanded
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("expanded", "set")
-
-
-      Interop.setEventHandler <@ element.Expanded @> (fun _ -> v ()) element)
+    |> Option.iter (fun v -> Interop.setEventHandler <@ element.Expanded @> (fun _ -> v ()) element)
 
     props
 
@@ -3283,10 +2767,10 @@ type ComboBoxElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("openSelectedItem", "set")
+      Interop.setEventHandler <@ element.OpenSelectedItem @> v element
 
 
-      Interop.setEventHandler <@ element.OpenSelectedItem @> v element)
+      this.trackEventHandler("openSelectedItem"))
 
     props
 
@@ -3297,10 +2781,10 @@ type ComboBoxElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("selectedItemChanged", "set")
+      Interop.setEventHandler <@ element.SelectedItemChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
+      this.trackEventHandler("selectedItemChanged"))
 
 
   override this.newView() = new ComboBox()
@@ -3314,42 +2798,16 @@ type DateFieldElement(props: Props) =
     let element = element :?> DateField
     // Properties
     props
-
     |> Props.tryFind PKey.dateField.culture
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("culture", "removed")
-
-      element.Culture <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.dateField.cursorPosition
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "removed")
-
-
-      element.CursorPosition <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.dateField.date
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("date", "removed")
-
-
-      element.Date <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Date <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -3357,9 +2815,11 @@ type DateFieldElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("dateChanged", "removed")
+      if this.isEventHandlerTracked("dateChanged") then
 
-      Interop.removeEventHandler <@ element.DateChanged @> element)
+        Interop.removeEventHandler <@ element.DateChanged @> element
+
+        this.removeTrackedEventHandler("dateChanged"))
 
   override _.name = $"DateField"
 
@@ -3370,42 +2830,16 @@ type DateFieldElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.dateField.culture
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("culture", "set")
-
-      element.Culture <- v)
+    |> Option.iter (fun v -> element.Culture <- v)
 
     props
-
-
     |> Props.tryFind PKey.dateField.cursorPosition
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "set")
-
-
-      element.CursorPosition <- v)
+    |> Option.iter (fun v -> element.CursorPosition <- v)
 
     props
-
-
     |> Props.tryFind PKey.dateField.date
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("date", "set")
-
-
-      element.Date <- v)
+    |> Option.iter (fun v -> element.Date <- v)
     // Events
     props
 
@@ -3413,9 +2847,9 @@ type DateFieldElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("dateChanged", "set")
+      Interop.setEventHandler <@ element.DateChanged @> v element
 
-      Interop.setEventHandler <@ element.DateChanged @> v element)
+      this.trackEventHandler("dateChanged"))
 
 
   override this.newView() = new DateField()
@@ -3429,28 +2863,12 @@ type DatePickerElement(props: Props) =
     let element = element :?> DatePicker
     // Properties
     props
-
     |> Props.tryFind PKey.datePicker.culture
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("culture", "removed")
-
-      element.Culture <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Culture <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.datePicker.date
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("date", "removed")
-
-
-      element.Date <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Date <- Unchecked.defaultof<_>)
 
   override _.name = $"DatePicker"
 
@@ -3461,28 +2879,12 @@ type DatePickerElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.datePicker.culture
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("culture", "set")
-
-      element.Culture <- v)
+    |> Option.iter (fun v -> element.Culture <- v)
 
     props
-
-
     |> Props.tryFind PKey.datePicker.date
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("date", "set")
-
-
-      element.Date <- v)
+    |> Option.iter (fun v -> element.Date <- v)
 
 
   override this.newView() = new DatePicker()
@@ -3496,42 +2898,16 @@ type DialogElement(props: Props) =
     let element = element :?> Dialog
     // Properties
     props
-
     |> Props.tryFind PKey.dialog.buttonAlignment
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("buttonAlignment", "removed")
-
-      element.ButtonAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ButtonAlignment <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.dialog.buttonAlignmentModes
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("buttonAlignmentModes", "removed")
-
-
-      element.ButtonAlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ButtonAlignmentModes <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.dialog.canceled
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("canceled", "removed")
-
-
-      element.Canceled <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Canceled <- Unchecked.defaultof<_>)
 
   override _.name = $"Dialog"
 
@@ -3542,42 +2918,16 @@ type DialogElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.dialog.buttonAlignment
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("buttonAlignment", "set")
-
-      element.ButtonAlignment <- v)
+    |> Option.iter (fun v -> element.ButtonAlignment <- v)
 
     props
-
-
     |> Props.tryFind PKey.dialog.buttonAlignmentModes
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("buttonAlignmentModes", "set")
-
-
-      element.ButtonAlignmentModes <- v)
+    |> Option.iter (fun v -> element.ButtonAlignmentModes <- v)
 
     props
-
-
     |> Props.tryFind PKey.dialog.canceled
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("canceled", "set")
-
-
-      element.Canceled <- v)
+    |> Option.iter (fun v -> element.Canceled <- v)
 
 
   override this.newView() = new Dialog()
@@ -3591,98 +2941,32 @@ type FileDialogElement(props: Props) =
     let element = element :?> FileDialog
     // Properties
     props
-
     |> Props.tryFind PKey.fileDialog.allowedTypes
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("allowedTypes", "removed")
-
-      element.AllowedTypes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowedTypes <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.allowsMultipleSelection
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("allowsMultipleSelection", "removed")
-
-
-      element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.fileOperationsHandler
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("fileOperationsHandler", "removed")
-
-
-      element.FileOperationsHandler <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.FileOperationsHandler <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.mustExist
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("mustExist", "removed")
-
-
-      element.MustExist <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MustExist <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.openMode
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("openMode", "removed")
-
-
-      element.OpenMode <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.OpenMode <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.path
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("path", "removed")
-
-
-      element.Path <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Path <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.searchMatcher
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("searchMatcher", "removed")
-
-
-      element.SearchMatcher <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SearchMatcher <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -3690,9 +2974,11 @@ type FileDialogElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("filesSelected", "removed")
+      if this.isEventHandlerTracked("filesSelected") then
 
-      Interop.removeEventHandler <@ element.FilesSelected @> element)
+        Interop.removeEventHandler <@ element.FilesSelected @> element
+
+        this.removeTrackedEventHandler("filesSelected"))
 
   override _.name = $"FileDialog"
 
@@ -3707,88 +2993,28 @@ type FileDialogElement(props: Props) =
     |> Option.iter (fun v -> element.AllowedTypes <- List<_>(v))
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.allowsMultipleSelection
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("allowsMultipleSelection", "set")
-
-
-      element.AllowsMultipleSelection <- v)
+    |> Option.iter (fun v -> element.AllowsMultipleSelection <- v)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.fileOperationsHandler
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("fileOperationsHandler", "set")
-
-
-      element.FileOperationsHandler <- v)
+    |> Option.iter (fun v -> element.FileOperationsHandler <- v)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.mustExist
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("mustExist", "set")
-
-
-      element.MustExist <- v)
+    |> Option.iter (fun v -> element.MustExist <- v)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.openMode
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("openMode", "set")
-
-
-      element.OpenMode <- v)
+    |> Option.iter (fun v -> element.OpenMode <- v)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.path
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("path", "set")
-
-
-      element.Path <- v)
+    |> Option.iter (fun v -> element.Path <- v)
 
     props
-
-
     |> Props.tryFind PKey.fileDialog.searchMatcher
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("searchMatcher", "set")
-
-
-      element.SearchMatcher <- v)
+    |> Option.iter (fun v -> element.SearchMatcher <- v)
     // Events
     props
 
@@ -3796,9 +3022,9 @@ type FileDialogElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("filesSelected", "set")
+      Interop.setEventHandler <@ element.FilesSelected @> v element
 
-      Interop.setEventHandler <@ element.FilesSelected @> v element)
+      this.trackEventHandler("filesSelected"))
 
 
   override this.newView() = new FileDialog()
@@ -3827,98 +3053,32 @@ type GraphViewElement(props: Props) =
     let element = element :?> GraphView
     // Properties
     props
-
     |> Props.tryFind PKey.graphView.axisX
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("axisX", "removed")
-
-      element.AxisX <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AxisX <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.axisY
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("axisY", "removed")
-
-
-      element.AxisY <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AxisY <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.cellSize
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cellSize", "removed")
-
-
-      element.CellSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CellSize <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.graphColor
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("graphColor", "removed")
-
-
-      element.GraphColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.GraphColor <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.marginBottom
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("marginBottom", "removed")
-
-
-      element.MarginBottom <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MarginBottom <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.marginLeft
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("marginLeft", "removed")
-
-
-      element.MarginLeft <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MarginLeft <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.graphView.scrollOffset
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("scrollOffset", "removed")
-
-
-      element.ScrollOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ScrollOffset <- Unchecked.defaultof<_>)
 
   override _.name = $"GraphView"
 
@@ -3929,42 +3089,16 @@ type GraphViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.graphView.axisX
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("axisX", "set")
-
-      element.AxisX <- v)
+    |> Option.iter (fun v -> element.AxisX <- v)
 
     props
-
-
     |> Props.tryFind PKey.graphView.axisY
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("axisY", "set")
-
-
-      element.AxisY <- v)
+    |> Option.iter (fun v -> element.AxisY <- v)
 
     props
-
-
     |> Props.tryFind PKey.graphView.cellSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("cellSize", "set")
-
-
-      element.CellSize <- v)
+    |> Option.iter (fun v -> element.CellSize <- v)
 
     props
     |> Props.tryFind PKey.graphView.graphColor
@@ -3979,18 +3113,8 @@ type GraphViewElement(props: Props) =
     |> Option.iter (fun v -> element.MarginLeft <- (v |> uint32))
 
     props
-
-
     |> Props.tryFind PKey.graphView.scrollOffset
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("scrollOffset", "set")
-
-
-      element.ScrollOffset <- v)
+    |> Option.iter (fun v -> element.ScrollOffset <- v)
 
 
   override this.newView() = new GraphView()
@@ -4004,70 +3128,24 @@ type HexViewElement(props: Props) =
     let element = element :?> HexView
     // Properties
     props
-
     |> Props.tryFind PKey.hexView.address
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("address", "removed")
-
-      element.Address <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Address <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.hexView.addressWidth
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("addressWidth", "removed")
-
-
-      element.AddressWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AddressWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.hexView.allowEdits
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("allowEdits", "removed")
-
-
-      element.BytesPerLine <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BytesPerLine <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.hexView.readOnly
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("readOnly", "removed")
-
-
-      element.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.hexView.source
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("source", "removed")
-
-
-      element.Source <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Source <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4075,9 +3153,11 @@ type HexViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("edited", "removed")
+      if this.isEventHandlerTracked("edited") then
 
-      Interop.removeEventHandler <@ element.Edited @> element)
+        Interop.removeEventHandler <@ element.Edited @> element
+
+        this.removeTrackedEventHandler("edited"))
 
     props
 
@@ -4088,10 +3168,13 @@ type HexViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("positionChanged", "removed")
+      if this.isEventHandlerTracked("positionChanged") then
 
 
-      Interop.removeEventHandler <@ element.PositionChanged @> element)
+        Interop.removeEventHandler <@ element.PositionChanged @> element
+
+
+        this.removeTrackedEventHandler("positionChanged"))
 
   override _.name = $"HexView"
 
@@ -4102,70 +3185,24 @@ type HexViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.hexView.address
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("address", "set")
-
-      element.Address <- v)
+    |> Option.iter (fun v -> element.Address <- v)
 
     props
-
-
     |> Props.tryFind PKey.hexView.addressWidth
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("addressWidth", "set")
-
-
-      element.AddressWidth <- v)
+    |> Option.iter (fun v -> element.AddressWidth <- v)
 
     props
-
-
     |> Props.tryFind PKey.hexView.allowEdits
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("allowEdits", "set")
-
-
-      element.BytesPerLine <- v)
+    |> Option.iter (fun v -> element.BytesPerLine <- v)
 
     props
-
-
     |> Props.tryFind PKey.hexView.readOnly
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("readOnly", "set")
-
-
-      element.ReadOnly <- v)
+    |> Option.iter (fun v -> element.ReadOnly <- v)
 
     props
-
-
     |> Props.tryFind PKey.hexView.source
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("source", "set")
-
-
-      element.Source <- v)
+    |> Option.iter (fun v -> element.Source <- v)
     // Events
     props
 
@@ -4173,9 +3210,9 @@ type HexViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("edited", "set")
+      Interop.setEventHandler <@ element.Edited @> v element
 
-      Interop.setEventHandler <@ element.Edited @> v element)
+      this.trackEventHandler("edited"))
 
     props
 
@@ -4186,10 +3223,10 @@ type HexViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("positionChanged", "set")
+      Interop.setEventHandler <@ element.PositionChanged @> v element
 
 
-      Interop.setEventHandler <@ element.PositionChanged @> v element)
+      this.trackEventHandler("positionChanged"))
 
 
   override this.newView() = new HexView()
@@ -4203,28 +3240,12 @@ type LabelElement(props: Props) =
     let element = element :?> Label
     // Properties
     props
-
     |> Props.tryFind PKey.label.hotKeySpecifier
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("hotKeySpecifier", "removed")
-
-      element.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.label.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
   override _.name = $"Label"
 
@@ -4235,28 +3256,12 @@ type LabelElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.label.hotKeySpecifier
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("hotKeySpecifier", "set")
-
-      element.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> element.HotKeySpecifier <- v)
 
     props
-
-
     |> Props.tryFind PKey.label.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
 
   override this.newView() = new Label()
@@ -4285,14 +3290,8 @@ type LineElement(props: Props) =
     let element = element :?> Line
     // Properties
     props
-
     |> Props.tryFind PKey.line.orientation
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("orientation", "removed")
-
-      element.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4300,9 +3299,11 @@ type LineElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -4313,10 +3314,13 @@ type LineElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
   override _.name = $"Line"
 
@@ -4327,14 +3331,8 @@ type LineElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.line.orientation
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("orientation", "set")
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
     // Events
     props
 
@@ -4342,9 +3340,9 @@ type LineElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -4355,10 +3353,10 @@ type LineElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
 
   override this.newView() = new Line()
@@ -4373,74 +3371,28 @@ type ListViewElement(props: Props) =
     let element = element :?> ListView
     // Properties
     props
-
     |> Props.tryFind PKey.listView.allowsMarking
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("allowsMarking", "removed")
-
-      element.AllowsMarking <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowsMarking <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.listView.allowsMultipleSelection
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("allowsMultipleSelection", "removed")
-
-
-      element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowsMultipleSelection <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.listView.leftItem
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("leftItem", "removed")
-
-
-      element.LeftItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.LeftItem <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.listView.selectedItem
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedItem", "removed")
-
-
-      element.SelectedItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.listView.source
     |> Option.iter (fun _ -> element.SetSource Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.listView.topItem
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("topItem", "removed")
-
-
-      element.TopItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TopItem <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4448,9 +3400,11 @@ type ListViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("collectionChanged", "removed")
+      if this.isEventHandlerTracked("collectionChanged") then
 
-      Interop.removeEventHandler <@ element.CollectionChanged @> element)
+        Interop.removeEventHandler <@ element.CollectionChanged @> element
+
+        this.removeTrackedEventHandler("collectionChanged"))
 
     props
 
@@ -4461,10 +3415,13 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("openSelectedItem", "removed")
+      if this.isEventHandlerTracked("openSelectedItem") then
 
 
-      Interop.removeEventHandler <@ element.OpenSelectedItem @> element)
+        Interop.removeEventHandler <@ element.OpenSelectedItem @> element
+
+
+        this.removeTrackedEventHandler("openSelectedItem"))
 
     props
 
@@ -4475,10 +3432,13 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("rowRender", "removed")
+      if this.isEventHandlerTracked("rowRender") then
 
 
-      Interop.removeEventHandler <@ element.RowRender @> element)
+        Interop.removeEventHandler <@ element.RowRender @> element
+
+
+        this.removeTrackedEventHandler("rowRender"))
 
     props
 
@@ -4489,10 +3449,13 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("selectedItemChanged", "removed")
+      if this.isEventHandlerTracked("selectedItemChanged") then
 
 
-      Interop.removeEventHandler <@ element.SelectedItemChanged @> element)
+        Interop.removeEventHandler <@ element.SelectedItemChanged @> element
+
+
+        this.removeTrackedEventHandler("selectedItemChanged"))
 
   override _.name = $"ListView"
 
@@ -4503,74 +3466,28 @@ type ListViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.listView.allowsMarking
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("allowsMarking", "set")
-
-      element.AllowsMarking <- v)
+    |> Option.iter (fun v -> element.AllowsMarking <- v)
 
     props
-
-
     |> Props.tryFind PKey.listView.allowsMultipleSelection
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("allowsMultipleSelection", "set")
-
-
-      element.AllowsMultipleSelection <- v)
+    |> Option.iter (fun v -> element.AllowsMultipleSelection <- v)
 
     props
-
-
     |> Props.tryFind PKey.listView.leftItem
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("leftItem", "set")
-
-
-      element.LeftItem <- v)
+    |> Option.iter (fun v -> element.LeftItem <- v)
 
     props
-
-
     |> Props.tryFind PKey.listView.selectedItem
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedItem", "set")
-
-
-      element.SelectedItem <- v)
+    |> Option.iter (fun v -> element.SelectedItem <- v)
 
     props
     |> Props.tryFind PKey.listView.source
     |> Option.iter (fun v -> element.SetSource(ObservableCollection(v)))
 
     props
-
-
     |> Props.tryFind PKey.listView.topItem
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("topItem", "set")
-
-
-      element.TopItem <- v)
+    |> Option.iter (fun v -> element.TopItem <- v)
     // Events
     props
 
@@ -4578,9 +3495,9 @@ type ListViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("collectionChanged", "set")
+      Interop.setEventHandler <@ element.CollectionChanged @> v element
 
-      Interop.setEventHandler <@ element.CollectionChanged @> v element)
+      this.trackEventHandler("collectionChanged"))
 
     props
 
@@ -4591,10 +3508,10 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("openSelectedItem", "set")
+      Interop.setEventHandler <@ element.OpenSelectedItem @> v element
 
 
-      Interop.setEventHandler <@ element.OpenSelectedItem @> v element)
+      this.trackEventHandler("openSelectedItem"))
 
     props
 
@@ -4605,10 +3522,10 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("rowRender", "set")
+      Interop.setEventHandler <@ element.RowRender @> v element
 
 
-      Interop.setEventHandler <@ element.RowRender @> v element)
+      this.trackEventHandler("rowRender"))
 
     props
 
@@ -4619,10 +3536,10 @@ type ListViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("selectedItemChanged", "set")
+      Interop.setEventHandler <@ element.SelectedItemChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SelectedItemChanged @> v element)
+      this.trackEventHandler("selectedItemChanged"))
 
 
   override this.newView() = new ListView()
@@ -4636,14 +3553,8 @@ type MarginElement(props: Props) =
     let element = element :?> Margin
     // Properties
     props
-
     |> Props.tryFind PKey.margin.shadowStyle
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("shadowStyle", "removed")
-
-      element.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
 
   override _.name = $"Margin"
 
@@ -4654,14 +3565,8 @@ type MarginElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.margin.shadowStyle
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("shadowStyle", "set")
-
-      element.ShadowStyle <- v)
+    |> Option.iter (fun v -> element.ShadowStyle <- v)
 
 
   override this.newView() = new Margin()
@@ -4675,28 +3580,12 @@ type MenuElement(props: Props) =
     let element = element :?> Menu
     // Properties
     props
-
     |> Props.tryFind PKey.menu.selectedMenuItem
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("selectedMenuItem", "removed")
-
-      element.SelectedMenuItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedMenuItem <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.menu.superMenuItem
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("superMenuItem", "removed")
-
-
-      element.SuperMenuItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SuperMenuItem <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4704,9 +3593,9 @@ type MenuElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("accepted", "set")
+      Interop.setEventHandler <@ element.Accepted @> v element
 
-      Interop.setEventHandler <@ element.Accepted @> v element)
+      this.trackEventHandler("accepted"))
 
     props
 
@@ -4717,10 +3606,10 @@ type MenuElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("selectedMenuItemChanged", "set")
+      Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
+      this.trackEventHandler("selectedMenuItemChanged"))
 
     ()
 
@@ -4733,28 +3622,12 @@ type MenuElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.menu.selectedMenuItem
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("selectedMenuItem", "set")
-
-      element.SelectedMenuItem <- v)
+    |> Option.iter (fun v -> element.SelectedMenuItem <- v)
 
     props
-
-
     |> Props.tryFind PKey.menu.superMenuItem
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("superMenuItem", "set")
-
-
-      element.SuperMenuItem <- v)
+    |> Option.iter (fun v -> element.SuperMenuItem <- v)
     // Events
     props
 
@@ -4762,9 +3635,9 @@ type MenuElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("accepted", "set")
+      Interop.setEventHandler <@ element.Accepted @> v element
 
-      Interop.setEventHandler <@ element.Accepted @> v element)
+      this.trackEventHandler("accepted"))
 
     props
 
@@ -4775,10 +3648,10 @@ type MenuElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("selectedMenuItemChanged", "set")
+      Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SelectedMenuItemChanged @> v element)
+      this.trackEventHandler("selectedMenuItemChanged"))
 
   override this.newView() = new Menu()
 
@@ -4796,42 +3669,16 @@ type PopoverMenuElement(props: Props) =
     let element = element :?> PopoverMenu
     // Properties
     props
-
     |> Props.tryFind PKey.popoverMenu.key
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("key", "removed")
-
-      element.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.popoverMenu.mouseFlags
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("mouseFlags", "removed")
-
-
-      element.MouseFlags <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MouseFlags <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.popoverMenu.root
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("root", "removed")
-
-
-      element.Root <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Root <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4839,9 +3686,11 @@ type PopoverMenuElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("accepted", "removed")
+      if this.isEventHandlerTracked("accepted") then
 
-      Interop.removeEventHandler <@ element.Accepted @> element)
+        Interop.removeEventHandler <@ element.Accepted @> element
+
+        this.removeTrackedEventHandler("accepted"))
 
     props
 
@@ -4852,10 +3701,13 @@ type PopoverMenuElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("keyChanged", "removed")
+      if this.isEventHandlerTracked("keyChanged") then
 
 
-      Interop.removeEventHandler <@ element.KeyChanged @> element)
+        Interop.removeEventHandler <@ element.KeyChanged @> element
+
+
+        this.removeTrackedEventHandler("keyChanged"))
 
   override this.name = "PopoverMenu"
 
@@ -4866,42 +3718,16 @@ type PopoverMenuElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.popoverMenu.key
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("key", "set")
-
-      element.Key <- v)
+    |> Option.iter (fun v -> element.Key <- v)
 
     props
-
-
     |> Props.tryFind PKey.popoverMenu.mouseFlags
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("mouseFlags", "set")
-
-
-      element.MouseFlags <- v)
+    |> Option.iter (fun v -> element.MouseFlags <- v)
 
     props
-
-
     |> Props.tryFind PKey.popoverMenu.root
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("root", "set")
-
-
-      element.Root <- v)
+    |> Option.iter (fun v -> element.Root <- v)
     // Events
     props
 
@@ -4909,9 +3735,9 @@ type PopoverMenuElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("accepted", "set")
+      Interop.setEventHandler <@ element.Accepted @> v element
 
-      Interop.setEventHandler <@ element.Accepted @> v element)
+      this.trackEventHandler("accepted"))
 
     props
 
@@ -4922,10 +3748,10 @@ type PopoverMenuElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("keyChanged", "set")
+      Interop.setEventHandler <@ element.KeyChanged @> v element
 
 
-      Interop.setEventHandler <@ element.KeyChanged @> v element)
+      this.trackEventHandler("keyChanged"))
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.popoverMenu.root_element
@@ -4945,28 +3771,12 @@ type MenuBarItemElement(props: Props) =
     let element = element :?> MenuBarItem
     // Properties
     props
-
     |> Props.tryFind PKey.menuBarItem.popoverMenu
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("popoverMenu", "removed")
-
-      element.PopoverMenu <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.PopoverMenu <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("popoverMenuOpen", "removed")
-
-
-      element.PopoverMenuOpen <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.PopoverMenuOpen <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -4974,9 +3784,11 @@ type MenuBarItemElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("popoverMenuOpenChanged", "removed")
+      if this.isEventHandlerTracked("popoverMenuOpenChanged") then
 
-      Interop.removeEventHandler <@ element.PopoverMenuOpenChanged @> element)
+        Interop.removeEventHandler <@ element.PopoverMenuOpenChanged @> element
+
+        this.removeTrackedEventHandler("popoverMenuOpenChanged"))
 
   override this.name = "MenuBarItem"
 
@@ -4987,28 +3799,12 @@ type MenuBarItemElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.menuBarItem.popoverMenu
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("popoverMenu", "set")
-
-      element.PopoverMenu <- v)
+    |> Option.iter (fun v -> element.PopoverMenu <- v)
 
     props
-
-
     |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("popoverMenuOpen", "set")
-
-
-      element.PopoverMenuOpen <- v)
+    |> Option.iter (fun v -> element.PopoverMenuOpen <- v)
     // Events
     props
 
@@ -5016,9 +3812,9 @@ type MenuBarItemElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("popoverMenuOpenChanged", "set")
+      Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element
 
-      Interop.setEventHandler <@ element.PopoverMenuOpenChanged @> (fun args -> v args.Value) element)
+      this.trackEventHandler("popoverMenuOpenChanged"))
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuBarItem.popoverMenu_element
@@ -5038,14 +3834,8 @@ type MenuBarElement(props: Props) =
     let element = element :?> MenuBar
     // Properties
     props
-
     |> Props.tryFind PKey.menuBar.key
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("key", "removed")
-
-      element.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
     // NOTE: No need to handle `Menus: MenuBarItemElement list` property here,
     //       as it already registered as "children" property.
@@ -5058,9 +3848,11 @@ type MenuBarElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("keyChanged", "removed")
+      if this.isEventHandlerTracked("keyChanged") then
 
-      Interop.removeEventHandler <@ element.KeyChanged @> element)
+        Interop.removeEventHandler <@ element.KeyChanged @> element
+
+        this.removeTrackedEventHandler("keyChanged"))
 
   override _.name = $"MenuBar"
 
@@ -5071,14 +3863,8 @@ type MenuBarElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.menuBar.key
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("key", "set")
-
-      element.Key <- v)
+    |> Option.iter (fun v -> element.Key <- v)
 
     // NOTE: No need to handle `Menus: MenuBarItemElement list` property here,
     //       as it already registered as "children" property.
@@ -5091,9 +3877,9 @@ type MenuBarElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("keyChanged", "set")
+      Interop.setEventHandler <@ element.KeyChanged @> v element
 
-      Interop.setEventHandler <@ element.KeyChanged @> v element)
+      this.trackEventHandler("keyChanged"))
 
   override this.newView() = new MenuBar()
 
@@ -5106,126 +3892,40 @@ type ShortcutElement(props: Props) =
     let element = element :?> Shortcut
     // Properties
     props
-
     |> Props.tryFind PKey.shortcut.action
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("action", "removed")
-
-      element.Action <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Action <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.alignmentModes
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("alignmentModes", "removed")
-
-
-      element.AlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.commandView
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("commandView", "removed")
-
-
-      element.CommandView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CommandView <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.forceFocusColors
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("forceFocusColors", "removed")
-
-
-      element.ForceFocusColors <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ForceFocusColors <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.helpText
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("helpText", "removed")
-
-
-      element.HelpText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.bindKeyToApplication
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("bindKeyToApplication", "removed")
-
-
-      element.BindKeyToApplication <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BindKeyToApplication <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.key
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("key", "removed")
-
-
-      element.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Key <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.minimumKeyTextSize
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("minimumKeyTextSize", "removed")
-
-
-      element.MinimumKeyTextSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MinimumKeyTextSize <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -5233,9 +3933,11 @@ type ShortcutElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -5246,10 +3948,13 @@ type ShortcutElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
   override _.name = $"Shortcut"
 
@@ -5260,126 +3965,40 @@ type ShortcutElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.shortcut.action
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("action", "set")
-
-      element.Action <- v)
+    |> Option.iter (fun v -> element.Action <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.alignmentModes
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("alignmentModes", "set")
-
-
-      element.AlignmentModes <- v)
+    |> Option.iter (fun v -> element.AlignmentModes <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.commandView
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("commandView", "set")
-
-
-      element.CommandView <- v)
+    |> Option.iter (fun v -> element.CommandView <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.forceFocusColors
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("forceFocusColors", "set")
-
-
-      element.ForceFocusColors <- v)
+    |> Option.iter (fun v -> element.ForceFocusColors <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.helpText
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("helpText", "set")
-
-
-      element.HelpText <- v)
+    |> Option.iter (fun v -> element.HelpText <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.bindKeyToApplication
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("bindKeyToApplication", "set")
-
-
-      element.BindKeyToApplication <- v)
+    |> Option.iter (fun v -> element.BindKeyToApplication <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.key
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("key", "set")
-
-
-      element.Key <- v)
+    |> Option.iter (fun v -> element.Key <- v)
 
     props
-
-
     |> Props.tryFind PKey.shortcut.minimumKeyTextSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("minimumKeyTextSize", "set")
-
-
-      element.MinimumKeyTextSize <- v)
+    |> Option.iter (fun v -> element.MinimumKeyTextSize <- v)
 
     // Events
     props
@@ -5388,9 +4007,9 @@ type ShortcutElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -5401,10 +4020,10 @@ type ShortcutElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.shortcut.commandView_element
@@ -5437,9 +4056,11 @@ type MenuItemElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("accepted", "removed")
+      if this.isEventHandlerTracked("accepted") then
 
-      Interop.removeEventHandler <@ element.Accepted @> element)
+        Interop.removeEventHandler <@ element.Accepted @> element
+
+        this.removeTrackedEventHandler("accepted"))
 
   override _.name = $"MenuItem"
 
@@ -5450,42 +4071,16 @@ type MenuItemElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.menuItem.command
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("command", "set")
-
-      element.Command <- v)
+    |> Option.iter (fun v -> element.Command <- v)
 
     props
-
-
     |> Props.tryFind PKey.menuItem.subMenu
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("subMenu", "set")
-
-
-      element.SubMenu <- v)
+    |> Option.iter (fun v -> element.SubMenu <- v)
 
     props
-
-
     |> Props.tryFind PKey.menuItem.targetView
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("targetView", "set")
-
-
-      element.TargetView <- v)
+    |> Option.iter (fun v -> element.TargetView <- v)
     // Events
     props
 
@@ -5493,9 +4088,9 @@ type MenuItemElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("accepted", "set")
+      Interop.setEventHandler <@ element.Accepted @> v element
 
-      Interop.setEventHandler <@ element.Accepted @> v element)
+      this.trackEventHandler("accepted"))
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuItem.subMenu_element
@@ -5595,14 +4190,8 @@ type OpenDialogElement(props: Props) =
     let element = element :?> OpenDialog
     // Properties
     props
-
     |> Props.tryFind PKey.openDialog.openMode
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("openMode", "removed")
-
-      element.OpenMode <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.OpenMode <- Unchecked.defaultof<_>)
 
   override _.name = $"OpenDialog"
 
@@ -5613,93 +4202,53 @@ type OpenDialogElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.openDialog.openMode
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("openMode", "set")
-
-      element.OpenMode <- v)
+    |> Option.iter (fun v -> element.OpenMode <- v)
 
 
   override this.newView() = new OpenDialog()
 
 // TODO: replace direct orientation usage with this type in the Element.fs
 type OrientationInterface =
-  static member removeProps (element: IOrientation) (props: Props) =
+  static member removeProps (element: IOrientation) (props: Props) (isTracked: string -> bool) (removeTracked: string -> unit) =
     // Properties
     props
-
     |> Props.tryFind PKey.orientationInterface.orientation
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("orientation", "removed")
-
-      element.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
 
     // Events
     props
-
     |> Props.tryFind PKey.orientationInterface.orientationChanged
-
     |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("orientationChanged", "removed")
-
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+      if isTracked("orientationChanged") then
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+        removeTracked("orientationChanged"))
 
     props
-
-
     |> Props.tryFind PKey.orientationInterface.orientationChanging
-
-
     |> Option.iter (fun _ -> 
+      if isTracked("orientationChanging") then
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+        removeTracked("orientationChanging"))
 
-
-      TerminalElement.logEvent("orientationChanging", "removed")
-
-
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
-
-  static member setProps (element: IOrientation) (props: Props) =
+  static member setProps (element: IOrientation) (props: Props) (track: string -> unit) =
     // Properties
     props
-
     |> Props.tryFind PKey.orientationInterface.orientation
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("orientation", "set")
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
 
     // Events
     props
-
     |> Props.tryFind PKey.orientationInterface.orientationChanged
-
     |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("orientationChanged", "set")
-
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
+      track("orientationChanged"))
 
     props
-
-
     |> Props.tryFind PKey.orientationInterface.orientationChanging
-
-
     |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("orientationChanging", "set")
-
-
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
+      track("orientationChanging"))
 
 // SelectorBase
 type internal SelectorBaseElement(props: Props) =
@@ -5709,116 +4258,40 @@ type internal SelectorBaseElement(props: Props) =
     base.removeProps (element, props)
     let element = element :?> SelectorBase
     // Interfaces
-    OrientationInterface.removeProps element props
+    OrientationInterface.removeProps element props this.isEventHandlerTracked this.removeTrackedEventHandler
 
     // Properties
     props
-
     |> Props.tryFind PKey.selectorBase.assignHotKeys
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("assignHotKeys", "removed")
-
-      element.AssignHotKeys <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AssignHotKeys <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.doubleClickAccepts
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("doubleClickAccepts", "removed")
-
-
-      element.DoubleClickAccepts <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.DoubleClickAccepts <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.horizontalSpace
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("horizontalSpace", "removed")
-
-
-      element.HorizontalSpace <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HorizontalSpace <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.labels
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("labels", "removed")
-
-
-      element.Labels <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Labels <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.styles
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("styles", "removed")
-
-
-      element.Styles <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Styles <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.usedHotKeys
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("usedHotKeys", "removed")
-
-
-      element.UsedHotKeys <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.UsedHotKeys <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.value
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("value", "removed")
-
-
-      element.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Value <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.values
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("values", "removed")
-
-
-      element.Values <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Values <- Unchecked.defaultof<_>)
 
     // Events
     props
@@ -5827,9 +4300,11 @@ type internal SelectorBaseElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("valueChanged", "removed")
+      if this.isEventHandlerTracked("valueChanged") then
 
-      Interop.removeEventHandler <@ element.ValueChanged @> element)
+        Interop.removeEventHandler <@ element.ValueChanged @> element
+
+        this.removeTrackedEventHandler("valueChanged"))
 
   override _.name = "SelectorBase"
 
@@ -5839,116 +4314,40 @@ type internal SelectorBaseElement(props: Props) =
     let element = element :?> SelectorBase
 
     // Interfaces
-    OrientationInterface.setProps element props
+    OrientationInterface.setProps element props this.trackEventHandler
 
     // Properties
     props
-
     |> Props.tryFind PKey.selectorBase.assignHotKeys
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("assignHotKeys", "set")
-
-      element.AssignHotKeys <- v)
+    |> Option.iter (fun v -> element.AssignHotKeys <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.doubleClickAccepts
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("doubleClickAccepts", "set")
-
-
-      element.DoubleClickAccepts <- v)
+    |> Option.iter (fun v -> element.DoubleClickAccepts <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.horizontalSpace
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("horizontalSpace", "set")
-
-
-      element.HorizontalSpace <- v)
+    |> Option.iter (fun v -> element.HorizontalSpace <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.labels
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("labels", "set")
-
-
-      element.Labels <- v)
+    |> Option.iter (fun v -> element.Labels <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.styles
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("styles", "set")
-
-
-      element.Styles <- v)
+    |> Option.iter (fun v -> element.Styles <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.usedHotKeys
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("usedHotKeys", "set")
-
-
-      element.UsedHotKeys <- v)
+    |> Option.iter (fun v -> element.UsedHotKeys <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.value
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("value", "set")
-
-
-      element.Value <- v)
+    |> Option.iter (fun v -> element.Value <- v)
 
     props
-
-
     |> Props.tryFind PKey.selectorBase.values
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("values", "set")
-
-
-      element.Values <- v)
+    |> Option.iter (fun v -> element.Values <- v)
 
     // Events
     props
@@ -5957,9 +4356,9 @@ type internal SelectorBaseElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("valueChanged", "set")
+      Interop.setEventHandler <@ element.ValueChanged @> v element
 
-      Interop.setEventHandler <@ element.ValueChanged @> v element)
+      this.trackEventHandler("valueChanged"))
 
   override this.newView() = raise (NotImplementedException())
 
@@ -5975,14 +4374,8 @@ type OptionSelectorElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.optionSelector.cursor
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("cursor", "removed")
-
-      element.Cursor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Cursor <- Unchecked.defaultof<_>)
 
   override _.name = $"OptionSelector"
 
@@ -5993,14 +4386,8 @@ type OptionSelectorElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.optionSelector.cursor
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("cursor", "set")
-
-      element.Cursor <- v)
+    |> Option.iter (fun v -> element.Cursor <- v)
 
   override this.newView() = new OptionSelector()
 
@@ -6015,14 +4402,8 @@ type FlagSelectorElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.flagSelector.value
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("value", "removed")
-
-      element.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Value <- Unchecked.defaultof<_>)
 
   override _.name = $"FlagSelector"
 
@@ -6033,14 +4414,8 @@ type FlagSelectorElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.flagSelector.value
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("value", "set")
-
-      element.Value <- v)
+    |> Option.iter (fun v -> element.Value <- v)
 
   override this.newView() = new FlagSelector()
 
@@ -6066,84 +4441,28 @@ type ProgressBarElement(props: Props) =
     let element = element :?> ProgressBar
     // Properties
     props
-
     |> Props.tryFind PKey.progressBar.bidirectionalMarquee
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("bidirectionalMarquee", "removed")
-
-      element.BidirectionalMarquee <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BidirectionalMarquee <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.fraction
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("fraction", "removed")
-
-
-      element.Fraction <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Fraction <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.progressBarFormat
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("progressBarFormat", "removed")
-
-
-      element.ProgressBarFormat <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ProgressBarFormat <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.progressBarStyle
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("progressBarStyle", "removed")
-
-
-      element.ProgressBarStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ProgressBarStyle <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.segmentCharacter
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("segmentCharacter", "removed")
-
-
-      element.SegmentCharacter <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SegmentCharacter <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
   override _.name = $"ProgressBar"
 
@@ -6154,84 +4473,28 @@ type ProgressBarElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.progressBar.bidirectionalMarquee
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("bidirectionalMarquee", "set")
-
-      element.BidirectionalMarquee <- v)
+    |> Option.iter (fun v -> element.BidirectionalMarquee <- v)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.fraction
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("fraction", "set")
-
-
-      element.Fraction <- v)
+    |> Option.iter (fun v -> element.Fraction <- v)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.progressBarFormat
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("progressBarFormat", "set")
-
-
-      element.ProgressBarFormat <- v)
+    |> Option.iter (fun v -> element.ProgressBarFormat <- v)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.progressBarStyle
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("progressBarStyle", "set")
-
-
-      element.ProgressBarStyle <- v)
+    |> Option.iter (fun v -> element.ProgressBarStyle <- v)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.segmentCharacter
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("segmentCharacter", "set")
-
-
-      element.SegmentCharacter <- v)
+    |> Option.iter (fun v -> element.SegmentCharacter <- v)
 
     props
-
-
     |> Props.tryFind PKey.progressBar.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
 
   override this.newView() = new ProgressBar()
@@ -6260,84 +4523,28 @@ type ScrollBarElement(props: Props) =
     let element = element :?> ScrollBar
     // Properties
     props
-
     |> Props.tryFind PKey.scrollBar.autoShow
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("autoShow", "removed")
-
-      element.AutoShow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AutoShow <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.increment
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("increment", "removed")
-
-
-      element.Increment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.orientation
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("orientation", "removed")
-
-
-      element.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.position
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("position", "removed")
-
-
-      element.Position <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.scrollableContentSize
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("scrollableContentSize", "removed")
-
-
-      element.ScrollableContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ScrollableContentSize <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.visibleContentSize
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("visibleContentSize", "removed")
-
-
-      element.VisibleContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -6345,9 +4552,11 @@ type ScrollBarElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -6358,10 +4567,13 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
     props
 
@@ -6372,10 +4584,13 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("scrollableContentSizeChanged", "removed")
+      if this.isEventHandlerTracked("scrollableContentSizeChanged") then
 
 
-      Interop.removeEventHandler <@ element.ScrollableContentSizeChanged @> element)
+        Interop.removeEventHandler <@ element.ScrollableContentSizeChanged @> element
+
+
+        this.removeTrackedEventHandler("scrollableContentSizeChanged"))
 
     props
 
@@ -6386,10 +4601,13 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("sliderPositionChanged", "removed")
+      if this.isEventHandlerTracked("sliderPositionChanged") then
 
 
-      Interop.removeEventHandler <@ element.SliderPositionChanged @> element)
+        Interop.removeEventHandler <@ element.SliderPositionChanged @> element
+
+
+        this.removeTrackedEventHandler("sliderPositionChanged"))
 
   override _.name = $"ScrollBar"
 
@@ -6400,84 +4618,28 @@ type ScrollBarElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.scrollBar.autoShow
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("autoShow", "set")
-
-      element.AutoShow <- v)
+    |> Option.iter (fun v -> element.AutoShow <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.increment
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("increment", "set")
-
-
-      element.Increment <- v)
+    |> Option.iter (fun v -> element.Increment <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.orientation
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("orientation", "set")
-
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.position
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("position", "set")
-
-
-      element.Position <- v)
+    |> Option.iter (fun v -> element.Position <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.scrollableContentSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("scrollableContentSize", "set")
-
-
-      element.ScrollableContentSize <- v)
+    |> Option.iter (fun v -> element.ScrollableContentSize <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollBar.visibleContentSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("visibleContentSize", "set")
-
-
-      element.VisibleContentSize <- v)
+    |> Option.iter (fun v -> element.VisibleContentSize <- v)
     // Events
     props
 
@@ -6485,9 +4647,9 @@ type ScrollBarElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -6498,10 +4660,10 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
     props
 
@@ -6512,10 +4674,10 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("scrollableContentSizeChanged", "set")
+      Interop.setEventHandler <@ element.ScrollableContentSizeChanged @> v element
 
 
-      Interop.setEventHandler <@ element.ScrollableContentSizeChanged @> v element)
+      this.trackEventHandler("scrollableContentSizeChanged"))
 
     props
 
@@ -6526,10 +4688,10 @@ type ScrollBarElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("sliderPositionChanged", "set")
+      Interop.setEventHandler <@ element.SliderPositionChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SliderPositionChanged @> v element)
+      this.trackEventHandler("sliderPositionChanged"))
 
 
   override this.newView() = new ScrollBar()
@@ -6543,70 +4705,24 @@ type ScrollSliderElement(props: Props) =
     let element = element :?> ScrollSlider
     // Properties
     props
-
     |> Props.tryFind PKey.scrollSlider.orientation
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("orientation", "removed")
-
-      element.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.position
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("position", "removed")
-
-
-      element.Position <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.size
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("size", "removed")
-
-
-      element.Size <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Size <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.sliderPadding
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("sliderPadding", "removed")
-
-
-      element.SliderPadding <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SliderPadding <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("visibleContentSize", "removed")
-
-
-      element.VisibleContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -6614,9 +4730,11 @@ type ScrollSliderElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -6627,10 +4745,13 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
     props
 
@@ -6641,10 +4762,13 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("positionChanged", "removed")
+      if this.isEventHandlerTracked("positionChanged") then
 
 
-      Interop.removeEventHandler <@ element.PositionChanged @> element)
+        Interop.removeEventHandler <@ element.PositionChanged @> element
+
+
+        this.removeTrackedEventHandler("positionChanged"))
 
     props
 
@@ -6655,10 +4779,13 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("positionChanging", "removed")
+      if this.isEventHandlerTracked("positionChanging") then
 
 
-      Interop.removeEventHandler <@ element.PositionChanging @> element)
+        Interop.removeEventHandler <@ element.PositionChanging @> element
+
+
+        this.removeTrackedEventHandler("positionChanging"))
 
     props
 
@@ -6669,10 +4796,13 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("scrolled", "removed")
+      if this.isEventHandlerTracked("scrolled") then
 
 
-      Interop.removeEventHandler <@ element.Scrolled @> element)
+        Interop.removeEventHandler <@ element.Scrolled @> element
+
+
+        this.removeTrackedEventHandler("scrolled"))
 
   override _.name = $"ScrollSlider"
 
@@ -6683,70 +4813,24 @@ type ScrollSliderElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.scrollSlider.orientation
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("orientation", "set")
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.position
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("position", "set")
-
-
-      element.Position <- v)
+    |> Option.iter (fun v -> element.Position <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.size
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("size", "set")
-
-
-      element.Size <- v)
+    |> Option.iter (fun v -> element.Size <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.sliderPadding
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("sliderPadding", "set")
-
-
-      element.SliderPadding <- v)
+    |> Option.iter (fun v -> element.SliderPadding <- v)
 
     props
-
-
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("visibleContentSize", "set")
-
-
-      element.VisibleContentSize <- v)
+    |> Option.iter (fun v -> element.VisibleContentSize <- v)
     // Events
     props
 
@@ -6754,9 +4838,9 @@ type ScrollSliderElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -6767,10 +4851,10 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
     props
 
@@ -6781,10 +4865,10 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("positionChanged", "set")
+      Interop.setEventHandler <@ element.PositionChanged @> v element
 
 
-      Interop.setEventHandler <@ element.PositionChanged @> v element)
+      this.trackEventHandler("positionChanged"))
 
     props
 
@@ -6795,10 +4879,10 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("positionChanging", "set")
+      Interop.setEventHandler <@ element.PositionChanging @> v element
 
 
-      Interop.setEventHandler <@ element.PositionChanging @> v element)
+      this.trackEventHandler("positionChanging"))
 
     props
 
@@ -6809,10 +4893,10 @@ type ScrollSliderElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("scrolled", "set")
+      Interop.setEventHandler <@ element.Scrolled @> v element
 
 
-      Interop.setEventHandler <@ element.Scrolled @> v element)
+      this.trackEventHandler("scrolled"))
 
 
   override this.newView() = new ScrollSlider()
@@ -6884,9 +4968,11 @@ type SliderElement<'a>(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("optionFocused", "removed")
+      if this.isEventHandlerTracked("optionFocused") then
 
-      Interop.removeEventHandler <@ element.OptionFocused @> element)
+        Interop.removeEventHandler <@ element.OptionFocused @> element
+
+        this.removeTrackedEventHandler("optionFocused"))
 
     props
 
@@ -6897,10 +4983,13 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("optionsChanged", "removed")
+      if this.isEventHandlerTracked("optionsChanged") then
 
 
-      Interop.removeEventHandler <@ element.OptionsChanged @> element)
+        Interop.removeEventHandler <@ element.OptionsChanged @> element
+
+
+        this.removeTrackedEventHandler("optionsChanged"))
 
     props
 
@@ -6911,10 +5000,13 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanged", "removed")
+      if this.isEventHandlerTracked("orientationChanged") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanged @> element)
+        Interop.removeEventHandler <@ element.OrientationChanged @> element
+
+
+        this.removeTrackedEventHandler("orientationChanged"))
 
     props
 
@@ -6925,10 +5017,13 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "removed")
+      if this.isEventHandlerTracked("orientationChanging") then
 
 
-      Interop.removeEventHandler <@ element.OrientationChanging @> element)
+        Interop.removeEventHandler <@ element.OrientationChanging @> element
+
+
+        this.removeTrackedEventHandler("orientationChanging"))
 
   override _.name = $"Slider<'a>"
 
@@ -6939,162 +5034,56 @@ type SliderElement<'a>(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.slider.allowEmpty
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("allowEmpty", "set")
-
-      element.AllowEmpty <- v)
+    |> Option.iter (fun v -> element.AllowEmpty <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.focusedOption
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("focusedOption", "set")
-
-
-      element.FocusedOption <- v)
+    |> Option.iter (fun v -> element.FocusedOption <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.legendsOrientation
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("legendsOrientation", "set")
-
-
-      element.LegendsOrientation <- v)
+    |> Option.iter (fun v -> element.LegendsOrientation <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.minimumInnerSpacing
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("minimumInnerSpacing", "set")
-
-
-      element.MinimumInnerSpacing <- v)
+    |> Option.iter (fun v -> element.MinimumInnerSpacing <- v)
 
     props
     |> Props.tryFind PKey.slider.options
     |> Option.iter (fun v -> element.Options <- List<_>(v))
 
     props
-
-
     |> Props.tryFind PKey.slider.orientation
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("orientation", "set")
-
-
-      element.Orientation <- v)
+    |> Option.iter (fun v -> element.Orientation <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.rangeAllowSingle
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("rangeAllowSingle", "set")
-
-
-      element.RangeAllowSingle <- v)
+    |> Option.iter (fun v -> element.RangeAllowSingle <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.showEndSpacing
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("showEndSpacing", "set")
-
-
-      element.ShowEndSpacing <- v)
+    |> Option.iter (fun v -> element.ShowEndSpacing <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.showLegends
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("showLegends", "set")
-
-
-      element.ShowLegends <- v)
+    |> Option.iter (fun v -> element.ShowLegends <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.style
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("style", "set")
-
-
-      element.Style <- v)
+    |> Option.iter (fun v -> element.Style <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
     props
     |> Props.tryFind PKey.slider.``type``
     |> Option.iter (fun v -> element.Type <- v)
 
     props
-
-
     |> Props.tryFind PKey.slider.useMinimumSize
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("useMinimumSize", "set")
-
-
-      element.UseMinimumSize <- v)
+    |> Option.iter (fun v -> element.UseMinimumSize <- v)
     // Events
     props
 
@@ -7102,9 +5091,9 @@ type SliderElement<'a>(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("optionFocused", "set")
+      Interop.setEventHandler <@ element.OptionFocused @> v element
 
-      Interop.setEventHandler <@ element.OptionFocused @> v element)
+      this.trackEventHandler("optionFocused"))
 
     props
 
@@ -7115,10 +5104,10 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("optionsChanged", "set")
+      Interop.setEventHandler <@ element.OptionsChanged @> v element
 
 
-      Interop.setEventHandler <@ element.OptionsChanged @> v element)
+      this.trackEventHandler("optionsChanged"))
 
     props
 
@@ -7129,10 +5118,10 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanged", "set")
+      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element
 
 
-      Interop.setEventHandler <@ element.OrientationChanged @> (fun arg -> v arg.Value) element)
+      this.trackEventHandler("orientationChanged"))
 
     props
 
@@ -7143,10 +5132,10 @@ type SliderElement<'a>(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("orientationChanging", "set")
+      Interop.setEventHandler <@ element.OrientationChanging @> v element
 
 
-      Interop.setEventHandler <@ element.OrientationChanging @> v element)
+      this.trackEventHandler("orientationChanging"))
 
 
   override this.newView() = new Slider<'a>()
@@ -7177,84 +5166,28 @@ type SpinnerViewElement(props: Props) =
     let element = element :?> SpinnerView
     // Properties
     props
-
     |> Props.tryFind PKey.spinnerView.autoSpin
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("autoSpin", "removed")
-
-      element.AutoSpin <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AutoSpin <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.sequence
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("sequence", "removed")
-
-
-      element.Sequence <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Sequence <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinBounce
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("spinBounce", "removed")
-
-
-      element.SpinBounce <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SpinBounce <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinDelay
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("spinDelay", "removed")
-
-
-      element.SpinDelay <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SpinDelay <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinReverse
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("spinReverse", "removed")
-
-
-      element.SpinReverse <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SpinReverse <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.style
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("style", "removed")
-
-
-      element.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
 
   override _.name = $"SpinnerView"
 
@@ -7265,74 +5198,28 @@ type SpinnerViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.spinnerView.autoSpin
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("autoSpin", "set")
-
-      element.AutoSpin <- v)
+    |> Option.iter (fun v -> element.AutoSpin <- v)
 
     props
     |> Props.tryFind PKey.spinnerView.sequence
     |> Option.iter (fun v -> element.Sequence <- v |> List.toArray)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinBounce
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("spinBounce", "set")
-
-
-      element.SpinBounce <- v)
+    |> Option.iter (fun v -> element.SpinBounce <- v)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinDelay
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("spinDelay", "set")
-
-
-      element.SpinDelay <- v)
+    |> Option.iter (fun v -> element.SpinDelay <- v)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.spinReverse
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("spinReverse", "set")
-
-
-      element.SpinReverse <- v)
+    |> Option.iter (fun v -> element.SpinReverse <- v)
 
     props
-
-
     |> Props.tryFind PKey.spinnerView.style
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("style", "set")
-
-
-      element.Style <- v)
+    |> Option.iter (fun v -> element.Style <- v)
 
 
   override this.newView() = new SpinnerView()
@@ -7361,28 +5248,12 @@ type TabElement(props: Props) =
     let element = element :?> Tab
     // Properties
     props
-
     |> Props.tryFind PKey.tab.displayText
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("displayText", "removed")
-
-      element.DisplayText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.DisplayText <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tab.view
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("view", "removed")
-
-
-      element.View <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.View <- Unchecked.defaultof<_>)
 
   override _.name = $"Tab"
 
@@ -7393,14 +5264,8 @@ type TabElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.tab.displayText
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("displayText", "set")
-
-      element.DisplayText <- v)
+    |> Option.iter (fun v -> element.DisplayText <- v)
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.tab.view_element
@@ -7418,56 +5283,20 @@ type TabViewElement(props: Props) =
     let element = element :?> TabView
     // Properties
     props
-
     |> Props.tryFind PKey.tabView.maxTabTextWidth
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("maxTabTextWidth", "removed")
-
-      element.MaxTabTextWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MaxTabTextWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tabView.selectedTab
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedTab", "removed")
-
-
-      element.SelectedTab <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedTab <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tabView.style
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("style", "removed")
-
-
-      element.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tabView.tabScrollOffset
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("tabScrollOffset", "removed")
-
-
-      element.TabScrollOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TabScrollOffset <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -7475,9 +5304,11 @@ type TabViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("selectedTabChanged", "removed")
+      if this.isEventHandlerTracked("selectedTabChanged") then
 
-      Interop.removeEventHandler <@ element.SelectedTabChanged @> element)
+        Interop.removeEventHandler <@ element.SelectedTabChanged @> element
+
+        this.removeTrackedEventHandler("selectedTabChanged"))
 
     props
 
@@ -7488,10 +5319,13 @@ type TabViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("tabClicked", "removed")
+      if this.isEventHandlerTracked("tabClicked") then
 
 
-      Interop.removeEventHandler <@ element.TabClicked @> element)
+        Interop.removeEventHandler <@ element.TabClicked @> element
+
+
+        this.removeTrackedEventHandler("tabClicked"))
 
   override _.name = $"TabView"
 
@@ -7506,46 +5340,16 @@ type TabViewElement(props: Props) =
     |> Option.iter (fun v -> element.MaxTabTextWidth <- (v |> uint32))
 
     props
-
-
     |> Props.tryFind PKey.tabView.selectedTab
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedTab", "set")
-
-
-      element.SelectedTab <- v)
+    |> Option.iter (fun v -> element.SelectedTab <- v)
 
     props
-
-
     |> Props.tryFind PKey.tabView.style
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("style", "set")
-
-
-      element.Style <- v)
+    |> Option.iter (fun v -> element.Style <- v)
 
     props
-
-
     |> Props.tryFind PKey.tabView.tabScrollOffset
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("tabScrollOffset", "set")
-
-
-      element.TabScrollOffset <- v)
+    |> Option.iter (fun v -> element.TabScrollOffset <- v)
     // Events
     props
 
@@ -7553,9 +5357,9 @@ type TabViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("selectedTabChanged", "set")
+      Interop.setEventHandler <@ element.SelectedTabChanged @> v element
 
-      Interop.setEventHandler <@ element.SelectedTabChanged @> v element)
+      this.trackEventHandler("selectedTabChanged"))
 
     props
 
@@ -7566,10 +5370,10 @@ type TabViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("tabClicked", "set")
+      Interop.setEventHandler <@ element.TabClicked @> v element
 
 
-      Interop.setEventHandler <@ element.TabClicked @> v element)
+      this.trackEventHandler("tabClicked"))
 
     // Additional properties
     props
@@ -7594,196 +5398,60 @@ type TableViewElement(props: Props) =
     let element = element :?> TableView
     // Properties
     props
-
     |> Props.tryFind PKey.tableView.cellActivationKey
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("cellActivationKey", "removed")
-
-      element.CellActivationKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CellActivationKey <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.collectionNavigator
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("collectionNavigator", "removed")
-
-
-      element.CollectionNavigator <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CollectionNavigator <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.columnOffset
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("columnOffset", "removed")
-
-
-      element.ColumnOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ColumnOffset <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.fullRowSelect
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("fullRowSelect", "removed")
-
-
-      element.FullRowSelect <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.FullRowSelect <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.maxCellWidth
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("maxCellWidth", "removed")
-
-
-      element.MaxCellWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MaxCellWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.minCellWidth
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("minCellWidth", "removed")
-
-
-      element.MinCellWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MinCellWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.multiSelect
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("multiSelect", "removed")
-
-
-      element.MultiSelect <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.MultiSelect <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.nullSymbol
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("nullSymbol", "removed")
-
-
-      element.NullSymbol <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.NullSymbol <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.rowOffset
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("rowOffset", "removed")
-
-
-      element.RowOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.RowOffset <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.selectedColumn
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedColumn", "removed")
-
-
-      element.SelectedColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedColumn <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.selectedRow
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedRow", "removed")
-
-
-      element.SelectedRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedRow <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.separatorSymbol
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("separatorSymbol", "removed")
-
-
-      element.SeparatorSymbol <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SeparatorSymbol <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.style
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("style", "removed")
-
-
-      element.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Style <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.tableView.table
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("table", "removed")
-
-
-      element.Table <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Table <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -7791,9 +5459,11 @@ type TableViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("cellActivated", "removed")
+      if this.isEventHandlerTracked("cellActivated") then
 
-      Interop.removeEventHandler <@ element.CellActivated @> element)
+        Interop.removeEventHandler <@ element.CellActivated @> element
+
+        this.removeTrackedEventHandler("cellActivated"))
 
     props
 
@@ -7804,10 +5474,13 @@ type TableViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("cellToggled", "removed")
+      if this.isEventHandlerTracked("cellToggled") then
 
 
-      Interop.removeEventHandler <@ element.CellToggled @> element)
+        Interop.removeEventHandler <@ element.CellToggled @> element
+
+
+        this.removeTrackedEventHandler("cellToggled"))
 
     props
 
@@ -7818,10 +5491,13 @@ type TableViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("selectedCellChanged", "removed")
+      if this.isEventHandlerTracked("selectedCellChanged") then
 
 
-      Interop.removeEventHandler <@ element.SelectedCellChanged @> element)
+        Interop.removeEventHandler <@ element.SelectedCellChanged @> element
+
+
+        this.removeTrackedEventHandler("selectedCellChanged"))
 
   override _.name = $"TableView"
 
@@ -7832,196 +5508,60 @@ type TableViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.tableView.cellActivationKey
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("cellActivationKey", "set")
-
-      element.CellActivationKey <- v)
+    |> Option.iter (fun v -> element.CellActivationKey <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.collectionNavigator
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("collectionNavigator", "set")
-
-
-      element.CollectionNavigator <- v)
+    |> Option.iter (fun v -> element.CollectionNavigator <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.columnOffset
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("columnOffset", "set")
-
-
-      element.ColumnOffset <- v)
+    |> Option.iter (fun v -> element.ColumnOffset <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.fullRowSelect
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("fullRowSelect", "set")
-
-
-      element.FullRowSelect <- v)
+    |> Option.iter (fun v -> element.FullRowSelect <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.maxCellWidth
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("maxCellWidth", "set")
-
-
-      element.MaxCellWidth <- v)
+    |> Option.iter (fun v -> element.MaxCellWidth <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.minCellWidth
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("minCellWidth", "set")
-
-
-      element.MinCellWidth <- v)
+    |> Option.iter (fun v -> element.MinCellWidth <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.multiSelect
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("multiSelect", "set")
-
-
-      element.MultiSelect <- v)
+    |> Option.iter (fun v -> element.MultiSelect <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.nullSymbol
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("nullSymbol", "set")
-
-
-      element.NullSymbol <- v)
+    |> Option.iter (fun v -> element.NullSymbol <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.rowOffset
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("rowOffset", "set")
-
-
-      element.RowOffset <- v)
+    |> Option.iter (fun v -> element.RowOffset <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.selectedColumn
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedColumn", "set")
-
-
-      element.SelectedColumn <- v)
+    |> Option.iter (fun v -> element.SelectedColumn <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.selectedRow
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedRow", "set")
-
-
-      element.SelectedRow <- v)
+    |> Option.iter (fun v -> element.SelectedRow <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.separatorSymbol
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("separatorSymbol", "set")
-
-
-      element.SeparatorSymbol <- v)
+    |> Option.iter (fun v -> element.SeparatorSymbol <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.style
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("style", "set")
-
-
-      element.Style <- v)
+    |> Option.iter (fun v -> element.Style <- v)
 
     props
-
-
     |> Props.tryFind PKey.tableView.table
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("table", "set")
-
-
-      element.Table <- v)
+    |> Option.iter (fun v -> element.Table <- v)
     // Events
     props
 
@@ -8029,9 +5569,9 @@ type TableViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("cellActivated", "set")
+      Interop.setEventHandler <@ element.CellActivated @> v element
 
-      Interop.setEventHandler <@ element.CellActivated @> v element)
+      this.trackEventHandler("cellActivated"))
 
     props
 
@@ -8042,10 +5582,10 @@ type TableViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("cellToggled", "set")
+      Interop.setEventHandler <@ element.CellToggled @> v element
 
 
-      Interop.setEventHandler <@ element.CellToggled @> v element)
+      this.trackEventHandler("cellToggled"))
 
     props
 
@@ -8056,10 +5596,10 @@ type TableViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("selectedCellChanged", "set")
+      Interop.setEventHandler <@ element.SelectedCellChanged @> v element
 
 
-      Interop.setEventHandler <@ element.SelectedCellChanged @> v element)
+      this.trackEventHandler("selectedCellChanged"))
 
 
   override this.newView() = new TableView()
@@ -8073,126 +5613,40 @@ type TextFieldElement(props: Props) =
     let element = element :?> TextField
     // Properties
     props
-
     |> Props.tryFind PKey.textField.autocomplete
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("autocomplete", "removed")
-
-      element.Autocomplete <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Autocomplete <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.cursorPosition
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "removed")
-
-
-      element.CursorPosition <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.readOnly
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("readOnly", "removed")
-
-
-      element.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.secret
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("secret", "removed")
-
-
-      element.Secret <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Secret <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.selectedStart
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectedStart", "removed")
-
-
-      element.SelectedStart <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectedStart <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.selectWordOnlyOnDoubleClick
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectWordOnlyOnDoubleClick", "removed")
-
-
-      element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.used
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("used", "removed")
-
-
-      element.Used <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Used <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textField.useSameRuneTypeForWords
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("useSameRuneTypeForWords", "removed")
-
-
-      element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -8200,9 +5654,11 @@ type TextFieldElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("textChanging", "removed")
+      if this.isEventHandlerTracked("textChanging") then
 
-      Interop.removeEventHandler <@ element.TextChanging @> element)
+        Interop.removeEventHandler <@ element.TextChanging @> element
+
+        this.removeTrackedEventHandler("textChanging"))
 
   override _.name = $"TextField"
 
@@ -8213,126 +5669,40 @@ type TextFieldElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.textField.autocomplete
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("autocomplete", "set")
-
-      element.Autocomplete <- v)
+    |> Option.iter (fun v -> element.Autocomplete <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.cursorPosition
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "set")
-
-
-      element.CursorPosition <- v)
+    |> Option.iter (fun v -> element.CursorPosition <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.readOnly
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("readOnly", "set")
-
-
-      element.ReadOnly <- v)
+    |> Option.iter (fun v -> element.ReadOnly <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.secret
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("secret", "set")
-
-
-      element.Secret <- v)
+    |> Option.iter (fun v -> element.Secret <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.selectedStart
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectedStart", "set")
-
-
-      element.SelectedStart <- v)
+    |> Option.iter (fun v -> element.SelectedStart <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.selectWordOnlyOnDoubleClick
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectWordOnlyOnDoubleClick", "set")
-
-
-      element.SelectWordOnlyOnDoubleClick <- v)
+    |> Option.iter (fun v -> element.SelectWordOnlyOnDoubleClick <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.used
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("used", "set")
-
-
-      element.Used <- v)
+    |> Option.iter (fun v -> element.Used <- v)
 
     props
-
-
     |> Props.tryFind PKey.textField.useSameRuneTypeForWords
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("useSameRuneTypeForWords", "set")
-
-
-      element.UseSameRuneTypeForWords <- v)
+    |> Option.iter (fun v -> element.UseSameRuneTypeForWords <- v)
     // Events
     props
 
@@ -8340,9 +5710,9 @@ type TextFieldElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("textChanging", "set")
+      Interop.setEventHandler <@ element.TextChanging @> v element
 
-      Interop.setEventHandler <@ element.TextChanging @> v element)
+      this.trackEventHandler("textChanging"))
 
 
   override this.newView() = new TextField()
@@ -8356,28 +5726,12 @@ type TextValidateFieldElement(props: Props) =
     let element = element :?> TextValidateField
     // Properties
     props
-
     |> Props.tryFind PKey.textValidateField.provider
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("provider", "removed")
-
-      element.Provider <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Provider <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textValidateField.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
   override _.name = $"TextValidateField"
 
@@ -8388,28 +5742,12 @@ type TextValidateFieldElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.textValidateField.provider
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("provider", "set")
-
-      element.Provider <- v)
+    |> Option.iter (fun v -> element.Provider <- v)
 
     props
-
-
     |> Props.tryFind PKey.textValidateField.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
 
   override this.newView() = new TextValidateField()
@@ -8424,252 +5762,76 @@ type TextViewElement(props: Props) =
     let element = element :?> TextView
     // Properties
     props
-
     |> Props.tryFind PKey.textView.allowsReturn
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("allowsReturn", "removed")
-
-      element.AllowsReturn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowsReturn <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.allowsTab
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("allowsTab", "removed")
-
-
-      element.AllowsTab <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.AllowsTab <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.cursorPosition
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "removed")
-
-
-      element.CursorPosition <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.inheritsPreviousAttribute
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("inheritsPreviousAttribute", "removed")
-
-
-      element.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.isDirty
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("isDirty", "removed")
-
-
-      element.IsDirty <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.IsDirty <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.isSelecting
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("isSelecting", "removed")
-
-
-      element.IsSelecting <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.IsSelecting <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.leftColumn
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("leftColumn", "removed")
-
-
-      element.LeftColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.LeftColumn <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.multiline
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("multiline", "removed")
-
-
-      element.Multiline <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Multiline <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.readOnly
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("readOnly", "removed")
-
-
-      element.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.ReadOnly <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectionStartColumn
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectionStartColumn", "removed")
-
-
-      element.SelectionStartColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectionStartColumn <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectionStartRow
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectionStartRow", "removed")
-
-
-      element.SelectionStartRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectionStartRow <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectWordOnlyOnDoubleClick
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("selectWordOnlyOnDoubleClick", "removed")
-
-
-      element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.tabWidth
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("tabWidth", "removed")
-
-
-      element.TabWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TabWidth <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.text
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("text", "removed")
-
-
-      element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.topRow
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("topRow", "removed")
-
-
-      element.TopRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.TopRow <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.used
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("used", "removed")
-
-
-      element.Used <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Used <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.useSameRuneTypeForWords
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("useSameRuneTypeForWords", "removed")
-
-
-      element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.textView.wordWrap
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("wordWrap", "removed")
-
-
-      element.WordWrap <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.WordWrap <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -8677,9 +5839,11 @@ type TextViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("contentsChanged", "removed")
+      if this.isEventHandlerTracked("contentsChanged") then
 
-      Interop.removeEventHandler <@ element.ContentsChanged @> element)
+        Interop.removeEventHandler <@ element.ContentsChanged @> element
+
+        this.removeTrackedEventHandler("contentsChanged"))
 
     props
 
@@ -8690,10 +5854,13 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawNormalColor", "removed")
+      if this.isEventHandlerTracked("drawNormalColor") then
 
 
-      Interop.removeEventHandler <@ element.DrawNormalColor @> element)
+        Interop.removeEventHandler <@ element.DrawNormalColor @> element
+
+
+        this.removeTrackedEventHandler("drawNormalColor"))
 
     props
 
@@ -8704,10 +5871,13 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawReadOnlyColor", "removed")
+      if this.isEventHandlerTracked("drawReadOnlyColor") then
 
 
-      Interop.removeEventHandler <@ element.DrawReadOnlyColor @> element)
+        Interop.removeEventHandler <@ element.DrawReadOnlyColor @> element
+
+
+        this.removeTrackedEventHandler("drawReadOnlyColor"))
 
     props
 
@@ -8718,10 +5888,13 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawSelectionColor", "removed")
+      if this.isEventHandlerTracked("drawSelectionColor") then
 
 
-      Interop.removeEventHandler <@ element.DrawSelectionColor @> element)
+        Interop.removeEventHandler <@ element.DrawSelectionColor @> element
+
+
+        this.removeTrackedEventHandler("drawSelectionColor"))
 
     props
 
@@ -8732,10 +5905,13 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("drawUsedColor", "removed")
+      if this.isEventHandlerTracked("drawUsedColor") then
 
 
-      Interop.removeEventHandler <@ element.DrawUsedColor @> element)
+        Interop.removeEventHandler <@ element.DrawUsedColor @> element
+
+
+        this.removeTrackedEventHandler("drawUsedColor"))
 
     props
 
@@ -8746,10 +5922,13 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("unwrappedCursorPosition", "removed")
+      if this.isEventHandlerTracked("unwrappedCursorPosition") then
 
 
-      Interop.removeEventHandler <@ element.UnwrappedCursorPosition @> element)
+        Interop.removeEventHandler <@ element.UnwrappedCursorPosition @> element
+
+
+        this.removeTrackedEventHandler("unwrappedCursorPosition"))
 
     // Additional properties
     props
@@ -8758,9 +5937,11 @@ type TextViewElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("textChanged", "removed")
+      if this.isEventHandlerTracked("textChanged") then
 
-      Interop.removeEventHandler <@ element.ContentsChanged @> element)
+        Interop.removeEventHandler <@ element.ContentsChanged @> element
+
+        this.removeTrackedEventHandler("textChanged"))
 
 
   override _.name = $"TextView"
@@ -8772,252 +5953,76 @@ type TextViewElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.textView.allowsReturn
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("allowsReturn", "set")
-
-      element.AllowsReturn <- v)
+    |> Option.iter (fun v -> element.AllowsReturn <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.allowsTab
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("allowsTab", "set")
-
-
-      element.AllowsTab <- v)
+    |> Option.iter (fun v -> element.AllowsTab <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.cursorPosition
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("cursorPosition", "set")
-
-
-      element.CursorPosition <- v)
+    |> Option.iter (fun v -> element.CursorPosition <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.inheritsPreviousAttribute
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("inheritsPreviousAttribute", "set")
-
-
-      element.InheritsPreviousAttribute <- v)
+    |> Option.iter (fun v -> element.InheritsPreviousAttribute <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.isDirty
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("isDirty", "set")
-
-
-      element.IsDirty <- v)
+    |> Option.iter (fun v -> element.IsDirty <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.isSelecting
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("isSelecting", "set")
-
-
-      element.IsSelecting <- v)
+    |> Option.iter (fun v -> element.IsSelecting <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.leftColumn
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("leftColumn", "set")
-
-
-      element.LeftColumn <- v)
+    |> Option.iter (fun v -> element.LeftColumn <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.multiline
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("multiline", "set")
-
-
-      element.Multiline <- v)
+    |> Option.iter (fun v -> element.Multiline <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.readOnly
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("readOnly", "set")
-
-
-      element.ReadOnly <- v)
+    |> Option.iter (fun v -> element.ReadOnly <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectionStartColumn
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectionStartColumn", "set")
-
-
-      element.SelectionStartColumn <- v)
+    |> Option.iter (fun v -> element.SelectionStartColumn <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectionStartRow
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectionStartRow", "set")
-
-
-      element.SelectionStartRow <- v)
+    |> Option.iter (fun v -> element.SelectionStartRow <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.selectWordOnlyOnDoubleClick
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("selectWordOnlyOnDoubleClick", "set")
-
-
-      element.SelectWordOnlyOnDoubleClick <- v)
+    |> Option.iter (fun v -> element.SelectWordOnlyOnDoubleClick <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.tabWidth
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("tabWidth", "set")
-
-
-      element.TabWidth <- v)
+    |> Option.iter (fun v -> element.TabWidth <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.text
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("text", "set")
-
-
-      element.Text <- v)
+    |> Option.iter (fun v -> element.Text <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.topRow
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("topRow", "set")
-
-
-      element.TopRow <- v)
+    |> Option.iter (fun v -> element.TopRow <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.used
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("used", "set")
-
-
-      element.Used <- v)
+    |> Option.iter (fun v -> element.Used <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.useSameRuneTypeForWords
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("useSameRuneTypeForWords", "set")
-
-
-      element.UseSameRuneTypeForWords <- v)
+    |> Option.iter (fun v -> element.UseSameRuneTypeForWords <- v)
 
     props
-
-
     |> Props.tryFind PKey.textView.wordWrap
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("wordWrap", "set")
-
-
-      element.WordWrap <- v)
+    |> Option.iter (fun v -> element.WordWrap <- v)
     // Events
     props
 
@@ -9025,9 +6030,9 @@ type TextViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("contentsChanged", "set")
+      Interop.setEventHandler <@ element.ContentsChanged @> v element
 
-      Interop.setEventHandler <@ element.ContentsChanged @> v element)
+      this.trackEventHandler("contentsChanged"))
 
     props
 
@@ -9038,10 +6043,10 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("drawNormalColor", "set")
+      Interop.setEventHandler <@ element.DrawNormalColor @> v element
 
 
-      Interop.setEventHandler <@ element.DrawNormalColor @> v element)
+      this.trackEventHandler("drawNormalColor"))
 
     props
 
@@ -9052,10 +6057,10 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("drawReadOnlyColor", "set")
+      Interop.setEventHandler <@ element.DrawReadOnlyColor @> v element
 
 
-      Interop.setEventHandler <@ element.DrawReadOnlyColor @> v element)
+      this.trackEventHandler("drawReadOnlyColor"))
 
     props
 
@@ -9066,10 +6071,10 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("drawSelectionColor", "set")
+      Interop.setEventHandler <@ element.DrawSelectionColor @> v element
 
 
-      Interop.setEventHandler <@ element.DrawSelectionColor @> v element)
+      this.trackEventHandler("drawSelectionColor"))
 
     props
 
@@ -9080,10 +6085,10 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("drawUsedColor", "set")
+      Interop.setEventHandler <@ element.DrawUsedColor @> v element
 
 
-      Interop.setEventHandler <@ element.DrawUsedColor @> v element)
+      this.trackEventHandler("drawUsedColor"))
 
     props
 
@@ -9094,10 +6099,10 @@ type TextViewElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("unwrappedCursorPosition", "set")
+      Interop.setEventHandler <@ element.UnwrappedCursorPosition @> v element
 
 
-      Interop.setEventHandler <@ element.UnwrappedCursorPosition @> v element)
+      this.trackEventHandler("unwrappedCursorPosition"))
 
     // Additional properties
     props
@@ -9106,9 +6111,9 @@ type TextViewElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("textChanged", "set")
+      Interop.setEventHandler <@ element.ContentsChanged @> (fun _ -> v element.Text) element
 
-      Interop.setEventHandler <@ element.ContentsChanged @> (fun _ -> v element.Text) element)
+      this.trackEventHandler("textChanged"))
 
 
   override this.newView() = new TextView()
@@ -9122,42 +6127,16 @@ type TimeFieldElement(props: Props) =
     let element = element :?> TimeField
     // Properties
     props
-
     |> Props.tryFind PKey.timeField.cursorPosition
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("cursorPosition", "removed")
-
-      element.CursorPosition <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CursorPosition <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.timeField.isShortFormat
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("isShortFormat", "removed")
-
-
-      element.IsShortFormat <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.IsShortFormat <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.timeField.time
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("time", "removed")
-
-
-      element.Time <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Time <- Unchecked.defaultof<_>)
     // Events
     props
 
@@ -9165,9 +6144,11 @@ type TimeFieldElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("timeChanged", "removed")
+      if this.isEventHandlerTracked("timeChanged") then
 
-      Interop.removeEventHandler <@ element.TimeChanged @> element)
+        Interop.removeEventHandler <@ element.TimeChanged @> element
+
+        this.removeTrackedEventHandler("timeChanged"))
 
   override _.name = $"TimeField"
 
@@ -9178,42 +6159,16 @@ type TimeFieldElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.timeField.cursorPosition
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("cursorPosition", "set")
-
-      element.CursorPosition <- v)
+    |> Option.iter (fun v -> element.CursorPosition <- v)
 
     props
-
-
     |> Props.tryFind PKey.timeField.isShortFormat
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("isShortFormat", "set")
-
-
-      element.IsShortFormat <- v)
+    |> Option.iter (fun v -> element.IsShortFormat <- v)
 
     props
-
-
     |> Props.tryFind PKey.timeField.time
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("time", "set")
-
-
-      element.Time <- v)
+    |> Option.iter (fun v -> element.Time <- v)
     // Events
     props
 
@@ -9221,9 +6176,9 @@ type TimeFieldElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("timeChanged", "set")
+      Interop.setEventHandler <@ element.TimeChanged @> v element
 
-      Interop.setEventHandler <@ element.TimeChanged @> v element)
+      this.trackEventHandler("timeChanged"))
 
 
   override this.newView() = new TimeField()
@@ -9245,32 +6200,12 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun _ -> element.SetIsRunning(Unchecked.defaultof<_>))
 
     props
-
-
     |> Props.tryFind PKey.runnable.stopRequested
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("stopRequested", "removed")
-
-
-      element.StopRequested <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.StopRequested <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.runnable.result
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("result", "removed")
-
-
-      element.Result <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.Result <- Unchecked.defaultof<_>)
 
     // Events
     props
@@ -9279,9 +6214,11 @@ type RunnableElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("isRunningChanging", "removed")
+      if this.isEventHandlerTracked("isRunningChanging") then
 
-      Interop.removeEventHandler <@ element.IsRunningChanging @> element)
+        Interop.removeEventHandler <@ element.IsRunningChanging @> element
+
+        this.removeTrackedEventHandler("isRunningChanging"))
 
     props
 
@@ -9292,10 +6229,13 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("isRunningChanged", "removed")
+      if this.isEventHandlerTracked("isRunningChanged") then
 
 
-      Interop.removeEventHandler <@ element.IsRunningChanged @> element)
+        Interop.removeEventHandler <@ element.IsRunningChanged @> element
+
+
+        this.removeTrackedEventHandler("isRunningChanged"))
 
     props
 
@@ -9306,10 +6246,13 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("isModalChanged", "removed")
+      if this.isEventHandlerTracked("isModalChanged") then
 
 
-      Interop.removeEventHandler <@ element.IsModalChanged @> element)
+        Interop.removeEventHandler <@ element.IsModalChanged @> element
+
+
+        this.removeTrackedEventHandler("isModalChanged"))
 
   override _.name = $"Runnable"
 
@@ -9328,32 +6271,12 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun v -> element.SetIsRunning(v))
 
     props
-
-
     |> Props.tryFind PKey.runnable.stopRequested
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("stopRequested", "set")
-
-
-      element.StopRequested <- v)
+    |> Option.iter (fun v -> element.StopRequested <- v)
 
     props
-
-
     |> Props.tryFind PKey.runnable.result
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("result", "set")
-
-
-      element.Result <- v)
+    |> Option.iter (fun v -> element.Result <- v)
 
     // Events
     props
@@ -9362,9 +6285,9 @@ type RunnableElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("isRunningChanging", "set")
+      Interop.setEventHandler <@ element.IsRunningChanging @> v element
 
-      Interop.setEventHandler <@ element.IsRunningChanging @> v element)
+      this.trackEventHandler("isRunningChanging"))
 
     props
 
@@ -9375,10 +6298,10 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("isRunningChanged", "set")
+      Interop.setEventHandler <@ element.IsRunningChanged @> v element
 
 
-      Interop.setEventHandler <@ element.IsRunningChanged @> v element)
+      this.trackEventHandler("isRunningChanged"))
 
     props
 
@@ -9389,10 +6312,10 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("isModalChanged", "set")
+      Interop.setEventHandler <@ element.IsModalChanged @> v element
 
 
-      Interop.setEventHandler <@ element.IsModalChanged @> v element)
+      this.trackEventHandler("isModalChanged"))
 
 
   override this.newView() = new Runnable()
@@ -9567,14 +6490,8 @@ type WizardElement(props: Props) =
     let element = element :?> Wizard
     // Properties
     props
-
     |> Props.tryFind PKey.wizard.currentStep
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("currentStep", "removed")
-
-      element.CurrentStep <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.CurrentStep <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.wizard.modal
@@ -9586,9 +6503,11 @@ type WizardElement(props: Props) =
 
     |> Option.iter (fun _ -> 
 
-      TerminalElement.logEvent("cancelled", "removed")
+      if this.isEventHandlerTracked("cancelled") then
 
-      Interop.removeEventHandler <@ element.Cancelled @> element)
+        Interop.removeEventHandler <@ element.Cancelled @> element
+
+        this.removeTrackedEventHandler("cancelled"))
 
     props
 
@@ -9599,10 +6518,13 @@ type WizardElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("finished", "removed")
+      if this.isEventHandlerTracked("finished") then
 
 
-      Interop.removeEventHandler <@ element.Finished @> element)
+        Interop.removeEventHandler <@ element.Finished @> element
+
+
+        this.removeTrackedEventHandler("finished"))
 
     props
 
@@ -9613,10 +6535,13 @@ type WizardElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("movingBack", "removed")
+      if this.isEventHandlerTracked("movingBack") then
 
 
-      Interop.removeEventHandler <@ element.MovingBack @> element)
+        Interop.removeEventHandler <@ element.MovingBack @> element
+
+
+        this.removeTrackedEventHandler("movingBack"))
 
     props
 
@@ -9627,10 +6552,13 @@ type WizardElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("movingNext", "removed")
+      if this.isEventHandlerTracked("movingNext") then
 
 
-      Interop.removeEventHandler <@ element.MovingNext @> element)
+        Interop.removeEventHandler <@ element.MovingNext @> element
+
+
+        this.removeTrackedEventHandler("movingNext"))
 
     props
 
@@ -9641,10 +6569,13 @@ type WizardElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("stepChanged", "removed")
+      if this.isEventHandlerTracked("stepChanged") then
 
 
-      Interop.removeEventHandler <@ element.StepChanged @> element)
+        Interop.removeEventHandler <@ element.StepChanged @> element
+
+
+        this.removeTrackedEventHandler("stepChanged"))
 
     props
 
@@ -9655,28 +6586,25 @@ type WizardElement(props: Props) =
     |> Option.iter (fun _ -> 
 
 
-      TerminalElement.logEvent("stepChanging", "removed")
+      if this.isEventHandlerTracked("stepChanging") then
 
 
-      Interop.removeEventHandler <@ element.StepChanging @> element)
+        Interop.removeEventHandler <@ element.StepChanging @> element
+
+
+        this.removeTrackedEventHandler("stepChanging"))
 
   override _.name = $"Wizard"
 
-  override _.setProps(element: View, props: Props) =
+  override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
     let element = element :?> Wizard
 
     // Properties
     props
-
     |> Props.tryFind PKey.wizard.currentStep
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("currentStep", "set")
-
-      element.CurrentStep <- v)
+    |> Option.iter (fun v -> element.CurrentStep <- v)
 
     props
     |> Props.tryFind PKey.wizard.modal
@@ -9688,9 +6616,9 @@ type WizardElement(props: Props) =
 
     |> Option.iter (fun v -> 
 
-      TerminalElement.logEvent("cancelled", "set")
+      Interop.setEventHandler <@ element.Cancelled @> v element
 
-      Interop.setEventHandler <@ element.Cancelled @> v element)
+      this.trackEventHandler("cancelled"))
 
     props
 
@@ -9701,10 +6629,10 @@ type WizardElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("finished", "set")
+      Interop.setEventHandler <@ element.Finished @> v element
 
 
-      Interop.setEventHandler <@ element.Finished @> v element)
+      this.trackEventHandler("finished"))
 
     props
 
@@ -9715,10 +6643,10 @@ type WizardElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("movingBack", "set")
+      Interop.setEventHandler <@ element.MovingBack @> v element
 
 
-      Interop.setEventHandler <@ element.MovingBack @> v element)
+      this.trackEventHandler("movingBack"))
 
     props
 
@@ -9729,10 +6657,10 @@ type WizardElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("movingNext", "set")
+      Interop.setEventHandler <@ element.MovingNext @> v element
 
 
-      Interop.setEventHandler <@ element.MovingNext @> v element)
+      this.trackEventHandler("movingNext"))
 
     props
 
@@ -9743,10 +6671,10 @@ type WizardElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("stepChanged", "set")
+      Interop.setEventHandler <@ element.StepChanged @> v element
 
 
-      Interop.setEventHandler <@ element.StepChanged @> v element)
+      this.trackEventHandler("stepChanged"))
 
     props
 
@@ -9757,10 +6685,10 @@ type WizardElement(props: Props) =
     |> Option.iter (fun v -> 
 
 
-      TerminalElement.logEvent("stepChanging", "set")
+      Interop.setEventHandler <@ element.StepChanging @> v element
 
 
-      Interop.setEventHandler <@ element.StepChanging @> v element)
+      this.trackEventHandler("stepChanging"))
 
 
   override this.newView() = new Wizard()
@@ -9774,42 +6702,16 @@ type WizardStepElement(props: Props) =
     let element = element :?> WizardStep
     // Properties
     props
-
     |> Props.tryFind PKey.wizardStep.backButtonText
-
-    |> Option.iter (fun _ -> 
-
-      TerminalElement.logEvent("backButtonText", "removed")
-
-      element.BackButtonText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.BackButtonText <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.wizardStep.helpText
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("helpText", "removed")
-
-
-      element.HelpText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.HelpText <- Unchecked.defaultof<_>)
 
     props
-
-
     |> Props.tryFind PKey.wizardStep.nextButtonText
-
-
-    |> Option.iter (fun _ -> 
-
-
-      TerminalElement.logEvent("nextButtonText", "removed")
-
-
-      element.NextButtonText <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> element.NextButtonText <- Unchecked.defaultof<_>)
 
   override _.name = $"WizardStep"
 
@@ -9820,42 +6722,16 @@ type WizardStepElement(props: Props) =
 
     // Properties
     props
-
     |> Props.tryFind PKey.wizardStep.backButtonText
-
-    |> Option.iter (fun v -> 
-
-      TerminalElement.logEvent("backButtonText", "set")
-
-      element.BackButtonText <- v)
+    |> Option.iter (fun v -> element.BackButtonText <- v)
 
     props
-
-
     |> Props.tryFind PKey.wizardStep.helpText
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("helpText", "set")
-
-
-      element.HelpText <- v)
+    |> Option.iter (fun v -> element.HelpText <- v)
 
     props
-
-
     |> Props.tryFind PKey.wizardStep.nextButtonText
-
-
-    |> Option.iter (fun v -> 
-
-
-      TerminalElement.logEvent("nextButtonText", "set")
-
-
-      element.NextButtonText <- v)
+    |> Option.iter (fun v -> element.NextButtonText <- v)
 
 
   override this.newView() = new WizardStep()

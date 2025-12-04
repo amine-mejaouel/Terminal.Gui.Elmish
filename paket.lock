@@ -10,18 +10,18 @@ NUGET
       System.Diagnostics.DiagnosticSource (>= 9.0.11) - restriction: || (>= net462) (&& (>= net8.0) (< net9.0)) (&& (< net8.0) (>= netstandard2.0))
     System.Diagnostics.DiagnosticSource (10.0) - restriction: || (&& (>= net462) (>= net8.0)) (&& (>= net8.0) (< net9.0))
     System.IO.Abstractions (22.1) - restriction: >= net8.0
-      TestableIO.System.IO.Abstractions (>= 22.1)
-      TestableIO.System.IO.Abstractions.Wrappers (>= 22.1)
-    Terminal.Gui (2.0.0-develop.4650)
+      TestableIO.System.IO.Abstractions (>= 22.1) - restriction: >= netstandard2.0
+      TestableIO.System.IO.Abstractions.Wrappers (>= 22.1) - restriction: >= netstandard2.0
+    Terminal.Gui (2.0.0-develop.4655)
       ColorHelper (>= 1.8.1 < 2.0) - restriction: >= net8.0
       JetBrains.Annotations (>= 2025.2.2) - restriction: >= net8.0
       Microsoft.Extensions.Logging.Abstractions (>= 9.0 < 10.0) - restriction: >= net8.0
       System.IO.Abstractions (>= 22.0.16 < 23.0) - restriction: >= net8.0
       Wcwidth (>= 4.0) - restriction: >= net8.0
     TestableIO.System.IO.Abstractions (22.1) - restriction: >= net8.0
-      Testably.Abstractions.FileSystem.Interface (>= 10.0)
+      Testably.Abstractions.FileSystem.Interface (>= 10.0) - restriction: >= netstandard2.0
     TestableIO.System.IO.Abstractions.Wrappers (22.1) - restriction: >= net8.0
-      Testably.Abstractions.FileSystem.Interface (>= 10.0)
+      Testably.Abstractions.FileSystem.Interface (>= 10.0) - restriction: >= netstandard2.0
     Testably.Abstractions.FileSystem.Interface (10.0) - restriction: >= net8.0
     Wcwidth (4.0.1) - restriction: >= net8.0
 

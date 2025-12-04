@@ -18,7 +18,7 @@ type Model = {
 
 type Msg = ThemeIndexChanged of index: int
 
-let init application =
+let init application : Model * Cmd<TerminalMsg<Msg>> =
   let themes = ThemeManager.GetThemeNames()
 
   let model = {
@@ -29,14 +29,17 @@ let init application =
 
   model, Cmd.none
 
-let update (msg: Msg) (model: Model) =
+let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>> =
   match msg with
-  | ThemeIndexChanged index ->
-      ThemeManager.Theme <- model.AvailableThemes[index]
+  | Msg msg ->
+    match msg with
+    | ThemeIndexChanged index ->
+        ThemeManager.Theme <- model.AvailableThemes[index]
+  | _ -> ()
 
   model, Cmd.none
 
-let view (state: Model) (dispatch: Msg -> unit) =
+let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
   let menuBar =
     View.menuBar (fun p m ->
       m.menuBarItem (fun p m ->
@@ -46,8 +49,9 @@ let view (state: Model) (dispatch: Msg -> unit) =
           View.menuItem (fun p ->
             p.title "Quit"
             p.helpText "Quit UI Catalog"
-            p.key Application.QuitKey
-            p.command Command.Quit
+            p.key (Key('Q'))
+            // p.mouseClick (fun _ -> dispatch TerminalMsg.Terminate)
+            p.action (fun _ -> dispatch TerminalMsg.Terminate)
           )
         ]
       )
@@ -94,7 +98,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
 
                   p.valueChanged (fun args ->
                     if args.Value.HasValue then
-                      dispatch (ThemeIndexChanged args.Value.Value)
+                      dispatch (ThemeIndexChanged args.Value.Value |> TerminalMsg.ofMsg)
                   )
 
                   p.value (Some state.SelectedThemeIndex)
@@ -155,7 +159,6 @@ let main argv =
 
   ElmishTerminal.mkProgram init update view
   // TODO: Implement base termination delegate on the library + allow client to extend it here
-  |> ElmishTerminal.withTermination (fun _ -> false)
   |> ElmishTerminal.runTerminal
 
   0 // return an integer exit code

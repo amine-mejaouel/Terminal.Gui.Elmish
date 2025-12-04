@@ -150,7 +150,6 @@ type TerminalElement(props: Props) =
   let onDrawCompleteEvent = Event<View>()
 
   let applyPos (apply: Pos -> unit) targetPos =
-    // TODO: There is still some Pos.* function that needs to be implemented.
     match targetPos with
     | TPos.X te ->
       (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.X(view)))
@@ -167,6 +166,10 @@ type TerminalElement(props: Props) =
     | TPos.Absolute position -> apply (Pos.Absolute(position))
     | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
     | TPos.Center -> apply (Pos.Center())
+    | TPos.Percent percent -> apply (Pos.Percent(percent))
+    | TPos.Func (func, te) ->
+      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Func(func, view)))
+    | TPos.Align (alignment, modes, groupId) -> apply (Pos.Align(alignment, modes, groupId))
 
   member this.props = props
   member val parent: View option = None with get, set

@@ -158,7 +158,6 @@ let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
   ElmishTerminal.mkProgram init update view
-  // TODO: Implement base termination delegate on the library + allow client to extend it here
   |> ElmishTerminal.runTerminal
 
   0 // return an integer exit code

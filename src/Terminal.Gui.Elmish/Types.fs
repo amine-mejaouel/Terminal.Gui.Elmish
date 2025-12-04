@@ -20,7 +20,7 @@ type TPos =
   | Center
   | Percent of percent: int
   | Func of func: (View -> int) * view: ITerminalElement
-  | Align of alignment: Alignment * modes: AlignmentModes * groupId: int
+  | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
 
 [<AutoOpen>]
 module internal PropKey =

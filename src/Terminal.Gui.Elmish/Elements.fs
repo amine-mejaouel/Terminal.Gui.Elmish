@@ -169,7 +169,7 @@ type TerminalElement(props: Props) =
     | TPos.Percent percent -> apply (Pos.Percent(percent))
     | TPos.Func (func, te) ->
       (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Func(func, view)))
-    | TPos.Align (alignment, modes, groupId) -> apply (Pos.Align(alignment, modes, groupId))
+    | TPos.Align (alignment, modes, groupId) -> apply (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.props = props
   member val parent: View option = None with get, set

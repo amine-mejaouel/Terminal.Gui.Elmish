@@ -1,6 +1,7 @@
 namespace Terminal.Gui.Elmish
 
 open System.Collections.Generic
+open Terminal.Gui.ViewBase
 
 type ITerminalElement =
   interface
@@ -17,6 +18,9 @@ type TPos =
   | Absolute of position: int
   | AnchorEnd of offset: int option
   | Center
+  | Percent of percent: int
+  | Func of func: (View -> int) * view: ITerminalElement
+  | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
 
 [<AutoOpen>]
 module internal PropKey =

@@ -13,8 +13,8 @@ type internal RootView =
   | View of View
 
 type internal InternalModel<'model> = {
-  Application: IApplication
   mutable CurrentTreeState: IInternalTerminalElement option
+  mutable Application: IApplication
   RootView: TaskCompletionSource<RootView>
   Termination: TaskCompletionSource
   /// Elmish model provided to the Program by the library caller.
@@ -85,7 +85,7 @@ let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminal
 
       match startState.view with
       | null -> failwith "error state not initialized"
-      | :? Terminal.Gui.ViewBase.Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
+      | :? Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
       | view -> model.RootView.SetResult(RootView.View view)
 
       startState
@@ -138,6 +138,8 @@ let runTerminal (ElmishTerminalProgram program) =
   let running = TaskCompletionSource()
   let mutable waitForTermination = null
 
+  let application = Application.Create()
+
   let runTerminal (model: InternalModel<_>) =
     let start dispatch =
       let rootView = model.RootView.Task.GetAwaiter().GetResult()
@@ -147,8 +149,9 @@ let runTerminal (ElmishTerminalProgram program) =
           Task.Run(fun () ->
             (
               try
-                model.Application.Init()
-                model.Application.Run(runnable)
+                model.Application <- application
+                model.Application.Init() |> ignore
+                model.Application.Run(runnable) |> ignore
                 running.SetResult()
               with ex -> running.SetException ex
             )
@@ -170,7 +173,7 @@ let runTerminal (ElmishTerminalProgram program) =
 
   program
   |> Program.withSubscription subscribe
-  |> Program.run
+  |> Program.runWith application
 
   waitForStart.Task.GetAwaiter().GetResult()
   Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()

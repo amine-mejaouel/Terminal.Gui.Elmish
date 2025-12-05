@@ -27,7 +27,7 @@ let render view =
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =
   let view =
-    View.topLevel [
+    View.runnable [
       View.menuBar (fun p m ->
         p.menus [
           View.menuBarItem (fun p ->
@@ -91,7 +91,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 [<Test>]
 let ``Using macros syntax: Menu should be correctly set`` () =
   let view =
-    View.topLevel [
+    View.runnable [
       View.menuBar (fun p m ->
         m.menuBarItem (fun p m ->
           p.title "MenuBarItem"

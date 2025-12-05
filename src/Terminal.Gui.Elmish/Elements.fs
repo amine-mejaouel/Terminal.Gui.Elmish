@@ -1150,6 +1150,39 @@ type TerminalElement(props: Props) =
     member this.onDrawComplete = this.onDrawComplete
 
 
+// OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
+type OrientationInterface =
+  static member removeProps (element: IOrientation) (props: Props) =
+    // Properties
+    props
+    |> Props.tryFind PKey.orientationInterface.orientation
+    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+
+    // Events
+    props
+    |> Props.tryFind PKey.orientationInterface.orientationChanged
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
+
+    props
+    |> Props.tryFind PKey.orientationInterface.orientationChanging
+    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+
+  // TODO: rename element' -> view here and everywhere else
+  static member setProps (element: TerminalElement) (element': IOrientation) (props: Props) =
+    // Properties
+    props
+    |> Props.tryFind PKey.orientationInterface.orientation
+    |> Option.iter (fun v -> element'.Orientation <- v)
+
+    // Events
+    props
+    |> Props.tryFind PKey.orientationInterface.orientationChanged
+    |> Option.iter (fun v -> element.eventRegistry.setPropEventHandler(PKey.orientationInterface.orientationChanged, element'.OrientationChanged, v))
+
+    props
+    |> Props.tryFind PKey.orientationInterface.orientationChanging
+    |> Option.iter (fun v -> element.eventRegistry.setPropEventHandler(PKey.orientationInterface.orientationChanging, element'.OrientationChanging, v))
+
 // Adornment
 type AdornmentElement(props: Props) =
   inherit TerminalElement(props)
@@ -1216,22 +1249,13 @@ type BarElement(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> Bar
+    // Interfaces
+    OrientationInterface.removeProps element props
+
     // Properties
     props
     |> Props.tryFind PKey.bar.alignmentModes
     |> Option.iter (fun _ -> element.AlignmentModes <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.bar.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
-    // Events
-    props
-    |> Props.tryFind PKey.bar.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.bar.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
 
   override _.name = $"Bar"
 
@@ -1239,22 +1263,14 @@ type BarElement(props: Props) =
     base.setProps (element, props)
 
     let element = element :?> Bar
+
+    // Interfaces
+    OrientationInterface.setProps this element props
+
     // Properties
     props
     |> Props.tryFind PKey.bar.alignmentModes
     |> Option.iter (fun v -> element.AlignmentModes <- v)
-
-    props
-    |> Props.tryFind PKey.bar.orientation
-    |> Option.iter (fun v -> element.Orientation <- v)
-    // Events
-    props
-    |> Props.tryFind PKey.bar.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.bar.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.bar.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.bar.orientationChanging, element.OrientationChanging, v))
 
 
   override this.newView() = new Bar()
@@ -2071,18 +2087,8 @@ type LineElement(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> Line
-    // Properties
-    props
-    |> Props.tryFind PKey.line.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
-    // Events
-    props
-    |> Props.tryFind PKey.line.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.line.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
+    // Interfaces
+    OrientationInterface.removeProps element props
 
   override _.name = $"Line"
 
@@ -2091,18 +2097,8 @@ type LineElement(props: Props) =
 
     let element = element :?> Line
 
-    // Properties
-    props
-    |> Props.tryFind PKey.line.orientation
-    |> Option.iter (fun v -> element.Orientation <- v)
-    // Events
-    props
-    |> Props.tryFind PKey.line.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.line.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.line.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.line.orientationChanging, element.OrientationChanging, v))
+    // Interfaces
+    OrientationInterface.setProps this element props
 
 
   override this.newView() = new Line()
@@ -2456,6 +2452,9 @@ type ShortcutElement(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> Shortcut
+    // Interfaces
+    OrientationInterface.removeProps element props
+
     // Properties
     props
     |> Props.tryFind PKey.shortcut.action
@@ -2492,14 +2491,6 @@ type ShortcutElement(props: Props) =
     props
     |> Props.tryFind PKey.shortcut.minimumKeyTextSize
     |> Option.iter (fun _ -> element.MinimumKeyTextSize <- Unchecked.defaultof<_>)
-    // Events
-    props
-    |> Props.tryFind PKey.shortcut.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.shortcut.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
 
   override _.name = $"Shortcut"
 
@@ -2507,6 +2498,9 @@ type ShortcutElement(props: Props) =
     base.setProps (element, props)
 
     let element = element :?> Shortcut
+
+    // Interfaces
+    OrientationInterface.setProps this element props
 
     // Properties
     props
@@ -2544,15 +2538,6 @@ type ShortcutElement(props: Props) =
     props
     |> Props.tryFind PKey.shortcut.minimumKeyTextSize
     |> Option.iter (fun v -> element.MinimumKeyTextSize <- v)
-
-    // Events
-    props
-    |> Props.tryFind PKey.shortcut.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.shortcut.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.shortcut.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.shortcut.orientationChanging, element.OrientationChanging, v))
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.shortcut.commandView_element
@@ -2722,39 +2707,6 @@ type OpenDialogElement(props: Props) =
 
 
   override this.newView() = new OpenDialog()
-
-// TODO: replace direct orientation usage with this type in the Element.fs
-type OrientationInterface =
-  static member removeProps (element: IOrientation) (props: Props) =
-    // Properties
-    props
-    |> Props.tryFind PKey.orientationInterface.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
-
-    // Events
-    props
-    |> Props.tryFind PKey.orientationInterface.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.orientationInterface.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
-
-  // TODO: rename element' -> view here and everywhere else
-  static member setProps (element: TerminalElement) (element': IOrientation) (props: Props) =
-    // Properties
-    props
-    |> Props.tryFind PKey.orientationInterface.orientation
-    |> Option.iter (fun v -> element'.Orientation <- v)
-
-    // Events
-    props
-    |> Props.tryFind PKey.orientationInterface.orientationChanged
-    |> Option.iter (fun v -> element.eventRegistry.setPropEventHandler(PKey.orientationInterface.orientationChanged, element'.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.orientationInterface.orientationChanging
-    |> Option.iter (fun v -> element.eventRegistry.setPropEventHandler(PKey.orientationInterface.orientationChanging, element'.OrientationChanging, v))
 
 // SelectorBase
 type internal SelectorBaseElement(props: Props) =
@@ -3013,6 +2965,9 @@ type ScrollBarElement(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> ScrollBar
+    // Interfaces
+    OrientationInterface.removeProps element props
+
     // Properties
     props
     |> Props.tryFind PKey.scrollBar.autoShow
@@ -3021,10 +2976,6 @@ type ScrollBarElement(props: Props) =
     props
     |> Props.tryFind PKey.scrollBar.increment
     |> Option.iter (fun _ -> element.Increment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.scrollBar.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.scrollBar.position
@@ -3038,14 +2989,6 @@ type ScrollBarElement(props: Props) =
     |> Props.tryFind PKey.scrollBar.visibleContentSize
     |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
-    props
-    |> Props.tryFind PKey.scrollBar.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.scrollBar.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
-
     props
     |> Props.tryFind PKey.scrollBar.scrollableContentSizeChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ScrollableContentSizeChanged @> element)
@@ -3061,6 +3004,9 @@ type ScrollBarElement(props: Props) =
 
     let element = element :?> ScrollBar
 
+    // Interfaces
+    OrientationInterface.setProps this element props
+
     // Properties
     props
     |> Props.tryFind PKey.scrollBar.autoShow
@@ -3069,10 +3015,6 @@ type ScrollBarElement(props: Props) =
     props
     |> Props.tryFind PKey.scrollBar.increment
     |> Option.iter (fun v -> element.Increment <- v)
-
-    props
-    |> Props.tryFind PKey.scrollBar.orientation
-    |> Option.iter (fun v -> element.Orientation <- v)
 
     props
     |> Props.tryFind PKey.scrollBar.position
@@ -3086,14 +3028,6 @@ type ScrollBarElement(props: Props) =
     |> Props.tryFind PKey.scrollBar.visibleContentSize
     |> Option.iter (fun v -> element.VisibleContentSize <- v)
     // Events
-    props
-    |> Props.tryFind PKey.scrollBar.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollBar.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.scrollBar.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollBar.orientationChanging, element.OrientationChanging, v))
-
     props
     |> Props.tryFind PKey.scrollBar.scrollableContentSizeChanged
     |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollBar.scrollableContentSizeChanged, element.ScrollableContentSizeChanged, v))
@@ -3112,11 +3046,10 @@ type ScrollSliderElement(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> ScrollSlider
-    // Properties
-    props
-    |> Props.tryFind PKey.scrollSlider.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
+    // Interfaces
+    OrientationInterface.removeProps element props
 
+    // Properties
     props
     |> Props.tryFind PKey.scrollSlider.position
     |> Option.iter (fun _ -> element.Position <- Unchecked.defaultof<_>)
@@ -3133,14 +3066,6 @@ type ScrollSliderElement(props: Props) =
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
     |> Option.iter (fun _ -> element.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
-    props
-    |> Props.tryFind PKey.scrollSlider.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.scrollSlider.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
-
     props
     |> Props.tryFind PKey.scrollSlider.positionChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.PositionChanged @> element)
@@ -3160,11 +3085,10 @@ type ScrollSliderElement(props: Props) =
 
     let element = element :?> ScrollSlider
 
-    // Properties
-    props
-    |> Props.tryFind PKey.scrollSlider.orientation
-    |> Option.iter (fun v -> element.Orientation <- v)
+    // Interfaces
+    OrientationInterface.setProps this element props
 
+    // Properties
     props
     |> Props.tryFind PKey.scrollSlider.position
     |> Option.iter (fun v -> element.Position <- v)
@@ -3181,14 +3105,6 @@ type ScrollSliderElement(props: Props) =
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
     |> Option.iter (fun v -> element.VisibleContentSize <- v)
     // Events
-    props
-    |> Props.tryFind PKey.scrollSlider.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollSlider.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.scrollSlider.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollSlider.orientationChanging, element.OrientationChanging, v))
-
     props
     |> Props.tryFind PKey.scrollSlider.positionChanged
     |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.scrollSlider.positionChanged, element.PositionChanged, v))
@@ -3212,6 +3128,9 @@ type SliderElement<'a>(props: Props) =
   override this.removeProps(element: View, props: Props) =
     base.removeProps (element, props)
     let element = element :?> Slider<'a>
+    // Interfaces
+    OrientationInterface.removeProps element props
+
     // Properties
     props
     |> Props.tryFind PKey.slider<'a>.allowEmpty
@@ -3232,10 +3151,6 @@ type SliderElement<'a>(props: Props) =
     props
     |> Props.tryFind PKey.slider<'a>.options
     |> Option.iter (fun _ -> element.Options <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.slider<'a>.orientation
-    |> Option.iter (fun _ -> element.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.slider<'a>.rangeAllowSingle
@@ -3273,20 +3188,15 @@ type SliderElement<'a>(props: Props) =
     |> Props.tryFind PKey.slider.optionsChanged
     |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OptionsChanged @> element)
 
-    props
-    |> Props.tryFind PKey.slider.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanged @> element)
-
-    props
-    |> Props.tryFind PKey.slider.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.OrientationChanging @> element)
-
   override _.name = $"Slider<'a>"
 
   override this.setProps(element: View, props: Props) =
     base.setProps (element, props)
 
     let element = element :?> Slider<'a>
+
+    // Interfaces
+    OrientationInterface.setProps this element props
 
     // Properties
     props
@@ -3308,10 +3218,6 @@ type SliderElement<'a>(props: Props) =
     props
     |> Props.tryFind PKey.slider.options
     |> Option.iter (fun v -> element.Options <- List<_>(v))
-
-    props
-    |> Props.tryFind PKey.slider.orientation
-    |> Option.iter (fun v -> element.Orientation <- v)
 
     props
     |> Props.tryFind PKey.slider.rangeAllowSingle
@@ -3348,14 +3254,6 @@ type SliderElement<'a>(props: Props) =
     props
     |> Props.tryFind PKey.slider.optionsChanged
     |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.slider.optionsChanged, element.OptionsChanged, v))
-
-    props
-    |> Props.tryFind PKey.slider.orientationChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.slider.orientationChanged, element.OrientationChanged, v))
-
-    props
-    |> Props.tryFind PKey.slider.orientationChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.slider.orientationChanging, element.OrientationChanging, v))
 
 
   override this.newView() = new Slider<'a>()

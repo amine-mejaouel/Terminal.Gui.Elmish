@@ -399,18 +399,20 @@ type adornmentProps() =
 // Bar
 type barProps() =
   inherit viewProps()
+
+  // IOrientation
+  member this.orientation(value: Orientation) =
+    this.props.add (PKey.orientationInterface.orientation, value)
+
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
+
+  member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
+
   // Properties
   member this.alignmentModes(value: AlignmentModes) =
     this.props.add (PKey.bar.alignmentModes, value)
-
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.bar.orientation, value)
-  // Events
-  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.bar.orientationChanged, handler)
-
-  member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.bar.orientationChanging, handler)
 
 // Border
 type borderProps() =
@@ -742,15 +744,15 @@ type legendAnnotationProps() =
 type lineProps() =
   inherit viewProps()
 
-  // Properties
+  // IOrientation
   member this.orientation(value: Orientation) =
-    this.props.add (PKey.line.orientation, value)
-  // Events
+    this.props.add (PKey.orientationInterface.orientation, value)
+
   member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.line.orientationChanged, handler)
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
 
   member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.line.orientationChanging, handler)
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
 
 // ListView
 type listViewProps() =
@@ -834,6 +836,16 @@ type menuBarProps() =
 type shortcutProps() =
   inherit viewProps()
 
+  // IOrientation
+  member this.orientation(value: Orientation) =
+    this.props.add (PKey.orientationInterface.orientation, value)
+
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
+
+  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
+
   // Properties
   member this.action(value: Action) =
     this.props.add (PKey.shortcut.action, value)
@@ -861,12 +873,6 @@ type shortcutProps() =
 
   member this.minimumKeyTextSize(value: Int32) =
     this.props.add (PKey.shortcut.minimumKeyTextSize, value)
-  // Events
-  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.shortcut.orientationChanged, handler)
-
-  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.shortcut.orientationChanging, handler)
 
 type menuItemProps() =
   inherit shortcutProps()
@@ -939,6 +945,7 @@ type openDialogProps() =
 // SelectorBase
 type [<AbstractClass>] selectorBaseProps() =
   inherit viewProps()
+
   // IOrientation
   member this.orientation(value: Orientation) =
     this.props.add (PKey.orientationInterface.orientation, value)
@@ -1027,15 +1034,22 @@ type progressBarProps() =
 type scrollBarProps() =
   inherit viewProps()
 
+  // IOrientation
+  member this.orientation(value: Orientation) =
+    this.props.add (PKey.orientationInterface.orientation, value)
+
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
+
+  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
+
   // Properties
   member this.autoShow(value: bool) =
     this.props.add (PKey.scrollBar.autoShow, value)
 
   member this.increment(value: Int32) =
     this.props.add (PKey.scrollBar.increment, value)
-
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.scrollBar.orientation, value)
 
   member this.position(value: Int32) =
     this.props.add (PKey.scrollBar.position, value)
@@ -1046,12 +1060,6 @@ type scrollBarProps() =
   member this.visibleContentSize(value: Int32) =
     this.props.add (PKey.scrollBar.visibleContentSize, value)
   // Events
-  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.scrollBar.orientationChanged, handler)
-
-  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.scrollBar.orientationChanging, handler)
-
   member this.scrollableContentSizeChanged(handler: EventArgs<Int32> -> unit) =
     this.props.add (PKey.scrollBar.scrollableContentSizeChanged, handler)
 
@@ -1062,10 +1070,17 @@ type scrollBarProps() =
 type scrollSliderProps() =
   inherit viewProps()
 
-  // Properties
+  // IOrientation
   member this.orientation(value: Orientation) =
-    this.props.add (PKey.scrollSlider.orientation, value)
+    this.props.add (PKey.orientationInterface.orientation, value)
 
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
+
+  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
+
+  // Properties
   member this.position(value: Int32) =
     this.props.add (PKey.scrollSlider.position, value)
 
@@ -1078,12 +1093,6 @@ type scrollSliderProps() =
   member this.visibleContentSize(value: Int32) =
     this.props.add (PKey.scrollSlider.visibleContentSize, value)
   // Events
-  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.scrollSlider.orientationChanged, handler)
-
-  member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.scrollSlider.orientationChanging, handler)
-
   member this.positionChanged(handler: EventArgs<Int32> -> unit) =
     this.props.add (PKey.scrollSlider.positionChanged, handler)
 
@@ -1096,6 +1105,16 @@ type scrollSliderProps() =
 // Slider`1
 type sliderProps<'a>() =
   inherit viewProps()
+
+  // IOrientation
+  member this.orientation(value: Orientation) =
+    this.props.add (PKey.orientationInterface.orientation, value)
+
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanged, handler)
+
+  member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.orientationInterface.orientationChanging, handler)
 
   // Properties
   member this.allowEmpty(value: bool) =
@@ -1113,8 +1132,6 @@ type sliderProps<'a>() =
   member this.options(value: SliderOption<'a> list) =
     this.props.add (PKey.slider.options, value)
 
-  member this.orientation(value: Orientation) =
-    this.props.add (PKey.slider.orientation, value)
 
   member this.rangeAllowSingle(value: bool) =
     this.props.add (PKey.slider.rangeAllowSingle, value)
@@ -1142,12 +1159,6 @@ type sliderProps<'a>() =
 
   member this.optionsChanged(handler: SliderEventArgs<'a> -> unit) =
     this.props.add (PKey.slider.optionsChanged, handler)
-
-  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.slider.orientationChanged, handler)
-
-  member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.slider.orientationChanging, handler)
 
 // Slider
 type sliderProps() =
@@ -1217,7 +1228,7 @@ type tabViewProps() =
     this.props.add (PKey.tabView.tabClicked, handler)
 
   member this.tabs(value: ITerminalElement list) =
-    this.props.add (PKey.tabView.tabs, System.Collections.Generic.List<_>(value))
+    this.props.add (PKey.tabView.tabs, List<_>(value))
 
 // TableView
 type tableViewProps() =

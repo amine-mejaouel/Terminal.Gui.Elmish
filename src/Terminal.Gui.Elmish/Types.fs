@@ -290,24 +290,6 @@ module internal Props =
 
   let exists (k: IPropKey<'a>) (p: Props) = p.dict.ContainsKey k
 
-  // TODO: remove this and replace usage with TerminalElement.compare where
-  let compare (oldProps: Props) (newProps: Props) =
-
-    let remainingOldProps, removedProps =
-      oldProps
-      |> partition (fun kv -> newProps |> rawKeyExists kv.Key)
-
-    let changedProps =
-      newProps
-      |> filter (fun kv ->
-        match remainingOldProps |> tryFindByRawKey kv.Key with
-        | _ when kv.Value = "children" -> false
-        | Some v' when kv.Value = v' -> false
-        | _ -> true
-      )
-
-    (changedProps, removedProps)
-
   let keys (props: Props) = props.dict.Keys |> Seq.map id
 
   let filterSingleElementKeys (props: Props) =

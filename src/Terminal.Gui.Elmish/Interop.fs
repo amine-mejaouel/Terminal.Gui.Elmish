@@ -1,7 +1,5 @@
 namespace Terminal.Gui.Elmish
 
-open System.Linq.Expressions
-open System
 open Terminal.Gui.ViewBase
 
 [<RequireQualifiedAccess>]

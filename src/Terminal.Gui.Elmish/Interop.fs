@@ -147,24 +147,6 @@ module Interop =
         None
     | _ -> None
 
-  /// Set an event handler for an event on an element and remove the previous handler
-  let setEventHandler (eventExpr: Expr<IEvent<'a, 'b>>) (eventHandler: 'b -> unit) element =
-    let evName = getPropNameFromEvent eventExpr
-
-    match evName with
-    | None -> raise (ArgumentException "can not get property name from event expression")
-    | Some evName ->
-      let eventDel =
-        EventHelpers.getEventDelegates evName element
-
-      if (eventDel.Length > 0) then
-        EventHelpers.clearEventDelegates evName element
-
-      let event =
-        unbox<IEvent<'a, 'b>> (LeafExpressionConverter.EvaluateQuotation eventExpr)
-
-      event.Add(eventHandler)
-
   let removeEventHandler (eventExpr: Expr<IEvent<'a, 'b>>) element =
     let evName = getPropNameFromEvent eventExpr
 

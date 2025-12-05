@@ -69,10 +69,10 @@ module internal PKey =
     member val y: ISimplePropKey<Pos> = PropKey.Create.simple "view.y"
     member val y_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos "view.y_delayedPos"
     // Events
-    member val accepting: ISimplePropKey<HandledEventArgs -> unit> = PropKey.Create.simple "view.accepting"
+    member val accepting: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "view.accepting"
     member val advancingFocus: ISimplePropKey<AdvanceFocusEventArgs -> unit> = PropKey.Create.simple "view.advancingFocus"
     member val borderStyleChanged: ISimplePropKey<EventArgs -> unit> = PropKey.Create.simple "view.borderStyleChanged"
-    member val canFocusChanged: ISimplePropKey<unit -> unit> = PropKey.Create.simple "view.canFocusChanged"
+    member val canFocusChanged: ISimplePropKey<EventArgs -> unit> = PropKey.Create.simple "view.canFocusChanged"
     member val clearedViewport: ISimplePropKey<DrawEventArgs -> unit> = PropKey.Create.simple "view.clearedViewport"
     member val clearingViewport: ISimplePropKey<DrawEventArgs -> unit> = PropKey.Create.simple "view.clearingViewport"
     member val commandNotBound: ISimplePropKey<CommandEventArgs -> unit> = PropKey.Create.simple "view.commandNotBound"
@@ -99,7 +99,7 @@ module internal PKey =
     member val mouseEnter: ISimplePropKey<CancelEventArgs -> unit> = PropKey.Create.simple "view.mouseEnter"
     member val mouseEvent: ISimplePropKey<MouseEventArgs -> unit> = PropKey.Create.simple "view.mouseEvent"
     member val mouseLeave: ISimplePropKey<EventArgs -> unit> = PropKey.Create.simple "view.mouseLeave"
-    member val mouseStateChanged: ISimplePropKey<EventArgs -> unit> = PropKey.Create.simple "view.mouseStateChanged"
+    member val mouseStateChanged: ISimplePropKey<EventArgs<MouseState> -> unit> = PropKey.Create.simple "view.mouseStateChanged"
     member val mouseWheel: ISimplePropKey<MouseEventArgs -> unit> = PropKey.Create.simple "view.mouseWheel"
     member val removed: ISimplePropKey<SuperViewChangedEventArgs -> unit> = PropKey.Create.simple "view.removed"
     member val schemeChanged: ISimplePropKey<ValueChangedEventArgs<Scheme> -> unit> = PropKey.Create.simple "view.schemeChanged"
@@ -113,11 +113,11 @@ module internal PKey =
     member val subViewsLaidOut: ISimplePropKey<LayoutEventArgs -> unit> = PropKey.Create.simple "view.subViewsLaidOut"
     member val superViewChanged: ISimplePropKey<SuperViewChangedEventArgs -> unit> = PropKey.Create.simple "view.superViewChanged"
     member val textChanged: ISimplePropKey<unit -> unit> = PropKey.Create.simple "view.textChanged"
-    member val titleChanged: ISimplePropKey<string -> unit> = PropKey.Create.simple "view.titleChanged"
+    member val titleChanged: ISimplePropKey<EventArgs<string> -> unit> = PropKey.Create.simple "view.titleChanged"
     member val titleChanging: ISimplePropKey<App.CancelEventArgs<string> -> unit> = PropKey.Create.simple "view.titleChanging"
     member val viewportChanged: ISimplePropKey<DrawEventArgs -> unit> = PropKey.Create.simple "view.viewportChanged"
     member val visibleChanged: ISimplePropKey<unit -> unit> = PropKey.Create.simple "view.visibleChanged"
-    member val visibleChanging: ISimplePropKey<unit -> unit> = PropKey.Create.simple "view.visibleChanging"
+    member val visibleChanging: ISimplePropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.simple "view.visibleChanging"
 
   // Adornment
   type adornmentPKeys() =
@@ -137,7 +137,7 @@ module internal PKey =
     member val alignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "bar.alignmentModes"
     member val orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "bar.orientation"
     // Events
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "bar.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "bar.orientationChanged"
     member val orientationChanging: ISimplePropKey<App.CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "bar.orientationChanging"
 
   // Border
@@ -331,7 +331,7 @@ module internal PKey =
     // Properties
     member val orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "line.orientation"
     // Events
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "line.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "line.orientationChanged"
     member val orientationChanging: ISimplePropKey<App.CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "line.orientationChanging"
 
   // ListView
@@ -393,7 +393,7 @@ module internal PKey =
     member val key: ISimplePropKey<Key> = PropKey.Create.simple "shortcut.key"
     member val minimumKeyTextSize: ISimplePropKey<Int32> = PropKey.Create.simple "shortcut.minimumKeyTextSize"
     // Events
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "shortcut.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "shortcut.orientationChanged"
     member val orientationChanging: ISimplePropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "shortcut.orientationChanging"
 
   type menuItemPKeys() =
@@ -412,7 +412,7 @@ module internal PKey =
     member val popoverMenu_element: ISingleElementPropKey<IPopoverMenuElement> = PropKey.Create.singleElement "menuBarItem.popoverMenu_element"
     member val popoverMenuOpen: ISimplePropKey<bool> = PropKey.Create.simple "menuBarItem.popoverMenuOpen"
     // Events
-    member val popoverMenuOpenChanged: ISimplePropKey<bool -> unit> = PropKey.Create.simple "menuBarItem.popoverMenuOpenChanged"
+    member val popoverMenuOpenChanged: ISimplePropKey<EventArgs<bool> -> unit> = PropKey.Create.simple "menuBarItem.popoverMenuOpenChanged"
 
   type popoverMenuPKeys() =
     inherit viewPKeys()
@@ -435,9 +435,9 @@ module internal PKey =
     member val increment: ISimplePropKey<'a> = PropKey.Create.simple "numericUpDown.increment"
     member val value: ISimplePropKey<'a> = PropKey.Create.simple "numericUpDown.value"
     // Events
-    member val formatChanged: ISimplePropKey<string -> unit> = PropKey.Create.simple "numericUpDown.formatChanged"
-    member val incrementChanged: ISimplePropKey<'a -> unit> = PropKey.Create.simple "numericUpDown.incrementChanged"
-    member val valueChanged: ISimplePropKey<'a -> unit> = PropKey.Create.simple "numericUpDown.valueChanged"
+    member val formatChanged: ISimplePropKey<EventArgs<string> -> unit> = PropKey.Create.simple "numericUpDown.formatChanged"
+    member val incrementChanged: ISimplePropKey<EventArgs<'a> -> unit> = PropKey.Create.simple "numericUpDown.incrementChanged"
+    member val valueChanged: ISimplePropKey<EventArgs<'a> -> unit> = PropKey.Create.simple "numericUpDown.valueChanged"
     member val valueChanging: ISimplePropKey<App.CancelEventArgs<'a> -> unit> = PropKey.Create.simple "numericUpDown.valueChanging"
 
   // NumericUpDown
@@ -510,7 +510,7 @@ module internal PKey =
     member val scrollableContentSize: ISimplePropKey<Int32> = PropKey.Create.simple "scrollBar.scrollableContentSize"
     member val visibleContentSize: ISimplePropKey<Int32> = PropKey.Create.simple "scrollBar.visibleContentSize"
     // Events
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "scrollBar.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "scrollBar.orientationChanged"
     member val orientationChanging: ISimplePropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "scrollBar.orientationChanging"
     member val scrollableContentSizeChanged: ISimplePropKey<EventArgs<Int32> -> unit> = PropKey.Create.simple "scrollBar.scrollableContentSizeChanged"
     member val sliderPositionChanged: ISimplePropKey<EventArgs<Int32> -> unit> = PropKey.Create.simple "scrollBar.sliderPositionChanged"
@@ -526,7 +526,7 @@ module internal PKey =
     member val sliderPadding: ISimplePropKey<Int32> = PropKey.Create.simple "scrollSlider.sliderPadding"
     member val visibleContentSize: ISimplePropKey<Int32> = PropKey.Create.simple "scrollSlider.visibleContentSize"
     // Events
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "scrollSlider.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "scrollSlider.orientationChanged"
     member val orientationChanging: ISimplePropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "scrollSlider.orientationChanging"
     member val positionChanged: ISimplePropKey<EventArgs<Int32> -> unit> = PropKey.Create.simple "scrollSlider.positionChanged"
     member val positionChanging: ISimplePropKey<CancelEventArgs<Int32> -> unit> = PropKey.Create.simple "scrollSlider.positionChanging"
@@ -553,7 +553,7 @@ module internal PKey =
     // Events
     member val optionFocused: ISimplePropKey<SliderEventArgs<'a> -> unit> = PropKey.Create.simple "slider.optionFocused"
     member val optionsChanged: ISimplePropKey<SliderEventArgs<'a> -> unit> = PropKey.Create.simple "slider.optionsChanged"
-    member val orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "slider.orientationChanged"
+    member val orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "slider.orientationChanged"
     member val orientationChanging: ISimplePropKey<App.CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "slider.orientationChanging"
 
   // Slider
@@ -666,7 +666,7 @@ module internal PKey =
     member val drawUsedColor: ISimplePropKey<CellEventArgs -> unit> = PropKey.Create.simple "textView.drawUsedColor"
     member val unwrappedCursorPosition: ISimplePropKey<Point -> unit> = PropKey.Create.simple "textView.unwrappedCursorPosition"
     // Additional properties
-    member val textChanged: ISimplePropKey<string -> unit> = PropKey.Create.simple "textView.textChanged"
+    member val textChanged: ISimplePropKey<ContentsChangedEventArgs -> unit> = PropKey.Create.simple "textView.textChanged"
 
   // TimeField
   type timeFieldPKeys() =
@@ -806,5 +806,5 @@ module internal PKey =
     // Properties
     let orientation : ISimplePropKey<Orientation> = PropKey.Create.simple "orientation.orientation"
     // Events
-    let orientationChanged: ISimplePropKey<Orientation -> unit> = PropKey.Create.simple "orientation.orientationChanged"
+    let orientationChanged: ISimplePropKey<EventArgs<Orientation> -> unit> = PropKey.Create.simple "orientation.orientationChanged"
     let orientationChanging: ISimplePropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.simple "orientation.orientationChanging"

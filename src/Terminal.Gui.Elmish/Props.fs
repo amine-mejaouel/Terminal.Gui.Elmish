@@ -158,7 +158,7 @@ type viewProps() =
   member this.borderStyleChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.view.borderStyleChanged, handler)
 
-  member this.canFocusChanged(handler: unit -> unit) =
+  member this.canFocusChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.view.canFocusChanged, handler)
 
   member this.clearedViewport(handler: DrawEventArgs -> unit) =
@@ -281,7 +281,7 @@ type viewProps() =
   member this.textChanged(handler: unit -> unit) =
     this.props.add (PKey.view.textChanged, handler)
 
-  member this.titleChanged(handler: string -> unit) =
+  member this.titleChanged(handler: EventArgs<string> -> unit) =
     this.props.add (PKey.view.titleChanged, handler)
 
   member this.titleChanging(handler: App.CancelEventArgs<string> -> unit) =
@@ -293,7 +293,7 @@ type viewProps() =
   member this.visibleChanged(handler: unit -> unit) =
     this.props.add (PKey.view.visibleChanged, handler)
 
-  member this.visibleChanging(handler: unit -> unit) =
+  member this.visibleChanging(handler: CancelEventArgs<bool> -> unit) =
     this.props.add (PKey.view.visibleChanging, handler)
 
 // module prop =
@@ -406,7 +406,7 @@ type barProps() =
   member this.orientation(value: Orientation) =
     this.props.add (PKey.bar.orientation, value)
   // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.bar.orientationChanged, handler)
 
   member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
@@ -746,7 +746,7 @@ type lineProps() =
   member this.orientation(value: Orientation) =
     this.props.add (PKey.line.orientation, value)
   // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.line.orientationChanged, handler)
 
   member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
@@ -862,7 +862,7 @@ type shortcutProps() =
   member this.minimumKeyTextSize(value: Int32) =
     this.props.add (PKey.shortcut.minimumKeyTextSize, value)
   // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.shortcut.orientationChanged, handler)
 
   member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
@@ -912,13 +912,13 @@ type numericUpDownProps<'a>() =
   member this.value(value: 'a) =
     this.props.add (PKey.numericUpDown.value, value)
   // Events
-  member this.formatChanged(handler: string -> unit) =
+  member this.formatChanged(handler: EventArgs<string> -> unit) =
     this.props.add (PKey.numericUpDown.formatChanged, handler)
 
-  member this.incrementChanged(handler: 'a -> unit) =
+  member this.incrementChanged(handler: EventArgs<'a> -> unit) =
     this.props.add (PKey.numericUpDown.incrementChanged, handler)
 
-  member this.valueChanged(handler: 'a -> unit) =
+  member this.valueChanged(handler: EventArgs<'a> -> unit) =
     this.props.add (PKey.numericUpDown.valueChanged, handler)
 
   member this.valueChanging(handler: App.CancelEventArgs<'a> -> unit) =
@@ -943,7 +943,7 @@ type [<AbstractClass>] selectorBaseProps() =
   member this.orientation(value: Orientation) =
     this.props.add (PKey.orientationInterface.orientation, value)
 
-  member this.orientationChanged(value: Orientation -> unit) =
+  member this.orientationChanged(value: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.orientationInterface.orientationChanged, value)
 
   member this.orientationChanging(value: CancelEventArgs<Orientation> -> unit) =
@@ -1046,7 +1046,7 @@ type scrollBarProps() =
   member this.visibleContentSize(value: Int32) =
     this.props.add (PKey.scrollBar.visibleContentSize, value)
   // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.scrollBar.orientationChanged, handler)
 
   member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
@@ -1078,7 +1078,7 @@ type scrollSliderProps() =
   member this.visibleContentSize(value: Int32) =
     this.props.add (PKey.scrollSlider.visibleContentSize, value)
   // Events
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.scrollSlider.orientationChanged, handler)
 
   member this.orientationChanging(handler: CancelEventArgs<Orientation> -> unit) =
@@ -1143,7 +1143,7 @@ type sliderProps<'a>() =
   member this.optionsChanged(handler: SliderEventArgs<'a> -> unit) =
     this.props.add (PKey.slider.optionsChanged, handler)
 
-  member this.orientationChanged(handler: Orientation -> unit) =
+  member this.orientationChanged(handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.slider.orientationChanged, handler)
 
   member this.orientationChanging(handler: App.CancelEventArgs<Orientation> -> unit) =
@@ -1363,7 +1363,7 @@ type textViewProps() =
   member this.unwrappedCursorPosition(handler: Point -> unit) =
     this.props.add (PKey.textView.unwrappedCursorPosition, handler)
   // Additional properties
-  member this.textChanged(value: string -> unit) =
+  member this.textChanged(value: ContentsChangedEventArgs -> unit) =
     this.props.add (PKey.textView.textChanged, value)
 
 

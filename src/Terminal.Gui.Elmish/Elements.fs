@@ -271,15 +271,15 @@ type TerminalElement(props: Props) =
   abstract reuse: prevView: View -> prevProps: Props -> unit
 
   default this.canReuseView prevView prevProps =
-    let changedProps, removedProps =
-      Props.compare prevProps props
+    let c =
+      this.compare prevProps
 
     let removedProps =
-      removedProps
+      c.removedProps
       |> Props.filter (not << _.Key.isViewKey)
 
     let canUpdateView =
-      ViewElement.canReuseView prevView changedProps removedProps
+      ViewElement.canReuseView prevView c.changedProps removedProps
 
     let canUpdateElement = true
 

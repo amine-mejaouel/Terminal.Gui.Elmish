@@ -302,10 +302,6 @@ module internal Props =
 [<AutoOpen>]
 module Element =
 
-  open Terminal.Gui.ViewBase
-
-  // TODO: all concrete Element(s) could be made internal, leaving only the interface as public
-  // TODO:  ie make all classes internal / expose public interface instead
   type internal IInternalTerminalElement =
     inherit ITerminalElement
     abstract initialize: parent: View option -> unit

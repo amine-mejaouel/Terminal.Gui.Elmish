@@ -127,6 +127,30 @@ type EventRegistry() =
 
   let eventHandlers = Dictionary<IPropKey, Delegate>()
 
+  member this.removePropEventHandler (pkey: IPropKey, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+    match eventHandlers.TryGetValue(pkey) with
+    | true, existingHandler ->
+      event.RemoveHandler (existingHandler :?> EventHandler<'TEventArgs>)
+      eventHandlers.Remove(pkey) |> ignore
+    | false, _ ->
+      ()
+
+  member this.removePropEventHandler (pkey: IPropKey, event: IEvent<EventHandler,EventArgs>) =
+    match eventHandlers.TryGetValue(pkey) with
+    | true, existingHandler ->
+      event.RemoveHandler (existingHandler :?> EventHandler)
+      eventHandlers.Remove(pkey) |> ignore
+    | false, _ ->
+      ()
+
+  member this.removePropEventHandler (pkey: IPropKey, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+    match eventHandlers.TryGetValue(pkey) with
+    | true, existingHandler ->
+      event.RemoveHandler (existingHandler :?> NotifyCollectionChangedEventHandler)
+      eventHandlers.Remove(pkey) |> ignore
+    | false, _ ->
+      ()
+
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
 
@@ -334,702 +358,702 @@ type TerminalElement(props: Props) =
           | _ -> failwith "Out of range subElement type"
     }
 
-  abstract setProps: element: View * props: Props -> unit
+  abstract setProps: view: View * props: Props -> unit
 
-  default this.setProps(element: View, props: Props) =
+  default this.setProps(view: View, props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.view.arrangement
-    |> Option.iter (fun v -> element.Arrangement <- v)
+    |> Option.iter (fun v -> view.Arrangement <- v)
 
     props
     |> Props.tryFind PKey.view.borderStyle
-    |> Option.iter (fun v -> element.BorderStyle <- v)
+    |> Option.iter (fun v -> view.BorderStyle <- v)
 
     props
     |> Props.tryFind PKey.view.canFocus
-    |> Option.iter (fun v -> element.CanFocus <- v)
+    |> Option.iter (fun v -> view.CanFocus <- v)
 
     props
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-    |> Option.iter (fun v -> element.ContentSizeTracksViewport <- v)
+    |> Option.iter (fun v -> view.ContentSizeTracksViewport <- v)
 
     props
     |> Props.tryFind PKey.view.cursorVisibility
-    |> Option.iter (fun v -> element.CursorVisibility <- v)
+    |> Option.iter (fun v -> view.CursorVisibility <- v)
 
     props
     |> Props.tryFind PKey.view.data
-    |> Option.iter (fun v -> element.Data <- v)
+    |> Option.iter (fun v -> view.Data <- v)
 
     props
     |> Props.tryFind PKey.view.enabled
-    |> Option.iter (fun v -> element.Enabled <- v)
+    |> Option.iter (fun v -> view.Enabled <- v)
 
     props
     |> Props.tryFind PKey.view.frame
-    |> Option.iter (fun v -> element.Frame <- v)
+    |> Option.iter (fun v -> view.Frame <- v)
 
     props
     |> Props.tryFind PKey.view.hasFocus
-    |> Option.iter (fun v -> element.HasFocus <- v)
+    |> Option.iter (fun v -> view.HasFocus <- v)
 
     props
     |> Props.tryFind PKey.view.height
-    |> Option.iter (fun v -> element.Height <- v)
+    |> Option.iter (fun v -> view.Height <- v)
 
     props
     |> Props.tryFind PKey.view.highlightStates
-    |> Option.iter (fun v -> element.HighlightStates <- v)
+    |> Option.iter (fun v -> view.HighlightStates <- v)
 
     props
     |> Props.tryFind PKey.view.hotKey
-    |> Option.iter (fun v -> element.HotKey <- v)
+    |> Option.iter (fun v -> view.HotKey <- v)
 
     props
     |> Props.tryFind PKey.view.hotKeySpecifier
-    |> Option.iter (fun v -> element.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> view.HotKeySpecifier <- v)
 
     props
     |> Props.tryFind PKey.view.id
-    |> Option.iter (fun v -> element.Id <- v)
+    |> Option.iter (fun v -> view.Id <- v)
 
     props
     |> Props.tryFind PKey.view.isInitialized
-    |> Option.iter (fun v -> element.IsInitialized <- v)
+    |> Option.iter (fun v -> view.IsInitialized <- v)
 
     props
     |> Props.tryFind PKey.view.mouseHeldDown
-    |> Option.iter (fun v -> element.MouseHeldDown <- v)
+    |> Option.iter (fun v -> view.MouseHeldDown <- v)
 
     props
     |> Props.tryFind PKey.view.needsDraw
-    |> Option.iter (fun v -> element.NeedsDraw <- v)
+    |> Option.iter (fun v -> view.NeedsDraw <- v)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-    |> Option.iter (fun v -> element.PreserveTrailingSpaces <- v)
+    |> Option.iter (fun v -> view.PreserveTrailingSpaces <- v)
 
     props
     |> Props.tryFind PKey.view.schemeName
-    |> Option.iter (fun v -> element.SchemeName <- v)
+    |> Option.iter (fun v -> view.SchemeName <- v)
 
     props
     |> Props.tryFind PKey.view.shadowStyle
-    |> Option.iter (fun v -> element.ShadowStyle <- v)
+    |> Option.iter (fun v -> view.ShadowStyle <- v)
 
     props
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-    |> Option.iter (fun v -> element.SuperViewRendersLineCanvas <- v)
+    |> Option.iter (fun v -> view.SuperViewRendersLineCanvas <- v)
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun v -> element.TabStop <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.TabStop <- v |> Option.toNullable)
 
     props
     |> Props.tryFind PKey.view.text
-    |> Option.iter (fun v -> element.Text <- v)
+    |> Option.iter (fun v -> view.Text <- v)
 
     props
     |> Props.tryFind PKey.view.textAlignment
-    |> Option.iter (fun v -> element.TextAlignment <- v)
+    |> Option.iter (fun v -> view.TextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.textDirection
-    |> Option.iter (fun v -> element.TextDirection <- v)
+    |> Option.iter (fun v -> view.TextDirection <- v)
 
     props
     |> Props.tryFind PKey.view.title
-    |> Option.iter (fun v -> element.Title <- v)
+    |> Option.iter (fun v -> view.Title <- v)
 
     props
     |> Props.tryFind PKey.view.validatePosDim
-    |> Option.iter (fun v -> element.ValidatePosDim <- v)
+    |> Option.iter (fun v -> view.ValidatePosDim <- v)
 
     props
     |> Props.tryFind PKey.view.verticalTextAlignment
-    |> Option.iter (fun v -> element.VerticalTextAlignment <- v)
+    |> Option.iter (fun v -> view.VerticalTextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.viewport
-    |> Option.iter (fun v -> element.Viewport <- v)
+    |> Option.iter (fun v -> view.Viewport <- v)
 
     props
     |> Props.tryFind PKey.view.viewportSettings
-    |> Option.iter (fun v -> element.ViewportSettings <- v)
+    |> Option.iter (fun v -> view.ViewportSettings <- v)
 
     props
     |> Props.tryFind PKey.view.visible
-    |> Option.iter (fun v -> element.Visible <- v)
+    |> Option.iter (fun v -> view.Visible <- v)
 
     props
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-    |> Option.iter (fun v -> element.WantContinuousButtonPressed <- v)
+    |> Option.iter (fun v -> view.WantContinuousButtonPressed <- v)
 
     props
     |> Props.tryFind PKey.view.wantMousePositionReports
-    |> Option.iter (fun v -> element.WantMousePositionReports <- v)
+    |> Option.iter (fun v -> view.WantMousePositionReports <- v)
 
     props
     |> Props.tryFind PKey.view.width
-    |> Option.iter (fun v -> element.Width <- v)
+    |> Option.iter (fun v -> view.Width <- v)
 
     props
     |> Props.tryFind PKey.view.x
-    |> Option.iter (fun v -> element.X <- v)
+    |> Option.iter (fun v -> view.X <- v)
 
     props
     |> Props.tryFind PKey.view.y
-    |> Option.iter (fun v -> element.Y <- v)
+    |> Option.iter (fun v -> view.Y <- v)
     // Events
     props
     |> Props.tryFind PKey.view.accepting
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.accepting, element.Accepting, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.accepting, view.Accepting, v))
 
     props
     |> Props.tryFind PKey.view.advancingFocus
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.advancingFocus, element.AdvancingFocus, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.advancingFocus, view.AdvancingFocus, v))
 
     props
     |> Props.tryFind PKey.view.borderStyleChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.borderStyleChanged, element.BorderStyleChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.borderStyleChanged, view.BorderStyleChanged, v))
 
     props
     |> Props.tryFind PKey.view.canFocusChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.canFocusChanged, element.CanFocusChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.canFocusChanged, view.CanFocusChanged, v))
 
     props
     |> Props.tryFind PKey.view.clearedViewport
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.clearedViewport, element.ClearedViewport, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.clearedViewport, view.ClearedViewport, v))
 
     props
     |> Props.tryFind PKey.view.clearingViewport
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.clearingViewport, element.ClearingViewport, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.clearingViewport, view.ClearingViewport, v))
 
     props
     |> Props.tryFind PKey.view.commandNotBound
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.commandNotBound, element.CommandNotBound, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.commandNotBound, view.CommandNotBound, v))
 
     props
     |> Props.tryFind PKey.view.contentSizeChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.contentSizeChanged, element.ContentSizeChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.contentSizeChanged, view.ContentSizeChanged, v))
 
     props
     |> Props.tryFind PKey.view.disposing
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.disposing, element.Disposing, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.disposing, view.Disposing, v))
 
     props
     |> Props.tryFind PKey.view.drawComplete
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawComplete, element.DrawComplete, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawComplete, view.DrawComplete, v))
 
     props
     |> Props.tryFind PKey.view.drawingContent
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingContent, element.DrawingContent, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingContent, view.DrawingContent, v))
 
     props
     |> Props.tryFind PKey.view.drawingSubViews
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingSubViews, element.DrawingSubViews, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingSubViews, view.DrawingSubViews, v))
 
     props
     |> Props.tryFind PKey.view.drawingText
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingText, element.DrawingText, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.drawingText, view.DrawingText, v))
 
     props
     |> Props.tryFind PKey.view.enabledChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.enabledChanged, element.EnabledChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.enabledChanged, view.EnabledChanged, v))
 
     props
     |> Props.tryFind PKey.view.focusedChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.focusedChanged, element.FocusedChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.focusedChanged, view.FocusedChanged, v))
 
     props
     |> Props.tryFind PKey.view.frameChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.frameChanged, element.FrameChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.frameChanged, view.FrameChanged, v))
 
     props
     |> Props.tryFind PKey.view.gettingAttributeForRole
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.gettingAttributeForRole, element.GettingAttributeForRole, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.gettingAttributeForRole, view.GettingAttributeForRole, v))
 
     props
     |> Props.tryFind PKey.view.gettingScheme
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.gettingScheme, element.GettingScheme, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.gettingScheme, view.GettingScheme, v))
 
     props
     |> Props.tryFind PKey.view.handlingHotKey
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.handlingHotKey, element.HandlingHotKey, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.handlingHotKey, view.HandlingHotKey, v))
 
     props
     |> Props.tryFind PKey.view.hasFocusChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hasFocusChanged, element.HasFocusChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hasFocusChanged, view.HasFocusChanged, v))
 
     props
     |> Props.tryFind PKey.view.hasFocusChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hasFocusChanging, element.HasFocusChanging, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hasFocusChanging, view.HasFocusChanging, v))
 
     props
     |> Props.tryFind PKey.view.hotKeyChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hotKeyChanged, element.HotKeyChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.hotKeyChanged, view.HotKeyChanged, v))
 
     props
     |> Props.tryFind PKey.view.initialized
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.initialized, element.Initialized, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.initialized, view.Initialized, v))
 
     props
     |> Props.tryFind PKey.view.keyDown
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyDown, element.KeyDown, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyDown, view.KeyDown, v))
 
     props
     |> Props.tryFind PKey.view.keyDownNotHandled
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyDownNotHandled, element.KeyDownNotHandled, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyDownNotHandled, view.KeyDownNotHandled, v))
 
     props
     |> Props.tryFind PKey.view.keyUp
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyUp, element.KeyUp, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.keyUp, view.KeyUp, v))
 
     props
     |> Props.tryFind PKey.view.mouseClick
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseClick, element.MouseClick, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseClick, view.MouseClick, v))
 
     props
     |> Props.tryFind PKey.view.mouseEnter
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseEnter, element.MouseEnter, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseEnter, view.MouseEnter, v))
 
     props
     |> Props.tryFind PKey.view.mouseEvent
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseEvent, element.MouseEvent, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseEvent, view.MouseEvent, v))
 
     props
     |> Props.tryFind PKey.view.mouseLeave
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseLeave, element.MouseLeave, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseLeave, view.MouseLeave, v))
 
     props
     |> Props.tryFind PKey.view.mouseStateChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseStateChanged, element.MouseStateChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseStateChanged, view.MouseStateChanged, v))
 
     props
     |> Props.tryFind PKey.view.mouseWheel
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseWheel, element.MouseWheel, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.mouseWheel, view.MouseWheel, v))
 
     props
     |> Props.tryFind PKey.view.removed
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.removed, element.Removed, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.removed, view.Removed, v))
 
     props
     |> Props.tryFind PKey.view.schemeChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeChanged, element.SchemeChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeChanged, view.SchemeChanged, v))
 
     props
     |> Props.tryFind PKey.view.schemeChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeChanging, element.SchemeChanging, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeChanging, view.SchemeChanging, v))
 
     props
     |> Props.tryFind PKey.view.schemeNameChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeNameChanged, element.SchemeNameChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeNameChanged, view.SchemeNameChanged, v))
 
     props
     |> Props.tryFind PKey.view.schemeNameChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeNameChanging, element.SchemeNameChanging, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.schemeNameChanging, view.SchemeNameChanging, v))
 
     props
     |> Props.tryFind PKey.view.selecting
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.selecting, element.Selecting, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.selecting, view.Selecting, v))
 
     props
     |> Props.tryFind PKey.view.subViewAdded
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewAdded, element.SubViewAdded, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewAdded, view.SubViewAdded, v))
 
     props
     |> Props.tryFind PKey.view.subViewLayout
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewLayout, element.SubViewLayout, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewLayout, view.SubViewLayout, v))
 
     props
     |> Props.tryFind PKey.view.subViewRemoved
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewRemoved, element.SubViewRemoved, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewRemoved, view.SubViewRemoved, v))
 
     props
     |> Props.tryFind PKey.view.subViewsLaidOut
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewsLaidOut, element.SubViewsLaidOut, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.subViewsLaidOut, view.SubViewsLaidOut, v))
 
     props
     |> Props.tryFind PKey.view.superViewChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.superViewChanged, element.SuperViewChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.superViewChanged, view.SuperViewChanged, v))
 
     props
     |> Props.tryFind PKey.view.textChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.textChanged, element.TextChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.textChanged, view.TextChanged, v))
 
     props
     |> Props.tryFind PKey.view.titleChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.titleChanged, element.TitleChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.titleChanged, view.TitleChanged, v))
 
     props
     |> Props.tryFind PKey.view.titleChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.titleChanging, element.TitleChanging, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.titleChanging, view.TitleChanging, v))
 
     props
     |> Props.tryFind PKey.view.viewportChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.viewportChanged, element.ViewportChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.viewportChanged, view.ViewportChanged, v))
 
     props
     |> Props.tryFind PKey.view.visibleChanged
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.visibleChanged, element.VisibleChanged, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.visibleChanged, view.VisibleChanged, v))
 
     props
     |> Props.tryFind PKey.view.visibleChanging
-    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.visibleChanging, element.VisibleChanging, v))
+    |> Option.iter (fun v -> this.eventRegistry.setPropEventHandler(PKey.view.visibleChanging, view.VisibleChanging, v))
 
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
-    |> Option.iter (applyPos (fun pos -> element.X <- pos))
+    |> Option.iter (applyPos (fun pos -> view.X <- pos))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (applyPos (fun pos -> element.Y <- pos))
+    |> Option.iter (applyPos (fun pos -> view.Y <- pos))
 
-  abstract removeProps: element: View * props: Props -> unit
+  abstract removeProps: view: View * props: Props -> unit
 
-  default this.removeProps(element: View, props: Props) =
+  default this.removeProps(view: View, props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.view.arrangement
-    |> Option.iter (fun _ -> element.Arrangement <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Arrangement <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.borderStyle
-    |> Option.iter (fun _ -> element.BorderStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BorderStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.canFocus
-    |> Option.iter (fun _ -> element.CanFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CanFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-    |> Option.iter (fun _ -> element.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.cursorVisibility
-    |> Option.iter (fun _ -> element.CursorVisibility <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CursorVisibility <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.data
-    |> Option.iter (fun _ -> element.Data <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Data <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.enabled
-    |> Option.iter (fun _ -> element.Enabled <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Enabled <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.frame
-    |> Option.iter (fun _ -> element.Frame <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Frame <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hasFocus
-    |> Option.iter (fun _ -> element.HasFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HasFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.height
-    |> Option.iter (fun _ -> element.Height <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Height <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.highlightStates
-    |> Option.iter (fun _ -> element.HighlightStates <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HighlightStates <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hotKey
-    |> Option.iter (fun _ -> element.HotKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hotKeySpecifier
-    |> Option.iter (fun _ -> element.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.id
-    |> Option.iter (fun _ -> element.Id <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Id <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.isInitialized
-    |> Option.iter (fun _ -> element.IsInitialized <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsInitialized <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.mouseHeldDown
-    |> Option.iter (fun _ -> element.MouseHeldDown <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MouseHeldDown <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.needsDraw
-    |> Option.iter (fun _ -> element.NeedsDraw <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.NeedsDraw <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-    |> Option.iter (fun _ -> element.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.schemeName
-    |> Option.iter (fun _ -> element.SchemeName <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SchemeName <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.shadowStyle
-    |> Option.iter (fun _ -> element.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-    |> Option.iter (fun _ -> element.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun _ -> element.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
+    |> Option.iter (fun _ -> view.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
 
     props
     |> Props.tryFind PKey.view.text
-    |> Option.iter (fun _ -> element.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Text <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.textAlignment
-    |> Option.iter (fun _ -> element.TextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.textDirection
-    |> Option.iter (fun _ -> element.TextDirection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TextDirection <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.title
-    |> Option.iter (fun _ -> element.Title <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Title <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.validatePosDim
-    |> Option.iter (fun _ -> element.ValidatePosDim <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ValidatePosDim <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.verticalTextAlignment
-    |> Option.iter (fun _ -> element.VerticalTextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.VerticalTextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.viewport
-    |> Option.iter (fun _ -> element.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.viewportSettings
-    |> Option.iter (fun _ -> element.ViewportSettings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ViewportSettings <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.visible
-    |> Option.iter (fun _ -> element.Visible <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Visible <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-    |> Option.iter (fun _ -> element.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.wantMousePositionReports
-    |> Option.iter (fun _ -> element.WantMousePositionReports <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.WantMousePositionReports <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.width
-    |> Option.iter (fun _ -> element.Width <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Width <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.x
-    |> Option.iter (fun _ -> element.X <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.X <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.y
-    |> Option.iter (fun _ -> element.Y <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Y <- Unchecked.defaultof<_>)
     // Events
     props
     |> Props.tryFind PKey.view.accepting
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Accepting @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.accepting, view.Accepting))
 
     props
     |> Props.tryFind PKey.view.advancingFocus
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.AdvancingFocus @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.advancingFocus, view.AdvancingFocus))
 
     props
     |> Props.tryFind PKey.view.borderStyleChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.BorderStyleChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.borderStyleChanged, view.BorderStyleChanged))
 
     props
     |> Props.tryFind PKey.view.canFocusChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CanFocusChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.canFocusChanged, view.CanFocusChanged))
 
     props
     |> Props.tryFind PKey.view.clearedViewport
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ClearedViewport @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.clearedViewport, view.ClearedViewport))
 
     props
     |> Props.tryFind PKey.view.clearingViewport
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ClearingViewport @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.clearingViewport, view.ClearingViewport))
 
     props
     |> Props.tryFind PKey.view.commandNotBound
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.CommandNotBound @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.commandNotBound, view.CommandNotBound))
 
     props
     |> Props.tryFind PKey.view.contentSizeChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ContentSizeChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.contentSizeChanged, view.ContentSizeChanged))
 
     props
     |> Props.tryFind PKey.view.disposing
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Disposing @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.disposing, view.Disposing))
 
     props
     |> Props.tryFind PKey.view.drawComplete
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawComplete @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.drawComplete, view.DrawComplete))
 
     props
     |> Props.tryFind PKey.view.drawingContent
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawingContent @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.drawingContent, view.DrawingContent))
 
     props
     |> Props.tryFind PKey.view.drawingSubViews
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawingSubViews @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.drawingSubViews, view.DrawingSubViews))
 
     props
     |> Props.tryFind PKey.view.drawingText
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.DrawingText @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.drawingText, view.DrawingText))
 
     props
     |> Props.tryFind PKey.view.enabledChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.EnabledChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.enabledChanged, view.EnabledChanged))
 
     props
     |> Props.tryFind PKey.view.focusedChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.FocusedChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.focusedChanged, view.FocusedChanged))
 
     props
     |> Props.tryFind PKey.view.frameChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.FrameChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.frameChanged, view.FrameChanged))
 
     props
     |> Props.tryFind PKey.view.gettingAttributeForRole
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.GettingAttributeForRole @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.gettingAttributeForRole, view.GettingAttributeForRole))
 
     props
     |> Props.tryFind PKey.view.gettingScheme
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.GettingScheme @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.gettingScheme, view.GettingScheme))
 
     props
     |> Props.tryFind PKey.view.handlingHotKey
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.HandlingHotKey @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.handlingHotKey, view.HandlingHotKey))
 
     props
     |> Props.tryFind PKey.view.hasFocusChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.HasFocusChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.hasFocusChanged, view.HasFocusChanged))
 
     props
     |> Props.tryFind PKey.view.hasFocusChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.HasFocusChanging @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.hasFocusChanging, view.HasFocusChanging))
 
     props
     |> Props.tryFind PKey.view.hotKeyChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.HotKeyChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.hotKeyChanged, view.HotKeyChanged))
 
     props
     |> Props.tryFind PKey.view.initialized
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Initialized @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.initialized, view.Initialized))
 
     props
     |> Props.tryFind PKey.view.keyDown
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.KeyDown @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.keyDown, view.KeyDown))
 
     props
     |> Props.tryFind PKey.view.keyDownNotHandled
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.KeyDownNotHandled @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.keyDownNotHandled, view.KeyDownNotHandled))
 
     props
     |> Props.tryFind PKey.view.keyUp
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.KeyUp @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.keyUp, view.KeyUp))
 
     props
     |> Props.tryFind PKey.view.mouseClick
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseClick @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseClick, view.MouseClick))
 
     props
     |> Props.tryFind PKey.view.mouseEnter
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseEnter @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseEnter, view.MouseEnter))
 
     props
     |> Props.tryFind PKey.view.mouseEvent
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseEvent @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseEvent, view.MouseEvent))
 
     props
     |> Props.tryFind PKey.view.mouseLeave
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseLeave @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseLeave, view.MouseLeave))
 
     props
     |> Props.tryFind PKey.view.mouseStateChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseStateChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseStateChanged, view.MouseStateChanged))
 
     props
     |> Props.tryFind PKey.view.mouseWheel
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.MouseWheel @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.mouseWheel, view.MouseWheel))
 
     props
     |> Props.tryFind PKey.view.removed
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Removed @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.removed, view.Removed))
 
     props
     |> Props.tryFind PKey.view.schemeChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SchemeChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.schemeChanged, view.SchemeChanged))
 
     props
     |> Props.tryFind PKey.view.schemeChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SchemeChanging @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.schemeChanging, view.SchemeChanging))
 
     props
     |> Props.tryFind PKey.view.schemeNameChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SchemeNameChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.schemeNameChanged, view.SchemeNameChanged))
 
     props
     |> Props.tryFind PKey.view.schemeNameChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SchemeNameChanging @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.schemeNameChanging, view.SchemeNameChanging))
 
     props
     |> Props.tryFind PKey.view.selecting
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.Selecting @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.selecting, view.Selecting))
 
     props
     |> Props.tryFind PKey.view.subViewAdded
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SubViewAdded @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.subViewAdded, view.SubViewAdded))
 
     props
     |> Props.tryFind PKey.view.subViewLayout
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SubViewLayout @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.subViewLayout, view.SubViewLayout))
 
     props
     |> Props.tryFind PKey.view.subViewRemoved
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SubViewRemoved @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.subViewRemoved, view.SubViewRemoved))
 
     props
     |> Props.tryFind PKey.view.subViewsLaidOut
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SubViewsLaidOut @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.subViewsLaidOut, view.SubViewsLaidOut))
 
     props
     |> Props.tryFind PKey.view.superViewChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.SuperViewChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.superViewChanged, view.SuperViewChanged))
 
     props
     |> Props.tryFind PKey.view.textChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.TextChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.textChanged, view.TextChanged))
 
     props
     |> Props.tryFind PKey.view.titleChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.TitleChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.titleChanged, view.TitleChanged))
 
     props
     |> Props.tryFind PKey.view.titleChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.TitleChanging @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.titleChanging, view.TitleChanging))
 
     props
     |> Props.tryFind PKey.view.viewportChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.ViewportChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.viewportChanged, view.ViewportChanged))
 
     props
     |> Props.tryFind PKey.view.visibleChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanged @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.visibleChanged, view.VisibleChanged))
 
     props
     |> Props.tryFind PKey.view.visibleChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ element.VisibleChanging @> element)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.view.visibleChanging, view.VisibleChanging))
 
   /// Reuses:
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
@@ -1152,7 +1176,7 @@ type TerminalElement(props: Props) =
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type OrientationInterface =
-  static member removeProps (view: IOrientation) (props: Props) =
+  static member removeProps (element: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.orientationInterface.orientation
@@ -1161,11 +1185,11 @@ type OrientationInterface =
     // Events
     props
     |> Props.tryFind PKey.orientationInterface.orientationChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OrientationChanged @> view)
+    |> Option.iter (fun _ -> element.eventRegistry.removePropEventHandler (PKey.orientationInterface.orientationChanged, view.OrientationChanged))
 
     props
     |> Props.tryFind PKey.orientationInterface.orientationChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OrientationChanging @> view)
+    |> Option.iter (fun _ -> element.eventRegistry.removePropEventHandler (PKey.orientationInterface.orientationChanging, view.OrientationChanging))
 
   static member setProps (element: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
@@ -1208,7 +1232,7 @@ type AdornmentElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.adornment.thicknessChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ThicknessChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.adornment.thicknessChanged, view.ThicknessChanged))
 
   override _.name = $"Adornment"
 
@@ -1249,7 +1273,7 @@ type BarElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> Bar
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -1406,11 +1430,11 @@ type CheckBoxElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.checkBox.checkedStateChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.CheckedStateChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.checkBox.checkedStateChanging, view.CheckedStateChanging))
 
     props
     |> Props.tryFind PKey.checkBox.checkedStateChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.CheckedStateChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.checkBox.checkedStateChanged, view.CheckedStateChanged))
 
   override _.name = $"CheckBox"
 
@@ -1469,7 +1493,7 @@ type ColorPickerElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.colorPicker.colorChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ColorChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.colorPicker.colorChanged, view.ColorChanged))
 
   override _.name = $"ColorPicker"
 
@@ -1520,7 +1544,7 @@ type ColorPicker16Element(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.colorPicker16.colorChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ColorChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.colorPicker16.colorChanged, view.ColorChanged))
 
   override _.name = $"ColorPicker16"
 
@@ -1587,19 +1611,19 @@ type ComboBoxElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.comboBox.collapsed
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Collapsed @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.comboBox.collapsed, view.Collapsed))
 
     props
     |> Props.tryFind PKey.comboBox.expanded
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Expanded @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.comboBox.expanded, view.Expanded))
 
     props
     |> Props.tryFind PKey.comboBox.openSelectedItem
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OpenSelectedItem @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.comboBox.openSelectedItem, view.OpenSelectedItem))
 
     props
     |> Props.tryFind PKey.comboBox.selectedItemChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SelectedItemChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.comboBox.selectedItemChanged, view.SelectedItemChanged))
 
   override _.name = $"ComboBox"
 
@@ -1674,7 +1698,7 @@ type DateFieldElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.dateField.dateChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DateChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.dateField.dateChanged, view.DateChanged))
 
   override _.name = $"DateField"
 
@@ -1819,7 +1843,7 @@ type FileDialogElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.fileDialog.filesSelected
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.FilesSelected @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.fileDialog.filesSelected, view.FilesSelected))
 
   override _.name = $"FileDialog"
 
@@ -1984,11 +2008,11 @@ type HexViewElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.hexView.edited
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Edited @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.hexView.edited, view.Edited))
 
     props
     |> Props.tryFind PKey.hexView.positionChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.PositionChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.hexView.positionChanged, view.PositionChanged))
 
   override _.name = $"HexView"
 
@@ -2087,7 +2111,7 @@ type LineElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> Line
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
   override _.name = $"Line"
 
@@ -2137,19 +2161,19 @@ type ListViewElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.listView.collectionChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.CollectionChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.listView.collectionChanged, view.CollectionChanged))
 
     props
     |> Props.tryFind PKey.listView.openSelectedItem
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OpenSelectedItem @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.listView.openSelectedItem, view.OpenSelectedItem))
 
     props
     |> Props.tryFind PKey.listView.rowRender
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.RowRender @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.listView.rowRender, view.RowRender))
 
     props
     |> Props.tryFind PKey.listView.selectedItemChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SelectedItemChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.listView.selectedItemChanged, view.SelectedItemChanged))
 
   override _.name = $"ListView"
 
@@ -2308,11 +2332,11 @@ type PopoverMenuElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.popoverMenu.accepted
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Accepted @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.popoverMenu.accepted, view.Accepted))
 
     props
     |> Props.tryFind PKey.popoverMenu.keyChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.KeyChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.popoverMenu.keyChanged, view.KeyChanged))
 
   override this.name = "PopoverMenu"
 
@@ -2369,7 +2393,7 @@ type MenuBarItemElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.menuBarItem.popoverMenuOpenChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.PopoverMenuOpenChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.menuBarItem.popoverMenuOpenChanged, view.PopoverMenuOpenChanged))
 
   override this.name = "MenuBarItem"
 
@@ -2419,7 +2443,7 @@ type MenuBarElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.menuBar.keyChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.KeyChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.menuBar.keyChanged, view.KeyChanged))
 
   override _.name = $"MenuBar"
 
@@ -2452,7 +2476,7 @@ type ShortcutElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> Shortcut
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -2565,7 +2589,7 @@ type MenuItemElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.menuItem.accepted
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Accepted @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.menuItem.accepted, view.Accepted))
 
   override _.name = $"MenuItem"
 
@@ -2620,19 +2644,19 @@ type NumericUpDownElement<'a>(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.numericUpDown<'a>.formatChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.FormatChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.numericUpDown<'a>.formatChanged, view.FormatChanged))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.incrementChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.IncrementChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.numericUpDown<'a>.incrementChanged, view.IncrementChanged))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.valueChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ValueChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.numericUpDown<'a>.valueChanged, view.ValueChanged))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.valueChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ValueChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.numericUpDown<'a>.valueChanging, view.ValueChanging))
 
   override _.name = $"NumericUpDown<'a>"
 
@@ -2715,7 +2739,7 @@ type internal SelectorBaseElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> SelectorBase
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -2752,7 +2776,7 @@ type internal SelectorBaseElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.selectorBase.valueChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ValueChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.selectorBase.valueChanged, view.ValueChanged))
 
   override _.name = "SelectorBase"
 
@@ -2963,7 +2987,7 @@ type ScrollBarElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> ScrollBar
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -2988,11 +3012,11 @@ type ScrollBarElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.scrollBar.scrollableContentSizeChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ScrollableContentSizeChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.scrollBar.scrollableContentSizeChanged, view.ScrollableContentSizeChanged))
 
     props
     |> Props.tryFind PKey.scrollBar.sliderPositionChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SliderPositionChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.scrollBar.sliderPositionChanged, view.SliderPositionChanged))
 
   override _.name = $"ScrollBar"
 
@@ -3044,7 +3068,7 @@ type ScrollSliderElement(props: Props) =
     base.removeProps (view, props)
     let view = view :?> ScrollSlider
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -3065,15 +3089,15 @@ type ScrollSliderElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.scrollSlider.positionChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.PositionChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.scrollSlider.positionChanged, view.PositionChanged))
 
     props
     |> Props.tryFind PKey.scrollSlider.positionChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.PositionChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.scrollSlider.positionChanging, view.PositionChanging))
 
     props
     |> Props.tryFind PKey.scrollSlider.scrolled
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Scrolled @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.scrollSlider.scrolled, view.Scrolled))
 
   override _.name = $"ScrollSlider"
 
@@ -3126,7 +3150,7 @@ type SliderElement<'a>(props: Props) =
     base.removeProps (view, props)
     let view = view :?> Slider<'a>
     // Interfaces
-    OrientationInterface.removeProps view props
+    OrientationInterface.removeProps this view props
 
     // Properties
     props
@@ -3179,11 +3203,11 @@ type SliderElement<'a>(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.slider.optionFocused
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OptionFocused @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.slider.optionFocused, view.OptionFocused))
 
     props
     |> Props.tryFind PKey.slider.optionsChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.OptionsChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.slider.optionsChanged, view.OptionsChanged))
 
   override _.name = $"Slider<'a>"
 
@@ -3415,11 +3439,11 @@ type TabViewElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.tabView.selectedTabChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SelectedTabChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.tabView.selectedTabChanged, view.SelectedTabChanged))
 
     props
     |> Props.tryFind PKey.tabView.tabClicked
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.TabClicked @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.tabView.tabClicked, view.TabClicked))
 
   override _.name = $"TabView"
 
@@ -3533,15 +3557,15 @@ type TableViewElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.tableView.cellActivated
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.CellActivated @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.tableView.cellActivated, view.CellActivated))
 
     props
     |> Props.tryFind PKey.tableView.cellToggled
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.CellToggled @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.tableView.cellToggled, view.CellToggled))
 
     props
     |> Props.tryFind PKey.tableView.selectedCellChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SelectedCellChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.tableView.selectedCellChanged, view.SelectedCellChanged))
 
   override _.name = $"TableView"
 
@@ -3668,7 +3692,7 @@ type TextFieldElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.textField.textChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.TextChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textField.textChanging, view.TextChanging))
 
   override _.name = $"TextField"
 
@@ -3839,32 +3863,32 @@ type TextViewElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.textView.contentsChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ContentsChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.contentsChanged, view.ContentsChanged))
 
     props
     |> Props.tryFind PKey.textView.drawNormalColor
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DrawNormalColor @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.drawNormalColor, view.DrawNormalColor))
 
     props
     |> Props.tryFind PKey.textView.drawReadOnlyColor
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DrawReadOnlyColor @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.drawReadOnlyColor, view.DrawReadOnlyColor))
 
     props
     |> Props.tryFind PKey.textView.drawSelectionColor
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DrawSelectionColor @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.drawSelectionColor, view.DrawSelectionColor))
 
     props
     |> Props.tryFind PKey.textView.drawUsedColor
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DrawUsedColor @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.drawUsedColor, view.DrawUsedColor))
 
     props
     |> Props.tryFind PKey.textView.unwrappedCursorPosition
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.UnwrappedCursorPosition @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.unwrappedCursorPosition, view.UnwrappedCursorPosition))
 
     // Additional properties
     props
     |> Props.tryFind PKey.textView.textChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ContentsChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.textView.textChanged, view.ContentsChanged))
 
 
   override _.name = $"TextView"
@@ -4001,7 +4025,7 @@ type TimeFieldElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.timeField.timeChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.TimeChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.timeField.timeChanged, view.TimeChanged))
 
   override _.name = $"TimeField"
 
@@ -4057,15 +4081,15 @@ type RunnableElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.runnable.isRunningChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.IsRunningChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.runnable.isRunningChanging, view.IsRunningChanging))
 
     props
     |> Props.tryFind PKey.runnable.isRunningChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.IsRunningChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.runnable.isRunningChanged, view.IsRunningChanged))
 
     props
     |> Props.tryFind PKey.runnable.isModalChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.IsModalChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.runnable.isModalChanged, view.IsModalChanged))
 
   override _.name = $"Runnable"
 
@@ -4166,15 +4190,15 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.treeView<'a>.drawLine
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.DrawLine @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.treeView<'a>.drawLine, view.DrawLine))
 
     props
     |> Props.tryFind PKey.treeView<'a>.objectActivated
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.ObjectActivated @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.treeView<'a>.objectActivated, view.ObjectActivated))
 
     props
     |> Props.tryFind PKey.treeView<'a>.selectionChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.SelectionChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.treeView<'a>.selectionChanged, view.SelectionChanged))
 
   override _.name = $"TreeView<'a>"
 
@@ -4286,27 +4310,27 @@ type WizardElement(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.wizard.cancelled
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Cancelled @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.cancelled, view.Cancelled))
 
     props
     |> Props.tryFind PKey.wizard.finished
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.Finished @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.finished, view.Finished))
 
     props
     |> Props.tryFind PKey.wizard.movingBack
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.MovingBack @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.movingBack, view.MovingBack))
 
     props
     |> Props.tryFind PKey.wizard.movingNext
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.MovingNext @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.movingNext, view.MovingNext))
 
     props
     |> Props.tryFind PKey.wizard.stepChanged
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.StepChanged @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.stepChanged, view.StepChanged))
 
     props
     |> Props.tryFind PKey.wizard.stepChanging
-    |> Option.iter (fun _ -> Interop.removeEventHandler <@ view.StepChanging @> view)
+    |> Option.iter (fun _ -> this.eventRegistry.removePropEventHandler (PKey.wizard.stepChanging, view.StepChanging))
 
   override _.name = $"Wizard"
 

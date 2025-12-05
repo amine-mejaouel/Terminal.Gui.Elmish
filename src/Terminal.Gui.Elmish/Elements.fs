@@ -127,77 +127,48 @@ type EventRegistry() =
 
   let eventHandlers = Dictionary<IPropKey, Delegate>()
 
-  member this.removePropEventHandler (pkey: IPropKey, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+  member private this.removeHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, removeFromEvent: 'THandler -> unit) =
     match eventHandlers.TryGetValue(pkey) with
     | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> EventHandler<'TEventArgs>)
+      removeFromEvent (existingHandler :?> 'THandler)
       eventHandlers.Remove(pkey) |> ignore
     | false, _ ->
       ()
+
+  member private this.setHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeFromEvent: 'THandler -> unit, addToEvent: 'THandler -> unit) =
+    match eventHandlers.TryGetValue(pkey) with
+    | true, existingHandler ->
+      removeFromEvent (existingHandler :?> 'THandler)
+    | false, _ ->
+      ()
+
+    eventHandlers[pkey] <- handler
+    addToEvent handler
+
+  member this.removePropEventHandler (pkey: IPropKey, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+    this.removeHandler(pkey, event.RemoveHandler)
 
   member this.removePropEventHandler (pkey: IPropKey, event: IEvent<EventHandler,EventArgs>) =
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> EventHandler)
-      eventHandlers.Remove(pkey) |> ignore
-    | false, _ ->
-      ()
+    this.removeHandler(pkey, event.RemoveHandler)
 
   member this.removePropEventHandler (pkey: IPropKey, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> NotifyCollectionChangedEventHandler)
-      eventHandlers.Remove(pkey) |> ignore
-    | false, _ ->
-      ()
+    this.removeHandler(pkey, event.RemoveHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
-
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> EventHandler<'TEventArgs>)
-    | false, _ ->
-      ()
-
-    eventHandlers[pkey] <- handler
-    event.AddHandler handler
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
-
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> EventHandler)
-    | false, _ ->
-      ()
-
-    eventHandlers[pkey] <- handler
-    event.AddHandler handler
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
-
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> EventHandler)
-    | false, _ ->
-      ()
-
     let handler: EventHandler = EventHandler(fun sender args -> action args)
-    eventHandlers[pkey] <- handler
-    event.AddHandler handler
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
-
-    match eventHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      event.RemoveHandler (existingHandler :?> NotifyCollectionChangedEventHandler)
-    | false, _ ->
-      ()
-
     let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
-    eventHandlers[pkey] <- handler
-    event.AddHandler handler
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
 
 [<AbstractClass>]
 type TerminalElement(props: Props) =

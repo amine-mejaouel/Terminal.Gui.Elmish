@@ -38,6 +38,7 @@
     <EmbeddedResource Remove="Scripts\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="PKey.fs" />
     <Compile Include="Elements.fs" />

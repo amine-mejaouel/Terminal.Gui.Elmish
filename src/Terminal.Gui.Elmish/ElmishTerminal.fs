@@ -105,6 +105,7 @@ module ElmishTerminal =
           view model dispatch :?> IInternalTerminalElement
 
         Differ.update currentState nextTreeState
+        currentState.Dispose()
         nextTreeState
 
     model.CurrentTreeState <- Some nextTreeState

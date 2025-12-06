@@ -126,6 +126,17 @@ module internal ViewElement =
 type EventRegistry() =
 
   let eventHandlers = Dictionary<IPropKey, Delegate>()
+  let removeAllHandlers: Dictionary<IPropKey, unit -> unit> = Dictionary<IPropKey, unit -> unit>()
+
+  member private this.registerHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, removeHandler: 'THandler -> unit) =
+    removeAllHandlers[pkey] <-
+      fun () ->
+        this.removeHandler(pkey, removeHandler)
+
+  member this.removeAllEventHandlers() =
+    for kv in removeAllHandlers do
+      kv.Value ()
+    removeAllHandlers.Clear()
 
   member private this.removeHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, removeFromEvent: 'THandler -> unit) =
     match eventHandlers.TryGetValue(pkey) with
@@ -157,18 +168,22 @@ type EventRegistry() =
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, event.RemoveHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, event.RemoveHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, event.RemoveHandler)
 
   member this.setPropEventHandler (pkey: IPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
     let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, event.RemoveHandler)
 
 [<AbstractClass>]
 type TerminalElement(props: Props) =
@@ -1129,6 +1144,9 @@ type TerminalElement(props: Props) =
   [<CLIEvent>]
   member this.onDrawComplete = onDrawCompleteEvent.Publish
 
+  member this.Dispose() =
+    this.eventRegistry.removeAllEventHandlers()
+
   interface IInternalTerminalElement with
     member this.initialize(parent) = this.initialize parent
     member this.initializeTree(parent) = this.initializeTree parent
@@ -1143,6 +1161,14 @@ type TerminalElement(props: Props) =
       this.setAsChildOfParentView
 
     member this.onDrawComplete = this.onDrawComplete
+
+    member this.isElmishComponent = this.isElmishComponent
+    member this.isElmishComponent with set value = this.isElmishComponent <- value
+
+    member this.parent = this.parent
+    member this.parent with set value = this.parent <- value
+
+    member this.Dispose() = this.Dispose()
 
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation

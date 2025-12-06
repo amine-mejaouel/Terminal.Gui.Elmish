@@ -1,5 +1,6 @@
 namespace Terminal.Gui.Elmish
 
+open System
 open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
@@ -304,6 +305,7 @@ module Element =
 
   type internal IInternalTerminalElement =
     inherit ITerminalElement
+    inherit IDisposable
     abstract initialize: parent: View option -> unit
     abstract initializeTree: parent: View option -> unit
     abstract canReuseView: prevView: View -> prevProps: Props -> bool

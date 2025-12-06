@@ -45,7 +45,7 @@ type SubElementPropKey<'a> =
   member this.viewKey =
     match this with
     | SingleElementKey key -> key.viewKey
-    | MultiElementKey _ -> raise (InvalidOperationException())
+    | MultiElementKey key -> key.viewKey
 
   interface IPropKey<'a> with
     member this.key = this.key

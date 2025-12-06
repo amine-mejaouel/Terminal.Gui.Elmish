@@ -51,6 +51,8 @@ module internal PropKey =
 
   type IMultiElementPropKey<'a> =
     inherit IPropKey<'a>
+    // TODO: same as ISingleElementPropKey, consider unifying
+    abstract member viewKey: IPropKey
 
   type IDelayedPosKey =
     inherit IPropKey<TPos>
@@ -174,6 +176,7 @@ module internal PropKey =
       member this.key = this.key
       member this.isViewKey = false
       member this.isSingleElementKey = false
+      member this.viewKey = this.viewKey
 
   /// Mainly used for positions that are relative to other views.
   /// These positions take in a `ITerminalElement` as parameter.

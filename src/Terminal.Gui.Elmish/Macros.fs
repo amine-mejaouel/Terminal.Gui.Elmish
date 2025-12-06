@@ -5,10 +5,10 @@ open Terminal.Gui.Elmish.Elements
 type menuBarItemMacros internal (props: menuBarItemProps) =
   member _.menuItems(value: ITerminalElement list) =
     let popoverMenu =
-      props.props.getOrInit PKey.menuBarItem.popoverMenu_element (fun () -> PopoverMenuElement(Props())) :?> PopoverMenuElement
+      props.props.getOrInit PKey.menuBarItem.popoverMenu_element (fun () -> new PopoverMenuElement(Props())) :?> PopoverMenuElement
 
     let menu =
-      popoverMenu.props.getOrInit PKey.popoverMenu.root_element (fun () -> MenuElement(Props())) :?> MenuElement
+      popoverMenu.props.getOrInit PKey.popoverMenu.root_element (fun () -> new MenuElement(Props())) :?> MenuElement
 
     menu.props.add (
       PKey.menu.children,
@@ -27,4 +27,4 @@ type menuBarMacros internal (props: menuBarProps) =
     let macros = menuBarItemMacros (props)
     set props macros
 
-    menus.Add(MenuBarItemElement(props.props))
+    menus.Add(new MenuBarItemElement(props.props))

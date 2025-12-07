@@ -1,15 +1,11 @@
-﻿module Terminal.Gui.Elmish.Tests
+﻿module Terminal.Gui.Elmish.Tests.Tests
 
 open System.Linq
 open NUnit.Framework
+open Terminal.Gui.Elmish
 open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.Views
 open Elmish
-
-[<SetUp>]
-let Setup () =
-  ElmishTerminal.unitTestMode <- true
-  ()
 
 let render view =
   let init _ = (), Cmd.none

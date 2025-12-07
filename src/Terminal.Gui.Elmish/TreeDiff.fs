@@ -17,6 +17,19 @@ module internal Differ =
       tree.SubViews |> Seq.iter (fun e -> disposeTree e)
       ()
 
+  /// Helper function to remove view from parent and dispose it
+  let private removeAndDisposeView (prevTree: IInternalTerminalElement) =
+    let parent = prevTree.view |> Interop.getParent
+    parent |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
+    prevTree.view.Dispose()
+#if DEBUG
+    System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
+#endif
+
+  /// Get sorted children list (sort once, reuse multiple times)
+  let private getSortedChildren (children: System.Collections.Generic.List<IInternalTerminalElement>) =
+    children |> Seq.sortBy (fun v -> v.name) |> Seq.toList
+
   let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
     let cve1 =
       ve1.children
@@ -56,133 +69,94 @@ module internal Differ =
   let rec update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
     match prevTree, newTree with
     | rt, nt when rt.name <> nt.name ->
-      let parent =
-        prevTree.view |> Interop.getParent
-
-      parent
-      |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-      prevTree.view.Dispose()
-#if DEBUG
-      System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-#endif
+      let parent = prevTree.view |> Interop.getParent
+      removeAndDisposeView prevTree
       newTree.initializeTree parent
+      
     | OnlyPropsChanged ->
       if newTree.canReuseView prevTree.view prevTree.props then
         newTree.reuse prevTree.view prevTree.props
       else
-        let parent =
-          prevTree.view |> Interop.getParent
-
-        parent
-        |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-        disposeTree prevTree.view
-        prevTree.view.RemoveAll() |> ignore
-        prevTree.view.Dispose()
-#if DEBUG
-        System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-#endif
+        let parent = prevTree.view |> Interop.getParent
+        removeAndDisposeView prevTree
         newTree.initializeTree parent
 
-      let sortedRootChildren =
-        prevTree.children
-        |> Seq.toList
-        |> List.sortBy (fun v -> v.name)
-
-      let sortedNewChildren =
-        newTree.children
-        |> Seq.toList
-        |> List.sortBy (fun v -> v.name)
+      let sortedRootChildren = getSortedChildren prevTree.children
+      let sortedNewChildren = getSortedChildren newTree.children
 
       (sortedRootChildren, sortedNewChildren)
       ||> List.iter2 (fun rt nt -> update rt nt)
+      
     | ChildsDifferent ->
       if newTree.canReuseView prevTree.view prevTree.props then
         newTree.reuse prevTree.view prevTree.props
       else
-        let parent =
-          prevTree.view |> Interop.getParent
-
-        parent
-        |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-        prevTree.view.Dispose()
-#if DEBUG
-        System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-#endif
+        let parent = prevTree.view |> Interop.getParent
+        removeAndDisposeView prevTree
         newTree.initializeTree parent
 
-      let sortedRootChildren =
-        prevTree.children
-        |> Seq.toList
-        |> List.sortBy (fun v -> v.name)
+      let sortedRootChildren = getSortedChildren prevTree.children
+      let sortedNewChildren = getSortedChildren newTree.children
 
-      let sortedNewChildren =
-        newTree.children
-        |> Seq.toList
-        |> List.sortBy (fun v -> v.name)
+      // Group elements by type for efficient lookup
+      let rootElementsByType = 
+        sortedRootChildren 
+        |> List.groupBy (fun e -> e.name)
+        |> Map.ofList
 
-      let groupedRootType =
-        sortedRootChildren
-        |> List.map (fun v -> v.name)
-        |> List.distinct
+      let newElementsByType = 
+        sortedNewChildren 
+        |> List.groupBy (fun e -> e.name)
+        |> Map.ofList
 
-      let groupedNewType =
-        sortedNewChildren
-        |> List.map (fun v -> v.name)
-        |> List.distinct
-
+      // Get all unique element types from both trees
       let allTypes =
-        groupedRootType @ groupedNewType |> List.distinct
-
+        Set.union
+          (rootElementsByType.Keys |> Set.ofSeq)
+          (newElementsByType.Keys |> Set.ofSeq)
 
       allTypes
-      |> List.iter (fun et ->
-        let rootElements =
-          sortedRootChildren
-          |> List.filter (fun e -> e.name = et)
+      |> Set.iter (fun elementType ->
+        let rootElements = 
+          rootElementsByType 
+          |> Map.tryFind elementType 
+          |> Option.defaultValue []
 
-        let newElements =
-          sortedNewChildren
-          |> List.filter (fun e -> e.name = et)
+        let newElements = 
+          newElementsByType 
+          |> Map.tryFind elementType 
+          |> Option.defaultValue []
 
-        if (newElements.Length > rootElements.Length) then
+        if newElements.Length > rootElements.Length then
           newElements
           |> List.iteri (fun idx ne ->
-            if (idx + 1 <= rootElements.Length) then
+            if idx < rootElements.Length then
               update rootElements.[idx] ne
             else
-              // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
-              // don't know
+              // Ensure parent can focus when adding first child
               if prevTree.view.SubViews.Count = 0 then
                 prevTree.view.CanFocus <- true
 
-              let newElem =
-                ne.initializeTree (Some prevTree.view)
-
-              newElem
+              ne.initializeTree (Some prevTree.view) |> ignore
 #if DEBUG
-              System.Diagnostics.Trace.WriteLine($"child {ne.name} created ()!")
+              System.Diagnostics.Trace.WriteLine($"child {ne.name} created!")
 #endif
-
           )
         else
           rootElements
           |> List.iteri (fun idx re ->
-            if (idx + 1 <= newElements.Length) then
+            if idx < newElements.Length then
               update re newElements.[idx]
             else
-              // the rest we remove
+              // Remove excess elements
               re.view |> prevTree.view.Remove |> ignore
               re.view.Dispose()
 #if DEBUG
               System.Diagnostics.Trace.WriteLine($"child {re.name} removed and disposed!")
 #endif
-              ()
-
           )
       )
+      
     | _ ->
-      printfn "other"
-      ()
+      // This case should not occur if active patterns cover all scenarios
+      failwithf "Unexpected case in update: prevTree.name=%s, newTree.name=%s" prevTree.name newTree.name

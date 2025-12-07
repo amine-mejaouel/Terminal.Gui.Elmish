@@ -309,7 +309,7 @@ module Element =
   type internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
-    abstract initialize: parent: View option -> unit
+    abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
     abstract canReuseView: prevView: View -> prevProps: Props -> bool
     abstract reuse: prevView: View -> prevProps: Props -> unit
@@ -319,6 +319,8 @@ module Element =
     abstract props: Props
     abstract name: string
     abstract setAsChildOfParentView: bool
+    abstract parent: View option with get, set
+    abstract isElmishComponent: bool with get, set
 
   type IMenuElement =
     inherit ITerminalElement

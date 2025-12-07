@@ -199,6 +199,7 @@ module ElmishTerminal =
         (task {
           // On program startup, Wait for the Elmish loop to take care of creating the root view.
           let! _ = model.RootView.Task
+          model.CurrentTreeState.Value.isElmishComponent <- true
           view <- model.CurrentTreeState.Value :> ITerminalElement
           waitForView.SetResult()
         }).GetAwaiter().GetResult()

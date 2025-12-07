@@ -263,21 +263,17 @@ type TerminalElement(props: Props) =
   abstract setAsChildOfParentView: bool
   default _.setAsChildOfParentView = true
 
-  member this.initialize(parent) =
+  member val isElmishComponent: bool = false with get, set
+
+  member this.initialize() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
 #endif
-    this.parent <- parent
 
     let newView = this.newView ()
 
     this.initializeSubElements newView
     |> Seq.iter props.addNonTyped
-
-    // Here, the "children" view are added to their parent
-    if this.setAsChildOfParentView then
-      parent
-      |> Option.iter (fun p -> p.Add newView |> ignore)
 
     this.setProps (newView, props)
     this.view <- newView
@@ -304,7 +300,17 @@ type TerminalElement(props: Props) =
 
   member this.initializeTree(parent: View option) : unit =
     let traverse (node: TreeNode) =
-      node.TerminalElement.initialize node.Parent
+      node.TerminalElement.parent <- node.Parent
+
+      if not node.TerminalElement.isElmishComponent then
+        // Elmish components are already initialized by their own Elmish loop
+        // Hence their views are already created and initialized
+        node.TerminalElement.initialize ()
+
+      // Here, the "children" view are added to their parent
+      if node.TerminalElement.setAsChildOfParentView then
+        node.Parent
+        |> Option.iter (fun p -> p.Add node.TerminalElement.view |> ignore)
 
     traverseTree
       [
@@ -1148,7 +1154,7 @@ type TerminalElement(props: Props) =
     this.eventRegistry.removeAllEventHandlers()
 
   interface IInternalTerminalElement with
-    member this.initialize(parent) = this.initialize parent
+    member this.initialize() = this.initialize()
     member this.initializeTree(parent) = this.initializeTree parent
     member this.canReuseView prevView prevProps = this.canReuseView prevView prevProps
     member this.reuse prevView prevProps = this.reuse prevView prevProps
@@ -3412,7 +3418,6 @@ type TabElement(props: Props) =
 // TabView
 type TabViewElement(props: Props) =
   inherit TerminalElement(props)
-
 
   override this.removeProps(view: View, props: Props) =
     base.removeProps (view, props)

@@ -95,9 +95,14 @@ let ``ElmishComponent embedded in ElmishTerminal program initializes and sets vi
 
     // After embedding in a program, the counts should not have increased significantly
     // because the component is already initialized (isElmishComponent = true)
+    
+    // First verify the component itself was initialized exactly once
+    Assert.That(initCountAfterComponent, Is.EqualTo(1), 
+        "TerminalElement.initialize() should be called exactly once during component creation")
+    
+    // Then verify embedding the component in a program doesn't trigger re-initialization
     Assert.That(initializeCallCount, Is.EqualTo(initCountAfterComponent), 
         "TerminalElement.initialize() should not be called again when component is embedded in a program")
-    Assert.That(initializeCallCount, Is.EqualTo(1), 
-        "TerminalElement.initialize() should be called exactly once total")
+    
     Assert.That(viewAccessCount, Is.GreaterThanOrEqualTo(viewCountAfterComponent), 
         "TerminalElement.view should be accessed")

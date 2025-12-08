@@ -39,20 +39,21 @@ module internal Differ =
 
   let update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
 
-    let removeAndDisposeView (tree: IInternalTerminalElement) (removeSubViews: bool) =
-      let parent =
-        tree.view |> Interop.getParent
+    let removeAndDisposeView
+      (removeSubViews: bool)
+      (view: Terminal.Gui.ViewBase.View, name: string, parent: Terminal.Gui.ViewBase.View option) =
 
       parent
-      |> Option.iter (fun p -> p.Remove tree.view |> ignore)
+      |> Option.iter (fun p -> p.Remove view |> ignore)
 
       if not removeSubViews then
-        // Prevent disposing children views when disposing the tree.view
+        // Prevent disposing children views when disposing the view
         prevTree.view.RemoveAll() |> ignore
       // NOTE: view.Dispose() will also dispose all subviews, if not removed first
-      tree.view.Dispose()
+      view.Dispose()
+
       #if DEBUG
-      System.Diagnostics.Trace.WriteLine($"{tree.name} removed and disposed!")
+      System.Diagnostics.Trace.WriteLine($"{name} removed and disposed!")
       #endif
 
     let workStack = System.Collections.Generic.Stack<_>()
@@ -63,17 +64,23 @@ module internal Differ =
       match prevTree, newTree with
       | rt, nt when rt.name <> nt.name ->
 
-        removeAndDisposeView prevTree true
-
         let parent =
           prevTree.view |> Interop.getParent
+
+        (prevTree.view, prevTree.name, parent)
+        |> removeAndDisposeView true
+
         newTree.initializeTree parent
 
       | OnlyPropsChanged ->
         if newTree.canReuseView prevTree.view prevTree.props then
           newTree.reuse prevTree.view prevTree.props
         else
-          removeAndDisposeView prevTree false
+          let parent =
+            prevTree.view |> Interop.getParent
+
+          (prevTree.view, prevTree.name, parent)
+          |> removeAndDisposeView false
 
           let parent =
             prevTree.view |> Interop.getParent
@@ -99,14 +106,15 @@ module internal Differ =
           newTree.reuse prevTree.view prevTree.props
         else
           // TODO: should test the case of noReuse manually and with unit test if needed
-          removeAndDisposeView prevTree false
+          let parent =
+            prevTree.view |> Interop.getParent
+
+          (prevTree.view, prevTree.name ,parent)
+          |> removeAndDisposeView false
 
           #if DEBUG
           System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
           #endif
-
-          let parent =
-            prevTree.view |> Interop.getParent
 
           newTree.initializeTree parent
 
@@ -158,7 +166,12 @@ module internal Differ =
               if (idx + 1 <= newElements.Length) then
                 workStack.Push(re, newElements.[idx])
               else
-                removeAndDisposeView re true
+                let parent =
+                  re.view |> Interop.getParent
+
+                (re.view, re.name, parent)
+                |> removeAndDisposeView true
+
                 #if DEBUG
                 System.Diagnostics.Trace.WriteLine($"child {re.name} removed and disposed!")
                 #endif

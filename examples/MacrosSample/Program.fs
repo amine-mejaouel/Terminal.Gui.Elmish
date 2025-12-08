@@ -138,11 +138,20 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
             p.width (Dim.Percent 100)
           )
 
+        let sampleComponent =
+          SampleComponent._component (fun p ->
+            p.y (TPos.Bottom textView)
+          )
+
+        let treeDiffUpdateTesterComponent =
+          TreeDiffUpdateTesterComponent._component(fun p ->
+            p.y (TPos.Bottom sampleComponent)
+          )
+
         label
         textView
-        SampleComponent._component (fun p ->
-          p.y (TPos.Bottom textView)
-        )
+        sampleComponent
+        treeDiffUpdateTesterComponent
       ]
     )
 

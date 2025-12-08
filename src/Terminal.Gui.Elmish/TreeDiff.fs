@@ -112,10 +112,6 @@ module internal Differ =
           (prevTree.view, prevTree.name ,parent)
           |> removeAndDisposeView false
 
-          #if DEBUG
-          System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-          #endif
-
           newTree.initializeTree parent
 
         let allTypes =
@@ -155,15 +151,11 @@ module internal Differ =
                   ne.initializeTree (Some prevTree.view)
 
                 newElem
-                #if DEBUG
-                System.Diagnostics.Trace.WriteLine($"child {ne.name} created ()!")
-                #endif
-
             )
           else
             rootElements
             |> List.iteri (fun idx re ->
-              if (idx + 1 <= newElements.Length) then
+              if (idx < newElements.Length) then
                 workStack.Push(re, newElements.[idx])
               else
                 let parent =
@@ -171,11 +163,6 @@ module internal Differ =
 
                 (re.view, re.name, parent)
                 |> removeAndDisposeView true
-
-                #if DEBUG
-                System.Diagnostics.Trace.WriteLine($"child {re.name} removed and disposed!")
-                #endif
-                ()
             )
         )
       | _ ->

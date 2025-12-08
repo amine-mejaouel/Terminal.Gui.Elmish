@@ -302,10 +302,7 @@ type TerminalElement(props: Props) =
     let traverse (node: TreeNode) =
       node.TerminalElement.parent <- node.Parent
 
-      if not node.TerminalElement.isElmishComponent then
-        // Elmish components are already initialized by their own Elmish loop
-        // Hence their views are already created and initialized
-        node.TerminalElement.initialize ()
+      node.TerminalElement.initialize ()
 
       // Here, the "children" view are added to their parent
       if node.TerminalElement.setAsChildOfParentView then
@@ -1168,14 +1165,10 @@ type TerminalElement(props: Props) =
 
     member this.onDrawComplete = this.onDrawComplete
 
-    member this.isElmishComponent = this.isElmishComponent
-    member this.isElmishComponent with set value = this.isElmishComponent <- value
-
     member this.parent = this.parent
     member this.parent with set value = this.parent <- value
 
     member this.Dispose() = this.Dispose()
-
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type OrientationInterface =

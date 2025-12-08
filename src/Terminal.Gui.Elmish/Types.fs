@@ -320,7 +320,6 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
-    abstract isElmishComponent: bool with get, set
 
   type IMenuElement =
     inherit ITerminalElement
@@ -339,3 +338,27 @@ module Element =
 
   type ITreeViewElement =
     inherit ITerminalElement
+
+  /// <summary>
+  /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
+  /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
+  /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
+  /// </summary>
+  type internal ElmishComponent_TerminalElement_Wrapper(element: IInternalTerminalElement) =
+    interface IInternalTerminalElement with
+      member this.initialize() = () // Do nothing, initialization is handled by the Elmish component
+      member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
+      member this.canReuseView prevView prevProps = element.canReuseView prevView prevProps
+      member this.reuse prevView prevProps = element.reuse prevView prevProps
+      member this.view = element.view
+      member this.props = element.props
+      member this.name = element.name
+      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
+      member this.children = new System.Collections.Generic.List<IInternalTerminalElement>()
+      member this.setAsChildOfParentView = element.setAsChildOfParentView
+      member this.onDrawComplete = element.onDrawComplete
+
+      member this.parent = element.parent
+      member this.parent with set value = element.parent <- value
+
+      member this.Dispose() = element.Dispose()

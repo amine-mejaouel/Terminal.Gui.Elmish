@@ -2,21 +2,6 @@
 
 module internal Differ =
 
-  open Terminal.Gui.ViewBase
-  open Terminal.Gui.Elmish.Elements
-  open System.Linq
-
-  //traverse Tree and get the Name of ever child
-  let rec disposeTree (tree: View) =
-    match tree.SubViews.ToArray() with
-    | [||] ->
-      tree.Dispose()
-      System.Diagnostics.Trace.WriteLine($"{tree.GetType().Name} disposed!")
-      ()
-    | _ ->
-      tree.SubViews |> Seq.iter (fun e -> disposeTree e)
-      ()
-
   let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
     let cve1 =
       ve1.children
@@ -52,8 +37,24 @@ module internal Differ =
 
     if cve1 <> cve2 then Some() else None
 
-  // TODO: Could be nice if this can be turned into a TailCall
   let update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
+
+    let removeAndDisposeView (tree: IInternalTerminalElement) (removeSubViews: bool) =
+      let parent =
+        tree.view |> Interop.getParent
+
+      parent
+      |> Option.iter (fun p -> p.Remove tree.view |> ignore)
+
+      if not removeSubViews then
+        // Prevent disposing children views when disposing the tree.view
+        prevTree.view.RemoveAll() |> ignore
+      // NOTE: view.Dispose() will also dispose all subviews, if not removed first
+      tree.view.Dispose()
+      #if DEBUG
+      System.Diagnostics.Trace.WriteLine($"{tree.name} removed and disposed!")
+      #endif
+
     let workStack = System.Collections.Generic.Stack<_>()
     workStack.Push((prevTree, newTree))
 
@@ -61,33 +62,21 @@ module internal Differ =
       let prevTree, newTree = workStack.Pop()
       match prevTree, newTree with
       | rt, nt when rt.name <> nt.name ->
+
+        removeAndDisposeView prevTree true
+
         let parent =
           prevTree.view |> Interop.getParent
-
-        parent
-        |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-        prevTree.view.Dispose()
-        #if DEBUG
-        System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-        #endif
         newTree.initializeTree parent
+
       | OnlyPropsChanged ->
         if newTree.canReuseView prevTree.view prevTree.props then
           newTree.reuse prevTree.view prevTree.props
         else
+          removeAndDisposeView prevTree false
+
           let parent =
             prevTree.view |> Interop.getParent
-
-          parent
-          |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-          disposeTree prevTree.view
-          prevTree.view.RemoveAll() |> ignore
-          prevTree.view.Dispose()
-          #if DEBUG
-          System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
-          #endif
           newTree.initializeTree parent
 
         let sortedRootChildren =
@@ -102,20 +91,23 @@ module internal Differ =
 
         (sortedRootChildren, sortedNewChildren)
         ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
+
+      // TODO: should also consider the SubElements in the pattern matching
       | ChildsDifferent ->
+        // TODO: should review the implementation of canReuse and its usefulness.
         if newTree.canReuseView prevTree.view prevTree.props then
           newTree.reuse prevTree.view prevTree.props
         else
-          let parent =
-            prevTree.view |> Interop.getParent
+          // TODO: should test the case of noReuse manually and with unit test if needed
+          removeAndDisposeView prevTree false
 
-          parent
-          |> Option.iter (fun p -> p.Remove prevTree.view |> ignore)
-
-          prevTree.view.Dispose()
           #if DEBUG
           System.Diagnostics.Trace.WriteLine($"{prevTree.name} removed and disposed!")
           #endif
+
+          let parent =
+            prevTree.view |> Interop.getParent
+
           newTree.initializeTree parent
 
         let sortedRootChildren =
@@ -178,9 +170,7 @@ module internal Differ =
               if (idx + 1 <= newElements.Length) then
                 workStack.Push(re, newElements.[idx])
               else
-                // the rest we remove
-                re.view |> prevTree.view.Remove |> ignore
-                re.view.Dispose()
+                removeAndDisposeView re true
                 #if DEBUG
                 System.Diagnostics.Trace.WriteLine($"child {re.name} removed and disposed!")
                 #endif

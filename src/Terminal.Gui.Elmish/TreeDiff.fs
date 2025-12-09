@@ -86,8 +86,6 @@ module internal Differ =
           (prevTree.view, prevTree.name, parent)
           |> removeAndDisposeView false
 
-          let parent =
-            prevTree.view |> Interop.getParent
           newTree.initializeTree parent
 
         let sortedRootChildren =
@@ -106,21 +104,24 @@ module internal Differ =
       // TODO: should also consider the SubElements in the pattern matching
       | ChildsDifferent ->
         // TODO: should review the implementation of canReuse and its usefulness.
-        if newTree.canReuseView prevTree.view prevTree.props then
-          match prevTree.detachView() with
-          | Ok view ->
-            newTree.reuse view prevTree.props
-          | Error errMsg ->
-            failwith errMsg
-        else
-          // TODO: should test the case of noReuse manually and with unit test if needed
-          let parent =
-            prevTree.view |> Interop.getParent
+        let view =
+          if newTree.canReuseView prevTree.view prevTree.props then
+            match prevTree.detachView() with
+            | Ok view ->
+              newTree.reuse view prevTree.props
+              view
+            | Error errMsg ->
+              failwith errMsg
+          else
+            // TODO: should test the case of noReuse manually and with unit test if needed
+            let parent =
+              prevTree.view |> Interop.getParent
 
-          (prevTree.view, prevTree.name ,parent)
-          |> removeAndDisposeView false
+            (prevTree.view, prevTree.name ,parent)
+            |> removeAndDisposeView false
 
-          newTree.initializeTree parent
+            newTree.initializeTree parent
+            newTree.view
 
         let allTypes =
           seq {
@@ -152,11 +153,11 @@ module internal Differ =
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
                 // TODO: check if this is still needed
-                if prevTree.view.SubViews.Count = 0 then
-                  prevTree.view.CanFocus <- true
+                if view.SubViews.Count = 0 then
+                  view.CanFocus <- true
 
                 let newElem =
-                  ne.initializeTree (Some prevTree.view)
+                  ne.initializeTree (Some view)
 
                 newElem
             )

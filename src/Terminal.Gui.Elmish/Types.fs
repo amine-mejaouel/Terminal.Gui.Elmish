@@ -320,6 +320,7 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
+    abstract detachView: unit -> Result<View, string>
 
   type IMenuElement =
     inherit ITerminalElement
@@ -362,3 +363,5 @@ module Element =
       member this.parent with set value = element.parent <- value
 
       member this.Dispose() = element.Dispose()
+
+      member this.detachView() = failwith "Operation not supported. View handling is managed by the Elmish component itself."

@@ -150,8 +150,7 @@ type PropsEventRegistry() =
     removeHandlerRepository[(pkey, owner)] <-
       fun () ->
         removeHandler handler
-        // TODO: I think this is not needed here, since I'm removing it in removeHandler method
-        eventHandlerRepository.Remove((pkey, owner)) |> ignore
+        // Handler will be removed from eventHandlerRepository in the `removeHandler` method
 
   member this.removeHandler (pkey: IPropKey, owner) =
     match this.tryGetRemoveHandler (pkey, owner) with

@@ -129,45 +129,35 @@ type HandlerOwner =
 
 type PropsEventRegistry() =
 
-  let eventHandlerRepository = Dictionary<IPropKey, Dictionary<HandlerOwner, Delegate>>()
-  let removeHandlerRepository: Dictionary<IPropKey, Dictionary<HandlerOwner,unit -> unit>> = Dictionary<IPropKey, Dictionary<HandlerOwner,unit -> unit>>()
+  let eventHandlerRepository = Dictionary<IPropKey * HandlerOwner, Delegate>()
+  let removeHandlerRepository = Dictionary<IPropKey * HandlerOwner, unit -> unit>()
 
   member private this.tryGetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, owner: HandlerOwner) =
-    match eventHandlerRepository.TryGetValue(pkey) with
-    | true, existingHandlers ->
-      match existingHandlers.TryGetValue(owner) with
-      | true, existingHandler ->
-        Some (existingHandler :?> 'THandler)
-      | false, _ ->
-        None
+    match eventHandlerRepository.TryGetValue((pkey, owner)) with
+    | true, existingHandler ->
+      Some (existingHandler :?> 'THandler)
     | false, _ ->
       None
 
   member private this.tryGetRemoveHandler (pkey: IPropKey, owner: HandlerOwner) =
-    match removeHandlerRepository.TryGetValue(pkey) with
-    | true, existingRemovers ->
-      match existingRemovers.TryGetValue(owner) with
-      | true, existingRemover ->
-        Some existingRemover
-      | false, _ ->
-        None
+    match removeHandlerRepository.TryGetValue((pkey, owner)) with
+    | true, existingRemover ->
+      Some existingRemover
     | false, _ ->
       None
 
   member private this.registerHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, owner, handler: 'THandler, removeHandler: 'THandler -> unit) =
-    if not (removeHandlerRepository.ContainsKey(pkey)) then
-      removeHandlerRepository[pkey] <- Dictionary<HandlerOwner, unit -> unit>()
-
-    removeHandlerRepository[pkey][owner] <-
+    removeHandlerRepository[(pkey, owner)] <-
       fun () ->
         removeHandler handler
-        eventHandlerRepository[pkey].Remove(owner) |> ignore
+        // TODO: I think this is not needed here, since I'm removing it in removeHandler method
+        eventHandlerRepository.Remove((pkey, owner)) |> ignore
 
   member this.removeHandler (pkey: IPropKey, owner) =
     match this.tryGetRemoveHandler (pkey, owner) with
     | Some removeHandler ->
       removeHandler ()
-      removeHandlerRepository[pkey].Remove(owner) |> ignore
+      removeHandlerRepository.Remove((pkey, owner)) |> ignore
     | None ->
       ()
 
@@ -176,10 +166,9 @@ type PropsEventRegistry() =
     | Some existingHandler ->
       removeFromEvent existingHandler
     | None ->
-      if not (eventHandlerRepository.ContainsKey(pkey)) then
-        eventHandlerRepository[pkey] <- Dictionary<HandlerOwner, Delegate>()
+      ()
 
-    eventHandlerRepository[pkey][owner] <- handler
+    eventHandlerRepository[(pkey, owner)] <- handler
     addToEvent handler
 
   member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, owner: HandlerOwner, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =

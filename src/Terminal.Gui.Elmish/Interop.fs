@@ -14,3 +14,7 @@ module Interop =
       else
         Some p
     )
+
+  let removeFromParent (view: View) =
+    getParent view
+    |> Option.iter (fun p -> p.Remove view |> ignore)

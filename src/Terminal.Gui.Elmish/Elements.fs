@@ -56,73 +56,6 @@ type SubElementPropKey<'a> =
       | SingleElementKey _ -> true
       | MultiElementKey _ -> false
 
-module internal ViewElement =
-
-  let canReuseView (view: View) (props: Props) (removedProps: Props) =
-    let isPosCompatible (a: Pos) (b: Pos) =
-      let nameA = a.GetType().Name
-      let nameB = b.GetType().Name
-
-      nameA = nameB
-      || (nameA = "PosAbsolute" && nameB = "PosAbsolute")
-      || (nameA <> "PosAbsolute" && nameB <> "PosAbsolute")
-
-    let isDimCompatible (a: Dim) (b: Dim) =
-      let nameA = a.GetType().Name
-      let nameB = b.GetType().Name
-
-      nameA = nameB
-      || (nameA = "DimAbsolute" && nameB = "DimAbsolute")
-      || (nameA <> "DimAbsolute" && nameB <> "DimAbsolute")
-
-
-    let positionX =
-      props
-      |> Props.tryFind PKey.view.x
-      |> Option.map (fun v -> isPosCompatible view.X v)
-      |> Option.defaultValue true
-
-    let positionY =
-      props
-      |> Props.tryFind PKey.view.y
-      |> Option.map (fun v -> isPosCompatible view.Y v)
-      |> Option.defaultValue true
-
-    let width =
-      props
-      |> Props.tryFind PKey.view.width
-      |> Option.map (fun v -> isDimCompatible view.Width v)
-      |> Option.defaultValue true
-
-    let height =
-      props
-      |> Props.tryFind PKey.view.height
-      |> Option.map (fun v -> isDimCompatible view.Height v)
-      |> Option.defaultValue true
-
-    // in case width or height is removed!
-    let widthNotRemoved =
-      removedProps
-      |> Props.exists PKey.view.width
-      |> not
-
-    let heightNotRemoved =
-      removedProps
-      |> Props.exists PKey.view.height
-      |> not
-
-    // TODO: is this still relevant ?
-    // TODO: should check if every check is still needed to reuse the view
-    [
-      positionX
-      positionY
-      width
-      height
-      widthNotRemoved
-      heightNotRemoved
-    ]
-    |> List.forall id
-
 type HandlerOwner =
   | LibraryItself of key: string
   | LibraryUser
@@ -265,28 +198,31 @@ type TerminalElement(props: Props) =
   member this.props = props
   member val parent: View option = None with get, set
 
-  member val private _viewAlreadySetOnce: bool = false with get, set
+  member val private _componentsDetached: bool = false with get, set
   member val _view: View = null with get, set
   member this.getView() = this._view
 
   member this.setView(view: View) =
-    if this._viewAlreadySetOnce then
-      failwith $"{this.name}: View has already been set once and cannot be set again."
-    this._viewAlreadySetOnce <- true
+    if (this._view <> null) then
+      failwith $"{this.name}: View has already been set."
+    else if this._componentsDetached then
+      failwith $"{this.name}: View has been detached and cannot be set again."
+
     this._view <- view
     this.propsEventRegistry.setEventHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View", view.DrawComplete, fun _ -> onDrawCompleteEvent.Trigger view)
 
-  member this.detachView () =
-    if this._view = null && this._viewAlreadySetOnce then
-      Error $"{this.name}: View is already detached."
+  member this.detachComponents () =
+    if this._componentsDetached then
+      failwith $"{this.name}: Components have already been detached."
     elif this._view = null then
-      Error $"{this.name}: View has not been set yet."
+      failwith $"{this.name}: Can't detach components before view is set."
     else
+      this._componentsDetached <- true
       this.propsEventRegistry.removeHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View")
       this.terminalElementEventRegistry.removeAllEventHandlers()
       let view = this._view
       this._view <- null
-      Ok view
+      {| View = view; Children = this.children; Props = this.props |}
 
   member _.children: List<IInternalTerminalElement> =
     props
@@ -315,23 +251,7 @@ type TerminalElement(props: Props) =
     this.setView newView
     this.setProps props
 
-  abstract canReuseView: prevView: View -> prevProps: Props -> bool
   abstract reuse: prevView: View -> prevProps: Props -> unit
-
-  default this.canReuseView prevView prevProps =
-    let c =
-      this.compare prevProps
-
-    let removedProps =
-      c.removedProps
-      |> Props.filter (not << _.Key.isViewKey)
-
-    let canUpdateView =
-      ViewElement.canReuseView prevView c.changedProps removedProps
-
-    let canUpdateElement = true
-
-    canUpdateView && canUpdateElement
 
   abstract name: string
 
@@ -731,6 +651,7 @@ type TerminalElement(props: Props) =
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
+    // TODO: too confusing here, too difficult to reason about, need to refactor
     |> Option.iter (applyPos this.terminalElementEventRegistry (fun pos -> this._view.X <- pos))
 
     props
@@ -1086,6 +1007,10 @@ type TerminalElement(props: Props) =
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
   override this.reuse prevView prevProps =
+
+    // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
+    // TODO: this should be tested and documented to make sure that it continues to work well in the future.
+
     let c = this.compare prevProps
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
@@ -1186,14 +1111,32 @@ type TerminalElement(props: Props) =
   member this.onDrawComplete = onDrawCompleteEvent.Publish
 
   member this.Dispose() =
-    ()
+
+    if (this._view <> null && not this._componentsDetached) then
+      let c = this.detachComponents()
+
+      c.View |> Interop.removeFromParent
+
+      // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
+      for key in this.SubElements_PropKeys do
+        c.Props
+        |> Props.tryFind key
+        |> Option.iter (fun subElement ->
+          subElement.Dispose())
+
+      // Dispose Children TerminalElements
+      for child in c.Children do
+        child.Dispose()
+
+      // Finally dispose the View itself
+      c.View.Dispose()
+
     // TODO: need to be precise about this, User event will be done on the removeProps, Internal library should be removed precisely here
     // this.eventRegistry.removeAllEventHandlers()
 
   interface IInternalTerminalElement with
     member this.initialize() = this.initialize()
     member this.initializeTree(parent) = this.initializeTree parent
-    member this.canReuseView prevView prevProps = this.canReuseView prevView prevProps
     member this.reuse prevView prevProps = this.reuse prevView prevProps
     member this.view = this._view
     member this.props = this.props
@@ -1210,7 +1153,7 @@ type TerminalElement(props: Props) =
 
     member this.Dispose() = this.Dispose()
 
-    member this.detachView () = this.detachView()
+    member this.detachComponents () = this.detachComponents()
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type OrientationInterface =
@@ -2864,8 +2807,6 @@ type internal SelectorBaseElement(props: Props) =
     |> Option.iter (fun v -> this.propsEventRegistry.setEventHandler(PKey.selectorBase.valueChanged, LibraryUser, view.ValueChanged, v))
 
   override this.newView() = raise (NotImplementedException())
-
-  override this.canReuseView _ _ = raise (NotImplementedException())
 
 // OptionSelector
 type OptionSelectorElement(props: Props) =

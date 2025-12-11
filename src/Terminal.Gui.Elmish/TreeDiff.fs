@@ -67,29 +67,19 @@ module internal Differ =
         let parent =
           prevTree.view |> Interop.getParent
 
-        (prevTree.view, prevTree.name, parent)
-        |> removeAndDisposeView true
+        prevTree.Dispose()
 
         newTree.initializeTree parent
 
       | OnlyPropsChanged ->
-        if newTree.canReuseView prevTree.view prevTree.props then
-          match prevTree.detachView() with
-          | Ok view ->
-            newTree.reuse view prevTree.props
-          | Error errMsg ->
-            failwith errMsg
-        else
-          let parent =
-            prevTree.view |> Interop.getParent
 
-          (prevTree.view, prevTree.name, parent)
-          |> removeAndDisposeView false
+        let prev = prevTree.detachComponents()
+        prevTree.Dispose()
 
-          newTree.initializeTree parent
+        newTree.reuse prev.View prev.Props
 
         let sortedRootChildren =
-          prevTree.children
+          prev.Children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
@@ -103,29 +93,15 @@ module internal Differ =
 
       // TODO: should also consider the SubElements in the pattern matching
       | ChildsDifferent ->
-        // TODO: should review the implementation of canReuse and its usefulness.
-        let view =
-          if newTree.canReuseView prevTree.view prevTree.props then
-            match prevTree.detachView() with
-            | Ok view ->
-              newTree.reuse view prevTree.props
-              view
-            | Error errMsg ->
-              failwith errMsg
-          else
-            // TODO: should test the case of noReuse manually and with unit test if needed
-            let parent =
-              prevTree.view |> Interop.getParent
 
-            (prevTree.view, prevTree.name ,parent)
-            |> removeAndDisposeView false
+        let prev = prevTree.detachComponents()
+        prevTree.Dispose()
 
-            newTree.initializeTree parent
-            newTree.view
+        newTree.reuse prev.View prev.Props
 
         let allTypes =
           seq {
-            yield! prevTree.children
+            yield! prev.Children
             yield! newTree.children
           }
           |> Seq.map (fun v -> v.name)
@@ -135,7 +111,7 @@ module internal Differ =
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            prevTree.children
+            prev.Children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
@@ -153,11 +129,11 @@ module internal Differ =
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
                 // TODO: check if this is still needed
-                if view.SubViews.Count = 0 then
-                  view.CanFocus <- true
+                if prev.View.SubViews.Count = 0 then
+                  prev.View.CanFocus <- true
 
                 let newElem =
-                  ne.initializeTree (Some view)
+                  ne.initializeTree (Some prev.View)
 
                 newElem
             )
@@ -165,13 +141,9 @@ module internal Differ =
             rootElements
             |> List.iteri (fun idx re ->
               if (idx < newElements.Length) then
-                workStack.Push(re, newElements.[idx])
+                workStack.Push(re, newElements[idx])
               else
-                let parent =
-                  re.view |> Interop.getParent
-
-                (re.view, re.name, parent)
-                |> removeAndDisposeView true
+                re.Dispose()
             )
         )
       | _ ->

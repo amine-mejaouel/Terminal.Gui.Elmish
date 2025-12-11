@@ -173,7 +173,7 @@ type viewProps() =
   member this.contentSizeChanged(handler: SizeChangedEventArgs -> unit) =
     this.props.add (PKey.view.contentSizeChanged, handler)
 
-  member this.disposing(handler: unit -> unit) =
+  member this.disposing(handler: EventArgs -> unit) =
     this.props.add (PKey.view.disposing, handler)
 
   member this.drawComplete(handler: DrawEventArgs -> unit) =
@@ -188,7 +188,7 @@ type viewProps() =
   member this.drawingText(handler: DrawEventArgs -> unit) =
     this.props.add (PKey.view.drawingText, handler)
 
-  member this.enabledChanged(handler: unit -> unit) =
+  member this.enabledChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.view.enabledChanged, handler)
 
   member this.focusedChanged(handler: HasFocusEventArgs -> unit) =
@@ -215,7 +215,7 @@ type viewProps() =
   member this.hotKeyChanged(handler: KeyChangedEventArgs -> unit) =
     this.props.add (PKey.view.hotKeyChanged, handler)
 
-  member this.initialized(handler: unit -> unit) =
+  member this.initialized(handler: EventArgs -> unit) =
     this.props.add (PKey.view.initialized, handler)
 
   member this.keyDown(handler: Key -> unit) =
@@ -278,7 +278,7 @@ type viewProps() =
   member this.superViewChanged(handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.view.superViewChanged, handler)
 
-  member this.textChanged(handler: unit -> unit) =
+  member this.textChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.view.textChanged, handler)
 
   member this.titleChanged(handler: EventArgs<string> -> unit) =
@@ -290,7 +290,7 @@ type viewProps() =
   member this.viewportChanged(handler: DrawEventArgs -> unit) =
     this.props.add (PKey.view.viewportChanged, handler)
 
-  member this.visibleChanged(handler: unit -> unit) =
+  member this.visibleChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.view.visibleChanged, handler)
 
   member this.visibleChanging(handler: CancelEventArgs<bool> -> unit) =
@@ -393,7 +393,7 @@ type adornmentProps() =
   member this.viewport(value: Rectangle) =
     this.props.add (PKey.adornment.viewport, value)
   // Events
-  member this.thicknessChanged(handler: unit -> unit) =
+  member this.thicknessChanged(handler: EventArgs -> unit) =
     this.props.add (PKey.adornment.thicknessChanged, handler)
 
 // Bar
@@ -525,10 +525,10 @@ type comboBoxProps() =
   member this.text(value: string) =
     this.props.add (PKey.comboBox.text, value)
   // Events
-  member this.collapsed(handler: unit -> unit) =
+  member this.collapsed(handler: EventArgs -> unit) =
     this.props.add (PKey.comboBox.collapsed, handler)
 
-  member this.expanded(handler: unit -> unit) =
+  member this.expanded(handler: EventArgs -> unit) =
     this.props.add (PKey.comboBox.expanded, handler)
 
   member this.openSelectedItem(handler: ListViewItemEventArgs -> unit) =

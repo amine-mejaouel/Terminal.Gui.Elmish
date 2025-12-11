@@ -314,7 +314,7 @@ module Element =
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
     abstract reuse: prevView: View -> prevProps: Props -> unit
-    abstract onDrawComplete: IEvent<View>
+    abstract onViewSet: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get
     abstract props: Props
@@ -357,7 +357,7 @@ module Element =
       // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
       member this.children = new System.Collections.Generic.List<IInternalTerminalElement>()
       member this.setAsChildOfParentView = element.setAsChildOfParentView
-      member this.onDrawComplete = element.onDrawComplete
+      member this.onViewSet = element.onViewSet
 
       member this.parent = element.parent
       member this.parent with set value = element.parent <- value

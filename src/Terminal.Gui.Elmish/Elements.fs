@@ -57,7 +57,7 @@ type SubElementPropKey<'a> =
       | MultiElementKey _ -> false
 
 type HandlerOwner =
-  | LibraryItself of key: string
+  | TerminalElementItself
   | LibraryUser
 
 type PropsEventRegistry() =
@@ -92,6 +92,16 @@ type PropsEventRegistry() =
       removeHandlerRepository.Remove((pkey, owner)) |> ignore
     | None ->
       ()
+
+  member this.removeHandlers(owner: HandlerOwner) =
+    let keysToRemove =
+      removeHandlerRepository
+      |> Seq.filter (fun kvp -> snd kvp.Key = owner)
+      |> Seq.map (fun kvp -> fst kvp.Key)
+      |> Seq.toList
+
+    for pkey in keysToRemove do
+      this.removeHandler (pkey, owner)
 
   member private this.setHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, owner: HandlerOwner, handler: 'THandler, removeFromEvent: 'THandler -> unit, addToEvent: 'THandler -> unit) =
     match this.tryGetHandler<'THandler> (pkey, owner) with
@@ -163,34 +173,44 @@ type TerminalElement(props: Props) =
 
       traverseTree (childNodes @ remainingNodes) traverse
 
-  let onDrawCompleteEvent = Event<View>()
+  let onViewSetEvent = Event<View>()
 
   // TODO: relative position should be cleared from the props in between elmish loop iteration
   // TODO: cause, they are capturing view but view are being reused and they might not be reused for the same targeted element.
-  let applyPos (eventRegistry: TerminalElementEventRegistry) (apply: Pos -> unit) targetPos =
-    let addTerminalEventHandler (terminal: ITerminalElement) handler =
-      eventRegistry.addEventHandler ((terminal :?> IInternalTerminalElement).onDrawComplete, handler)
+  member this.applyPos (propsEventRegistry: PropsEventRegistry) (eventRegistry: TerminalElementEventRegistry) (apply: View -> Pos -> unit) targetPos =
+
+    let onViewSetOnTerminalElement (terminal: ITerminalElement) applyPos =
+      let onViewSet (otherView: View) (applyPos: View -> View -> unit) =
+
+        propsEventRegistry.setEventHandler (PKey.view.drawComplete, TerminalElementItself, otherView.DrawComplete, fun x -> applyPos this._view otherView)
+
+      let terminalElement = terminal :?> IInternalTerminalElement
+      if (terminalElement.view <> null) then
+        onViewSet terminalElement.view applyPos
+      else
+        eventRegistry.addEventHandler ((terminal :?> IInternalTerminalElement).onViewSet, fun view -> onViewSet view applyPos)
+
 
     match targetPos with
     | TPos.X te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.X(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.X(otherView)))
     | TPos.Y te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Y(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Y(otherView)))
     | TPos.Top te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Top(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Top(otherView)))
     | TPos.Bottom te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Bottom(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Bottom(otherView)))
     | TPos.Left te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Left(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Left(otherView)))
     | TPos.Right te ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Right(view)))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Right(otherView)))
     | TPos.Func (func, te) ->
-      addTerminalEventHandler te (fun view -> apply (Pos.Func(func, view)))
-    | TPos.Absolute position -> apply (Pos.Absolute(position))
-    | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
-    | TPos.Center -> apply (Pos.Center())
-    | TPos.Percent percent -> apply (Pos.Percent(percent))
-    | TPos.Align (alignment, modes, groupId) -> apply (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
+      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Func(func, otherView)))
+    | TPos.Absolute position -> apply this._view (Pos.Absolute(position))
+    | TPos.AnchorEnd offset -> apply this._view (Pos.AnchorEnd(offset |> Option.defaultValue 0))
+    | TPos.Center -> apply this._view (Pos.Center())
+    | TPos.Percent percent -> apply this._view (Pos.Percent(percent))
+    | TPos.Align (alignment, modes, groupId) -> apply this._view (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member val propsEventRegistry = PropsEventRegistry() with get, set
   member val terminalElementEventRegistry = TerminalElementEventRegistry() with get, set
@@ -199,6 +219,7 @@ type TerminalElement(props: Props) =
   member val parent: View option = None with get, set
 
   member val private _componentsDetached: bool = false with get, set
+
   member val _view: View = null with get, set
   member this.getView() = this._view
 
@@ -209,7 +230,7 @@ type TerminalElement(props: Props) =
       failwith $"{this.name}: View has been detached and cannot be set again."
 
     this._view <- view
-    this.propsEventRegistry.setEventHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View", view.DrawComplete, fun _ -> onDrawCompleteEvent.Trigger view)
+    onViewSetEvent.Trigger view
 
   member this.detachComponents () =
     if this._componentsDetached then
@@ -218,7 +239,7 @@ type TerminalElement(props: Props) =
       failwith $"{this.name}: Can't detach components before view is set."
     else
       this._componentsDetached <- true
-      this.propsEventRegistry.removeHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View")
+      this.propsEventRegistry.removeHandlers TerminalElementItself
       this.terminalElementEventRegistry.removeAllEventHandlers()
       let view = this._view
       this._view <- null
@@ -652,11 +673,11 @@ type TerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.view.x_delayedPos
     // TODO: too confusing here, too difficult to reason about, need to refactor
-    |> Option.iter (applyPos this.terminalElementEventRegistry (fun pos -> this._view.X <- pos))
+    |> Option.iter (this.applyPos this.propsEventRegistry this.terminalElementEventRegistry (fun view pos -> view.X <- pos))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (applyPos this.terminalElementEventRegistry (fun pos -> this._view.Y <- pos))
+    |> Option.iter (this.applyPos this.propsEventRegistry this.terminalElementEventRegistry (fun view pos -> view.Y <- pos))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
   abstract removeProps: props: Props -> unit
@@ -1108,7 +1129,7 @@ type TerminalElement(props: Props) =
     |}
 
   [<CLIEvent>]
-  member this.onDrawComplete = onDrawCompleteEvent.Publish
+  member this.onViewSet = onViewSetEvent.Publish
 
   member this.Dispose() =
 
@@ -1132,7 +1153,8 @@ type TerminalElement(props: Props) =
       c.View.Dispose()
 
     // TODO: need to be precise about this, User event will be done on the removeProps, Internal library should be removed precisely here
-    // this.eventRegistry.removeAllEventHandlers()
+    this.terminalElementEventRegistry.removeAllEventHandlers()
+    this.propsEventRegistry.removeHandlers TerminalElementItself
 
   interface IInternalTerminalElement with
     member this.initialize() = this.initialize()
@@ -1146,7 +1168,7 @@ type TerminalElement(props: Props) =
     member this.setAsChildOfParentView =
       this.setAsChildOfParentView
 
-    member this.onDrawComplete = this.onDrawComplete
+    member this.onViewSet = this.onViewSet
 
     member this.parent = this.parent
     member this.parent with set value = this.parent <- value
@@ -1154,6 +1176,7 @@ type TerminalElement(props: Props) =
     member this.Dispose() = this.Dispose()
 
     member this.detachComponents () = this.detachComponents()
+
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type OrientationInterface =

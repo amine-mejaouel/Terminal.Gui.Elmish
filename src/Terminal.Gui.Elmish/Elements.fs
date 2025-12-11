@@ -148,9 +148,7 @@ type TerminalElement(props: Props) =
 
   member val private _componentsDetached: bool = false with get, set
 
-  member this.getView() = this.elementData.View
-
-  member this.setView(view: View) =
+  member private this.setView(view: View) =
     if (this.elementData.View <> null) then
       failwith $"{this.name}: View has already been set."
     else if this._componentsDetached then

@@ -5,6 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="TreeDiffUpdateTesterComponent.fs" />
     <Compile Include="SampleComponent.fs" />
     <Compile Include="Program.fs" />
     <Content Include="paket.references" />

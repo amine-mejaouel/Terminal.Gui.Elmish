@@ -317,7 +317,6 @@ type internal PropsEventRegistry() =
 type internal Props(?initialProps) =
 
   member val dict = defaultArg initialProps (Dictionary<IPropKey, _>()) with get
-  member val eventRegistry = PropsEventRegistry()
 
   member this.add<'a>(k: IPropKey<'a>, v: 'a) = this.dict.Add(k, v :> obj)
   member this.addNonTyped<'a>(k: IPropKey, v: 'a) = this.dict.Add(k, v :> obj)
@@ -336,30 +335,6 @@ type internal Props(?initialProps) =
     match this.dict.TryGetValue key with
     | true, v -> v |> unbox<'a> |> Some
     | _, _ -> None
-
-  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
-
-    this.tryRemoveEventHandler k
-    
-    this.tryFind k
-    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.tryFind k
-    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.tryFind k
-    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
-
-  member this.tryRemoveEventHandler (k: IPropKey) =
-    this.eventRegistry.removeHandler k
 
 module internal Props =
   let merge (props': Props) (props'': Props) =
@@ -430,6 +405,43 @@ module internal Props =
 
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 
+/// ElementData contains the Props, EventRegistry, and View for a terminal element
+type internal ElementData = {
+  Props: Props
+  EventRegistry: PropsEventRegistry
+  mutable View: View
+}
+with
+  static member create(props: Props) = {
+    Props = props
+    EventRegistry = PropsEventRegistry()
+    View = null
+  }
+
+  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+
+    this.tryRemoveEventHandler k
+    
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.tryRemoveEventHandler (k: IPropKey) =
+    this.EventRegistry.removeHandler k
+
 [<AutoOpen>]
 module Element =
 
@@ -446,6 +458,7 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
+    abstract isElmishComponent: bool with get, set
     abstract detachComponents: unit -> {| View: View; Children: List<IInternalTerminalElement>; Props: Props |}
 
   type IMenuElement =
@@ -486,6 +499,9 @@ module Element =
 
       member this.parent = element.parent
       member this.parent with set value = element.parent <- value
+
+      member this.isElmishComponent = element.isElmishComponent
+      member this.isElmishComponent with set value = element.isElmishComponent <- value
 
       member this.Dispose() = element.Dispose()
 

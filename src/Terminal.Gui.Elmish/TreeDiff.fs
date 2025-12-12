@@ -116,6 +116,9 @@ module internal Differ =
           |> Seq.distinct
           |> Seq.toList
 
+        let prevParent =
+          prevElementData.View
+
         allTypes
         |> List.iter (fun et ->
           let rootElements =
@@ -141,7 +144,7 @@ module internal Differ =
                   prevElementData.View.CanFocus <- true
 
                 let newElem =
-                  ne.initializeTree (Some prevElementData.View)
+                  ne.initializeTree (Some prevParent)
 
                 newElem
             )

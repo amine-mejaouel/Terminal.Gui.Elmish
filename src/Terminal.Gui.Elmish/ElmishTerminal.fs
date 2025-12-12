@@ -192,15 +192,14 @@ module ElmishTerminal =
   let runComponent (ElmishTerminalProgram program) : ITerminalElement =
 
     let waitForView = TaskCompletionSource()
-    let mutable view: ITerminalElement = Unchecked.defaultof<_>
+    let mutable view: IInternalTerminalElement = Unchecked.defaultof<_>
 
     let runComponent (model: InternalModel<_>) =
       let start dispatch =
         (task {
           // On program startup, Wait for the Elmish loop to take care of creating the root view.
           let! _ = model.RootView.Task
-          model.CurrentTreeState.Value.isElmishComponent <- true
-          view <- model.CurrentTreeState.Value :> ITerminalElement
+          view <- model.CurrentTreeState.Value
           waitForView.SetResult()
         }).GetAwaiter().GetResult()
 
@@ -215,4 +214,4 @@ module ElmishTerminal =
     |> Program.run
 
     waitForView.Task.GetAwaiter().GetResult()
-    view
+    new ElmishComponent_TerminalElement_Wrapper(view) :> ITerminalElement

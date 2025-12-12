@@ -35,13 +35,13 @@ let _component (set: IProps -> unit) =
   let view model dispatch =
     if model.DisplayedView = Button then
       View.button (fun p ->
-        p.text "Button"
+        p.text "Click to test changing the Terminal Element type!"
         props.y_value |> Option.iter p.y
         p.mouseClick (fun _ -> dispatch (ChangeView Label))
       )
     else
       View.label (fun p ->
-        p.text "Label"
+        p.text "Click to test changing the Terminal Element type!"
         props.y_value |> Option.iter p.y
         p.mouseClick (fun _ -> dispatch (ChangeView Button))
       )

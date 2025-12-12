@@ -429,7 +429,7 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
-    abstract isElmishComponent: bool with get, set
+    abstract isElmishComponent: bool with get
     abstract detachElementData: unit -> IElementData
     abstract elementData: IElementData with get
 
@@ -471,7 +471,6 @@ module Element =
       member this.parent with set value = element.parent <- value
 
       member this.isElmishComponent = true
-      member this.isElmishComponent with set value = element.isElmishComponent <- value
 
       member this.Dispose() = element.Dispose()
 

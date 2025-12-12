@@ -139,6 +139,7 @@ module internal Differ =
               else
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
+                // TODO: check if this is still needed
                 if prevTree.view.SubViews.Count = 0 then
                   prevTree.view.CanFocus <- true
 

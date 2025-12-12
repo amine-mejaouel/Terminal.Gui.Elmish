@@ -73,13 +73,20 @@ module internal Differ =
 
       | OnlyPropsChanged ->
 
-        let prev = prevTree.detachComponents()
+        let prev = prevTree.detachElementData()
+        let prevChildren = prevTree.detachChildren()
         prevTree.Dispose()
 
-        newTree.reuse prev.View prev.Props
+        let prevElementData = {
+          Props = prev.Props
+          EventRegistry = prev.EventRegistry
+          View = prev.View
+        }
+
+        newTree.reuse prevElementData
 
         let sortedRootChildren =
-          prev.Children
+          prevChildren
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
@@ -94,14 +101,15 @@ module internal Differ =
       // TODO: should also consider the SubElements in the pattern matching
       | ChildsDifferent ->
 
-        let prev = prevTree.detachComponents()
+        let prevElementData = prevTree.detachElementData()
+        let prevChildren = prevTree.detachChildren()
         prevTree.Dispose()
 
-        newTree.reuse prev.View prev.Props
+        newTree.reuse prevElementData
 
         let allTypes =
           seq {
-            yield! prev.Children
+            yield! prevChildren
             yield! newTree.children
           }
           |> Seq.map (fun v -> v.name)
@@ -111,7 +119,7 @@ module internal Differ =
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            prev.Children
+            prevChildren
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
@@ -129,11 +137,11 @@ module internal Differ =
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
                 // TODO: check if this is still needed
-                if prev.View.SubViews.Count = 0 then
-                  prev.View.CanFocus <- true
+                if prevElementData.View.SubViews.Count = 0 then
+                  prevElementData.View.CanFocus <- true
 
                 let newElem =
-                  ne.initializeTree (Some prev.View)
+                  ne.initializeTree (Some prevElementData.View)
 
                 newElem
             )

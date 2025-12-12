@@ -140,34 +140,47 @@ type TerminalElement(props: Props) =
 
   member val terminalElementEventRegistry = TerminalElementEventRegistry() with get, set
 
-  member val elementData = ElementData.create(props) with get, set
+  member val _elementData: ElementData = ElementData.create(props) with get, set
+  member this.elementData
+    with get() =
+      if this._elementDataDetached then
+        failwith $"{this.name}: ElementData has been detached and cannot be accessed."
+      else
+        this._elementData
+    and set value =
+      this._elementData <- value
 
   // Compatibility properties
   member this.props = this.elementData.Props
+
   member val parent: View option = None with get, set
 
-  member val private _componentsDetached: bool = false with get, set
+  member val private _elementDataDetached: bool = false with get, set
+  member val private _childrenDetached: bool = false with get, set
 
   member private this.setView(view: View) =
     if (this.elementData.View <> null) then
       failwith $"{this.name}: View has already been set."
-    else if this._componentsDetached then
-      failwith $"{this.name}: View has been detached and cannot be set again."
+    else if this._elementDataDetached then
+      failwith $"{this.name}: ElementData has been detached and cannot set View."
 
     this.elementData.View <- view
     onViewSetEvent.Trigger view
 
-  member this.detachComponents () =
-    if this._componentsDetached then
-      failwith $"{this.name}: Components have already been detached."
+  member this.detachElementData () =
+    if this._elementDataDetached then
+      failwith $"{this.name}: ElementData is already detached."
     elif this.elementData.View = null then
-      failwith $"{this.name}: Can't detach components before view is set."
+      failwith $"{this.name}: Can't detach ElementData before View is set."
     else
-      this._componentsDetached <- true
+      let result = this.elementData
+      this._elementDataDetached <- true
       this.terminalElementEventRegistry.removeAllEventHandlers()
-      let view = this.elementData.View
-      this.elementData.View <- null
-      {| View = view; Children = this.children; Props = this.props |}
+      result
+
+  member this.detachChildren () : List<IInternalTerminalElement> =
+    this._childrenDetached <- true
+    this.children
 
   member _.children: List<IInternalTerminalElement> =
     props
@@ -196,7 +209,7 @@ type TerminalElement(props: Props) =
     this.setView newView
     this.setProps props
 
-  abstract reuse: prevView: View -> prevProps: Props -> unit
+  abstract reuse: prevElementData: ElementData -> unit
 
   abstract name: string
 
@@ -767,12 +780,12 @@ type TerminalElement(props: Props) =
   /// // TODO: outdated documentation
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
-  override this.reuse prevView prevProps =
+  override this.reuse prevElementData  =
 
     // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
     // TODO: this should be tested and documented to make sure that it continues to work well in the future.
 
-    let c = this.compare prevProps
+    let c = TerminalElement.compare prevElementData.Props this.elementData.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
@@ -788,9 +801,9 @@ type TerminalElement(props: Props) =
 
     // 2 - And we add them.
     view_Props_ToReinject
-    |> Props.iter (fun kv -> this.props.addNonTyped (kv.Key, kv.Value))
+    |> Props.iter (fun kv -> this.elementData.Props.addNonTyped (kv.Key, kv.Value))
 
-    this.setView prevView
+    this.setView prevElementData.View
     this.removeProps removedProps
     this.setProps c.changedProps
 
@@ -830,8 +843,9 @@ type TerminalElement(props: Props) =
 
     isEquivalent
 
-  member this.compare
+  static member compare
     (prevProps: Props)
+    (curProps: Props)
     : {|
         changedProps: Props
         unchangedProps: Props
@@ -841,10 +855,10 @@ type TerminalElement(props: Props) =
 
     let remainingOldProps, removedProps =
       prevProps
-      |> Props.partition (fun kv -> this.props |> Props.rawKeyExists kv.Key)
+      |> Props.partition (fun kv -> curProps |> Props.rawKeyExists kv.Key)
 
     let unchangedProps, changedProps =
-      this.props
+      curProps
       |> Props.partition (fun kv ->
         match remainingOldProps |> Props.tryFindByRawKey kv.Key with
         | _ when kv.Key.key = "children" -> // Here we always consider the 'children' unchanged
@@ -872,9 +886,12 @@ type TerminalElement(props: Props) =
   member this.onViewSet = onViewSetEvent.Publish
 
   member this.Dispose() =
+    if not this._childrenDetached then
+      for child in this.children do
+        child.Dispose()
 
-    if (this.elementData.View <> null && not this._componentsDetached) then
-      let c = this.detachComponents()
+    if (not this._elementDataDetached) then
+      let c = this.detachElementData()
 
       c.View |> Interop.removeFromParent
 
@@ -885,10 +902,6 @@ type TerminalElement(props: Props) =
         |> Option.iter (fun subElement ->
           subElement.Dispose())
 
-      // Dispose Children TerminalElements
-      for child in c.Children do
-        child.Dispose()
-
       // Finally dispose the View itself
       c.View.Dispose()
 
@@ -898,7 +911,7 @@ type TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.initialize() = this.initialize()
     member this.initializeTree(parent) = this.initializeTree parent
-    member this.reuse prevView prevProps = this.reuse prevView prevProps
+    member this.reuse prevElementData = this.reuse prevElementData
     member this.view = this.elementData.View
     member this.props = this.props
     member this.name = this.name
@@ -917,7 +930,8 @@ type TerminalElement(props: Props) =
 
     member this.Dispose() = this.Dispose()
 
-    member this.detachComponents () = this.detachComponents()
+    member this.detachElementData () = this.detachElementData()
+    member this.detachChildren () = this.detachChildren()
 
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation

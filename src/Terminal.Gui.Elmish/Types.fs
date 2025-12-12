@@ -421,7 +421,7 @@ with
   member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
     this.tryRemoveEventHandler k
-    
+
     this.Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
 
@@ -450,7 +450,7 @@ module Element =
     inherit IDisposable
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
-    abstract reuse: prevView: View -> prevProps: Props -> unit
+    abstract reuse: prevElementData: ElementData -> unit
     abstract onViewSet: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get
@@ -459,7 +459,8 @@ module Element =
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
     abstract isElmishComponent: bool with get, set
-    abstract detachComponents: unit -> {| View: View; Children: List<IInternalTerminalElement>; Props: Props |}
+    abstract detachElementData: unit -> ElementData
+    abstract detachChildren: unit -> List<IInternalTerminalElement>
 
   type IMenuElement =
     inherit ITerminalElement
@@ -488,7 +489,7 @@ module Element =
     interface IInternalTerminalElement with
       member this.initialize() = () // Do nothing, initialization is handled by the Elmish component
       member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
-      member this.reuse prevView prevProps = element.reuse prevView prevProps
+      member this.reuse prevElementData = element.reuse prevElementData
       member this.view = element.view
       member this.props = element.props
       member this.name = element.name
@@ -505,4 +506,5 @@ module Element =
 
       member this.Dispose() = element.Dispose()
 
-      member this.detachComponents() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
+      member this.detachElementData() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
+      member this.detachChildren() = failwith "Operation not supported. Children handling is managed by the Elmish component itself."

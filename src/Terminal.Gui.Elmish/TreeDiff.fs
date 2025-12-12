@@ -4,13 +4,13 @@ module internal Differ =
 
   let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
     let cve1 =
-      ve1.children
+      ve1.elementData.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
 
     let cve2 =
-      ve2.children
+      ve2.elementData.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
@@ -24,13 +24,13 @@ module internal Differ =
     //let cve2 = getChildrenNames(ve2)
 
     let cve1 =
-      ve1.children
+      ve1.elementData.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
 
     let cve2 =
-      ve2.children
+      ve2.elementData.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
@@ -38,23 +38,6 @@ module internal Differ =
     if cve1 <> cve2 then Some() else None
 
   let update (prevTree: IInternalTerminalElement) (newTree: IInternalTerminalElement) =
-
-    let removeAndDisposeView
-      (removeSubViews: bool)
-      (view: Terminal.Gui.ViewBase.View, name: string, parent: Terminal.Gui.ViewBase.View option) =
-
-      parent
-      |> Option.iter (fun p -> p.Remove view |> ignore)
-
-      if not removeSubViews then
-        // Prevent disposing children views when disposing the view
-        prevTree.view.RemoveAll() |> ignore
-      // NOTE: view.Dispose() will also dispose all subviews, if not removed first
-      view.Dispose()
-
-      #if DEBUG
-      System.Diagnostics.Trace.WriteLine($"{name} removed and disposed!")
-      #endif
 
     let workStack = System.Collections.Generic.Stack<_>()
     workStack.Push((prevTree, newTree))
@@ -73,25 +56,18 @@ module internal Differ =
 
       | OnlyPropsChanged ->
 
-        let prev = prevTree.detachElementData()
-        let prevChildren = prevTree.detachChildren()
+        let prevElementData = prevTree.detachElementData()
         prevTree.Dispose()
-
-        let prevElementData = {
-          Props = prev.Props
-          EventRegistry = prev.EventRegistry
-          View = prev.View
-        }
 
         newTree.reuse prevElementData
 
         let sortedRootChildren =
-          prevChildren
+          prevElementData.children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
         let sortedNewChildren =
-          newTree.children
+          newTree.elementData.children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
@@ -102,32 +78,31 @@ module internal Differ =
       | ChildsDifferent ->
 
         let prevElementData = prevTree.detachElementData()
-        let prevChildren = prevTree.detachChildren()
         prevTree.Dispose()
 
         newTree.reuse prevElementData
 
         let allTypes =
           seq {
-            yield! prevChildren
-            yield! newTree.children
+            yield! prevElementData.children
+            yield! newTree.elementData.children
           }
           |> Seq.map (fun v -> v.name)
           |> Seq.distinct
           |> Seq.toList
 
         let prevParent =
-          prevElementData.View
+          prevElementData.view
 
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            prevChildren
+            prevElementData.children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
           let newElements =
-            newTree.children
+            newTree.elementData.children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
@@ -140,8 +115,8 @@ module internal Differ =
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
                 // TODO: check if this is still needed
-                if prevElementData.View.SubViews.Count = 0 then
-                  prevElementData.View.CanFocus <- true
+                if prevElementData.view.SubViews.Count = 0 then
+                  prevElementData.view.CanFocus <- true
 
                 let newElem =
                   ne.initializeTree (Some prevParent)

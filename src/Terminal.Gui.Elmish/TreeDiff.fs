@@ -74,7 +74,11 @@ module internal Differ =
 
       | OnlyPropsChanged ->
         if newTree.canReuseView prevTree.view prevTree.props then
-          newTree.reuse prevTree.view prevTree.props
+          match prevTree.detachView() with
+          | Ok view ->
+            newTree.reuse view prevTree.props
+          | Error errMsg ->
+            failwith errMsg
         else
           let parent =
             prevTree.view |> Interop.getParent
@@ -103,7 +107,11 @@ module internal Differ =
       | ChildsDifferent ->
         // TODO: should review the implementation of canReuse and its usefulness.
         if newTree.canReuseView prevTree.view prevTree.props then
-          newTree.reuse prevTree.view prevTree.props
+          match prevTree.detachView() with
+          | Ok view ->
+            newTree.reuse view prevTree.props
+          | Error errMsg ->
+            failwith errMsg
         else
           // TODO: should test the case of noReuse manually and with unit test if needed
           let parent =

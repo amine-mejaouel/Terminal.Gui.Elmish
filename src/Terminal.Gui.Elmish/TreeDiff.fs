@@ -110,44 +110,31 @@ module internal Differ =
 
           newTree.initializeTree parent
 
-        let sortedRootChildren =
-          prevTree.children
-          |> Seq.toList
-          |> List.sortBy (fun v -> v.name)
-
-        let sortedNewChildren =
-          newTree.children
-          |> Seq.toList
-          |> List.sortBy (fun v -> v.name)
-
-        let groupedRootType =
-          sortedRootChildren
-          |> List.map (fun v -> v.name)
-          |> List.distinct
-
-        let groupedNewType =
-          sortedNewChildren
-          |> List.map (fun v -> v.name)
-          |> List.distinct
-
         let allTypes =
-          groupedRootType @ groupedNewType |> List.distinct
-
+          seq {
+            yield! prevTree.children
+            yield! newTree.children
+          }
+          |> Seq.map (fun v -> v.name)
+          |> Seq.distinct
+          |> Seq.toList
 
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            sortedRootChildren
-            |> List.filter (fun e -> e.name = et)
+            prevTree.children
+            |> Seq.filter (fun e -> e.name = et)
+            |> Seq.toList
 
           let newElements =
-            sortedNewChildren
-            |> List.filter (fun e -> e.name = et)
+            newTree.children
+            |> Seq.filter (fun e -> e.name = et)
+            |> Seq.toList
 
           if (newElements.Length > rootElements.Length) then
             newElements
             |> List.iteri (fun idx ne ->
-              if (idx + 1 <= rootElements.Length) then
+              if (idx < rootElements.Length) then
                 workStack.Push(rootElements.[idx], ne)
               else
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.

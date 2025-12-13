@@ -59,6 +59,7 @@ module internal Differ =
         let prevElementData = prevTree.detachElementData()
         prevTree.Dispose()
 
+        PositionService.Current.SignalReuse prevElementData
         newTree.reuse prevElementData
 
         let sortedRootChildren =
@@ -80,6 +81,7 @@ module internal Differ =
         let prevElementData = prevTree.detachElementData()
         prevTree.Dispose()
 
+        PositionService.Current.SignalReuse prevElementData
         newTree.reuse prevElementData
 
         let allTypes =

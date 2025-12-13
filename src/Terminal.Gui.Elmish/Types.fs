@@ -417,6 +417,7 @@ module Element =
     abstract eventRegistry: PropsEventRegistry with get
     // TODO: better to have Children: List<IElementData>
     abstract children: List<IInternalTerminalElement> with get
+    abstract ViewSet: IEvent<View>
 
   and internal IInternalTerminalElement =
     inherit ITerminalElement
@@ -424,7 +425,6 @@ module Element =
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
     abstract reuse: prevElementData: IElementData -> unit
-    abstract onViewSet: IEvent<View>
     abstract view: View with get
     abstract name: string
     abstract setAsChildOfParentView: bool
@@ -465,7 +465,6 @@ module Element =
       member this.name = element.name
       // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
       member this.setAsChildOfParentView = element.setAsChildOfParentView
-      member this.onViewSet = element.onViewSet
 
       member this.parent = element.parent
       member this.parent with set value = element.parent <- value
@@ -475,4 +474,5 @@ module Element =
       member this.Dispose() = element.Dispose()
 
       member this.detachElementData() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
-      member this.elementData = failwith "Operation not supported. ElementData handling is managed by the Elmish component itself."
+      // TODO: should provide a special ElementData that hides children and other Elmish component specific stuff
+      member this.elementData =  element.elementData

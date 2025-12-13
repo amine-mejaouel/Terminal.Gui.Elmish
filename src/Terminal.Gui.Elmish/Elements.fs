@@ -9,17 +9,13 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 /// ElementData contains the Props, EventRegistry, and View for a terminal element
-type internal ElementData = {
-  Props: Props
-  EventRegistry: PropsEventRegistry
-  mutable View: View
-}
-with
-  static member create(props: Props) = {
-    Props = props
-    EventRegistry = PropsEventRegistry()
-    View = null
-  }
+type internal ElementData(props) =
+
+  member val Props: Props = props with get, set
+  member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
+  member val View: View = null with get, set
+
+  static member create(props: Props) = ElementData(props)
 
   member this.Children =
     this.Props
@@ -49,13 +45,21 @@ with
   member this.tryRemoveEventHandler (k: IPropKey) =
     this.EventRegistry.removeHandler k
 
+  member this.ViewSetEvent = Event<View>()
+  member this.ViewSet = this.ViewSetEvent.Publish
+
   interface IElementData with
     member this.props = this.Props
     member this.eventRegistry = this.EventRegistry
     member this.view
       with get() = this.View
-      and set value = this.View <- value
+      and set value =
+        if (this.View <> null) then
+          failwith $"View has already been set."
+        this.View <- value
+        this.ViewSetEvent.Trigger value
     member this.children = this.Children
+    member this.ViewSet = this.ViewSet
 
 type TreeNode = {
   TerminalElement: IInternalTerminalElement
@@ -105,22 +109,6 @@ type SubElementPropKey<'a> =
       | SingleElementKey _ -> true
       | MultiElementKey _ -> false
 
-
-type TerminalElementEventRegistry() =
-
-  let removeHandlerRepository = List<unit -> unit>()
-
-  member this.addEventHandler(event: IEvent<'TEventArgs>, action: 'TEventArgs -> unit) =
-    let handler = Handler<'TEventArgs>(fun _ args -> action args)
-    event.AddHandler(handler)
-
-    removeHandlerRepository.Add(fun () -> event.RemoveHandler(handler))
-
-  member this.removeAllEventHandlers() =
-    removeHandlerRepository
-    |> Seq.iter (fun removeHandler -> removeHandler ())
-    removeHandlerRepository.Clear()
-
 [<AbstractClass>]
 type TerminalElement(initialProps: Props) =
 
@@ -149,50 +137,6 @@ type TerminalElement(initialProps: Props) =
 
       traverseTree (childNodes @ remainingNodes) traverse
 
-  let onViewSetEvent = Event<View>()
-
-  // TODO: relative position should be cleared from the props in between elmish loop iteration
-  // TODO: cause, they are capturing view but view are being reused and they might not be reused for the same targeted element.
-  member this.applyPos (propsEventRegistry: PropsEventRegistry) (eventRegistry: TerminalElementEventRegistry) (apply: View -> Pos -> unit) targetPos =
-
-    // Avoid capturing 'this' in the closure
-    let thisView = this.elementData.View
-
-    let onViewSetOnTerminalElement (terminal: ITerminalElement) applyPos =
-      let onViewSet (otherView: View) (applyPos: View -> View -> unit) =
-
-        propsEventRegistry.setEventHandler (PKey.view.drawComplete, otherView.DrawComplete, fun x -> applyPos thisView otherView)
-
-      let terminalElement = terminal :?> IInternalTerminalElement
-      if (terminalElement.view <> null) then
-        onViewSet terminalElement.view applyPos
-      else
-        eventRegistry.addEventHandler ((terminal :?> IInternalTerminalElement).onViewSet, fun view -> onViewSet view applyPos)
-
-
-    match targetPos with
-    | TPos.X te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.X(otherView)))
-    | TPos.Y te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Y(otherView)))
-    | TPos.Top te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Top(otherView)))
-    | TPos.Bottom te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Bottom(otherView)))
-    | TPos.Left te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Left(otherView)))
-    | TPos.Right te ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Right(otherView)))
-    | TPos.Func (func, te) ->
-      onViewSetOnTerminalElement te (fun thisView otherView -> apply thisView (Pos.Func(func, otherView)))
-    | TPos.Absolute position -> apply this.elementData.View (Pos.Absolute(position))
-    | TPos.AnchorEnd offset -> apply this.elementData.View (Pos.AnchorEnd(offset |> Option.defaultValue 0))
-    | TPos.Center -> apply this.elementData.View (Pos.Center())
-    | TPos.Percent percent -> apply this.elementData.View (Pos.Percent(percent))
-    | TPos.Align (alignment, modes, groupId) -> apply this.elementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
-
-  member val terminalElementEventRegistry = TerminalElementEventRegistry() with get, set
-
   member val _elementData: ElementData = ElementData.create initialProps with get, set
   member this.elementData
     with get() =
@@ -209,15 +153,6 @@ type TerminalElement(initialProps: Props) =
   member val private _elementDataDetached: bool = false with get, set
   member val private _childrenDetached: bool = false with get, set
 
-  member private this.setView(view: View) =
-    if (this.elementData.View <> null) then
-      failwith $"{this.name}: View has already been set."
-    else if this._elementDataDetached then
-      failwith $"{this.name}: ElementData has been detached and cannot set View."
-
-    this.elementData.View <- view
-    onViewSetEvent.Trigger view
-
   member this.detachElementData () : IElementData =
     if this._elementDataDetached then
       failwith $"{this.name}: ElementData is already detached."
@@ -226,7 +161,6 @@ type TerminalElement(initialProps: Props) =
     else
       let result = this.elementData
       this._elementDataDetached <- true
-      this.terminalElementEventRegistry.removeAllEventHandlers()
       result
 
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
@@ -247,7 +181,7 @@ type TerminalElement(initialProps: Props) =
     this.initializeSubElements newView
     |> Seq.iter this.elementData.Props.addNonTyped
 
-    this.setView newView
+    this.elementData.View <- newView
     this.setProps this.elementData.Props
 
   abstract reuse: prevElementData: IElementData -> unit
@@ -554,11 +488,11 @@ type TerminalElement(initialProps: Props) =
     props
     |> Props.tryFind PKey.view.x_delayedPos
     // TODO: too confusing here, too difficult to reason about, need to refactor
-    |> Option.iter (this.applyPos this.elementData.EventRegistry this.terminalElementEventRegistry (fun view pos -> view.X <- pos))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(this.elementData, tPos, (fun view pos -> view.X <- pos)))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (this.applyPos this.elementData.EventRegistry this.terminalElementEventRegistry (fun view pos -> view.Y <- pos))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(this.elementData, tPos, (fun view pos -> view.Y <- pos)))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
   abstract removeProps: props: Props -> unit
@@ -826,6 +760,9 @@ type TerminalElement(initialProps: Props) =
     // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
     // TODO: this should be tested and documented to make sure that it continues to work well in the future.
 
+    this.elementData.View <- prevElementData.view
+    this.elementData.EventRegistry <- prevElementData.eventRegistry
+
     let c = TerminalElement.compare prevElementData.props this.elementData.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
@@ -844,7 +781,6 @@ type TerminalElement(initialProps: Props) =
     view_Props_ToReinject
     |> Props.iter (fun kv -> this.elementData.Props.addNonTyped (kv.Key, kv.Value))
 
-    this.setView prevElementData.view
     this.removeProps removedProps
     this.setProps c.changedProps
 
@@ -923,9 +859,6 @@ type TerminalElement(initialProps: Props) =
       removedProps = removedProps
     |}
 
-  [<CLIEvent>]
-  member this.onViewSet = onViewSetEvent.Publish
-
   member this.Dispose() =
     if (not this._elementDataDetached) then
       let c = this.detachElementData()
@@ -942,11 +875,9 @@ type TerminalElement(initialProps: Props) =
       for child in c.children do
         child.Dispose()
 
+      PositionService.Current.SignalDispose(c)
       // Finally dispose the View itself
       c.view.Dispose()
-
-    // TODO: need to be precise about this, User event will be done on the removeProps, Internal library should be removed precisely here
-    this.terminalElementEventRegistry.removeAllEventHandlers()
 
   interface IInternalTerminalElement with
     member this.initialize() = this.initialize()
@@ -957,8 +888,6 @@ type TerminalElement(initialProps: Props) =
 
     member this.setAsChildOfParentView =
       this.setAsChildOfParentView
-
-    member this.onViewSet = this.onViewSet
 
     member this.parent = this.parent
     member this.parent with set value = this.parent <- value

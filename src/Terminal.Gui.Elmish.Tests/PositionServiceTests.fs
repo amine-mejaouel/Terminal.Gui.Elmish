@@ -9,6 +9,10 @@ open Terminal.Gui.Views
 open Terminal.Gui.Elmish
 open Terminal.Gui.Elmish.Elements
 
+// Type aliases for complex generic types
+type private RemoveHandlerRepo = Dictionary<IElementData * IElementData, List<unit -> unit>>
+type private IndexedRemoveHandlerRepo = Dictionary<IElementData, HashSet<IElementData * IElementData>>
+
 /// Helper to get private/internal properties using reflection
 let private getPrivateProperty<'T> (target: obj) (propertyName: string) : 'T =
     let targetType = target.GetType()
@@ -17,12 +21,32 @@ let private getPrivateProperty<'T> (target: obj) (propertyName: string) : 'T =
         failwith $"Property '{propertyName}' not found on {targetType.FullName}"
     prop.GetValue(target) :?> 'T
 
+/// Helper to create a minimal IInternalTerminalElement for testing
+let private createTestTerminalElement (elementData: ElementData) (view: ViewBase.View) =
+    let mutable parentValue = None
+    {
+        new IInternalTerminalElement with
+            member _.elementData = elementData :> IElementData
+            member _.view = view
+            member _.name = "test"
+            member _.isElmishComponent = false
+            member _.reuse(_) = ()
+            member _.detachElementData() = elementData :> IElementData
+            member _.Dispose() = ()
+            member _.initialize() = ()
+            member _.initializeTree(_) = ()
+            member _.setAsChildOfParentView = false
+            member _.parent 
+                with get() = parentValue
+                and set(value) = parentValue <- value
+    }
+
 [<SetUp>]
 let Setup() =
     // Clear the PositionService singleton state before each test
     let positionService = PositionService.Current
-    let removeHandlerRepo = getPrivateProperty<Dictionary<IElementData * IElementData, List<unit -> unit>>> positionService "RemoveHandlerRepository"
-    let indexedRemoveHandler = getPrivateProperty<Dictionary<IElementData, HashSet<IElementData * IElementData>>> positionService "IndexedRemoveHandler"
+    let removeHandlerRepo = getPrivateProperty<RemoveHandlerRepo> positionService "RemoveHandlerRepository"
+    let indexedRemoveHandler = getPrivateProperty<IndexedRemoveHandlerRepo> positionService "IndexedRemoveHandler"
     
     removeHandlerRepo.Clear()
     indexedRemoveHandler.Clear()
@@ -46,8 +70,8 @@ let ``SignalReuse removes handlers from both internal dictionaries`` () =
     elementData2.View <- view2
     
     // Use reflection to manually populate the dictionaries to simulate ApplyPos behavior
-    let removeHandlerRepo = getPrivateProperty<Dictionary<IElementData * IElementData, List<unit -> unit>>> positionService "RemoveHandlerRepository"
-    let indexedRemoveHandler = getPrivateProperty<Dictionary<IElementData, HashSet<IElementData * IElementData>>> positionService "IndexedRemoveHandler"
+    let removeHandlerRepo = getPrivateProperty<RemoveHandlerRepo> positionService "RemoveHandlerRepository"
+    let indexedRemoveHandler = getPrivateProperty<IndexedRemoveHandlerRepo> positionService "IndexedRemoveHandler"
     
     // Add a dummy handler to RemoveHandlerRepository
     let key = (elementData1 :> IElementData, elementData2 :> IElementData)
@@ -96,31 +120,15 @@ let ``SignalReuse with ApplyPos - verify handler cleanup after relative position
     elementData2.View <- view2
     
     // Create a terminal element to use in TPos (minimal implementation for testing)
-    let mutable parentValue = None
-    let terminalElement = {
-        new IInternalTerminalElement with
-            member _.elementData = elementData2 :> IElementData
-            member _.view = view2
-            member _.name = "test"
-            member _.isElmishComponent = false
-            member _.reuse(_) = ()
-            member _.detachElementData() = elementData2 :> IElementData
-            member _.Dispose() = ()
-            member _.initialize() = ()
-            member _.initializeTree(_) = ()
-            member _.setAsChildOfParentView = false
-            member _.parent 
-                with get() = parentValue
-                and set(value) = parentValue <- value
-    }
+    let terminalElement = createTestTerminalElement elementData2 view2
     
     // Apply a relative position (this should register handlers)
     let targetPos = TPos.X terminalElement
     positionService.ApplyPos(elementData1 :> IElementData, targetPos, fun v p -> v.X <- p)
     
     // Verify handlers were registered
-    let removeHandlerRepo = getPrivateProperty<Dictionary<IElementData * IElementData, List<unit -> unit>>> positionService "RemoveHandlerRepository"
-    let indexedRemoveHandler = getPrivateProperty<Dictionary<IElementData, HashSet<IElementData * IElementData>>> positionService "IndexedRemoveHandler"
+    let removeHandlerRepo = getPrivateProperty<RemoveHandlerRepo> positionService "RemoveHandlerRepository"
+    let indexedRemoveHandler = getPrivateProperty<IndexedRemoveHandlerRepo> positionService "IndexedRemoveHandler"
     
     let initialRemoveHandlerCount = removeHandlerRepo.Count
     let initialIndexedHandlerCount = indexedRemoveHandler.Count
@@ -155,8 +163,8 @@ let ``Multiple SignalReuse calls handle empty dictionaries gracefully`` () =
     )
     
     // Verify dictionaries remain empty
-    let removeHandlerRepo = getPrivateProperty<Dictionary<IElementData * IElementData, List<unit -> unit>>> positionService "RemoveHandlerRepository"
-    let indexedRemoveHandler = getPrivateProperty<Dictionary<IElementData, HashSet<IElementData * IElementData>>> positionService "IndexedRemoveHandler"
+    let removeHandlerRepo = getPrivateProperty<RemoveHandlerRepo> positionService "RemoveHandlerRepository"
+    let indexedRemoveHandler = getPrivateProperty<IndexedRemoveHandlerRepo> positionService "IndexedRemoveHandler"
     
     Assert.That(removeHandlerRepo.Count, Is.EqualTo(0))
     Assert.That(indexedRemoveHandler.Count, Is.EqualTo(0))

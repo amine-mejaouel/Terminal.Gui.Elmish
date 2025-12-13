@@ -1024,6 +1024,15 @@ type TerminalElement(props: Props) =
     |> Props.tryFind PKey.view.visibleChanging
     |> Option.iter (fun _ -> this.propsEventRegistry.removeHandler (PKey.view.visibleChanging, LibraryUser))
 
+    // Custom Props
+    props
+    |> Props.tryFind PKey.view.x_delayedPos
+    |> Option.iter (fun _ -> this._view.X <- Pos.Absolute(0))
+
+    props
+    |> Props.tryFind PKey.view.y_delayedPos
+    |> Option.iter (fun _ -> this._view.Y <- Pos.Absolute(0))
+
   /// Reuses:
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.

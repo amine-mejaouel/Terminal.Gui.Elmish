@@ -3,9 +3,59 @@ module internal Terminal.Gui.Elmish.Elements
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
+open System.Collections.Specialized
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
+
+/// ElementData contains the Props, EventRegistry, and View for a terminal element
+type internal ElementData = {
+  Props: Props
+  EventRegistry: PropsEventRegistry
+  mutable View: View
+}
+with
+  static member create(props: Props) = {
+    Props = props
+    EventRegistry = PropsEventRegistry()
+    View = null
+  }
+
+  member this.Children =
+    this.Props
+    |> Props.tryFindWithDefault PKey.view.children (List<_>())
+
+  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.tryRemoveEventHandler (k: IPropKey) =
+    this.EventRegistry.removeHandler k
+
+  interface IElementData with
+    member this.props = this.Props
+    member this.eventRegistry = this.EventRegistry
+    member this.view
+      with get() = this.View
+      and set value = this.View <- value
+    member this.children = this.Children
 
 type TreeNode = {
   TerminalElement: IInternalTerminalElement
@@ -72,7 +122,7 @@ type TerminalElementEventRegistry() =
     removeHandlerRepository.Clear()
 
 [<AbstractClass>]
-type TerminalElement(props: Props) =
+type TerminalElement(initialProps: Props) =
 
   let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
 
@@ -87,12 +137,15 @@ type TerminalElement(props: Props) =
       traverse curNode
 
       let childNodes =
-        curNode.TerminalElement.children
-        |> Seq.map (fun e -> {
-          TerminalElement = e
-          Parent = Some curNode.TerminalElement.view
-        })
-        |> List.ofSeq
+        match curNode.TerminalElement.isElmishComponent with
+        | true -> []
+        | false ->
+          curNode.TerminalElement.elementData.children
+          |> Seq.map (fun e -> {
+            TerminalElement = e
+            Parent = Some curNode.TerminalElement.view
+          })
+          |> List.ofSeq
 
       traverseTree (childNodes @ remainingNodes) traverse
 
@@ -140,7 +193,7 @@ type TerminalElement(props: Props) =
 
   member val terminalElementEventRegistry = TerminalElementEventRegistry() with get, set
 
-  member val _elementData: ElementData = ElementData.create(props) with get, set
+  member val _elementData: ElementData = ElementData.create initialProps with get, set
   member this.elementData
     with get() =
       if this._elementDataDetached then
@@ -151,8 +204,6 @@ type TerminalElement(props: Props) =
       this._elementData <- value
 
   // Compatibility properties
-  member this.props = this.elementData.Props
-
   member val parent: View option = None with get, set
 
   member val private _elementDataDetached: bool = false with get, set
@@ -167,7 +218,7 @@ type TerminalElement(props: Props) =
     this.elementData.View <- view
     onViewSetEvent.Trigger view
 
-  member this.detachElementData () =
+  member this.detachElementData () : IElementData =
     if this._elementDataDetached then
       failwith $"{this.name}: ElementData is already detached."
     elif this.elementData.View = null then
@@ -177,14 +228,6 @@ type TerminalElement(props: Props) =
       this._elementDataDetached <- true
       this.terminalElementEventRegistry.removeAllEventHandlers()
       result
-
-  member this.detachChildren () : List<IInternalTerminalElement> =
-    this._childrenDetached <- true
-    this.children
-
-  member _.children: List<IInternalTerminalElement> =
-    props
-    |> Props.tryFindWithDefault PKey.view.children (List<_>())
 
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
   default _.SubElements_PropKeys = []
@@ -204,12 +247,12 @@ type TerminalElement(props: Props) =
     let newView = this.newView ()
 
     this.initializeSubElements newView
-    |> Seq.iter props.addNonTyped
+    |> Seq.iter this.elementData.Props.addNonTyped
 
     this.setView newView
-    this.setProps props
+    this.setProps this.elementData.Props
 
-  abstract reuse: prevElementData: ElementData -> unit
+  abstract reuse: prevElementData: IElementData -> unit
 
   abstract name: string
 
@@ -237,7 +280,7 @@ type TerminalElement(props: Props) =
   member this.initializeSubElements parent : (IPropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
-        match props |> Props.tryFindByRawKey<obj> x with
+        match this.elementData.Props |> Props.tryFindByRawKey<obj> x with
 
         | None -> ()
 
@@ -785,7 +828,7 @@ type TerminalElement(props: Props) =
     // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
     // TODO: this should be tested and documented to make sure that it continues to work well in the future.
 
-    let c = TerminalElement.compare prevElementData.Props this.elementData.Props
+    let c = TerminalElement.compare prevElementData.props this.elementData.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
@@ -803,7 +846,7 @@ type TerminalElement(props: Props) =
     view_Props_ToReinject
     |> Props.iter (fun kv -> this.elementData.Props.addNonTyped (kv.Key, kv.Value))
 
-    this.setView prevElementData.View
+    this.setView prevElementData.view
     this.removeProps removedProps
     this.setProps c.changedProps
 
@@ -812,7 +855,7 @@ type TerminalElement(props: Props) =
     let mutable isEquivalent = true
 
     let mutable enumerator =
-      this.props.dict.GetEnumerator()
+      this.elementData.Props.dict.GetEnumerator()
 
     while isEquivalent && enumerator.MoveNext() do
       let kv = enumerator.Current
@@ -826,7 +869,7 @@ type TerminalElement(props: Props) =
           kv.Value :?> TerminalElement
 
         let otherElement =
-          other.props
+          other.elementData.Props
           |> Props.tryFindByRawKey kv.Key
           |> Option.map (fun (x: obj) -> x :?> TerminalElement)
 
@@ -837,7 +880,7 @@ type TerminalElement(props: Props) =
         let curElement = kv.Value
 
         let otherElement =
-          other.props |> Props.tryFindByRawKey kv.Key
+          other.elementData.Props |> Props.tryFindByRawKey kv.Key
 
         isEquivalent <- curElement = otherElement
 
@@ -886,24 +929,23 @@ type TerminalElement(props: Props) =
   member this.onViewSet = onViewSetEvent.Publish
 
   member this.Dispose() =
-    if not this._childrenDetached then
-      for child in this.children do
-        child.Dispose()
-
     if (not this._elementDataDetached) then
       let c = this.detachElementData()
 
-      c.View |> Interop.removeFromParent
+      c.view |> Interop.removeFromParent
 
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
-        c.Props
+        c.props
         |> Props.tryFind key
         |> Option.iter (fun subElement ->
           subElement.Dispose())
 
+      for child in c.children do
+        child.Dispose()
+
       // Finally dispose the View itself
-      c.View.Dispose()
+      c.view.Dispose()
 
     // TODO: need to be precise about this, User event will be done on the removeProps, Internal library should be removed precisely here
     this.terminalElementEventRegistry.removeAllEventHandlers()
@@ -913,9 +955,7 @@ type TerminalElement(props: Props) =
     member this.initializeTree(parent) = this.initializeTree parent
     member this.reuse prevElementData = this.reuse prevElementData
     member this.view = this.elementData.View
-    member this.props = this.props
     member this.name = this.name
-    member this.children = this.children
 
     member this.setAsChildOfParentView =
       this.setAsChildOfParentView
@@ -931,7 +971,7 @@ type TerminalElement(props: Props) =
     member this.Dispose() = this.Dispose()
 
     member this.detachElementData () = this.detachElementData()
-    member this.detachChildren () = this.detachChildren()
+    member this.elementData = this.elementData
 
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation

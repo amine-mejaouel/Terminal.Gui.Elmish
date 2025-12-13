@@ -8,9 +8,9 @@ type menuBarItemMacros internal (props: menuBarItemProps) =
       props.props.getOrInit PKey.menuBarItem.popoverMenu_element (fun () -> new PopoverMenuElement(Props())) :?> PopoverMenuElement
 
     let menu =
-      popoverMenu.props.getOrInit PKey.popoverMenu.root_element (fun () -> new MenuElement(Props())) :?> MenuElement
+      popoverMenu.elementData.Props.getOrInit PKey.popoverMenu.root_element (fun () -> new MenuElement(Props())) :?> MenuElement
 
-    menu.props.add (
+    menu.elementData.Props.add (
       PKey.menu.children,
       System.Collections.Generic.List<_>(
         value

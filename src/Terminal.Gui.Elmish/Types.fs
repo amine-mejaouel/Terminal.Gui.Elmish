@@ -408,62 +408,30 @@ module internal Props =
 
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 
-/// ElementData contains the Props, EventRegistry, and View for a terminal element
-type internal ElementData = {
-  Props: Props
-  EventRegistry: PropsEventRegistry
-  mutable View: View
-}
-with
-  static member create(props: Props) = {
-    Props = props
-    EventRegistry = PropsEventRegistry()
-    View = null
-  }
-
-  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.tryRemoveEventHandler (k: IPropKey) =
-    this.EventRegistry.removeHandler k
-
 [<AutoOpen>]
 module Element =
 
-  type internal IInternalTerminalElement =
+  type internal IElementData =
+    abstract props: Props with get
+    abstract view: View with get, set
+    abstract eventRegistry: PropsEventRegistry with get
+    // TODO: better to have Children: List<IElementData>
+    abstract children: List<IInternalTerminalElement> with get
+
+  and internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
-    abstract reuse: prevElementData: ElementData -> unit
+    abstract reuse: prevElementData: IElementData -> unit
     abstract onViewSet: IEvent<View>
-    abstract children: List<IInternalTerminalElement> with get
     abstract view: View with get
-    abstract props: Props
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
     abstract isElmishComponent: bool with get, set
-    abstract detachElementData: unit -> ElementData
-    abstract detachChildren: unit -> List<IInternalTerminalElement>
+    abstract detachElementData: unit -> IElementData
+    abstract elementData: IElementData with get
 
   type IMenuElement =
     inherit ITerminalElement
@@ -494,20 +462,18 @@ module Element =
       member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
       member this.reuse prevElementData = element.reuse prevElementData
       member this.view = element.view
-      member this.props = element.props
       member this.name = element.name
       // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
-      member this.children = new System.Collections.Generic.List<IInternalTerminalElement>()
       member this.setAsChildOfParentView = element.setAsChildOfParentView
       member this.onViewSet = element.onViewSet
 
       member this.parent = element.parent
       member this.parent with set value = element.parent <- value
 
-      member this.isElmishComponent = element.isElmishComponent
+      member this.isElmishComponent = true
       member this.isElmishComponent with set value = element.isElmishComponent <- value
 
       member this.Dispose() = element.Dispose()
 
       member this.detachElementData() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
-      member this.detachChildren() = failwith "Operation not supported. Children handling is managed by the Elmish component itself."
+      member this.elementData = failwith "Operation not supported. ElementData handling is managed by the Elmish component itself."

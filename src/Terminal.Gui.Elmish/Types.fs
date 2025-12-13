@@ -234,6 +234,8 @@ type internal Props(?initialProps) =
       this.dict[k] <- value :> obj
       value
 
+  member this.remove (k: IPropKey) = this.dict.Remove k |> ignore
+
 module internal Props =
   let merge (props': Props) (props'': Props) =
     let result = Dictionary()
@@ -311,7 +313,6 @@ module Element =
     inherit IDisposable
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
-    abstract canReuseView: prevView: View -> prevProps: Props -> bool
     abstract reuse: prevView: View -> prevProps: Props -> unit
     abstract onDrawComplete: IEvent<View>
     abstract children: List<IInternalTerminalElement> with get
@@ -320,7 +321,7 @@ module Element =
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
-    abstract detachView: unit -> Result<View, string>
+    abstract detachComponents: unit -> {| View: View; Children: List<IInternalTerminalElement>; Props: Props |}
 
   type IMenuElement =
     inherit ITerminalElement
@@ -349,7 +350,6 @@ module Element =
     interface IInternalTerminalElement with
       member this.initialize() = () // Do nothing, initialization is handled by the Elmish component
       member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
-      member this.canReuseView prevView prevProps = element.canReuseView prevView prevProps
       member this.reuse prevView prevProps = element.reuse prevView prevProps
       member this.view = element.view
       member this.props = element.props
@@ -364,4 +364,4 @@ module Element =
 
       member this.Dispose() = element.Dispose()
 
-      member this.detachView() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
+      member this.detachComponents() = failwith "Operation not supported. View handling is managed by the Elmish component itself."

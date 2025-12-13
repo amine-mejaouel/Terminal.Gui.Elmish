@@ -17,8 +17,7 @@ type private IndexedRemoveHandlerRepo = Dictionary<IElementData, HashSet<IElemen
 let private getPrivateProperty<'T> (target: obj) (propertyName: string) : 'T =
     let targetType = target.GetType()
     let prop = targetType.GetProperty(propertyName, BindingFlags.NonPublic ||| BindingFlags.Instance ||| BindingFlags.Public)
-    if prop = null then
-        failwith $"Property '{propertyName}' not found on {targetType.FullName}"
+    Assert.That(prop, Is.Not.Null, $"Property '{propertyName}' not found on {targetType.FullName}")
     prop.GetValue(target) :?> 'T
 
 /// Helper to create a minimal IInternalTerminalElement for testing

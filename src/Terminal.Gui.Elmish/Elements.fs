@@ -237,8 +237,6 @@ type TerminalElement(initialProps: Props) =
   abstract setAsChildOfParentView: bool
   default _.setAsChildOfParentView = true
 
-  member val isElmishComponent: bool = false with get, set
-
   member this.initialize() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
@@ -965,8 +963,7 @@ type TerminalElement(initialProps: Props) =
     member this.parent = this.parent
     member this.parent with set value = this.parent <- value
 
-    member this.isElmishComponent = this.isElmishComponent
-    member this.isElmishComponent with set value = this.isElmishComponent <- value
+    member this.isElmishComponent = false
 
     member this.Dispose() = this.Dispose()
 

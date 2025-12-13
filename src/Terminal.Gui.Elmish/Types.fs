@@ -2,6 +2,7 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
+open System.Collections.Specialized
 open Terminal.Gui.ViewBase
 
 type ITerminalElement =
@@ -56,6 +57,9 @@ module internal PropKey =
 
   type IDelayedPosKey =
     inherit IPropKey<TPos>
+
+  type IEventPropKey<'a> =
+    inherit IPropKey<'a>
 
   /// Represents a property in a Terminal.Gui View
   [<CustomEquality; NoComparison>]
@@ -116,6 +120,32 @@ module internal PropKey =
     interface IViewPropKey<'a> with
       member this.key = this.key
       member this.isViewKey = true
+      member this.isSingleElementKey = false
+
+  [<CustomEquality; NoComparison>]
+  type private EventPropKey<'a> =
+    private
+    | Key of string
+    static member create<'a>(key: string) : IEventPropKey<'a> =
+      if not (key.EndsWith "_event") then
+        failwith $"Invalid key: {key}"
+      else
+        Key key
+
+    member this.key =
+      let (Key key) = this
+      key
+
+    override this.GetHashCode() = this.key.GetHashCode()
+
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
+
+    interface IEventPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
       member this.isSingleElementKey = false
 
   [<CustomEquality; NoComparison>]
@@ -214,14 +244,80 @@ module internal PropKey =
       static member singleElement key = SingleElementPropKey.create key
       static member multiElement key = MultiElementPropKey.create key
       static member simple key = SimplePropKey.create key
+      static member event key = EventPropKey.create key
       static member view key = ViewPropKey.create key
       static member delayedPos key = DelayedPosKey.create key
+
+
+type internal PropsEventRegistry() =
+
+  let eventHandlerRepository = Dictionary<IPropKey, Delegate>()
+  let removeHandlerRepository = Dictionary<IPropKey, unit -> unit>()
+
+  member private this.tryGetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey) =
+    match eventHandlerRepository.TryGetValue(pkey) with
+    | true, existingHandler ->
+      Some (existingHandler :?> 'THandler)
+    | false, _ ->
+      None
+
+  member private this.tryGetRemoveHandler (pkey: IPropKey) =
+    match removeHandlerRepository.TryGetValue(pkey) with
+    | true, existingRemover ->
+      Some existingRemover
+    | false, _ ->
+      None
+
+  member private this.registerHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
+    removeHandlerRepository[pkey] <-
+      fun () ->
+        removeHandler handler
+        // Handler will be removed from eventHandlerRepository in the `removeHandler` method
+
+  member this.removeHandler (pkey: IPropKey) =
+    match this.tryGetRemoveHandler pkey with
+    | Some removeHandler ->
+      removeHandler ()
+      removeHandlerRepository.Remove pkey |> ignore
+    | None ->
+      ()
+
+  member private this.setHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeFromEvent: 'THandler -> unit, addToEvent: 'THandler -> unit) =
+    match this.tryGetHandler<'THandler> (pkey) with
+    | Some existingHandler ->
+      removeFromEvent existingHandler
+    | None ->
+      ()
+
+    eventHandlerRepository[pkey] <- handler
+    addToEvent handler
+
+  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
+    let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+    let handler: EventHandler = EventHandler(fun sender args -> action ())
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+    let handler: EventHandler = EventHandler(fun sender args -> action args)
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.setEventHandler (pkey: IPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
+    let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
+    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
 
 
 /// Props object that is still under construction
 type internal Props(?initialProps) =
 
   member val dict = defaultArg initialProps (Dictionary<IPropKey, _>()) with get
+  member val eventRegistry = PropsEventRegistry()
 
   member this.add<'a>(k: IPropKey<'a>, v: 'a) = this.dict.Add(k, v :> obj)
   member this.addNonTyped<'a>(k: IPropKey, v: 'a) = this.dict.Add(k, v :> obj)
@@ -235,6 +331,35 @@ type internal Props(?initialProps) =
       value
 
   member this.remove (k: IPropKey) = this.dict.Remove k |> ignore
+
+  member this.tryFind (key: IPropKey<'a>) =
+    match this.dict.TryGetValue key with
+    | true, v -> v |> unbox<'a> |> Some
+    | _, _ -> None
+
+  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+
+    this.tryRemoveEventHandler k
+    
+    this.tryFind k
+    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.tryFind k
+    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.tryFind k
+    |> Option.iter (fun action -> this.eventRegistry.setEventHandler(k, event, action))
+
+  member this.tryRemoveEventHandler (k: IPropKey) =
+    this.eventRegistry.removeHandler k
 
 module internal Props =
   let merge (props': Props) (props'': Props) =

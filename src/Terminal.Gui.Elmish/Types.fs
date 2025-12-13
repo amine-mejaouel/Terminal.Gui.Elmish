@@ -271,14 +271,17 @@ type internal PropsEventRegistry() =
   member private this.registerHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
     removeHandlerRepository[pkey] <-
       fun () ->
+        // This will only remove the handler from the event, not from the repositories
         removeHandler handler
-        // Handler will be removed from eventHandlerRepository in the `removeHandler` method
+
+        // Note: The actual removal from the repositories is done in `removeHandler` method
 
   member this.removeHandler (pkey: IPropKey) =
     match this.tryGetRemoveHandler pkey with
     | Some removeHandler ->
       removeHandler ()
       removeHandlerRepository.Remove pkey |> ignore
+      eventHandlerRepository.Remove pkey |> ignore
     | None ->
       ()
 

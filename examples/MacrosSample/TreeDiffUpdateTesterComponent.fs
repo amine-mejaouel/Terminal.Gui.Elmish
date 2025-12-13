@@ -33,18 +33,35 @@ let _component (set: IProps -> unit) =
        { model with DisplayedView = view }
 
   let view model dispatch =
-    if model.DisplayedView = Button then
-      View.button (fun p ->
-        p.text "Click to test changing the Terminal Element type!"
-        props.y_value |> Option.iter p.y
-        p.mouseClick (fun _ -> dispatch (ChangeView Label))
-      )
-    else
-      View.label (fun p ->
-        p.text "Click to test changing the Terminal Element type!"
-        props.y_value |> Option.iter p.y
-        p.mouseClick (fun _ -> dispatch (ChangeView Button))
-      )
+    View.runnable (fun p ->
+      props.y_value |> Option.iter p.y
+      p.children [
+        let first =
+          if model.DisplayedView = Button then
+            View.button (fun p ->
+              p.text "Click to test changing the Terminal Element type!"
+              p.mouseClick (fun _ -> dispatch (ChangeView Label))
+            )
+          else
+            View.label (fun p ->
+              p.text "Click to test changing the Terminal Element type!"
+              p.mouseClick (fun _ -> dispatch (ChangeView Button))
+            )
+
+        let second =
+          View.label (fun p ->
+            p.text "I am a static label below the first element."
+            p.y (TPos.Bottom first))
+
+        let third =
+          View.label (fun p ->
+            p.text "I am another static label below the second element."
+            p.y (TPos.Bottom second))
+
+        first
+        second
+        third
+      ])
 
   ElmishTerminal.mkSimple init update view
   |> ElmishTerminal.runComponent

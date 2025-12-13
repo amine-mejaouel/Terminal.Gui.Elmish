@@ -127,10 +127,13 @@ type HandlerOwner =
   | LibraryItself of key: string
   | LibraryUser
 
+// TODO: break this into two classes: one for prop event handlers and one for terminal event handlers
 type EventRegistry() =
 
   let eventHandlerRepository = Dictionary<IPropKey, Dictionary<HandlerOwner, Delegate>>()
   let removeHandlerRepository: Dictionary<IPropKey, Dictionary<HandlerOwner,unit -> unit>> = Dictionary<IPropKey, Dictionary<HandlerOwner,unit -> unit>>()
+
+  let terminal_RemoveHandlers_Repository = List<unit -> unit>()
 
   member private this.tryGetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, owner: HandlerOwner) =
     match eventHandlerRepository.TryGetValue(pkey) with
@@ -202,6 +205,17 @@ type EventRegistry() =
     this.setHandler(pkey, owner, handler, event.RemoveHandler, event.AddHandler)
     this.registerHandlerRemoval(pkey, owner, handler, event.RemoveHandler)
 
+  member this.addTerminalEventHandler(event: IEvent<'TEventArgs>, action: 'TEventArgs -> unit) =
+    let handler = Handler<'TEventArgs>(fun _ args -> action args)
+    event.AddHandler(handler)
+
+    terminal_RemoveHandlers_Repository.Add(fun () -> event.RemoveHandler(handler))
+
+  member this.removeAllTerminalEventHandlers() =
+    terminal_RemoveHandlers_Repository
+    |> Seq.iter (fun removeHandler -> removeHandler ())
+    terminal_RemoveHandlers_Repository.Clear()
+
 [<AbstractClass>]
 type TerminalElement(props: Props) =
 
@@ -229,26 +243,31 @@ type TerminalElement(props: Props) =
 
   let onDrawCompleteEvent = Event<View>()
 
-  let applyPos (apply: Pos -> unit) targetPos =
+  // TODO: relative position should be cleared from the props in between elmish loop iteration
+  // TODO: cause, they are capturing view but view are being reused and they might not be reused for the same targeted element.
+  let applyPos (eventRegistry: EventRegistry) (apply: Pos -> unit) targetPos =
+    let addTerminalEventHandler (terminal: ITerminalElement) handler =
+      eventRegistry.addTerminalEventHandler ((terminal :?> IInternalTerminalElement).onDrawComplete, handler)
+
     match targetPos with
     | TPos.X te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.X(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.X(view)))
     | TPos.Y te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Y(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.Y(view)))
     | TPos.Top te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Top(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.Top(view)))
     | TPos.Bottom te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Bottom(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.Bottom(view)))
     | TPos.Left te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Left(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.Left(view)))
     | TPos.Right te ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Right(view)))
+      addTerminalEventHandler te (fun view -> apply (Pos.Right(view)))
+    | TPos.Func (func, te) ->
+      addTerminalEventHandler te (fun view -> apply (Pos.Func(func, view)))
     | TPos.Absolute position -> apply (Pos.Absolute(position))
     | TPos.AnchorEnd offset -> apply (Pos.AnchorEnd(offset |> Option.defaultValue 0))
     | TPos.Center -> apply (Pos.Center())
     | TPos.Percent percent -> apply (Pos.Percent(percent))
-    | TPos.Func (func, te) ->
-      (te :?> IInternalTerminalElement).onDrawComplete.Add(fun view -> apply (Pos.Func(func, view)))
     | TPos.Align (alignment, modes, groupId) -> apply (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member val eventRegistry = EventRegistry() with get, set
@@ -258,13 +277,14 @@ type TerminalElement(props: Props) =
 
   member val private _viewAlreadySetOnce: bool = false with get, set
   member val _view: View = null with get, set
+  member this.getView() = this._view
 
   member this.setView(view: View) =
     if this._viewAlreadySetOnce then
       failwith $"{this.name}: View has already been set once and cannot be set again."
     this._viewAlreadySetOnce <- true
     this._view <- view
-    this.eventRegistry.setPropEventHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View", this._view.DrawComplete, fun _ -> onDrawCompleteEvent.Trigger this._view)
+    this.eventRegistry.setPropEventHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View", view.DrawComplete, fun _ -> onDrawCompleteEvent.Trigger view)
 
   member this.detachView () =
     if this._view = null && this._viewAlreadySetOnce then
@@ -273,6 +293,7 @@ type TerminalElement(props: Props) =
       Error $"{this.name}: View has not been set yet."
     else
       this.eventRegistry.removeHandler(PKey.view.drawComplete, LibraryItself "TerminalElement.View")
+      this.eventRegistry.removeAllTerminalEventHandlers()
       let view = this._view
       this._view <- null
       Ok view
@@ -720,11 +741,11 @@ type TerminalElement(props: Props) =
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
-    |> Option.iter (applyPos (fun pos -> this._view.X <- pos))
+    |> Option.iter (applyPos this.eventRegistry (fun pos -> this._view.X <- pos))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (applyPos (fun pos -> this._view.Y <- pos))
+    |> Option.iter (applyPos this.eventRegistry (fun pos -> this._view.Y <- pos))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
   abstract removeProps: props: Props -> unit

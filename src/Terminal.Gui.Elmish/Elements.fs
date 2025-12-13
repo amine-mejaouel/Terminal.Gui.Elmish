@@ -11,9 +11,18 @@ open Terminal.Gui.Views
 /// ElementData contains the Props, EventRegistry, and View for a terminal element
 type internal ElementData(props) =
 
+  let viewSetEvent = Event<View>()
+  let mutable view = null
+
   member val Props: Props = props with get, set
   member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
-  member val View: View = null with get, set
+  member this.View
+    with get() = view
+    and set value =
+      if (view <> null) then
+        failwith $"View has already been set."
+      view <- value
+      viewSetEvent.Trigger value
 
   static member create(props: Props) = ElementData(props)
 
@@ -45,19 +54,14 @@ type internal ElementData(props) =
   member this.tryRemoveEventHandler (k: IPropKey) =
     this.EventRegistry.removeHandler k
 
-  member this.ViewSetEvent = Event<View>()
-  member this.ViewSet = this.ViewSetEvent.Publish
+  member val ViewSet = viewSetEvent.Publish
 
   interface IElementData with
     member this.props = this.Props
     member this.eventRegistry = this.EventRegistry
     member this.view
       with get() = this.View
-      and set value =
-        if (this.View <> null) then
-          failwith $"View has already been set."
-        this.View <- value
-        this.ViewSetEvent.Trigger value
+      and set value = this.View <- value
     member this.children = this.Children
     member this.ViewSet = this.ViewSet
 

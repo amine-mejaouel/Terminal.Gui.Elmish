@@ -310,10 +310,6 @@ type TerminalElement(initialProps: Props) =
     |> Option.iter (fun v -> this.elementData.View.MouseHeldDown <- v)
 
     props
-    |> Props.tryFind PKey.view.needsDraw
-    |> Option.iter (fun v -> this.elementData.View.NeedsDraw <- v)
-
-    props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
     |> Option.iter (fun v -> this.elementData.View.PreserveTrailingSpaces <- v)
 
@@ -566,10 +562,6 @@ type TerminalElement(initialProps: Props) =
     props
     |> Props.tryFind PKey.view.mouseHeldDown
     |> Option.iter (fun _ -> this.elementData.View.MouseHeldDown <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.view.needsDraw
-    |> Option.iter (fun _ -> this.elementData.View.NeedsDraw <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces

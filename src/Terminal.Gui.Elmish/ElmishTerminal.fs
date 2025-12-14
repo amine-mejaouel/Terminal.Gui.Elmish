@@ -1,5 +1,7 @@
 namespace Terminal.Gui.Elmish
 
+open Terminal.Gui.Views
+
 type TerminalMsg<'a> =
   | Terminate
   | Msg of 'a

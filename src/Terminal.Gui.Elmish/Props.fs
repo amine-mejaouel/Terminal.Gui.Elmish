@@ -88,9 +88,6 @@ type viewProps() =
   member this.mouseHeldDown(value: IMouseHeldDown) =
     this.props.add (PKey.view.mouseHeldDown, value)
 
-  member this.needsDraw(value: bool) =
-    this.props.add (PKey.view.needsDraw, value)
-
   member this.preserveTrailingSpaces(value: bool) =
     this.props.add (PKey.view.preserveTrailingSpaces, value)
 

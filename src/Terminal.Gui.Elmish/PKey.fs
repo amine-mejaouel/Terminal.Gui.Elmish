@@ -46,7 +46,6 @@ module internal PKey =
     member val id: ISimplePropKey<string> = PropKey.Create.simple "view.id"
     member val isInitialized: ISimplePropKey<bool> = PropKey.Create.simple "view.isInitialized"
     member val mouseHeldDown: ISimplePropKey<IMouseHeldDown> = PropKey.Create.simple "view.mouseHeldDown"
-    member val needsDraw: ISimplePropKey<bool> = PropKey.Create.simple "view.needsDraw"
     member val preserveTrailingSpaces: ISimplePropKey<bool> = PropKey.Create.simple "view.preserveTrailingSpaces"
     member val schemeName: ISimplePropKey<string> = PropKey.Create.simple "view.schemeName"
     member val shadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "view.shadowStyle"

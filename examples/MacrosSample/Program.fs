@@ -60,31 +60,6 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
         p.title "_Themes"
 
         m.menuItems [
-          View.menuItem (fun p ->
-            p.commandView (
-              View.checkBox (fun p ->
-                p.title "Force _16 Colors"
-
-                p.checkedState (
-                  if state.Application.Force16Colors then
-                    CheckState.Checked
-                  else
-                    CheckState.UnChecked
-                )
-
-                p.checkedStateChanging (fun args ->
-                  if
-                    (state.Application.Force16Colors
-                     && args.Result = CheckState.UnChecked
-                     && not state.Application.Driver.SupportsTrueColor)
-                  then
-                    args.Handled <- true
-                )
-
-                p.checkedStateChanged (fun args -> state.Application.Force16Colors <- args.Value = CheckState.Checked)
-              )
-            )
-          )
           View.menuItem (fun p -> p.commandView (View.line []))
           if ConfigurationManager.IsEnabled then
             View.menuItem (fun p ->

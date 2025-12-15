@@ -857,10 +857,13 @@ type TerminalElement(initialProps: Props) =
 
   member this.Dispose() =
     if (not this._elementDataDetached) then
+
+      // Remove any event subscriptions
+      this.removeProps this.elementData.Props
+
       let c = this.detachElementData()
 
       c.view |> Interop.removeFromParent
-
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         c.props
@@ -872,7 +875,7 @@ type TerminalElement(initialProps: Props) =
         child.Dispose()
 
       PositionService.Current.SignalDispose(c)
-      // Finally dispose the View itself
+      // Finally, dispose the View itself
       c.view.Dispose()
 
   interface IInternalTerminalElement with

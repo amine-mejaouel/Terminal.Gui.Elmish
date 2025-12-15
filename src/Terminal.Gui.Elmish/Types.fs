@@ -411,7 +411,7 @@ module internal Props =
 [<AutoOpen>]
 module Element =
 
-  type internal IElementData =
+  type internal ITerminalElementData =
     abstract props: Props with get
     abstract view: View with get, set
     abstract eventRegistry: PropsEventRegistry with get
@@ -424,14 +424,14 @@ module Element =
     inherit IDisposable
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
-    abstract reuse: prevElementData: IElementData -> unit
+    abstract reuse: prevElementData: ITerminalElementData -> unit
     abstract view: View with get
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract parent: View option with get, set
     abstract isElmishComponent: bool with get
-    abstract detachElementData: unit -> IElementData
-    abstract elementData: IElementData with get
+    abstract detachElementData: unit -> ITerminalElementData
+    abstract elementData: ITerminalElementData with get
 
   type IMenuElement =
     inherit ITerminalElement

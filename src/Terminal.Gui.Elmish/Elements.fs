@@ -56,7 +56,7 @@ type internal ElementData(props) =
 
   member val ViewSet = viewSetEvent.Publish
 
-  interface IElementData with
+  interface ITerminalElementData with
     member this.props = this.Props
     member this.eventRegistry = this.EventRegistry
     member this.view
@@ -157,7 +157,7 @@ type TerminalElement(initialProps: Props) =
   member val private _elementDataDetached: bool = false with get, set
   member val private _childrenDetached: bool = false with get, set
 
-  member this.detachElementData () : IElementData =
+  member this.detachElementData () : ITerminalElementData =
     if this._elementDataDetached then
       failwith $"{this.name}: ElementData is already detached."
     elif this.elementData.View = null then
@@ -188,7 +188,7 @@ type TerminalElement(initialProps: Props) =
     this.elementData.View <- newView
     this.setProps this.elementData.Props
 
-  abstract reuse: prevElementData: IElementData -> unit
+  abstract reuse: prevElementData: ITerminalElementData -> unit
 
   abstract name: string
 

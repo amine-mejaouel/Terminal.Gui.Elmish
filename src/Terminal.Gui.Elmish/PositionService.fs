@@ -9,10 +9,10 @@ type internal PositionService() =
   static member val Current = PositionService() with get
 
   // Key: (curElementData, relElementData) / Value: list of remove handlers
-  member val RemoveHandlerRepository = Dictionary<IElementData * IElementData, List<unit -> unit>>()
+  member val RemoveHandlerRepository = Dictionary<ITerminalElementData * ITerminalElementData, List<unit -> unit>>()
 
   // Key: IElementData / Value: set of (curElementData, relElementData) to be used to lookup in RemoveHandlerRepository
-  member val IndexedRemoveHandler = Dictionary<IElementData, HashSet<IElementData*IElementData>>()
+  member val IndexedRemoveHandler = Dictionary<ITerminalElementData, HashSet<ITerminalElementData * ITerminalElementData>>()
 
   member private this.UpdateIndex(v0, v1) =
     let indexRepo = this.IndexedRemoveHandler
@@ -22,14 +22,14 @@ type internal PositionService() =
       | true, set ->
         set.Add (v0, v1) |> ignore
       | false, _ ->
-        let set = HashSet<IElementData*IElementData>()
+        let set = HashSet<ITerminalElementData * ITerminalElementData>()
         set.Add (v0, v1) |> ignore
         indexRepo[k] <- set
 
     update v0
     update v1
 
-  member private this.SetRemoveHandler(key: IElementData * IElementData, removeHandler: unit -> unit) =
+  member private this.SetRemoveHandler(key: ITerminalElementData * ITerminalElementData, removeHandler: unit -> unit) =
     let repo = this.RemoveHandlerRepository
 
     match repo.TryGetValue(key) with
@@ -40,7 +40,7 @@ type internal PositionService() =
 
     this.UpdateIndex(key)
 
-  member private this.RemoveHandlers(key: IElementData) =
+  member private this.RemoveHandlers(key: ITerminalElementData) =
     let indexRepo = this.IndexedRemoveHandler
     let repo = this.RemoveHandlerRepository
 
@@ -56,15 +56,15 @@ type internal PositionService() =
       indexRepo.Remove(key) |> ignore
     | false, _ -> ()
 
-  member private this.ApplyRelativePos(cur: IElementData, rel: IElementData, apply: View -> View -> unit) =
+  member private this.ApplyRelativePos(cur: ITerminalElementData, rel: ITerminalElementData, apply: View -> View -> unit) =
     let handler = EventHandler<DrawEventArgs>(fun _ _ -> apply cur.view rel.view)
     rel.view.DrawComplete.AddHandler handler
     this.SetRemoveHandler((cur, rel), fun () -> rel.view.DrawComplete.RemoveHandler handler)
 
-  member this.ApplyPos(curElementData: IElementData, targetPos: TPos, apply: View -> Pos -> unit) =
+  member this.ApplyPos(curElementData: ITerminalElementData, targetPos: TPos, apply: View -> Pos -> unit) =
 
-    let onViewSetOnElementData (relativeElementData: IElementData) applyPos =
-      let differApplyRelativePos (relativeElementData: IElementData) (applyPos: View -> View -> unit) =
+    let onViewSetOnElementData (relativeElementData: ITerminalElementData) applyPos =
+      let differApplyRelativePos (relativeElementData: ITerminalElementData) (applyPos: View -> View -> unit) =
         let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeElementData, applyPos))
         relativeElementData.ViewSet.AddHandler handler
         this.SetRemoveHandler((curElementData, relativeElementData), fun () -> relativeElementData.ViewSet.RemoveHandler handler)
@@ -97,8 +97,8 @@ type internal PositionService() =
     | TPos.Percent percent -> apply curElementData.view (Pos.Percent(percent))
     | TPos.Align (alignment, modes, groupId) -> apply curElementData.view (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
-  member this.SignalReuse(elementData: IElementData) =
+  member this.SignalReuse(elementData: ITerminalElementData) =
     this.RemoveHandlers elementData
 
-  member this.SignalDispose(elementData: IElementData) =
+  member this.SignalDispose(elementData: ITerminalElementData) =
     this.RemoveHandlers elementData

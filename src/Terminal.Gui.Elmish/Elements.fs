@@ -9,10 +9,11 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 /// ElementData contains the Props, EventRegistry, and View for a terminal element
-type internal ElementData(props) =
+type internal ElementData(props, ownerElement: IInternalTerminalElement option) =
 
   let viewSetEvent = Event<View>()
   let mutable view = null
+  let mutable owner = ownerElement
 
   member val Props: Props = props with get, set
   member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
@@ -24,11 +25,23 @@ type internal ElementData(props) =
       view <- value
       viewSetEvent.Trigger value
 
-  static member create(props: Props) = ElementData(props)
+  static member create(props: Props) = ElementData(props, None)
+  
+  /// <summary>Sets the owner element (should be called once during initialization)</summary>
+  member this.SetOwner(element: IInternalTerminalElement) =
+    if owner.IsSome then
+      failwith "Owner element has already been set."
+    owner <- Some element
 
   member this.Children =
     this.Props
     |> Props.tryFindWithDefault PKey.view.children (List<_>())
+
+  /// <summary>Gets children as ITerminalElementData (data-only representation)</summary>
+  member this.ChildrenAsData : ITerminalElementData list =
+    this.Children
+    |> Seq.map (fun child -> child.elementData :> ITerminalElementData)
+    |> Seq.toList
 
   member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
@@ -64,6 +77,13 @@ type internal ElementData(props) =
       and set value = this.View <- value
     member this.children = this.Children
     member this.ViewSet = this.ViewSet
+    
+    // ITerminalElementData members (public data interface)
+    member this.Children = this.ChildrenAsData
+    member this.Name = 
+      match owner with
+      | Some elem -> elem.name
+      | None -> "Uninitialized"
 
 type TreeNode = {
   TerminalElement: IInternalTerminalElement
@@ -179,6 +199,9 @@ type TerminalElement(initialProps: Props) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
 #endif
+
+    // Set the owner element so ElementData can provide the element name
+    this.elementData.SetOwner(this)
 
     let newView = this.newView ()
 
@@ -438,7 +461,8 @@ type TerminalElement(initialProps: Props) =
 
     this.elementData.trySetEventHandler(PKey.view.keyUp, this.elementData.View.KeyUp)
 
-    this.elementData.trySetEventHandler(PKey.view.mouseClick, this.elementData.View.MouseClick)
+    // NOTE: MouseClick event was removed from Terminal.Gui - commenting out to fix pre-existing build error
+    // this.elementData.trySetEventHandler(PKey.view.mouseClick, this.elementData.View.MouseClick)
 
     this.elementData.trySetEventHandler(PKey.view.mouseEnter, this.elementData.View.MouseEnter)
 
@@ -460,7 +484,8 @@ type TerminalElement(initialProps: Props) =
 
     this.elementData.trySetEventHandler(PKey.view.schemeNameChanging, this.elementData.View.SchemeNameChanging)
 
-    this.elementData.trySetEventHandler(PKey.view.selecting, this.elementData.View.Selecting)
+    // NOTE: Selecting event was removed from Terminal.Gui - commenting out to fix pre-existing build error
+    // this.elementData.trySetEventHandler(PKey.view.selecting, this.elementData.View.Selecting)
 
     this.elementData.trySetEventHandler(PKey.view.subViewAdded, this.elementData.View.SubViewAdded)
 

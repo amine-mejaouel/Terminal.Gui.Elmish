@@ -411,11 +411,29 @@ module internal Props =
 [<AutoOpen>]
 module Element =
 
+  /// <summary>
+  /// Public interface representing terminal element data in a pure data structure.
+  /// This interface exposes children as ITerminalElementData (data-only nodes) for
+  /// separation of data persistence from runtime behavior.
+  /// </summary>
+  type ITerminalElementData =
+    /// <summary>Gets the children of this element as data nodes (not runtime wrappers).</summary>
+    abstract Children: ITerminalElementData list with get
+    
+    /// <summary>Gets the name/type of this element.</summary>
+    abstract Name: string with get
+
+  /// <summary>
+  /// Internal interface for runtime element data.
+  /// Keeps children as IInternalTerminalElement (runtime wrappers) for internal operations.
+  /// This is the "shell" that manipulates the underlying data.
+  /// </summary>
   type internal IElementData =
+    inherit ITerminalElementData
     abstract props: Props with get
     abstract view: View with get, set
     abstract eventRegistry: PropsEventRegistry with get
-    // TODO: better to have Children: List<IElementData>
+    /// <summary>Internal runtime children - kept as List of IInternalTerminalElement for runtime operations</summary>
     abstract children: List<IInternalTerminalElement> with get
     abstract ViewSet: IEvent<View>
 

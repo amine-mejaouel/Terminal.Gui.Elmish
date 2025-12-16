@@ -27,6 +27,7 @@ type internal ElementData(props) =
 
   static member create(props: Props) = ElementData(props)
 
+  // TODO: should be filled by the TerminalElement
   member this.Children = children
 
   member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =

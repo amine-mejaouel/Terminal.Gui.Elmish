@@ -4,13 +4,13 @@ module internal Differ =
 
   let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
     let cve1 =
-      ve1.elementData.children
+      ve1.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
 
     let cve2 =
-      ve2.elementData.children
+      ve2.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
@@ -24,13 +24,13 @@ module internal Differ =
     //let cve2 = getChildrenNames(ve2)
 
     let cve1 =
-      ve1.elementData.children
+      ve1.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
 
     let cve2 =
-      ve2.elementData.children
+      ve2.children
       |> Seq.map (fun e -> e.name)
       |> Seq.toList
       |> List.sort
@@ -57,37 +57,37 @@ module internal Differ =
       | OnlyPropsChanged ->
 
         let prevElementData = prevTree.detachElementData()
-        prevTree.Dispose()
 
         PositionService.Current.SignalReuse prevElementData
         newTree.reuse prevElementData
 
         let sortedRootChildren =
-          prevElementData.children
+          prevTree.children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
         let sortedNewChildren =
-          newTree.elementData.children
+          newTree.children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
         (sortedRootChildren, sortedNewChildren)
         ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
 
+        prevTree.Dispose()
+
       // TODO: should also consider the SubElements in the pattern matching
       | ChildsDifferent ->
 
         let prevElementData = prevTree.detachElementData()
-        prevTree.Dispose()
 
         PositionService.Current.SignalReuse prevElementData
         newTree.reuse prevElementData
 
         let allTypes =
           seq {
-            yield! prevElementData.children
-            yield! newTree.elementData.children
+            yield! prevTree.children
+            yield! newTree.children
           }
           |> Seq.map (fun v -> v.name)
           |> Seq.distinct
@@ -99,12 +99,12 @@ module internal Differ =
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            prevElementData.children
+            prevTree.children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
           let newElements =
-            newTree.elementData.children
+            newTree.children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
@@ -112,7 +112,7 @@ module internal Differ =
             newElements
             |> List.iteri (fun idx ne ->
               if (idx < rootElements.Length) then
-                workStack.Push(rootElements.[idx], ne)
+                workStack.Push(rootElements[idx], ne)
               else
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
@@ -134,6 +134,8 @@ module internal Differ =
                 re.Dispose()
             )
         )
+
+        prevTree.Dispose()
       | _ ->
         printfn "other"
         ()

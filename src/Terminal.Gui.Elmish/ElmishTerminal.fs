@@ -95,7 +95,7 @@ module ElmishTerminal =
 
         startState.initializeTree None
 
-        match startState.view with
+        match startState.View with
         | null -> failwith "error state not initialized"
         | :? Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
         | view -> model.RootView.SetResult(RootView.View view)

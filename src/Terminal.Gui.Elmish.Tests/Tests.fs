@@ -18,7 +18,7 @@ let render view =
     |> ElmishTerminal.runComponent
     :?> IInternalTerminalElement
 
-  terminalElement.view
+  terminalElement.View
 
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =

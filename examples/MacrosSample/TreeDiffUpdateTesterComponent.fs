@@ -40,12 +40,12 @@ let _component (set: IProps -> unit) =
           if model.DisplayedView = Button then
             View.button (fun p ->
               p.text "Click to test changing the Terminal Element type!"
-              p.mouseClick (fun _ -> dispatch (ChangeView Label))
+              p.activating (fun _ -> dispatch (ChangeView Label))
             )
           else
             View.label (fun p ->
               p.text "Click to test changing the Terminal Element type!"
-              p.mouseClick (fun _ -> dispatch (ChangeView Button))
+              p.activating (fun _ -> dispatch (ChangeView Button))
             )
 
         let second =

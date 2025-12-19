@@ -360,6 +360,8 @@ type TerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.view.accepting, terminalElement.View.Accepting)
 
+    terminalElement.trySetEventHandler(PKey.view.activating, terminalElement.View.Activating)
+
     terminalElement.trySetEventHandler(PKey.view.advancingFocus, terminalElement.View.AdvancingFocus)
 
     terminalElement.trySetEventHandler(PKey.view.borderStyleChanged, terminalElement.View.BorderStyleChanged)
@@ -410,8 +412,6 @@ type TerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.view.keyUp, terminalElement.View.KeyUp)
 
-    terminalElement.trySetEventHandler(PKey.view.mouseClick, terminalElement.View.MouseClick)
-
     terminalElement.trySetEventHandler(PKey.view.mouseEnter, terminalElement.View.MouseEnter)
 
     terminalElement.trySetEventHandler(PKey.view.mouseEvent, terminalElement.View.MouseEvent)
@@ -431,8 +431,6 @@ type TerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.view.schemeNameChanged, terminalElement.View.SchemeNameChanged)
 
     terminalElement.trySetEventHandler(PKey.view.schemeNameChanging, terminalElement.View.SchemeNameChanging)
-
-    terminalElement.trySetEventHandler(PKey.view.selecting, terminalElement.View.Selecting)
 
     terminalElement.trySetEventHandler(PKey.view.subViewAdded, terminalElement.View.SubViewAdded)
 
@@ -617,6 +615,8 @@ type TerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.view.accepting
 
+    terminalElement.tryRemoveEventHandler PKey.view.activating
+
     terminalElement.tryRemoveEventHandler PKey.view.advancingFocus
 
     terminalElement.tryRemoveEventHandler PKey.view.borderStyleChanged
@@ -667,8 +667,6 @@ type TerminalElement(props: Props) =
 
     terminalElement.tryRemoveEventHandler PKey.view.keyUp
 
-    terminalElement.tryRemoveEventHandler PKey.view.mouseClick
-
     terminalElement.tryRemoveEventHandler PKey.view.mouseEnter
 
     terminalElement.tryRemoveEventHandler PKey.view.mouseEvent
@@ -688,8 +686,6 @@ type TerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.view.schemeNameChanged
 
     terminalElement.tryRemoveEventHandler PKey.view.schemeNameChanging
-
-    terminalElement.tryRemoveEventHandler PKey.view.selecting
 
     terminalElement.tryRemoveEventHandler PKey.view.subViewAdded
 

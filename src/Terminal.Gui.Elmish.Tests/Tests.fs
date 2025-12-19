@@ -48,21 +48,21 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.elementData.children.Single() :?> MenuBarElement
+    view.Children.Single() :?> MenuBarElement
 
   let menuBarItemElement =
-    (menuBarElement.elementData.Props
+    (menuBarElement.Props
      |> Props.find PKey.menuBar.children)
       .Single()
     :?> MenuBarItemElement
 
   let popoverMenu =
-    menuBarItemElement.elementData.Props
+    menuBarItemElement.Props
     |> Props.find PKey.menuBarItem.popoverMenu_element
     :?> PopoverMenuElement
 
   let popoverMenuRoot =
-    popoverMenu.elementData.Props
+    popoverMenu.Props
     |> Props.find PKey.popoverMenu.root_element
 
   let view = view |> render
@@ -102,21 +102,21 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.elementData.children.Single() :?> MenuBarElement
+    view.Children.Single() :?> MenuBarElement
 
   let menuBarItemElement =
-    (menuBarElement.elementData.Props
+    (menuBarElement.Props
      |> Props.find PKey.menuBar.children)
       .Single()
     :?> MenuBarItemElement
 
   let popoverMenu =
-    menuBarItemElement.elementData.Props
+    menuBarItemElement.Props
     |> Props.find PKey.menuBarItem.popoverMenu_element
     :?> PopoverMenuElement
 
   let popoverMenuRoot =
-    popoverMenu.elementData.Props
+    popoverMenu.Props
     |> Props.find PKey.popoverMenu.root_element
 
 

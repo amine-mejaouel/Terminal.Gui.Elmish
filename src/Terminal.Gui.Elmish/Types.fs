@@ -421,7 +421,7 @@ module Element =
     abstract View: View with get
     abstract name: string
     abstract setAsChildOfParentView: bool
-    abstract children: List<IInternalTerminalElement>
+    abstract Children: List<IInternalTerminalElement>
     abstract isElmishComponent: bool with get
     abstract ViewSet: IEvent<View>
 
@@ -463,6 +463,6 @@ module Element =
 
       member this.Dispose() = terminalElement.Dispose()
 
-      member this.children = List<IInternalTerminalElement>()
+      member this.Children = List<IInternalTerminalElement>()
       member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
       member this.ViewSet = terminalElement.ViewSet

@@ -75,7 +75,7 @@ type TerminalElement(props: Props) =
         match curNode.TerminalElement.isElmishComponent with
         | true -> []
         | false ->
-          curNode.TerminalElement.children
+          curNode.TerminalElement.Children
           |> Seq.map (fun e -> {
             TerminalElement = e
             Parent = Some curNode.TerminalElement.View
@@ -103,11 +103,15 @@ type TerminalElement(props: Props) =
 
   member val Props: Props = props with get, set
 
-  member val children: List<IInternalTerminalElement> =
-    props
-    |> Props.tryFind PKey.view.children
-    |> Option.defaultValue (List<IInternalTerminalElement>())
-    with get, set
+  member this.children
+    with get() : List<IInternalTerminalElement> =
+      props
+      |> Props.tryFind PKey.view.children
+      |> Option.defaultValue (List<IInternalTerminalElement>())
+    and set value =
+      match props.tryFind PKey.view.children with
+      | Some _ -> failwith "Children property has already been set."
+      | None -> props.add(PKey.view.children, value)
 
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
   default _.SubElements_PropKeys = []
@@ -860,7 +864,7 @@ type TerminalElement(props: Props) =
     member this.setAsChildOfParentView =
       this.setAsChildOfParentView
 
-    member this.children = this.children
+    member this.Children = this.children
 
     member this.isElmishComponent = false
 

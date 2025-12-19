@@ -3,7 +3,7 @@
 module internal Differ =
 
   let sortedChildNames (ve: IInternalTerminalElement) =
-    ve.children
+    ve.Children
     |> Seq.map (fun e -> e.name)
     |> Seq.toList
     |> List.sort
@@ -44,12 +44,12 @@ module internal Differ =
         newTree.reuse prevTree
 
         let sortedRootChildren =
-          prevTree.children
+          prevTree.Children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
         let sortedNewChildren =
-          newTree.children
+          newTree.Children
           |> Seq.toList
           |> List.sortBy (fun v -> v.name)
 
@@ -65,8 +65,8 @@ module internal Differ =
 
         let allTypes =
           seq {
-            yield! prevTree.children
-            yield! newTree.children
+            yield! prevTree.Children
+            yield! newTree.Children
           }
           |> Seq.map (fun v -> v.name)
           |> Seq.distinct
@@ -78,12 +78,12 @@ module internal Differ =
         allTypes
         |> List.iter (fun et ->
           let rootElements =
-            prevTree.children
+            prevTree.Children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 
           let newElements =
-            newTree.children
+            newTree.Children
             |> Seq.filter (fun e -> e.name = et)
             |> Seq.toList
 

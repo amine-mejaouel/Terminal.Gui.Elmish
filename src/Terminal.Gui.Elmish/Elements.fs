@@ -13,6 +13,7 @@ type TreeNode = {
   Parent: View option
 }
 
+
 [<CustomEquality; NoComparison>]
 type SubElementPropKey<'a> =
   | SingleElementKey of ISingleElementPropKey<'a>
@@ -55,6 +56,7 @@ type SubElementPropKey<'a> =
       match this with
       | SingleElementKey _ -> true
       | MultiElementKey _ -> false
+
 
 [<AbstractClass>]
 type TerminalElement(props: Props) =
@@ -899,6 +901,7 @@ type OrientationInterface =
 
     terminalElement.trySetEventHandler(PKey.orientationInterface.orientationChanging, view.OrientationChanging)
 
+
 // Adornment
 type AdornmentElement(props: Props) =
   inherit TerminalElement(props)
@@ -992,8 +995,8 @@ type BarElement(props: Props) =
     |> Props.tryFind PKey.bar.alignmentModes
     |> Option.iter (fun v -> view.AlignmentModes <- v)
 
-
   override this.newView() = new Bar()
+
 
 // Border
 type BorderElement(props: Props) =
@@ -1028,7 +1031,6 @@ type BorderElement(props: Props) =
     props
     |> Props.tryFind PKey.border.settings
     |> Option.iter (fun v -> view.Settings <- v)
-
 
   override this.newView() = new Border()
 
@@ -1096,8 +1098,8 @@ type ButtonElement(props: Props) =
     |> Props.tryFind PKey.button.wantContinuousButtonPressed
     |> Option.iter (fun v -> view.WantContinuousButtonPressed <- v)
 
-
   override this.newView() = new Button()
+
 
 // CheckBox
 type CheckBoxElement(props: Props) =
@@ -1170,6 +1172,7 @@ type CheckBoxElement(props: Props) =
 
   override this.newView() = new CheckBox()
 
+
 // ColorPicker
 type ColorPickerElement(props: Props) =
   inherit TerminalElement(props)
@@ -1212,6 +1215,7 @@ type ColorPickerElement(props: Props) =
 
 
   override this.newView() = new ColorPicker()
+
 
 // ColorPicker16
 type ColorPicker16Element(props: Props) =
@@ -1271,6 +1275,7 @@ type ColorPicker16Element(props: Props) =
 
 
   override this.newView() = new ColorPicker16()
+
 
 // ComboBox
 type ComboBoxElement(props: Props) =
@@ -1359,6 +1364,7 @@ type ComboBoxElement(props: Props) =
 
   override this.newView() = new ComboBox()
 
+
 // DateField
 type DateFieldElement(props: Props) =
   inherit TerminalElement(props)
@@ -1410,6 +1416,7 @@ type DateFieldElement(props: Props) =
 
   override this.newView() = new DateField()
 
+
 // DatePicker
 type DatePickerElement(props: Props) =
   inherit TerminalElement(props)
@@ -1448,6 +1455,7 @@ type DatePickerElement(props: Props) =
 
 
   override this.newView() = new DatePicker()
+
 
 // Dialog
 type DialogElement(props: Props) =
@@ -1495,6 +1503,7 @@ type DialogElement(props: Props) =
 
 
   override this.newView() = new Dialog()
+
 
 // FileDialog
 type FileDialogElement(props: Props) =
@@ -1579,6 +1588,7 @@ type FileDialogElement(props: Props) =
 
   override this.newView() = new FileDialog()
 
+
 // FrameView
 type FrameViewElement(props: Props) =
   inherit TerminalElement(props)
@@ -1593,6 +1603,7 @@ type FrameViewElement(props: Props) =
 
 
   override this.newView() = new FrameView()
+
 
 // GraphView
 type GraphViewElement(props: Props) =
@@ -1673,6 +1684,7 @@ type GraphViewElement(props: Props) =
 
   override this.newView() = new GraphView()
 
+
 // HexView
 type HexViewElement(props: Props) =
   inherit TerminalElement(props)
@@ -1744,6 +1756,7 @@ type HexViewElement(props: Props) =
 
   override this.newView() = new HexView()
 
+
 // Label
 type LabelElement(props: Props) =
   inherit TerminalElement(props)
@@ -1783,6 +1796,7 @@ type LabelElement(props: Props) =
 
   override this.newView() = new Label()
 
+
 // LegendAnnotation
 type LegendAnnotationElement(props: Props) =
   inherit TerminalElement(props)
@@ -1797,6 +1811,7 @@ type LegendAnnotationElement(props: Props) =
 
 
   override this.newView() = new LegendAnnotation()
+
 
 // Line
 type LineElement(props: Props) =
@@ -1913,6 +1928,7 @@ type ListViewElement(props: Props) =
 
   override this.newView() = new ListView()
 
+
 // Margin
 type MarginElement(props: Props) =
   inherit TerminalElement(props)
@@ -1943,6 +1959,7 @@ type MarginElement(props: Props) =
 
 
   override this.newView() = new Margin()
+
 
 // Menu
 type MenuElement(props: Props) =
@@ -2058,6 +2075,7 @@ type PopoverMenuElement(props: Props) =
 
   interface IPopoverMenuElement
 
+
 // MenuBarItem
 type MenuBarItemElement(props: Props) =
   inherit TerminalElement(props)
@@ -2107,6 +2125,7 @@ type MenuBarItemElement(props: Props) =
 
   interface IMenuBarItemElement
 
+
 // MenuBar
 type MenuBarElement(props: Props) =
   inherit TerminalElement(props)
@@ -2150,6 +2169,7 @@ type MenuBarElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.menuBar.keyChanged, view.KeyChanged)
 
   override this.newView() = new MenuBar()
+
 
 // Shortcut
 type ShortcutElement(props: Props) =
@@ -2255,6 +2275,7 @@ type ShortcutElement(props: Props) =
 
   override this.newView() = new Shortcut()
 
+
 type MenuItemElement(props: Props) =
   inherit ShortcutElement(props)
 
@@ -2308,6 +2329,7 @@ type MenuItemElement(props: Props) =
 
 
   override this.newView() = new MenuItem()
+
 
 // NumericUpDown<'a>
 type NumericUpDownElement<'a>(props: Props) =
@@ -2387,6 +2409,7 @@ type NumericUpDownElement<'a>(props: Props) =
 type NumericUpDownElement(props: Props) =
   inherit NumericUpDownElement<int>(props)
 
+
 // OpenDialog
 type OpenDialogElement(props: Props) =
   inherit TerminalElement(props)
@@ -2417,6 +2440,7 @@ type OpenDialogElement(props: Props) =
 
 
   override this.newView() = new OpenDialog()
+
 
 // SelectorBase
 type internal SelectorBaseElement(props: Props) =
@@ -2514,6 +2538,7 @@ type internal SelectorBaseElement(props: Props) =
 
   override this.newView() = raise (NotImplementedException())
 
+
 // OptionSelector
 type OptionSelectorElement(props: Props) =
   inherit SelectorBaseElement(props)
@@ -2575,6 +2600,7 @@ type FlagSelectorElement(props: Props) =
 
   override this.newView() = new FlagSelector()
 
+
 // Padding
 type PaddingElement(props: Props) =
   inherit TerminalElement(props)
@@ -2587,6 +2613,7 @@ type PaddingElement(props: Props) =
 
 
   override this.newView() = new Padding()
+
 
 // ProgressBar
 type ProgressBarElement(props: Props) =
@@ -2659,6 +2686,7 @@ type ProgressBarElement(props: Props) =
 
   override this.newView() = new ProgressBar()
 
+
 // SaveDialog
 type SaveDialogElement(props: Props) =
   inherit TerminalElement(props)
@@ -2673,6 +2701,7 @@ type SaveDialogElement(props: Props) =
 
 
   override this.newView() = new SaveDialog()
+
 
 // ScrollBar
 type ScrollBarElement(props: Props) =
@@ -2750,6 +2779,7 @@ type ScrollBarElement(props: Props) =
 
 
   override this.newView() = new ScrollBar()
+
 
 // ScrollSlider
 type ScrollSliderElement(props: Props) =
@@ -2961,6 +2991,7 @@ type SliderElement<'a>(props: Props) =
 
   interface ISliderElement
 
+
 // Slider
 type SliderElement(props: Props) =
   inherit TerminalElement(props)
@@ -2974,6 +3005,7 @@ type SliderElement(props: Props) =
   // No properties or events Slider
 
   override this.newView() = new Slider()
+
 
 // SpinnerView
 type SpinnerViewElement(props: Props) =
@@ -3046,6 +3078,7 @@ type SpinnerViewElement(props: Props) =
 
   override this.newView() = new SpinnerView()
 
+
 // StatusBar
 type StatusBarElement(props: Props) =
   inherit TerminalElement(props)
@@ -3060,6 +3093,7 @@ type StatusBarElement(props: Props) =
 
 
   override this.newView() = new StatusBar()
+
 
 // Tab
 type TabElement(props: Props) =
@@ -3098,6 +3132,7 @@ type TabElement(props: Props) =
     :: base.SubElements_PropKeys
 
   override this.newView() = new Tab()
+
 
 // TabView
 type TabViewElement(props: Props) =
@@ -3172,6 +3207,7 @@ type TabViewElement(props: Props) =
     :: base.SubElements_PropKeys
 
   override this.newView() = new TabView()
+
 
 // TableView
 type TableViewElement(props: Props) =
@@ -3320,6 +3356,7 @@ type TableViewElement(props: Props) =
 
   override this.newView() = new TableView()
 
+
 // TextField
 type TextFieldElement(props: Props) =
   inherit TerminalElement(props)
@@ -3419,6 +3456,7 @@ type TextFieldElement(props: Props) =
 
   override this.newView() = new TextField()
 
+
 // TextValidateField
 type TextValidateFieldElement(props: Props) =
   inherit TerminalElement(props)
@@ -3457,6 +3495,7 @@ type TextValidateFieldElement(props: Props) =
 
 
   override this.newView() = new TextValidateField()
+
 
 // TextView
 type TextViewElement(props: Props) =
@@ -3657,6 +3696,7 @@ type TextViewElement(props: Props) =
 
   override this.newView() = new TextView()
 
+
 // TimeField
 type TimeFieldElement(props: Props) =
   inherit TerminalElement(props)
@@ -3707,6 +3747,7 @@ type TimeFieldElement(props: Props) =
 
 
   override this.newView() = new TimeField()
+
 
 // Runnable
 type RunnableElement(props: Props) =
@@ -3917,9 +3958,11 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
 
   interface ITreeViewElement
 
+
 // TreeView
 type TreeViewElement(props: Props) =
   inherit TreeViewElement<ITreeNode>(props)
+
 
 // Window
 type WindowElement(props: Props) =
@@ -3935,6 +3978,7 @@ type WindowElement(props: Props) =
 
 
   override this.newView() = new Window()
+
 
 // Wizard
 type WizardElement(props: Props) =
@@ -3998,6 +4042,7 @@ type WizardElement(props: Props) =
 
 
   override this.newView() = new Wizard()
+
 
 // WizardStep
 type WizardStepElement(props: Props) =

@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="ElmishComponentTests.fs" />
+    <Compile Include="ElementsCompleteness.fs" />
     <Compile Include="Main.fs" />
     <Content Include="paket.references" />
   </ItemGroup>

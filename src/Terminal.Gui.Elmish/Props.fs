@@ -149,6 +149,9 @@ type viewProps() =
   member this.accepting(handler: HandledEventArgs -> unit) =
     this.props.add (PKey.view.accepting, handler)
 
+  member this.activating(handler: HandledEventArgs -> unit) =
+    this.props.add (PKey.view.activating, handler)
+
   member this.advancingFocus(handler: AdvanceFocusEventArgs -> unit) =
     this.props.add (PKey.view.advancingFocus, handler)
 
@@ -224,9 +227,6 @@ type viewProps() =
   member this.keyUp(handler: Key -> unit) =
     this.props.add (PKey.view.keyUp, handler)
 
-  member this.mouseClick(handler: MouseEventArgs -> unit) =
-    this.props.add (PKey.view.mouseClick, handler)
-
   member this.mouseEnter(handler: CancelEventArgs -> unit) =
     this.props.add (PKey.view.mouseEnter, handler)
 
@@ -256,9 +256,6 @@ type viewProps() =
 
   member this.schemeNameChanging(handler: ValueChangingEventArgs<string> -> unit) =
     this.props.add (PKey.view.schemeNameChanging, handler)
-
-  member this.selecting(handler: CommandEventArgs -> unit) =
-    this.props.add (PKey.view.selecting, handler)
 
   member this.subViewAdded(handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.view.subViewAdded, handler)

@@ -9,10 +9,10 @@ type internal PositionService() =
   static member val Current = PositionService() with get
 
   // Key: (curElementData, relElementData) / Value: list of remove handlers
-  member val RemoveHandlerRepository = Dictionary<ITerminalElementData * ITerminalElementData, List<unit -> unit>>()
+  member val RemoveHandlerRepository = Dictionary<IInternalTerminalElement * IInternalTerminalElement, List<unit -> unit>>()
 
   // Key: IElementData / Value: set of (curElementData, relElementData) to be used to lookup in RemoveHandlerRepository
-  member val IndexedRemoveHandler = Dictionary<ITerminalElementData, HashSet<ITerminalElementData * ITerminalElementData>>()
+  member val IndexedRemoveHandler = Dictionary<IInternalTerminalElement, HashSet<IInternalTerminalElement * IInternalTerminalElement>>()
 
   member private this.UpdateIndex(v0, v1) =
     let indexRepo = this.IndexedRemoveHandler
@@ -22,14 +22,14 @@ type internal PositionService() =
       | true, set ->
         set.Add (v0, v1) |> ignore
       | false, _ ->
-        let set = HashSet<ITerminalElementData * ITerminalElementData>()
+        let set = HashSet<IInternalTerminalElement * IInternalTerminalElement>()
         set.Add (v0, v1) |> ignore
         indexRepo[k] <- set
 
     update v0
     update v1
 
-  member private this.SetRemoveHandler(key: ITerminalElementData * ITerminalElementData, removeHandler: unit -> unit) =
+  member private this.SetRemoveHandler(key: IInternalTerminalElement * IInternalTerminalElement, removeHandler: unit -> unit) =
     let repo = this.RemoveHandlerRepository
 
     match repo.TryGetValue(key) with
@@ -40,7 +40,7 @@ type internal PositionService() =
 
     this.UpdateIndex(key)
 
-  member private this.RemoveHandlers(key: ITerminalElementData) =
+  member private this.RemoveHandlers(key: IInternalTerminalElement) =
     let indexRepo = this.IndexedRemoveHandler
     let repo = this.RemoveHandlerRepository
 
@@ -56,49 +56,47 @@ type internal PositionService() =
       indexRepo.Remove(key) |> ignore
     | false, _ -> ()
 
-  member private this.ApplyRelativePos(cur: ITerminalElementData, rel: ITerminalElementData, apply: View -> View -> unit) =
-    let handler = EventHandler<DrawEventArgs>(fun _ _ -> apply cur.view rel.view)
-    rel.view.DrawComplete.AddHandler handler
-    this.SetRemoveHandler((cur, rel), fun () -> rel.view.DrawComplete.RemoveHandler handler)
+  member private this.ApplyRelativePos(cur: IInternalTerminalElement, rel: IInternalTerminalElement, apply: View -> View -> unit) =
+    let handler = EventHandler<DrawEventArgs>(fun _ _ -> apply cur.View rel.View)
+    rel.View.DrawComplete.AddHandler handler
+    this.SetRemoveHandler((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
 
-  member this.ApplyPos(curElementData: ITerminalElementData, targetPos: TPos, apply: View -> Pos -> unit) =
+  member this.ApplyPos(curElementData: IInternalTerminalElement, targetPos: TPos, apply: View -> Pos -> unit) =
 
-    let onViewSetOnElementData (relativeElementData: ITerminalElementData) applyPos =
-      let differApplyRelativePos (relativeElementData: ITerminalElementData) (applyPos: View -> View -> unit) =
-        let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeElementData, applyPos))
-        relativeElementData.ViewSet.AddHandler handler
-        this.SetRemoveHandler((curElementData, relativeElementData), fun () -> relativeElementData.ViewSet.RemoveHandler handler)
+    let onViewSetOnElementData (relativeTerminalElement: IInternalTerminalElement) applyPos =
+      let differApplyRelativePos (relativeTerminalElement: IInternalTerminalElement) (applyPos: View -> View -> unit) =
+        let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos))
+        relativeTerminalElement.ViewSet.AddHandler handler
+        this.SetRemoveHandler((curElementData, relativeTerminalElement), fun () -> relativeTerminalElement.ViewSet.RemoveHandler handler)
 
-      if (relativeElementData.view = null) then
-        differApplyRelativePos relativeElementData applyPos
+      if (relativeTerminalElement.View = null) then
+        differApplyRelativePos relativeTerminalElement applyPos
       else
-        this.ApplyRelativePos (curElementData, relativeElementData, applyPos)
-
-    let elementData (terminalElement: ITerminalElement) = (terminalElement :?> IInternalTerminalElement).elementData
+        this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos)
 
     match targetPos with
     | TPos.X te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.X(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.X(otherView)))
     | TPos.Y te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Y(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Y(otherView)))
     | TPos.Top te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Top(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Top(otherView)))
     | TPos.Bottom te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Bottom(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Bottom(otherView)))
     | TPos.Left te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Left(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Left(otherView)))
     | TPos.Right te ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Right(otherView)))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Right(otherView)))
     | TPos.Func (func, te) ->
-      onViewSetOnElementData (elementData te) (fun thisView otherView -> apply thisView (Pos.Func(func, otherView)))
-    | TPos.Absolute position -> apply curElementData.view (Pos.Absolute(position))
-    | TPos.AnchorEnd offset -> apply curElementData.view (Pos.AnchorEnd(offset |> Option.defaultValue 0))
-    | TPos.Center -> apply curElementData.view (Pos.Center())
-    | TPos.Percent percent -> apply curElementData.view (Pos.Percent(percent))
-    | TPos.Align (alignment, modes, groupId) -> apply curElementData.view (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
+      onViewSetOnElementData (te :?> IInternalTerminalElement) (fun thisView otherView -> apply thisView (Pos.Func(func, otherView)))
+    | TPos.Absolute position -> apply curElementData.View (Pos.Absolute(position))
+    | TPos.AnchorEnd offset -> apply curElementData.View (Pos.AnchorEnd(offset |> Option.defaultValue 0))
+    | TPos.Center -> apply curElementData.View (Pos.Center())
+    | TPos.Percent percent -> apply curElementData.View (Pos.Percent(percent))
+    | TPos.Align (alignment, modes, groupId) -> apply curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
-  member this.SignalReuse(elementData: ITerminalElementData) =
-    this.RemoveHandlers elementData
+  member this.SignalReuse(terminalElement: IInternalTerminalElement) =
+    this.RemoveHandlers terminalElement
 
-  member this.SignalDispose(elementData: ITerminalElementData) =
-    this.RemoveHandlers elementData
+  member this.SignalDispose(terminalElement: IInternalTerminalElement) =
+    this.RemoveHandlers terminalElement

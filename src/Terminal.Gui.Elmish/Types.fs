@@ -411,26 +411,19 @@ module internal Props =
 [<AutoOpen>]
 module Element =
 
-  type internal ITerminalElementData =
-    abstract props: Props with get
-    abstract view: View with get, set
-    abstract eventRegistry: PropsEventRegistry with get
-    abstract children: List<ITerminalElementData> with get
-    abstract ViewSet: IEvent<View>
-
-  and internal IInternalTerminalElement =
+  type internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
     abstract initialize: unit -> unit
     abstract initializeTree: parent: View option -> unit
-    abstract reuse: prevElementData: ITerminalElementData -> unit
-    abstract view: View with get
+    abstract reuse: prev: IInternalTerminalElement -> unit
+    abstract Props: Props with get
+    abstract View: View with get
     abstract name: string
     abstract setAsChildOfParentView: bool
     abstract children: List<IInternalTerminalElement>
     abstract isElmishComponent: bool with get
-    abstract detachElementData: unit -> ITerminalElementData
-    abstract elementData: ITerminalElementData with get
+    abstract ViewSet: IEvent<View>
 
   type IMenuElement =
     inherit ITerminalElement
@@ -455,21 +448,21 @@ module Element =
   /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
   /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
   /// </summary>
-  type internal ElmishComponent_TerminalElement_Wrapper(element: IInternalTerminalElement) =
+  type internal ElmishComponent_TerminalElement_Wrapper(terminalElement: IInternalTerminalElement) =
     interface IInternalTerminalElement with
       member this.initialize() = () // Do nothing, initialization is handled by the Elmish component
       member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
-      member this.reuse prevElementData = element.reuse prevElementData
-      member this.view = element.view
-      member this.name = element.name
+      member this.reuse prevElementData = terminalElement.reuse prevElementData
+      member this.View = terminalElement.View
+
+      member this.name = terminalElement.name
       // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
-      member this.setAsChildOfParentView = element.setAsChildOfParentView
+      member this.setAsChildOfParentView = terminalElement.setAsChildOfParentView
 
       member this.isElmishComponent = true
 
-      member this.Dispose() = element.Dispose()
+      member this.Dispose() = terminalElement.Dispose()
 
-      member this.detachElementData() = failwith "Operation not supported. View handling is managed by the Elmish component itself."
-      // TODO: should provide a special ElementData that hides children and other Elmish component specific stuff
-      member this.elementData =  element.elementData
-      member this.children = List<IInternalTerminalElement>() // No children visible from outside
+      member this.children = List<IInternalTerminalElement>()
+      member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
+      member this.ViewSet = terminalElement.ViewSet

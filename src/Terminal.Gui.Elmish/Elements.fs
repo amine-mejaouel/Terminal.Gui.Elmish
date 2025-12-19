@@ -8,63 +8,6 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
-/// ElementData contains the Props, EventRegistry, and View for a terminal element
-type internal ElementData(props) =
-
-  let viewSetEvent = Event<View>()
-  let mutable view = null
-  let children: List<ITerminalElementData> = List<ITerminalElementData>()
-
-  member val Props: Props = props with get, set
-  member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
-  member this.View
-    with get() = view
-    and set value =
-      if (view <> null) then
-        failwith $"View has already been set."
-      view <- value
-      viewSetEvent.Trigger value
-
-  static member create(props: Props) = ElementData(props)
-
-  // TODO: should be filled by the TerminalElement
-  member this.Children = children
-
-  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
-
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.tryRemoveEventHandler (k: IPropKey) =
-    this.EventRegistry.removeHandler k
-
-  member val ViewSet = viewSetEvent.Publish
-
-  interface ITerminalElementData with
-    member this.props = this.Props
-    member this.eventRegistry = this.EventRegistry
-    member this.view
-      with get() = this.View
-      and set value = this.View <- value
-    member this.children = this.Children
-    member this.ViewSet = this.ViewSet
-
 type TreeNode = {
   TerminalElement: IInternalTerminalElement
   Parent: View option
@@ -135,40 +78,36 @@ type TerminalElement(props: Props) =
           curNode.TerminalElement.children
           |> Seq.map (fun e -> {
             TerminalElement = e
-            Parent = Some curNode.TerminalElement.view
+            Parent = Some curNode.TerminalElement.View
           })
           |> List.ofSeq
 
       traverseTree (childNodes @ remainingNodes) traverse
 
-  member val _elementData: ElementData = ElementData.create props with get, set
-  member this.elementData
-    with get() =
-      if this._elementDataDetached then
-        failwith $"{this.name}: ElementData has been detached and cannot be accessed."
-      else
-        this._elementData
+  let mutable reused = false
+
+  let mutable view = null
+  let viewSetEvent = Event<View>()
+
+  member this.View
+    with get() = view
     and set value =
-      this._elementData <- value
+      if (view <> null) then
+        failwith $"View has already been set."
+      view <- value
+      viewSetEvent.Trigger value
+
+  member val ViewSet = viewSetEvent.Publish
+
+  member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
+
+  member val Props: Props = props with get, set
 
   member val children: List<IInternalTerminalElement> =
     props
     |> Props.tryFind PKey.view.children
     |> Option.defaultValue (List<IInternalTerminalElement>())
     with get, set
-
-  member val private _elementDataDetached: bool = false with get, set
-  member val private _childrenDetached: bool = false with get, set
-
-  member this.detachElementData () : ITerminalElementData =
-    if this._elementDataDetached then
-      failwith $"{this.name}: ElementData is already detached."
-    elif this.elementData.View = null then
-      failwith $"{this.name}: Can't detach ElementData before View is set."
-    else
-      let result = this.elementData
-      this._elementDataDetached <- true
-      result
 
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
   default _.SubElements_PropKeys = []
@@ -178,6 +117,10 @@ type TerminalElement(props: Props) =
   abstract setAsChildOfParentView: bool
   default _.setAsChildOfParentView = true
 
+  member this.SignalReuse() =
+    PositionService.Current.SignalReuse this
+    reused <- true
+
   member this.initialize() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
@@ -186,12 +129,12 @@ type TerminalElement(props: Props) =
     let newView = this.newView ()
 
     this.initializeSubElements newView
-    |> Seq.iter this.elementData.Props.addNonTyped
+    |> Seq.iter this.Props.addNonTyped
 
-    this.elementData.View <- newView
-    this.setProps (this.elementData, this.elementData.Props)
+    this.View <- newView
+    this.setProps (this, this.Props)
 
-  abstract reuse: prevElementData: ITerminalElementData -> unit
+  abstract reuse: prev: IInternalTerminalElement -> unit
 
   abstract name: string
 
@@ -203,7 +146,7 @@ type TerminalElement(props: Props) =
       // Here, the "children" view are added to their parent
       if node.TerminalElement.setAsChildOfParentView then
         node.Parent
-        |> Option.iter (fun p -> p.Add node.TerminalElement.view |> ignore)
+        |> Option.iter (fun p -> p.Add node.TerminalElement.View |> ignore)
 
     traverseTree
       [
@@ -218,7 +161,7 @@ type TerminalElement(props: Props) =
   member this.initializeSubElements parent : (IPropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
-        match this.elementData.Props |> Props.tryFindByRawKey<obj> x with
+        match this.Props |> Props.tryFindByRawKey<obj> x with
 
         | None -> ()
 
@@ -229,7 +172,7 @@ type TerminalElement(props: Props) =
 
             let viewKey = x.viewKey
 
-            yield viewKey, subElement.elementData.View
+            yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
             |> Seq.iter (fun e -> e.initializeTree (Some parent))
@@ -237,531 +180,565 @@ type TerminalElement(props: Props) =
             let viewKey = x.viewKey
 
             let views =
-              elements |> Seq.map _.view |> Seq.toList
+              elements |> Seq.map _.View |> Seq.toList
 
             yield viewKey, views
           | _ -> failwith "Out of range subElement type"
     }
 
-  abstract setProps: elementData: ElementData * props: Props -> unit
+  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
-  default _.setProps(elementData: ElementData, props: Props) =
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.tryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+
+  member this.tryRemoveEventHandler (k: IPropKey) =
+    this.EventRegistry.removeHandler k
+
+  abstract setProps: terminalElement: IInternalTerminalElement * props: Props -> unit
+
+  default _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+
+    let terminalElement = terminalElement :?> TerminalElement
+
     // Properties
     props
     |> Props.tryFind PKey.view.arrangement
-    |> Option.iter (fun v -> elementData.View.Arrangement <- v)
+    |> Option.iter (fun v -> terminalElement.View.Arrangement <- v)
 
     props
     |> Props.tryFind PKey.view.borderStyle
-    |> Option.iter (fun v -> elementData.View.BorderStyle <- v)
+    |> Option.iter (fun v -> terminalElement.View.BorderStyle <- v)
 
     props
     |> Props.tryFind PKey.view.canFocus
-    |> Option.iter (fun v -> elementData.View.CanFocus <- v)
+    |> Option.iter (fun v -> terminalElement.View.CanFocus <- v)
 
     props
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-    |> Option.iter (fun v -> elementData.View.ContentSizeTracksViewport <- v)
+    |> Option.iter (fun v -> terminalElement.View.ContentSizeTracksViewport <- v)
 
     props
     |> Props.tryFind PKey.view.cursorVisibility
-    |> Option.iter (fun v -> elementData.View.CursorVisibility <- v)
+    |> Option.iter (fun v -> terminalElement.View.CursorVisibility <- v)
 
     props
     |> Props.tryFind PKey.view.data
-    |> Option.iter (fun v -> elementData.View.Data <- v)
+    |> Option.iter (fun v -> terminalElement.View.Data <- v)
 
     props
     |> Props.tryFind PKey.view.enabled
-    |> Option.iter (fun v -> elementData.View.Enabled <- v)
+    |> Option.iter (fun v -> terminalElement.View.Enabled <- v)
 
     props
     |> Props.tryFind PKey.view.frame
-    |> Option.iter (fun v -> elementData.View.Frame <- v)
+    |> Option.iter (fun v -> terminalElement.View.Frame <- v)
 
     props
     |> Props.tryFind PKey.view.hasFocus
-    |> Option.iter (fun v -> elementData.View.HasFocus <- v)
+    |> Option.iter (fun v -> terminalElement.View.HasFocus <- v)
 
     props
     |> Props.tryFind PKey.view.height
-    |> Option.iter (fun v -> elementData.View.Height <- v)
+    |> Option.iter (fun v -> terminalElement.View.Height <- v)
 
     props
     |> Props.tryFind PKey.view.highlightStates
-    |> Option.iter (fun v -> elementData.View.HighlightStates <- v)
+    |> Option.iter (fun v -> terminalElement.View.HighlightStates <- v)
 
     props
     |> Props.tryFind PKey.view.hotKey
-    |> Option.iter (fun v -> elementData.View.HotKey <- v)
+    |> Option.iter (fun v -> terminalElement.View.HotKey <- v)
 
     props
     |> Props.tryFind PKey.view.hotKeySpecifier
-    |> Option.iter (fun v -> elementData.View.HotKeySpecifier <- v)
+    |> Option.iter (fun v -> terminalElement.View.HotKeySpecifier <- v)
 
     props
     |> Props.tryFind PKey.view.id
-    |> Option.iter (fun v -> elementData.View.Id <- v)
+    |> Option.iter (fun v -> terminalElement.View.Id <- v)
 
     props
     |> Props.tryFind PKey.view.isInitialized
-    |> Option.iter (fun v -> elementData.View.IsInitialized <- v)
+    |> Option.iter (fun v -> terminalElement.View.IsInitialized <- v)
 
     props
     |> Props.tryFind PKey.view.mouseHeldDown
-    |> Option.iter (fun v -> elementData.View.MouseHeldDown <- v)
+    |> Option.iter (fun v -> terminalElement.View.MouseHeldDown <- v)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-    |> Option.iter (fun v -> elementData.View.PreserveTrailingSpaces <- v)
+    |> Option.iter (fun v -> terminalElement.View.PreserveTrailingSpaces <- v)
 
     props
     |> Props.tryFind PKey.view.schemeName
-    |> Option.iter (fun v -> elementData.View.SchemeName <- v)
+    |> Option.iter (fun v -> terminalElement.View.SchemeName <- v)
 
     props
     |> Props.tryFind PKey.view.shadowStyle
-    |> Option.iter (fun v -> elementData.View.ShadowStyle <- v)
+    |> Option.iter (fun v -> terminalElement.View.ShadowStyle <- v)
 
     props
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-    |> Option.iter (fun v -> elementData.View.SuperViewRendersLineCanvas <- v)
+    |> Option.iter (fun v -> terminalElement.View.SuperViewRendersLineCanvas <- v)
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun v -> elementData.View.TabStop <- v |> Option.toNullable)
+    |> Option.iter (fun v -> terminalElement.View.TabStop <- v |> Option.toNullable)
 
     props
     |> Props.tryFind PKey.view.text
-    |> Option.iter (fun v -> elementData.View.Text <- v)
+    |> Option.iter (fun v -> terminalElement.View.Text <- v)
 
     props
     |> Props.tryFind PKey.view.textAlignment
-    |> Option.iter (fun v -> elementData.View.TextAlignment <- v)
+    |> Option.iter (fun v -> terminalElement.View.TextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.textDirection
-    |> Option.iter (fun v -> elementData.View.TextDirection <- v)
+    |> Option.iter (fun v -> terminalElement.View.TextDirection <- v)
 
     props
     |> Props.tryFind PKey.view.title
-    |> Option.iter (fun v -> elementData.View.Title <- v)
+    |> Option.iter (fun v -> terminalElement.View.Title <- v)
 
     props
     |> Props.tryFind PKey.view.validatePosDim
-    |> Option.iter (fun v -> elementData.View.ValidatePosDim <- v)
+    |> Option.iter (fun v -> terminalElement.View.ValidatePosDim <- v)
 
     props
     |> Props.tryFind PKey.view.verticalTextAlignment
-    |> Option.iter (fun v -> elementData.View.VerticalTextAlignment <- v)
+    |> Option.iter (fun v -> terminalElement.View.VerticalTextAlignment <- v)
 
     props
     |> Props.tryFind PKey.view.viewport
-    |> Option.iter (fun v -> elementData.View.Viewport <- v)
+    |> Option.iter (fun v -> terminalElement.View.Viewport <- v)
 
     props
     |> Props.tryFind PKey.view.viewportSettings
-    |> Option.iter (fun v -> elementData.View.ViewportSettings <- v)
+    |> Option.iter (fun v -> terminalElement.View.ViewportSettings <- v)
 
     props
     |> Props.tryFind PKey.view.visible
-    |> Option.iter (fun v -> elementData.View.Visible <- v)
+    |> Option.iter (fun v -> terminalElement.View.Visible <- v)
 
     props
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-    |> Option.iter (fun v -> elementData.View.WantContinuousButtonPressed <- v)
+    |> Option.iter (fun v -> terminalElement.View.WantContinuousButtonPressed <- v)
 
     props
     |> Props.tryFind PKey.view.wantMousePositionReports
-    |> Option.iter (fun v -> elementData.View.WantMousePositionReports <- v)
+    |> Option.iter (fun v -> terminalElement.View.WantMousePositionReports <- v)
 
     props
     |> Props.tryFind PKey.view.width
-    |> Option.iter (fun v -> elementData.View.Width <- v)
+    |> Option.iter (fun v -> terminalElement.View.Width <- v)
 
     props
     |> Props.tryFind PKey.view.x
-    |> Option.iter (fun v -> elementData.View.X <- v)
+    |> Option.iter (fun v -> terminalElement.View.X <- v)
 
     props
     |> Props.tryFind PKey.view.y
-    |> Option.iter (fun v -> elementData.View.Y <- v)
+    |> Option.iter (fun v -> terminalElement.View.Y <- v)
 
     // Events
-    elementData.trySetEventHandler(PKey.view.accepting, elementData.View.Accepting)
+    terminalElement.trySetEventHandler(PKey.view.accepting, terminalElement.View.Accepting)
 
-    elementData.trySetEventHandler(PKey.view.advancingFocus, elementData.View.AdvancingFocus)
+    terminalElement.trySetEventHandler(PKey.view.advancingFocus, terminalElement.View.AdvancingFocus)
 
-    elementData.trySetEventHandler(PKey.view.borderStyleChanged, elementData.View.BorderStyleChanged)
+    terminalElement.trySetEventHandler(PKey.view.borderStyleChanged, terminalElement.View.BorderStyleChanged)
 
-    elementData.trySetEventHandler(PKey.view.canFocusChanged, elementData.View.CanFocusChanged)
+    terminalElement.trySetEventHandler(PKey.view.canFocusChanged, terminalElement.View.CanFocusChanged)
 
-    elementData.trySetEventHandler(PKey.view.clearedViewport, elementData.View.ClearedViewport)
+    terminalElement.trySetEventHandler(PKey.view.clearedViewport, terminalElement.View.ClearedViewport)
 
-    elementData.trySetEventHandler(PKey.view.clearingViewport, elementData.View.ClearingViewport)
+    terminalElement.trySetEventHandler(PKey.view.clearingViewport, terminalElement.View.ClearingViewport)
 
-    elementData.trySetEventHandler(PKey.view.commandNotBound, elementData.View.CommandNotBound)
+    terminalElement.trySetEventHandler(PKey.view.commandNotBound, terminalElement.View.CommandNotBound)
 
-    elementData.trySetEventHandler(PKey.view.contentSizeChanged, elementData.View.ContentSizeChanged)
+    terminalElement.trySetEventHandler(PKey.view.contentSizeChanged, terminalElement.View.ContentSizeChanged)
 
-    elementData.trySetEventHandler(PKey.view.disposing, elementData.View.Disposing)
+    terminalElement.trySetEventHandler(PKey.view.disposing, terminalElement.View.Disposing)
 
-    elementData.trySetEventHandler(PKey.view.drawComplete, elementData.View.DrawComplete)
+    terminalElement.trySetEventHandler(PKey.view.drawComplete, terminalElement.View.DrawComplete)
 
-    elementData.trySetEventHandler(PKey.view.drawingContent, elementData.View.DrawingContent)
+    terminalElement.trySetEventHandler(PKey.view.drawingContent, terminalElement.View.DrawingContent)
 
-    elementData.trySetEventHandler(PKey.view.drawingSubViews, elementData.View.DrawingSubViews)
+    terminalElement.trySetEventHandler(PKey.view.drawingSubViews, terminalElement.View.DrawingSubViews)
 
-    elementData.trySetEventHandler(PKey.view.drawingText, elementData.View.DrawingText)
+    terminalElement.trySetEventHandler(PKey.view.drawingText, terminalElement.View.DrawingText)
 
-    elementData.trySetEventHandler(PKey.view.enabledChanged, elementData.View.EnabledChanged)
+    terminalElement.trySetEventHandler(PKey.view.enabledChanged, terminalElement.View.EnabledChanged)
 
-    elementData.trySetEventHandler(PKey.view.focusedChanged, elementData.View.FocusedChanged)
+    terminalElement.trySetEventHandler(PKey.view.focusedChanged, terminalElement.View.FocusedChanged)
 
-    elementData.trySetEventHandler(PKey.view.frameChanged, elementData.View.FrameChanged)
+    terminalElement.trySetEventHandler(PKey.view.frameChanged, terminalElement.View.FrameChanged)
 
-    elementData.trySetEventHandler(PKey.view.gettingAttributeForRole, elementData.View.GettingAttributeForRole)
+    terminalElement.trySetEventHandler(PKey.view.gettingAttributeForRole, terminalElement.View.GettingAttributeForRole)
 
-    elementData.trySetEventHandler(PKey.view.gettingScheme, elementData.View.GettingScheme)
+    terminalElement.trySetEventHandler(PKey.view.gettingScheme, terminalElement.View.GettingScheme)
 
-    elementData.trySetEventHandler(PKey.view.handlingHotKey, elementData.View.HandlingHotKey)
+    terminalElement.trySetEventHandler(PKey.view.handlingHotKey, terminalElement.View.HandlingHotKey)
 
-    elementData.trySetEventHandler(PKey.view.hasFocusChanged, elementData.View.HasFocusChanged)
+    terminalElement.trySetEventHandler(PKey.view.hasFocusChanged, terminalElement.View.HasFocusChanged)
 
-    elementData.trySetEventHandler(PKey.view.hasFocusChanging, elementData.View.HasFocusChanging)
+    terminalElement.trySetEventHandler(PKey.view.hasFocusChanging, terminalElement.View.HasFocusChanging)
 
-    elementData.trySetEventHandler(PKey.view.hotKeyChanged, elementData.View.HotKeyChanged)
+    terminalElement.trySetEventHandler(PKey.view.hotKeyChanged, terminalElement.View.HotKeyChanged)
 
-    elementData.trySetEventHandler(PKey.view.initialized, elementData.View.Initialized)
+    terminalElement.trySetEventHandler(PKey.view.initialized, terminalElement.View.Initialized)
 
-    elementData.trySetEventHandler(PKey.view.keyDown, elementData.View.KeyDown)
+    terminalElement.trySetEventHandler(PKey.view.keyDown, terminalElement.View.KeyDown)
 
-    elementData.trySetEventHandler(PKey.view.keyDownNotHandled, elementData.View.KeyDownNotHandled)
+    terminalElement.trySetEventHandler(PKey.view.keyDownNotHandled, terminalElement.View.KeyDownNotHandled)
 
-    elementData.trySetEventHandler(PKey.view.keyUp, elementData.View.KeyUp)
+    terminalElement.trySetEventHandler(PKey.view.keyUp, terminalElement.View.KeyUp)
 
-    elementData.trySetEventHandler(PKey.view.mouseClick, elementData.View.MouseClick)
+    terminalElement.trySetEventHandler(PKey.view.mouseClick, terminalElement.View.MouseClick)
 
-    elementData.trySetEventHandler(PKey.view.mouseEnter, elementData.View.MouseEnter)
+    terminalElement.trySetEventHandler(PKey.view.mouseEnter, terminalElement.View.MouseEnter)
 
-    elementData.trySetEventHandler(PKey.view.mouseEvent, elementData.View.MouseEvent)
+    terminalElement.trySetEventHandler(PKey.view.mouseEvent, terminalElement.View.MouseEvent)
 
-    elementData.trySetEventHandler(PKey.view.mouseLeave, elementData.View.MouseLeave)
+    terminalElement.trySetEventHandler(PKey.view.mouseLeave, terminalElement.View.MouseLeave)
 
-    elementData.trySetEventHandler(PKey.view.mouseStateChanged, elementData.View.MouseStateChanged)
+    terminalElement.trySetEventHandler(PKey.view.mouseStateChanged, terminalElement.View.MouseStateChanged)
 
-    elementData.trySetEventHandler(PKey.view.mouseWheel, elementData.View.MouseWheel)
+    terminalElement.trySetEventHandler(PKey.view.mouseWheel, terminalElement.View.MouseWheel)
 
-    elementData.trySetEventHandler(PKey.view.removed, elementData.View.Removed)
+    terminalElement.trySetEventHandler(PKey.view.removed, terminalElement.View.Removed)
 
-    elementData.trySetEventHandler(PKey.view.schemeChanged, elementData.View.SchemeChanged)
+    terminalElement.trySetEventHandler(PKey.view.schemeChanged, terminalElement.View.SchemeChanged)
 
-    elementData.trySetEventHandler(PKey.view.schemeChanging, elementData.View.SchemeChanging)
+    terminalElement.trySetEventHandler(PKey.view.schemeChanging, terminalElement.View.SchemeChanging)
 
-    elementData.trySetEventHandler(PKey.view.schemeNameChanged, elementData.View.SchemeNameChanged)
+    terminalElement.trySetEventHandler(PKey.view.schemeNameChanged, terminalElement.View.SchemeNameChanged)
 
-    elementData.trySetEventHandler(PKey.view.schemeNameChanging, elementData.View.SchemeNameChanging)
+    terminalElement.trySetEventHandler(PKey.view.schemeNameChanging, terminalElement.View.SchemeNameChanging)
 
-    elementData.trySetEventHandler(PKey.view.selecting, elementData.View.Selecting)
+    terminalElement.trySetEventHandler(PKey.view.selecting, terminalElement.View.Selecting)
 
-    elementData.trySetEventHandler(PKey.view.subViewAdded, elementData.View.SubViewAdded)
+    terminalElement.trySetEventHandler(PKey.view.subViewAdded, terminalElement.View.SubViewAdded)
 
-    elementData.trySetEventHandler(PKey.view.subViewLayout, elementData.View.SubViewLayout)
+    terminalElement.trySetEventHandler(PKey.view.subViewLayout, terminalElement.View.SubViewLayout)
 
-    elementData.trySetEventHandler(PKey.view.subViewRemoved, elementData.View.SubViewRemoved)
+    terminalElement.trySetEventHandler(PKey.view.subViewRemoved, terminalElement.View.SubViewRemoved)
 
-    elementData.trySetEventHandler(PKey.view.subViewsLaidOut, elementData.View.SubViewsLaidOut)
+    terminalElement.trySetEventHandler(PKey.view.subViewsLaidOut, terminalElement.View.SubViewsLaidOut)
 
-    elementData.trySetEventHandler(PKey.view.superViewChanged, elementData.View.SuperViewChanged)
+    terminalElement.trySetEventHandler(PKey.view.superViewChanged, terminalElement.View.SuperViewChanged)
 
-    elementData.trySetEventHandler(PKey.view.textChanged, elementData.View.TextChanged)
+    terminalElement.trySetEventHandler(PKey.view.textChanged, terminalElement.View.TextChanged)
 
-    elementData.trySetEventHandler(PKey.view.titleChanged, elementData.View.TitleChanged)
+    terminalElement.trySetEventHandler(PKey.view.titleChanged, terminalElement.View.TitleChanged)
 
-    elementData.trySetEventHandler(PKey.view.titleChanging, elementData.View.TitleChanging)
+    terminalElement.trySetEventHandler(PKey.view.titleChanging, terminalElement.View.TitleChanging)
 
-    elementData.trySetEventHandler(PKey.view.viewportChanged, elementData.View.ViewportChanged)
+    terminalElement.trySetEventHandler(PKey.view.viewportChanged, terminalElement.View.ViewportChanged)
 
-    elementData.trySetEventHandler(PKey.view.visibleChanged, elementData.View.VisibleChanged)
+    terminalElement.trySetEventHandler(PKey.view.visibleChanged, terminalElement.View.VisibleChanged)
 
-    elementData.trySetEventHandler(PKey.view.visibleChanging, elementData.View.VisibleChanging)
+    terminalElement.trySetEventHandler(PKey.view.visibleChanging, terminalElement.View.VisibleChanging)
 
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
     // TODO: too confusing here, too difficult to reason about, need to refactor
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(elementData, tPos, (fun view pos -> view.X <- pos)))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.X <- pos)))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(elementData, tPos, (fun view pos -> view.Y <- pos)))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.Y <- pos)))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
-  abstract removeProps: elementData: ElementData * props: Props -> unit
+  abstract removeProps: terminalElement: IInternalTerminalElement * props: Props -> unit
 
-  default _.removeProps(elementData: ElementData, props: Props) =
+  default _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+
+    let terminalElement = terminalElement :?> TerminalElement
+
     // Properties
     props
     |> Props.tryFind PKey.view.arrangement
-    |> Option.iter (fun _ -> elementData.View.Arrangement <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Arrangement <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.borderStyle
-    |> Option.iter (fun _ -> elementData.View.BorderStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.BorderStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.canFocus
-    |> Option.iter (fun _ -> elementData.View.CanFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.CanFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.contentSizeTracksViewport
-    |> Option.iter (fun _ -> elementData.View.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.cursorVisibility
-    |> Option.iter (fun _ -> elementData.View.CursorVisibility <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.CursorVisibility <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.data
-    |> Option.iter (fun _ -> elementData.View.Data <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Data <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.enabled
-    |> Option.iter (fun _ -> elementData.View.Enabled <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Enabled <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.frame
-    |> Option.iter (fun _ -> elementData.View.Frame <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Frame <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hasFocus
-    |> Option.iter (fun _ -> elementData.View.HasFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.HasFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.height
-    |> Option.iter (fun _ -> elementData.View.Height <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Height <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.highlightStates
-    |> Option.iter (fun _ -> elementData.View.HighlightStates <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.HighlightStates <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hotKey
-    |> Option.iter (fun _ -> elementData.View.HotKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.HotKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.hotKeySpecifier
-    |> Option.iter (fun _ -> elementData.View.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.id
-    |> Option.iter (fun _ -> elementData.View.Id <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Id <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.isInitialized
-    |> Option.iter (fun _ -> elementData.View.IsInitialized <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.IsInitialized <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.mouseHeldDown
-    |> Option.iter (fun _ -> elementData.View.MouseHeldDown <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.MouseHeldDown <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.preserveTrailingSpaces
-    |> Option.iter (fun _ -> elementData.View.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.schemeName
-    |> Option.iter (fun _ -> elementData.View.SchemeName <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.SchemeName <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.shadowStyle
-    |> Option.iter (fun _ -> elementData.View.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.ShadowStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.superViewRendersLineCanvas
-    |> Option.iter (fun _ -> elementData.View.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun _ -> elementData.View.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
+    |> Option.iter (fun _ -> terminalElement.View.TabStop <- Unchecked.defaultof<_> |> Option.toNullable)
 
     props
     |> Props.tryFind PKey.view.text
-    |> Option.iter (fun _ -> elementData.View.Text <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Text <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.textAlignment
-    |> Option.iter (fun _ -> elementData.View.TextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.TextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.textDirection
-    |> Option.iter (fun _ -> elementData.View.TextDirection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.TextDirection <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.title
-    |> Option.iter (fun _ -> elementData.View.Title <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Title <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.validatePosDim
-    |> Option.iter (fun _ -> elementData.View.ValidatePosDim <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.ValidatePosDim <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.verticalTextAlignment
-    |> Option.iter (fun _ -> elementData.View.VerticalTextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.VerticalTextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.viewport
-    |> Option.iter (fun _ -> elementData.View.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Viewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.viewportSettings
-    |> Option.iter (fun _ -> elementData.View.ViewportSettings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.ViewportSettings <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.visible
-    |> Option.iter (fun _ -> elementData.View.Visible <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Visible <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.wantContinuousButtonPressed
-    |> Option.iter (fun _ -> elementData.View.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.wantMousePositionReports
-    |> Option.iter (fun _ -> elementData.View.WantMousePositionReports <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.WantMousePositionReports <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.width
-    |> Option.iter (fun _ -> elementData.View.Width <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Width <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.x
-    |> Option.iter (fun _ -> elementData.View.X <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.X <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.view.y
-    |> Option.iter (fun _ -> elementData.View.Y <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> terminalElement.View.Y <- Unchecked.defaultof<_>)
 
     // Events
-    elementData.tryRemoveEventHandler PKey.view.accepting
+    terminalElement.tryRemoveEventHandler PKey.view.accepting
 
-    elementData.tryRemoveEventHandler PKey.view.advancingFocus
+    terminalElement.tryRemoveEventHandler PKey.view.advancingFocus
 
-    elementData.tryRemoveEventHandler PKey.view.borderStyleChanged
+    terminalElement.tryRemoveEventHandler PKey.view.borderStyleChanged
 
-    elementData.tryRemoveEventHandler PKey.view.canFocusChanged
+    terminalElement.tryRemoveEventHandler PKey.view.canFocusChanged
 
-    elementData.tryRemoveEventHandler PKey.view.clearedViewport
+    terminalElement.tryRemoveEventHandler PKey.view.clearedViewport
 
-    elementData.tryRemoveEventHandler PKey.view.clearingViewport
+    terminalElement.tryRemoveEventHandler PKey.view.clearingViewport
 
-    elementData.tryRemoveEventHandler PKey.view.commandNotBound
+    terminalElement.tryRemoveEventHandler PKey.view.commandNotBound
 
-    elementData.tryRemoveEventHandler PKey.view.contentSizeChanged
+    terminalElement.tryRemoveEventHandler PKey.view.contentSizeChanged
 
-    elementData.tryRemoveEventHandler PKey.view.disposing
+    terminalElement.tryRemoveEventHandler PKey.view.disposing
 
-    elementData.tryRemoveEventHandler PKey.view.drawComplete
+    terminalElement.tryRemoveEventHandler PKey.view.drawComplete
 
-    elementData.tryRemoveEventHandler PKey.view.drawingContent
+    terminalElement.tryRemoveEventHandler PKey.view.drawingContent
 
-    elementData.tryRemoveEventHandler PKey.view.drawingSubViews
+    terminalElement.tryRemoveEventHandler PKey.view.drawingSubViews
 
-    elementData.tryRemoveEventHandler PKey.view.drawingText
+    terminalElement.tryRemoveEventHandler PKey.view.drawingText
 
-    elementData.tryRemoveEventHandler PKey.view.enabledChanged
+    terminalElement.tryRemoveEventHandler PKey.view.enabledChanged
 
-    elementData.tryRemoveEventHandler PKey.view.focusedChanged
+    terminalElement.tryRemoveEventHandler PKey.view.focusedChanged
 
-    elementData.tryRemoveEventHandler PKey.view.frameChanged
+    terminalElement.tryRemoveEventHandler PKey.view.frameChanged
 
-    elementData.tryRemoveEventHandler PKey.view.gettingAttributeForRole
+    terminalElement.tryRemoveEventHandler PKey.view.gettingAttributeForRole
 
-    elementData.tryRemoveEventHandler PKey.view.gettingScheme
+    terminalElement.tryRemoveEventHandler PKey.view.gettingScheme
 
-    elementData.tryRemoveEventHandler PKey.view.handlingHotKey
+    terminalElement.tryRemoveEventHandler PKey.view.handlingHotKey
 
-    elementData.tryRemoveEventHandler PKey.view.hasFocusChanged
+    terminalElement.tryRemoveEventHandler PKey.view.hasFocusChanged
 
-    elementData.tryRemoveEventHandler PKey.view.hasFocusChanging
+    terminalElement.tryRemoveEventHandler PKey.view.hasFocusChanging
 
-    elementData.tryRemoveEventHandler PKey.view.hotKeyChanged
+    terminalElement.tryRemoveEventHandler PKey.view.hotKeyChanged
 
-    elementData.tryRemoveEventHandler PKey.view.initialized
+    terminalElement.tryRemoveEventHandler PKey.view.initialized
 
-    elementData.tryRemoveEventHandler PKey.view.keyDown
+    terminalElement.tryRemoveEventHandler PKey.view.keyDown
 
-    elementData.tryRemoveEventHandler PKey.view.keyDownNotHandled
+    terminalElement.tryRemoveEventHandler PKey.view.keyDownNotHandled
 
-    elementData.tryRemoveEventHandler PKey.view.keyUp
+    terminalElement.tryRemoveEventHandler PKey.view.keyUp
 
-    elementData.tryRemoveEventHandler PKey.view.mouseClick
+    terminalElement.tryRemoveEventHandler PKey.view.mouseClick
 
-    elementData.tryRemoveEventHandler PKey.view.mouseEnter
+    terminalElement.tryRemoveEventHandler PKey.view.mouseEnter
 
-    elementData.tryRemoveEventHandler PKey.view.mouseEvent
+    terminalElement.tryRemoveEventHandler PKey.view.mouseEvent
 
-    elementData.tryRemoveEventHandler PKey.view.mouseLeave
+    terminalElement.tryRemoveEventHandler PKey.view.mouseLeave
 
-    elementData.tryRemoveEventHandler PKey.view.mouseStateChanged
+    terminalElement.tryRemoveEventHandler PKey.view.mouseStateChanged
 
-    elementData.tryRemoveEventHandler PKey.view.mouseWheel
+    terminalElement.tryRemoveEventHandler PKey.view.mouseWheel
 
-    elementData.tryRemoveEventHandler PKey.view.removed
+    terminalElement.tryRemoveEventHandler PKey.view.removed
 
-    elementData.tryRemoveEventHandler PKey.view.schemeChanged
+    terminalElement.tryRemoveEventHandler PKey.view.schemeChanged
 
-    elementData.tryRemoveEventHandler PKey.view.schemeChanging
+    terminalElement.tryRemoveEventHandler PKey.view.schemeChanging
 
-    elementData.tryRemoveEventHandler PKey.view.schemeNameChanged
+    terminalElement.tryRemoveEventHandler PKey.view.schemeNameChanged
 
-    elementData.tryRemoveEventHandler PKey.view.schemeNameChanging
+    terminalElement.tryRemoveEventHandler PKey.view.schemeNameChanging
 
-    elementData.tryRemoveEventHandler PKey.view.selecting
+    terminalElement.tryRemoveEventHandler PKey.view.selecting
 
-    elementData.tryRemoveEventHandler PKey.view.subViewAdded
+    terminalElement.tryRemoveEventHandler PKey.view.subViewAdded
 
-    elementData.tryRemoveEventHandler PKey.view.subViewLayout
+    terminalElement.tryRemoveEventHandler PKey.view.subViewLayout
 
-    elementData.tryRemoveEventHandler PKey.view.subViewRemoved
+    terminalElement.tryRemoveEventHandler PKey.view.subViewRemoved
 
-    elementData.tryRemoveEventHandler PKey.view.subViewsLaidOut
+    terminalElement.tryRemoveEventHandler PKey.view.subViewsLaidOut
 
-    elementData.tryRemoveEventHandler PKey.view.superViewChanged
+    terminalElement.tryRemoveEventHandler PKey.view.superViewChanged
 
-    elementData.tryRemoveEventHandler PKey.view.textChanged
+    terminalElement.tryRemoveEventHandler PKey.view.textChanged
 
-    elementData.tryRemoveEventHandler PKey.view.titleChanged
+    terminalElement.tryRemoveEventHandler PKey.view.titleChanged
 
-    elementData.tryRemoveEventHandler PKey.view.titleChanging
+    terminalElement.tryRemoveEventHandler PKey.view.titleChanging
 
-    elementData.tryRemoveEventHandler PKey.view.viewportChanged
+    terminalElement.tryRemoveEventHandler PKey.view.viewportChanged
 
-    elementData.tryRemoveEventHandler PKey.view.visibleChanged
+    terminalElement.tryRemoveEventHandler PKey.view.visibleChanged
 
-    elementData.tryRemoveEventHandler PKey.view.visibleChanging
+    terminalElement.tryRemoveEventHandler PKey.view.visibleChanging
 
     // Custom Props
     props
     |> Props.tryFind PKey.view.x_delayedPos
-    |> Option.iter (fun _ -> elementData.View.X <- Pos.Absolute(0))
+    |> Option.iter (fun _ -> terminalElement.View.X <- Pos.Absolute(0))
 
     props
     |> Props.tryFind PKey.view.y_delayedPos
-    |> Option.iter (fun _ -> elementData.View.Y <- Pos.Absolute(0))
+    |> Option.iter (fun _ -> terminalElement.View.Y <- Pos.Absolute(0))
 
   /// Reuses:
   /// // TODO: outdated documentation
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
-  override this.reuse prevElementData  =
+  override this.reuse prev =
+
+    let prev = prev :?> TerminalElement
+
+    prev.SignalReuse()
 
     // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
     // TODO: this should be tested and documented to make sure that it continues to work well in the future.
 
-    this.elementData.View <- prevElementData.view
-    this.elementData.EventRegistry <- prevElementData.eventRegistry
+    this.View <- prev.View
+    this.EventRegistry <- prev.EventRegistry
 
-    let c = TerminalElement.compare prevElementData.props this.elementData.Props
+    let c = TerminalElement.compare prev.Props this.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
@@ -777,17 +754,16 @@ type TerminalElement(props: Props) =
 
     // 2 - And we add them.
     view_Props_ToReinject
-    |> Props.iter (fun kv -> this.elementData.Props.addNonTyped (kv.Key, kv.Value))
+    |> Props.iter (fun kv -> this.Props.addNonTyped (kv.Key, kv.Value))
 
-    this.removeProps (this.elementData, removedProps)
-    this.setProps (this.elementData, c.changedProps)
-
+    this.removeProps (this, removedProps)
+    this.setProps (this, c.changedProps)
 
   member this.equivalentTo(other: TerminalElement) =
     let mutable isEquivalent = true
 
     let mutable enumerator =
-      this.elementData.Props.dict.GetEnumerator()
+      this.Props.dict.GetEnumerator()
 
     while isEquivalent && enumerator.MoveNext() do
       let kv = enumerator.Current
@@ -801,7 +777,7 @@ type TerminalElement(props: Props) =
           kv.Value :?> TerminalElement
 
         let otherElement =
-          other.elementData.Props
+          other.Props
           |> Props.tryFindByRawKey kv.Key
           |> Option.map (fun (x: obj) -> x :?> TerminalElement)
 
@@ -812,7 +788,7 @@ type TerminalElement(props: Props) =
         let curElement = kv.Value
 
         let otherElement =
-          other.elementData.Props |> Props.tryFindByRawKey kv.Key
+          other.Props |> Props.tryFindByRawKey kv.Key
 
         isEquivalent <- curElement = otherElement
 
@@ -858,17 +834,15 @@ type TerminalElement(props: Props) =
     |}
 
   member this.Dispose() =
-    if (not this._elementDataDetached) then
+    if (not reused) then
 
       // Remove any event subscriptions
-      this.removeProps (this.elementData, this.elementData.Props)
+      this.removeProps (this, this.Props)
 
-      let c = this.detachElementData()
-
-      c.view |> Interop.removeFromParent
+      this.View |> Interop.removeFromParent
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
-        c.props
+        this.Props
         |> Props.tryFind key
         |> Option.iter (fun subElement ->
           subElement.Dispose())
@@ -876,15 +850,15 @@ type TerminalElement(props: Props) =
       for child in this.children do
         child.Dispose()
 
-      PositionService.Current.SignalDispose(c)
+      PositionService.Current.SignalDispose(this)
       // Finally, dispose the View itself
-      c.view.Dispose()
+      this.View.Dispose()
 
   interface IInternalTerminalElement with
     member this.initialize() = this.initialize()
     member this.initializeTree(parent) = this.initializeTree parent
     member this.reuse prevElementData = this.reuse prevElementData
-    member this.view = this.elementData.View
+    member this.View = this.View
     member this.name = this.name
 
     member this.setAsChildOfParentView =
@@ -894,43 +868,47 @@ type TerminalElement(props: Props) =
 
     member this.isElmishComponent = false
 
-    member this.Dispose() = this.Dispose()
+    member this.Props = this.Props
 
-    member this.detachElementData () = this.detachElementData()
-    member this.elementData = this.elementData
+    member this.ViewSet = this.ViewSet
+
+    member this.Dispose() = this.Dispose()
 
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type OrientationInterface =
-  static member removeProps (elementData: ElementData) (view: IOrientation) (props: Props) =
+  static member removeProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.orientationInterface.orientation
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    elementData.tryRemoveEventHandler PKey.orientationInterface.orientationChanged
+    terminalElement.tryRemoveEventHandler PKey.orientationInterface.orientationChanged
 
-    elementData.tryRemoveEventHandler PKey.orientationInterface.orientationChanging
+    terminalElement.tryRemoveEventHandler PKey.orientationInterface.orientationChanging
 
-  static member setProps (elementData: ElementData) (view: IOrientation) (props: Props) =
+  static member setProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.orientationInterface.orientation
     |> Option.iter (fun v -> view.Orientation <- v)
 
     // Events
-    elementData.trySetEventHandler(PKey.orientationInterface.orientationChanged, view.OrientationChanged)
+    terminalElement.trySetEventHandler(PKey.orientationInterface.orientationChanged, view.OrientationChanged)
 
-    elementData.trySetEventHandler(PKey.orientationInterface.orientationChanging, view.OrientationChanging)
+    terminalElement.trySetEventHandler(PKey.orientationInterface.orientationChanging, view.OrientationChanging)
 
 // Adornment
 type AdornmentElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Adornment
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+
+    let terminalElement = terminalElement :?> TerminalElement
+
+    base.removeProps (terminalElement, props)
+    let view = terminalElement.View :?> Adornment
     // Properties
     props
     |> Props.tryFind PKey.adornment.diagnostics
@@ -948,14 +926,15 @@ type AdornmentElement(props: Props) =
     |> Props.tryFind PKey.adornment.viewport
     |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.adornment.thicknessChanged
+    terminalElement.tryRemoveEventHandler PKey.adornment.thicknessChanged
 
   override _.name = $"Adornment"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Adornment
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Adornment
 
     // Properties
     props
@@ -974,7 +953,7 @@ type AdornmentElement(props: Props) =
     |> Props.tryFind PKey.adornment.viewport
     |> Option.iter (fun v -> view.Viewport <- v)
     // Events
-    elementData.trySetEventHandler(PKey.adornment.thicknessChanged, view.ThicknessChanged)
+    terminalElement.trySetEventHandler(PKey.adornment.thicknessChanged, view.ThicknessChanged)
 
   override this.newView() = new Adornment()
 
@@ -983,11 +962,14 @@ type AdornmentElement(props: Props) =
 type BarElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Bar
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Bar
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -996,13 +978,14 @@ type BarElement(props: Props) =
 
   override _.name = $"Bar"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Bar
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Bar
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -1016,9 +999,11 @@ type BarElement(props: Props) =
 type BorderElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Border
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Border
     // Properties
     props
     |> Props.tryFind PKey.border.lineStyle
@@ -1030,7 +1015,7 @@ type BorderElement(props: Props) =
 
   override _.name = $"Border"
 
-  override _.setProps(elementData: ElementData, props: Props) =
+  override _.setProps(elementData: IInternalTerminalElement, props: Props) =
     base.setProps (elementData, props)
 
     let view = elementData.View :?> Border
@@ -1051,7 +1036,7 @@ type BorderElement(props: Props) =
 type ButtonElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
+  override _.removeProps(elementData: IInternalTerminalElement, props: Props) =
     base.removeProps (elementData, props)
     let view = elementData.View :?> Button
     // Properties
@@ -1081,7 +1066,7 @@ type ButtonElement(props: Props) =
 
   override _.name = $"Button"
 
-  override _.setProps(elementData: ElementData, props: Props) =
+  override _.setProps(elementData: IInternalTerminalElement, props: Props) =
     base.setProps (elementData, props)
 
     let view = elementData.View :?> Button
@@ -1118,9 +1103,12 @@ type ButtonElement(props: Props) =
 type CheckBoxElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> CheckBox
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> CheckBox
+
     // Properties
     props
     |> Props.tryFind PKey.checkBox.allowCheckStateNone
@@ -1142,16 +1130,17 @@ type CheckBoxElement(props: Props) =
     |> Props.tryFind PKey.checkBox.text
     |> Option.iter (fun _ -> view.Text <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.checkBox.checkedStateChanging
+    terminalElement.tryRemoveEventHandler PKey.checkBox.checkedStateChanging
 
-    elementData.tryRemoveEventHandler PKey.checkBox.checkedStateChanged
+    terminalElement.tryRemoveEventHandler PKey.checkBox.checkedStateChanged
 
   override _.name = $"CheckBox"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> CheckBox
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> CheckBox
 
     // Properties
     props
@@ -1174,9 +1163,9 @@ type CheckBoxElement(props: Props) =
     |> Props.tryFind PKey.checkBox.text
     |> Option.iter (fun v -> view.Text <- v)
     // Events
-    elementData.trySetEventHandler(PKey.checkBox.checkedStateChanging, view.CheckedStateChanging)
+    terminalElement.trySetEventHandler(PKey.checkBox.checkedStateChanging, view.CheckedStateChanging)
 
-    elementData.trySetEventHandler(PKey.checkBox.checkedStateChanged, view.CheckedStateChanged)
+    terminalElement.trySetEventHandler(PKey.checkBox.checkedStateChanged, view.CheckedStateChanged)
 
 
   override this.newView() = new CheckBox()
@@ -1185,9 +1174,12 @@ type CheckBoxElement(props: Props) =
 type ColorPickerElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ColorPicker
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ColorPicker
+
     // Properties
     props
     |> Props.tryFind PKey.colorPicker.selectedColor
@@ -1197,14 +1189,15 @@ type ColorPickerElement(props: Props) =
     |> Props.tryFind PKey.colorPicker.style
     |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.colorPicker.colorChanged
+    terminalElement.tryRemoveEventHandler PKey.colorPicker.colorChanged
 
   override _.name = $"ColorPicker"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ColorPicker
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ColorPicker
 
     // Properties
     props
@@ -1215,7 +1208,7 @@ type ColorPickerElement(props: Props) =
     |> Props.tryFind PKey.colorPicker.style
     |> Option.iter (fun v -> view.Style <- v)
     // Events
-    elementData.trySetEventHandler(PKey.colorPicker.colorChanged, view.ColorChanged)
+    terminalElement.trySetEventHandler(PKey.colorPicker.colorChanged, view.ColorChanged)
 
 
   override this.newView() = new ColorPicker()
@@ -1224,9 +1217,12 @@ type ColorPickerElement(props: Props) =
 type ColorPicker16Element(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ColorPicker16
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ColorPicker16
+
     // Properties
     props
     |> Props.tryFind PKey.colorPicker16.boxHeight
@@ -1244,14 +1240,15 @@ type ColorPicker16Element(props: Props) =
     |> Props.tryFind PKey.colorPicker16.selectedColor
     |> Option.iter (fun _ -> view.SelectedColor <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.colorPicker16.colorChanged
+    terminalElement.tryRemoveEventHandler PKey.colorPicker16.colorChanged
 
   override _.name = $"ColorPicker16"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ColorPicker16
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ColorPicker16
 
     // Properties
     props
@@ -1270,7 +1267,7 @@ type ColorPicker16Element(props: Props) =
     |> Props.tryFind PKey.colorPicker16.selectedColor
     |> Option.iter (fun v -> view.SelectedColor <- v)
     // Events
-    elementData.trySetEventHandler(PKey.colorPicker16.colorChanged, view.ColorChanged)
+    terminalElement.trySetEventHandler(PKey.colorPicker16.colorChanged, view.ColorChanged)
 
 
   override this.newView() = new ColorPicker16()
@@ -1279,9 +1276,12 @@ type ColorPicker16Element(props: Props) =
 type ComboBoxElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ComboBox
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ComboBox
+
     // Properties
     props
     |> Props.tryFind PKey.comboBox.hideDropdownListOnClick
@@ -1307,20 +1307,21 @@ type ComboBoxElement(props: Props) =
     |> Props.tryFind PKey.comboBox.text
     |> Option.iter (fun _ -> view.Text <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.comboBox.collapsed
+    terminalElement.tryRemoveEventHandler PKey.comboBox.collapsed
 
-    elementData.tryRemoveEventHandler PKey.comboBox.expanded
+    terminalElement.tryRemoveEventHandler PKey.comboBox.expanded
 
-    elementData.tryRemoveEventHandler PKey.comboBox.openSelectedItem
+    terminalElement.tryRemoveEventHandler PKey.comboBox.openSelectedItem
 
-    elementData.tryRemoveEventHandler PKey.comboBox.selectedItemChanged
+    terminalElement.tryRemoveEventHandler PKey.comboBox.selectedItemChanged
 
   override _.name = $"ComboBox"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ComboBox
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ComboBox
 
     // Properties
     props
@@ -1345,15 +1346,15 @@ type ComboBoxElement(props: Props) =
 
     props
     |> Props.tryFind PKey.comboBox.text
-    |> Option.iter (fun v -> elementData.View.Text <- v)
+    |> Option.iter (fun v -> terminalElement.View.Text <- v)
     // Events
-    elementData.trySetEventHandler(PKey.comboBox.collapsed, view.Collapsed)
+    terminalElement.trySetEventHandler(PKey.comboBox.collapsed, view.Collapsed)
 
-    elementData.trySetEventHandler(PKey.comboBox.expanded, view.Expanded)
+    terminalElement.trySetEventHandler(PKey.comboBox.expanded, view.Expanded)
 
-    elementData.trySetEventHandler(PKey.comboBox.openSelectedItem, view.OpenSelectedItem)
+    terminalElement.trySetEventHandler(PKey.comboBox.openSelectedItem, view.OpenSelectedItem)
 
-    elementData.trySetEventHandler(PKey.comboBox.selectedItemChanged, view.SelectedItemChanged)
+    terminalElement.trySetEventHandler(PKey.comboBox.selectedItemChanged, view.SelectedItemChanged)
 
 
   override this.newView() = new ComboBox()
@@ -1362,9 +1363,12 @@ type ComboBoxElement(props: Props) =
 type DateFieldElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> DateField
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> DateField
+
     // Properties
     props
     |> Props.tryFind PKey.dateField.culture
@@ -1378,14 +1382,15 @@ type DateFieldElement(props: Props) =
     |> Props.tryFind PKey.dateField.date
     |> Option.iter (fun _ -> view.Date <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.dateField.dateChanged
+    terminalElement.tryRemoveEventHandler PKey.dateField.dateChanged
 
   override _.name = $"DateField"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> DateField
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> DateField
 
     // Properties
     props
@@ -1400,7 +1405,7 @@ type DateFieldElement(props: Props) =
     |> Props.tryFind PKey.dateField.date
     |> Option.iter (fun v -> view.Date <- v)
     // Events
-    elementData.trySetEventHandler(PKey.dateField.dateChanged, view.DateChanged)
+    terminalElement.trySetEventHandler(PKey.dateField.dateChanged, view.DateChanged)
 
 
   override this.newView() = new DateField()
@@ -1409,9 +1414,12 @@ type DateFieldElement(props: Props) =
 type DatePickerElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> DatePicker
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> DatePicker
+
     // Properties
     props
     |> Props.tryFind PKey.datePicker.culture
@@ -1423,10 +1431,11 @@ type DatePickerElement(props: Props) =
 
   override _.name = $"DatePicker"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> DatePicker
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> DatePicker
 
     // Properties
     props
@@ -1444,9 +1453,12 @@ type DatePickerElement(props: Props) =
 type DialogElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Dialog
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog
+
     // Properties
     props
     |> Props.tryFind PKey.dialog.buttonAlignment
@@ -1462,10 +1474,11 @@ type DialogElement(props: Props) =
 
   override _.name = $"Dialog"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Dialog
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog
 
     // Properties
     props
@@ -1487,9 +1500,12 @@ type DialogElement(props: Props) =
 type FileDialogElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> FileDialog
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FileDialog
+
     // Properties
     props
     |> Props.tryFind PKey.fileDialog.allowedTypes
@@ -1519,14 +1535,15 @@ type FileDialogElement(props: Props) =
     |> Props.tryFind PKey.fileDialog.searchMatcher
     |> Option.iter (fun _ -> view.SearchMatcher <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.fileDialog.filesSelected
+    terminalElement.tryRemoveEventHandler PKey.fileDialog.filesSelected
 
   override _.name = $"FileDialog"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> FileDialog
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FileDialog
 
     // Properties
     props
@@ -1557,7 +1574,7 @@ type FileDialogElement(props: Props) =
     |> Props.tryFind PKey.fileDialog.searchMatcher
     |> Option.iter (fun v -> view.SearchMatcher <- v)
     // Events
-    elementData.trySetEventHandler(PKey.fileDialog.filesSelected, view.FilesSelected)
+    terminalElement.trySetEventHandler(PKey.fileDialog.filesSelected, view.FilesSelected)
 
 
   override this.newView() = new FileDialog()
@@ -1566,12 +1583,12 @@ type FileDialogElement(props: Props) =
 type FrameViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events FrameView
 
   override _.name = $"FrameView"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events FrameView
 
 
@@ -1581,9 +1598,12 @@ type FrameViewElement(props: Props) =
 type GraphViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> GraphView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> GraphView
+
     // Properties
     props
     |> Props.tryFind PKey.graphView.axisX
@@ -1615,10 +1635,11 @@ type GraphViewElement(props: Props) =
 
   override _.name = $"GraphView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> GraphView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> GraphView
 
     // Properties
     props
@@ -1656,9 +1677,12 @@ type GraphViewElement(props: Props) =
 type HexViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> HexView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> HexView
+
     // Properties
     props
     |> Props.tryFind PKey.hexView.address
@@ -1680,16 +1704,17 @@ type HexViewElement(props: Props) =
     |> Props.tryFind PKey.hexView.source
     |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.hexView.edited
+    terminalElement.tryRemoveEventHandler PKey.hexView.edited
 
-    elementData.tryRemoveEventHandler PKey.hexView.positionChanged
+    terminalElement.tryRemoveEventHandler PKey.hexView.positionChanged
 
   override _.name = $"HexView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> HexView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> HexView
 
     // Properties
     props
@@ -1712,9 +1737,9 @@ type HexViewElement(props: Props) =
     |> Props.tryFind PKey.hexView.source
     |> Option.iter (fun v -> view.Source <- v)
     // Events
-    elementData.trySetEventHandler(PKey.hexView.edited, view.Edited)
+    terminalElement.trySetEventHandler(PKey.hexView.edited, view.Edited)
 
-    elementData.trySetEventHandler(PKey.hexView.positionChanged, view.PositionChanged)
+    terminalElement.trySetEventHandler(PKey.hexView.positionChanged, view.PositionChanged)
 
 
   override this.newView() = new HexView()
@@ -1723,9 +1748,12 @@ type HexViewElement(props: Props) =
 type LabelElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Label
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Label
+
     // Properties
     props
     |> Props.tryFind PKey.label.hotKeySpecifier
@@ -1737,10 +1765,11 @@ type LabelElement(props: Props) =
 
   override _.name = $"Label"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Label
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Label
 
     // Properties
     props
@@ -1758,12 +1787,12 @@ type LabelElement(props: Props) =
 type LegendAnnotationElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events LegendAnnotation
 
   override _.name = $"LegendAnnotation"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events LegendAnnotation
 
 
@@ -1773,21 +1802,25 @@ type LegendAnnotationElement(props: Props) =
 type LineElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Line
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Line
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
   override _.name = $"Line"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Line
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Line
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
 
   override this.newView() = new Line()
@@ -1797,9 +1830,12 @@ type LineElement(props: Props) =
 type ListViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ListView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ListView
+
     // Properties
     props
     |> Props.tryFind PKey.listView.allowsMarking
@@ -1825,20 +1861,21 @@ type ListViewElement(props: Props) =
     |> Props.tryFind PKey.listView.topItem
     |> Option.iter (fun _ -> view.TopItem <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.listView.collectionChanged
+    terminalElement.tryRemoveEventHandler PKey.listView.collectionChanged
 
-    elementData.tryRemoveEventHandler PKey.listView.openSelectedItem
+    terminalElement.tryRemoveEventHandler PKey.listView.openSelectedItem
 
-    elementData.tryRemoveEventHandler PKey.listView.rowRender
+    terminalElement.tryRemoveEventHandler PKey.listView.rowRender
 
-    elementData.tryRemoveEventHandler PKey.listView.selectedItemChanged
+    terminalElement.tryRemoveEventHandler PKey.listView.selectedItemChanged
 
   override _.name = $"ListView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ListView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ListView
 
     // Properties
     props
@@ -1865,13 +1902,13 @@ type ListViewElement(props: Props) =
     |> Props.tryFind PKey.listView.topItem
     |> Option.iter (fun v -> view.TopItem <- v)
     // Events
-    elementData.trySetEventHandler(PKey.listView.collectionChanged, view.CollectionChanged)
+    terminalElement.trySetEventHandler(PKey.listView.collectionChanged, view.CollectionChanged)
 
-    elementData.trySetEventHandler(PKey.listView.openSelectedItem, view.OpenSelectedItem)
+    terminalElement.trySetEventHandler(PKey.listView.openSelectedItem, view.OpenSelectedItem)
 
-    elementData.trySetEventHandler(PKey.listView.rowRender, view.RowRender)
+    terminalElement.trySetEventHandler(PKey.listView.rowRender, view.RowRender)
 
-    elementData.trySetEventHandler(PKey.listView.selectedItemChanged, view.SelectedItemChanged)
+    terminalElement.trySetEventHandler(PKey.listView.selectedItemChanged, view.SelectedItemChanged)
 
 
   override this.newView() = new ListView()
@@ -1880,9 +1917,12 @@ type ListViewElement(props: Props) =
 type MarginElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Margin
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Margin
+
     // Properties
     props
     |> Props.tryFind PKey.margin.shadowStyle
@@ -1890,10 +1930,11 @@ type MarginElement(props: Props) =
 
   override _.name = $"Margin"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Margin
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Margin
 
     // Properties
     props
@@ -1907,9 +1948,12 @@ type MarginElement(props: Props) =
 type MenuElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Menu
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Menu
+
     // Properties
     props
     |> Props.tryFind PKey.menu.selectedMenuItem
@@ -1919,18 +1963,19 @@ type MenuElement(props: Props) =
     |> Props.tryFind PKey.menu.superMenuItem
     |> Option.iter (fun _ -> view.SuperMenuItem <- Unchecked.defaultof<_>)
     // Events
-    elementData.trySetEventHandler(PKey.menu.accepted, view.Accepted)
+    terminalElement.trySetEventHandler(PKey.menu.accepted, view.Accepted)
 
-    elementData.trySetEventHandler(PKey.menu.selectedMenuItemChanged, view.SelectedMenuItemChanged)
+    terminalElement.trySetEventHandler(PKey.menu.selectedMenuItemChanged, view.SelectedMenuItemChanged)
 
     ()
 
   override _.name = $"Menu"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Menu
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Menu
 
     // Properties
     props
@@ -1941,9 +1986,9 @@ type MenuElement(props: Props) =
     |> Props.tryFind PKey.menu.superMenuItem
     |> Option.iter (fun v -> view.SuperMenuItem <- v)
     // Events
-    elementData.trySetEventHandler(PKey.menu.accepted, view.Accepted)
+    terminalElement.trySetEventHandler(PKey.menu.accepted, view.Accepted)
 
-    elementData.trySetEventHandler(PKey.menu.selectedMenuItemChanged, view.SelectedMenuItemChanged)
+    terminalElement.trySetEventHandler(PKey.menu.selectedMenuItemChanged, view.SelectedMenuItemChanged)
 
   override this.newView() = new Menu()
 
@@ -1956,9 +2001,12 @@ type MenuElement(props: Props) =
 type PopoverMenuElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> PopoverMenu
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> PopoverMenu
+
     // Properties
     props
     |> Props.tryFind PKey.popoverMenu.key
@@ -1972,16 +2020,17 @@ type PopoverMenuElement(props: Props) =
     |> Props.tryFind PKey.popoverMenu.root
     |> Option.iter (fun _ -> view.Root <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.popoverMenu.accepted
+    terminalElement.tryRemoveEventHandler PKey.popoverMenu.accepted
 
-    elementData.tryRemoveEventHandler PKey.popoverMenu.keyChanged
+    terminalElement.tryRemoveEventHandler PKey.popoverMenu.keyChanged
 
   override this.name = "PopoverMenu"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> PopoverMenu
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> PopoverMenu
 
     // Properties
     props
@@ -1996,9 +2045,9 @@ type PopoverMenuElement(props: Props) =
     |> Props.tryFind PKey.popoverMenu.root
     |> Option.iter (fun v -> view.Root <- v)
     // Events
-    elementData.trySetEventHandler(PKey.popoverMenu.accepted, view.Accepted)
+    terminalElement.trySetEventHandler(PKey.popoverMenu.accepted, view.Accepted)
 
-    elementData.trySetEventHandler(PKey.popoverMenu.keyChanged, view.KeyChanged)
+    terminalElement.trySetEventHandler(PKey.popoverMenu.keyChanged, view.KeyChanged)
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.popoverMenu.root_element
@@ -2013,9 +2062,12 @@ type PopoverMenuElement(props: Props) =
 type MenuBarItemElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> MenuBarItem
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuBarItem
+
     // Properties
     props
     |> Props.tryFind PKey.menuBarItem.popoverMenu
@@ -2025,14 +2077,15 @@ type MenuBarItemElement(props: Props) =
     |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
     |> Option.iter (fun _ -> view.PopoverMenuOpen <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.menuBarItem.popoverMenuOpenChanged
+    terminalElement.tryRemoveEventHandler PKey.menuBarItem.popoverMenuOpenChanged
 
   override this.name = "MenuBarItem"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> MenuBarItem
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuBarItem
 
     // Properties
     props
@@ -2043,7 +2096,7 @@ type MenuBarItemElement(props: Props) =
     |> Props.tryFind PKey.menuBarItem.popoverMenuOpen
     |> Option.iter (fun v -> view.PopoverMenuOpen <- v)
     // Events
-    elementData.trySetEventHandler(PKey.menuBarItem.popoverMenuOpenChanged, view.PopoverMenuOpenChanged)
+    terminalElement.trySetEventHandler(PKey.menuBarItem.popoverMenuOpenChanged, view.PopoverMenuOpenChanged)
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuBarItem.popoverMenu_element
@@ -2058,9 +2111,12 @@ type MenuBarItemElement(props: Props) =
 type MenuBarElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> MenuBar
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuBar
+
     // Properties
     props
     |> Props.tryFind PKey.menuBar.key
@@ -2071,14 +2127,15 @@ type MenuBarElement(props: Props) =
     //       And "children" properties are handled by the TreeDiff initializeTree function
 
     // Events
-    elementData.tryRemoveEventHandler PKey.menuBar.keyChanged
+    terminalElement.tryRemoveEventHandler PKey.menuBar.keyChanged
 
   override _.name = $"MenuBar"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> MenuBar
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuBar
 
     // Properties
     props
@@ -2090,7 +2147,7 @@ type MenuBarElement(props: Props) =
     //       And "children" properties are handled by the TreeDiff initializeTree function
 
     // Events
-    elementData.trySetEventHandler(PKey.menuBar.keyChanged, view.KeyChanged)
+    terminalElement.trySetEventHandler(PKey.menuBar.keyChanged, view.KeyChanged)
 
   override this.newView() = new MenuBar()
 
@@ -2098,11 +2155,14 @@ type MenuBarElement(props: Props) =
 type ShortcutElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Shortcut
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Shortcut
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -2143,13 +2203,14 @@ type ShortcutElement(props: Props) =
 
   override _.name = $"Shortcut"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Shortcut
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Shortcut
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -2197,9 +2258,12 @@ type ShortcutElement(props: Props) =
 type MenuItemElement(props: Props) =
   inherit ShortcutElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> MenuItem
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuItem
+
     // Properties
     props
     |> Props.tryFind PKey.menuItem.command
@@ -2213,14 +2277,15 @@ type MenuItemElement(props: Props) =
     |> Props.tryFind PKey.menuItem.targetView
     |> Option.iter (fun _ -> Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.menuItem.accepted
+    terminalElement.tryRemoveEventHandler PKey.menuItem.accepted
 
   override _.name = $"MenuItem"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> MenuItem
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> MenuItem
 
     // Properties
     props
@@ -2235,7 +2300,7 @@ type MenuItemElement(props: Props) =
     |> Props.tryFind PKey.menuItem.targetView
     |> Option.iter (fun v -> view.TargetView <- v)
     // Events
-    elementData.trySetEventHandler(PKey.menuItem.accepted, view.Accepted)
+    terminalElement.trySetEventHandler(PKey.menuItem.accepted, view.Accepted)
 
   override this.SubElements_PropKeys =
     SubElementPropKey.from PKey.menuItem.subMenu_element
@@ -2248,9 +2313,12 @@ type MenuItemElement(props: Props) =
 type NumericUpDownElement<'a>(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> NumericUpDown<'a>
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> NumericUpDown<'a>
+
     // Properties
     props
     |> Props.tryFind PKey.numericUpDown<'a>.format
@@ -2264,20 +2332,21 @@ type NumericUpDownElement<'a>(props: Props) =
     |> Props.tryFind PKey.numericUpDown<'a>.value
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.numericUpDown<'a>.formatChanged
+    terminalElement.tryRemoveEventHandler PKey.numericUpDown<'a>.formatChanged
 
-    elementData.tryRemoveEventHandler PKey.numericUpDown<'a>.incrementChanged
+    terminalElement.tryRemoveEventHandler PKey.numericUpDown<'a>.incrementChanged
 
-    elementData.tryRemoveEventHandler PKey.numericUpDown<'a>.valueChanged
+    terminalElement.tryRemoveEventHandler PKey.numericUpDown<'a>.valueChanged
 
-    elementData.tryRemoveEventHandler PKey.numericUpDown<'a>.valueChanging
+    terminalElement.tryRemoveEventHandler PKey.numericUpDown<'a>.valueChanging
 
   override _.name = $"NumericUpDown<'a>"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> NumericUpDown<'a>
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> NumericUpDown<'a>
 
     // Properties
     props
@@ -2294,19 +2363,19 @@ type NumericUpDownElement<'a>(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.numericUpDown<'a>.formatChanged
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.formatChanged, view.FormatChanged, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.formatChanged, view.FormatChanged, v))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.incrementChanged
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.incrementChanged, view.IncrementChanged, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.incrementChanged, view.IncrementChanged, v))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.valueChanged
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.valueChanged, view.ValueChanged, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.valueChanged, view.ValueChanged, v))
 
     props
     |> Props.tryFind PKey.numericUpDown<'a>.valueChanging
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.valueChanging, view.ValueChanging, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.numericUpDown<'a>.valueChanging, view.ValueChanging, v))
 
   override this.newView() = new NumericUpDown<'a>()
 
@@ -2322,9 +2391,12 @@ type NumericUpDownElement(props: Props) =
 type OpenDialogElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> OpenDialog
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OpenDialog
+
     // Properties
     props
     |> Props.tryFind PKey.openDialog.openMode
@@ -2332,10 +2404,11 @@ type OpenDialogElement(props: Props) =
 
   override _.name = $"OpenDialog"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> OpenDialog
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OpenDialog
 
     // Properties
     props
@@ -2349,11 +2422,14 @@ type OpenDialogElement(props: Props) =
 type internal SelectorBaseElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> SelectorBase
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> SelectorBase
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -2388,17 +2464,18 @@ type internal SelectorBaseElement(props: Props) =
     |> Props.tryFind PKey.selectorBase.values
     |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.selectorBase.valueChanged
+    terminalElement.tryRemoveEventHandler PKey.selectorBase.valueChanged
 
   override _.name = "SelectorBase"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> SelectorBase
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> SelectorBase
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -2433,7 +2510,7 @@ type internal SelectorBaseElement(props: Props) =
     |> Props.tryFind PKey.selectorBase.values
     |> Option.iter (fun v -> view.Values <- v)
     // Events
-    elementData.trySetEventHandler(PKey.selectorBase.valueChanged, view.ValueChanged)
+    terminalElement.trySetEventHandler(PKey.selectorBase.valueChanged, view.ValueChanged)
 
   override this.newView() = raise (NotImplementedException())
 
@@ -2441,9 +2518,11 @@ type internal SelectorBaseElement(props: Props) =
 type OptionSelectorElement(props: Props) =
   inherit SelectorBaseElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> OptionSelector
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OptionSelector
 
     // Properties
     props
@@ -2452,10 +2531,11 @@ type OptionSelectorElement(props: Props) =
 
   override _.name = $"OptionSelector"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> OptionSelector
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OptionSelector
 
     // Properties
     props
@@ -2469,9 +2549,11 @@ type OptionSelectorElement(props: Props) =
 type FlagSelectorElement(props: Props) =
   inherit SelectorBaseElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> FlagSelector
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FlagSelector
 
     // Properties
     props
@@ -2480,10 +2562,11 @@ type FlagSelectorElement(props: Props) =
 
   override _.name = $"FlagSelector"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> FlagSelector
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FlagSelector
 
     // Properties
     props
@@ -2496,11 +2579,11 @@ type FlagSelectorElement(props: Props) =
 type PaddingElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
 
   override _.name = $"Padding"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
 
 
   override this.newView() = new Padding()
@@ -2509,9 +2592,12 @@ type PaddingElement(props: Props) =
 type ProgressBarElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ProgressBar
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ProgressBar
+
     // Properties
     props
     |> Props.tryFind PKey.progressBar.bidirectionalMarquee
@@ -2539,10 +2625,11 @@ type ProgressBarElement(props: Props) =
 
   override _.name = $"ProgressBar"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ProgressBar
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ProgressBar
 
     // Properties
     props
@@ -2576,12 +2663,12 @@ type ProgressBarElement(props: Props) =
 type SaveDialogElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events SaveDialog
 
   override _.name = $"SaveDialog"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events SaveDialog
 
 
@@ -2591,11 +2678,14 @@ type SaveDialogElement(props: Props) =
 type ScrollBarElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ScrollBar
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ScrollBar
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -2618,19 +2708,20 @@ type ScrollBarElement(props: Props) =
     |> Props.tryFind PKey.scrollBar.visibleContentSize
     |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.scrollBar.scrollableContentSizeChanged
+    terminalElement.tryRemoveEventHandler PKey.scrollBar.scrollableContentSizeChanged
 
-    elementData.tryRemoveEventHandler PKey.scrollBar.sliderPositionChanged
+    terminalElement.tryRemoveEventHandler PKey.scrollBar.sliderPositionChanged
 
   override _.name = $"ScrollBar"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ScrollBar
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ScrollBar
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -2653,9 +2744,9 @@ type ScrollBarElement(props: Props) =
     |> Props.tryFind PKey.scrollBar.visibleContentSize
     |> Option.iter (fun v -> view.VisibleContentSize <- v)
     // Events
-    elementData.trySetEventHandler(PKey.scrollBar.scrollableContentSizeChanged, view.ScrollableContentSizeChanged)
+    terminalElement.trySetEventHandler(PKey.scrollBar.scrollableContentSizeChanged, view.ScrollableContentSizeChanged)
 
-    elementData.trySetEventHandler(PKey.scrollBar.sliderPositionChanged, view.SliderPositionChanged)
+    terminalElement.trySetEventHandler(PKey.scrollBar.sliderPositionChanged, view.SliderPositionChanged)
 
 
   override this.newView() = new ScrollBar()
@@ -2664,11 +2755,14 @@ type ScrollBarElement(props: Props) =
 type ScrollSliderElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> ScrollSlider
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ScrollSlider
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -2687,21 +2781,22 @@ type ScrollSliderElement(props: Props) =
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
     |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.scrollSlider.positionChanged
+    terminalElement.tryRemoveEventHandler PKey.scrollSlider.positionChanged
 
-    elementData.tryRemoveEventHandler PKey.scrollSlider.positionChanging
+    terminalElement.tryRemoveEventHandler PKey.scrollSlider.positionChanging
 
-    elementData.tryRemoveEventHandler PKey.scrollSlider.scrolled
+    terminalElement.tryRemoveEventHandler PKey.scrollSlider.scrolled
 
   override _.name = $"ScrollSlider"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> ScrollSlider
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> ScrollSlider
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -2720,11 +2815,11 @@ type ScrollSliderElement(props: Props) =
     |> Props.tryFind PKey.scrollSlider.visibleContentSize
     |> Option.iter (fun v -> view.VisibleContentSize <- v)
     // Events
-    elementData.trySetEventHandler(PKey.scrollSlider.positionChanged, view.PositionChanged)
+    terminalElement.trySetEventHandler(PKey.scrollSlider.positionChanged, view.PositionChanged)
 
-    elementData.trySetEventHandler(PKey.scrollSlider.positionChanging, view.PositionChanging)
+    terminalElement.trySetEventHandler(PKey.scrollSlider.positionChanging, view.PositionChanging)
 
-    elementData.trySetEventHandler(PKey.scrollSlider.scrolled, view.Scrolled)
+    terminalElement.trySetEventHandler(PKey.scrollSlider.scrolled, view.Scrolled)
 
 
   override this.newView() = new ScrollSlider()
@@ -2734,11 +2829,14 @@ type ScrollSliderElement(props: Props) =
 type SliderElement<'a>(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Slider<'a>
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Slider<'a>
+
     // Interfaces
-    OrientationInterface.removeProps elementData view props
+    OrientationInterface.removeProps terminalElement view props
 
     // Properties
     props
@@ -2789,19 +2887,20 @@ type SliderElement<'a>(props: Props) =
     |> Props.tryFind PKey.slider<'a>.useMinimumSize
     |> Option.iter (fun _ -> view.UseMinimumSize <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.slider.optionFocused
+    terminalElement.tryRemoveEventHandler PKey.slider.optionFocused
 
-    elementData.tryRemoveEventHandler PKey.slider.optionsChanged
+    terminalElement.tryRemoveEventHandler PKey.slider.optionsChanged
 
   override _.name = $"Slider<'a>"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Slider<'a>
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Slider<'a>
 
     // Interfaces
-    OrientationInterface.setProps elementData view props
+    OrientationInterface.setProps terminalElement view props
 
     // Properties
     props
@@ -2852,9 +2951,9 @@ type SliderElement<'a>(props: Props) =
     |> Props.tryFind PKey.slider.useMinimumSize
     |> Option.iter (fun v -> view.UseMinimumSize <- v)
     // Events
-    elementData.trySetEventHandler(PKey.slider.optionFocused, view.OptionFocused)
+    terminalElement.trySetEventHandler(PKey.slider.optionFocused, view.OptionFocused)
 
-    elementData.trySetEventHandler(PKey.slider.optionsChanged, view.OptionsChanged)
+    terminalElement.trySetEventHandler(PKey.slider.optionsChanged, view.OptionsChanged)
 
 
   override this.newView() = new Slider<'a>()
@@ -2866,12 +2965,12 @@ type SliderElement<'a>(props: Props) =
 type SliderElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events Slider
 
   override _.name = $"Slider"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events Slider
 
   override this.newView() = new Slider()
@@ -2880,9 +2979,12 @@ type SliderElement(props: Props) =
 type SpinnerViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> SpinnerView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> SpinnerView
+
     // Properties
     props
     |> Props.tryFind PKey.spinnerView.autoSpin
@@ -2910,10 +3012,11 @@ type SpinnerViewElement(props: Props) =
 
   override _.name = $"SpinnerView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> SpinnerView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> SpinnerView
 
     // Properties
     props
@@ -2947,12 +3050,12 @@ type SpinnerViewElement(props: Props) =
 type StatusBarElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events StatusBar
 
   override _.name = $"StatusBar"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events StatusBar
 
 
@@ -2962,9 +3065,12 @@ type StatusBarElement(props: Props) =
 type TabElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Tab
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Tab
+
     // Properties
     props
     |> Props.tryFind PKey.tab.displayText
@@ -2976,10 +3082,11 @@ type TabElement(props: Props) =
 
   override _.name = $"Tab"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Tab
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Tab
 
     // Properties
     props
@@ -2996,9 +3103,12 @@ type TabElement(props: Props) =
 type TabViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TabView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TabView
+
     // Properties
     props
     |> Props.tryFind PKey.tabView.maxTabTextWidth
@@ -3016,16 +3126,17 @@ type TabViewElement(props: Props) =
     |> Props.tryFind PKey.tabView.tabScrollOffset
     |> Option.iter (fun _ -> view.TabScrollOffset <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.tabView.selectedTabChanged
+    terminalElement.tryRemoveEventHandler PKey.tabView.selectedTabChanged
 
-    elementData.tryRemoveEventHandler PKey.tabView.tabClicked
+    terminalElement.tryRemoveEventHandler PKey.tabView.tabClicked
 
   override _.name = $"TabView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TabView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TabView
 
     // Properties
     props
@@ -3044,16 +3155,16 @@ type TabViewElement(props: Props) =
     |> Props.tryFind PKey.tabView.tabScrollOffset
     |> Option.iter (fun v -> view.TabScrollOffset <- v)
     // Events
-    elementData.trySetEventHandler(PKey.tabView.selectedTabChanged, view.SelectedTabChanged)
+    terminalElement.trySetEventHandler(PKey.tabView.selectedTabChanged, view.SelectedTabChanged)
 
-    elementData.trySetEventHandler(PKey.tabView.tabClicked, view.TabClicked)
+    terminalElement.trySetEventHandler(PKey.tabView.tabClicked, view.TabClicked)
 
     // Additional properties
     props
     |> Props.tryFind PKey.tabView.tabs
     |> Option.iter (fun tabItems ->
       tabItems
-      |> Seq.iter (fun tabItem -> view.AddTab((tabItem :?> IInternalTerminalElement).view :?> Tab, false))
+      |> Seq.iter (fun tabItem -> view.AddTab((tabItem :?> IInternalTerminalElement).View :?> Tab, false))
     )
 
   override this.SubElements_PropKeys =
@@ -3066,9 +3177,12 @@ type TabViewElement(props: Props) =
 type TableViewElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TableView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TableView
+
     // Properties
     props
     |> Props.tryFind PKey.tableView.cellActivationKey
@@ -3126,18 +3240,19 @@ type TableViewElement(props: Props) =
     |> Props.tryFind PKey.tableView.table
     |> Option.iter (fun _ -> view.Table <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.tableView.cellActivated
+    terminalElement.tryRemoveEventHandler PKey.tableView.cellActivated
 
-    elementData.tryRemoveEventHandler PKey.tableView.cellToggled
+    terminalElement.tryRemoveEventHandler PKey.tableView.cellToggled
 
-    elementData.tryRemoveEventHandler PKey.tableView.selectedCellChanged
+    terminalElement.tryRemoveEventHandler PKey.tableView.selectedCellChanged
 
   override _.name = $"TableView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TableView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TableView
 
     // Properties
     props
@@ -3196,11 +3311,11 @@ type TableViewElement(props: Props) =
     |> Props.tryFind PKey.tableView.table
     |> Option.iter (fun v -> view.Table <- v)
     // Events
-    elementData.trySetEventHandler(PKey.tableView.cellActivated, view.CellActivated)
+    terminalElement.trySetEventHandler(PKey.tableView.cellActivated, view.CellActivated)
 
-    elementData.trySetEventHandler(PKey.tableView.cellToggled, view.CellToggled)
+    terminalElement.trySetEventHandler(PKey.tableView.cellToggled, view.CellToggled)
 
-    elementData.trySetEventHandler(PKey.tableView.selectedCellChanged, view.SelectedCellChanged)
+    terminalElement.trySetEventHandler(PKey.tableView.selectedCellChanged, view.SelectedCellChanged)
 
 
   override this.newView() = new TableView()
@@ -3209,9 +3324,12 @@ type TableViewElement(props: Props) =
 type TextFieldElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TextField
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextField
+
     // Properties
     props
     |> Props.tryFind PKey.textField.autocomplete
@@ -3249,14 +3367,15 @@ type TextFieldElement(props: Props) =
     |> Props.tryFind PKey.textField.useSameRuneTypeForWords
     |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.textField.textChanging
+    terminalElement.tryRemoveEventHandler PKey.textField.textChanging
 
   override _.name = $"TextField"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TextField
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextField
 
     // Properties
     props
@@ -3295,7 +3414,7 @@ type TextFieldElement(props: Props) =
     |> Props.tryFind PKey.textField.useSameRuneTypeForWords
     |> Option.iter (fun v -> view.UseSameRuneTypeForWords <- v)
     // Events
-    elementData.trySetEventHandler(PKey.textField.textChanging, view.TextChanging)
+    terminalElement.trySetEventHandler(PKey.textField.textChanging, view.TextChanging)
 
 
   override this.newView() = new TextField()
@@ -3304,9 +3423,12 @@ type TextFieldElement(props: Props) =
 type TextValidateFieldElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TextValidateField
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextValidateField
+
     // Properties
     props
     |> Props.tryFind PKey.textValidateField.provider
@@ -3318,10 +3440,11 @@ type TextValidateFieldElement(props: Props) =
 
   override _.name = $"TextValidateField"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TextValidateField
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextValidateField
 
     // Properties
     props
@@ -3340,9 +3463,12 @@ type TextViewElement(props: Props) =
   inherit TerminalElement(props)
 
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TextView
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextView
+
     // Properties
     props
     |> Props.tryFind PKey.textView.allowsReturn
@@ -3416,28 +3542,29 @@ type TextViewElement(props: Props) =
     |> Props.tryFind PKey.textView.wordWrap
     |> Option.iter (fun _ -> view.WordWrap <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.textView.contentsChanged
+    terminalElement.tryRemoveEventHandler PKey.textView.contentsChanged
 
-    elementData.tryRemoveEventHandler PKey.textView.drawNormalColor
+    terminalElement.tryRemoveEventHandler PKey.textView.drawNormalColor
 
-    elementData.tryRemoveEventHandler PKey.textView.drawReadOnlyColor
+    terminalElement.tryRemoveEventHandler PKey.textView.drawReadOnlyColor
 
-    elementData.tryRemoveEventHandler PKey.textView.drawSelectionColor
+    terminalElement.tryRemoveEventHandler PKey.textView.drawSelectionColor
 
-    elementData.tryRemoveEventHandler PKey.textView.drawUsedColor
+    terminalElement.tryRemoveEventHandler PKey.textView.drawUsedColor
 
-    elementData.tryRemoveEventHandler PKey.textView.unwrappedCursorPosition
+    terminalElement.tryRemoveEventHandler PKey.textView.unwrappedCursorPosition
 
     // Additional properties
-    elementData.tryRemoveEventHandler PKey.textView.textChanged
+    terminalElement.tryRemoveEventHandler PKey.textView.textChanged
 
 
   override _.name = $"TextView"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TextView
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TextView
 
     // Properties
     props
@@ -3512,20 +3639,20 @@ type TextViewElement(props: Props) =
     |> Props.tryFind PKey.textView.wordWrap
     |> Option.iter (fun v -> view.WordWrap <- v)
     // Events
-    elementData.trySetEventHandler(PKey.textView.contentsChanged, view.ContentsChanged)
+    terminalElement.trySetEventHandler(PKey.textView.contentsChanged, view.ContentsChanged)
 
-    elementData.trySetEventHandler(PKey.textView.drawNormalColor, view.DrawNormalColor)
+    terminalElement.trySetEventHandler(PKey.textView.drawNormalColor, view.DrawNormalColor)
 
-    elementData.trySetEventHandler(PKey.textView.drawReadOnlyColor, view.DrawReadOnlyColor)
+    terminalElement.trySetEventHandler(PKey.textView.drawReadOnlyColor, view.DrawReadOnlyColor)
 
-    elementData.trySetEventHandler(PKey.textView.drawSelectionColor, view.DrawSelectionColor)
+    terminalElement.trySetEventHandler(PKey.textView.drawSelectionColor, view.DrawSelectionColor)
 
-    elementData.trySetEventHandler(PKey.textView.drawUsedColor, view.DrawUsedColor)
+    terminalElement.trySetEventHandler(PKey.textView.drawUsedColor, view.DrawUsedColor)
 
-    elementData.trySetEventHandler(PKey.textView.unwrappedCursorPosition, view.UnwrappedCursorPosition)
+    terminalElement.trySetEventHandler(PKey.textView.unwrappedCursorPosition, view.UnwrappedCursorPosition)
 
     // Additional properties
-    elementData.trySetEventHandler(PKey.textView.textChanged, view.ContentsChanged)
+    terminalElement.trySetEventHandler(PKey.textView.textChanged, view.ContentsChanged)
 
 
   override this.newView() = new TextView()
@@ -3534,9 +3661,12 @@ type TextViewElement(props: Props) =
 type TimeFieldElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TimeField
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TimeField
+
     // Properties
     props
     |> Props.tryFind PKey.timeField.cursorPosition
@@ -3550,14 +3680,15 @@ type TimeFieldElement(props: Props) =
     |> Props.tryFind PKey.timeField.time
     |> Option.iter (fun _ -> view.Time <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.timeField.timeChanged
+    terminalElement.tryRemoveEventHandler PKey.timeField.timeChanged
 
   override _.name = $"TimeField"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TimeField
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TimeField
 
     // Properties
     props
@@ -3572,7 +3703,7 @@ type TimeFieldElement(props: Props) =
     |> Props.tryFind PKey.timeField.time
     |> Option.iter (fun v -> view.Time <- v)
     // Events
-    elementData.trySetEventHandler(PKey.timeField.timeChanged, view.TimeChanged)
+    terminalElement.trySetEventHandler(PKey.timeField.timeChanged, view.TimeChanged)
 
 
   override this.newView() = new TimeField()
@@ -3581,9 +3712,12 @@ type TimeFieldElement(props: Props) =
 type RunnableElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Runnable
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Runnable
+
     // Properties
     props
     |> Props.tryFind PKey.runnable.isModal
@@ -3602,18 +3736,19 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
 
     // Events
-    elementData.tryRemoveEventHandler PKey.runnable.isRunningChanging
+    terminalElement.tryRemoveEventHandler PKey.runnable.isRunningChanging
 
-    elementData.tryRemoveEventHandler PKey.runnable.isRunningChanged
+    terminalElement.tryRemoveEventHandler PKey.runnable.isRunningChanged
 
-    elementData.tryRemoveEventHandler PKey.runnable.isModalChanged
+    terminalElement.tryRemoveEventHandler PKey.runnable.isModalChanged
 
   override _.name = $"Runnable"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Runnable
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Runnable
 
     // Properties
     props
@@ -3633,11 +3768,11 @@ type RunnableElement(props: Props) =
     |> Option.iter (fun v -> view.Result <- v)
 
     // Events
-    elementData.trySetEventHandler(PKey.runnable.isRunningChanging, view.IsRunningChanging)
+    terminalElement.trySetEventHandler(PKey.runnable.isRunningChanging, view.IsRunningChanging)
 
-    elementData.trySetEventHandler(PKey.runnable.isRunningChanged, view.IsRunningChanged)
+    terminalElement.trySetEventHandler(PKey.runnable.isRunningChanged, view.IsRunningChanged)
 
-    elementData.trySetEventHandler(PKey.runnable.isModalChanged, view.IsModalChanged)
+    terminalElement.trySetEventHandler(PKey.runnable.isModalChanged, view.IsModalChanged)
 
 
   override this.newView() = new Runnable()
@@ -3647,9 +3782,12 @@ type RunnableElement(props: Props) =
 type TreeViewElement<'a when 'a: not struct>(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> TreeView<'a>
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TreeView<'a>
+
     // Properties
     props
     |> Props.tryFind PKey.treeView<'a>.allowLetterBasedNavigation
@@ -3699,18 +3837,19 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
     |> Props.tryFind PKey.treeView<'a>.treeBuilder
     |> Option.iter (fun _ -> view.TreeBuilder <- Unchecked.defaultof<_>)
     // Events
-    elementData.tryRemoveEventHandler PKey.treeView<'a>.drawLine
+    terminalElement.tryRemoveEventHandler PKey.treeView<'a>.drawLine
 
-    elementData.tryRemoveEventHandler PKey.treeView<'a>.objectActivated
+    terminalElement.tryRemoveEventHandler PKey.treeView<'a>.objectActivated
 
-    elementData.tryRemoveEventHandler PKey.treeView<'a>.selectionChanged
+    terminalElement.tryRemoveEventHandler PKey.treeView<'a>.selectionChanged
 
   override _.name = $"TreeView<'a>"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> TreeView<'a>
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> TreeView<'a>
 
     // Properties
     props
@@ -3763,15 +3902,15 @@ type TreeViewElement<'a when 'a: not struct>(props: Props) =
     // Events
     props
     |> Props.tryFind PKey.treeView<'a>.drawLine
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.treeView<'a>.drawLine, view.DrawLine, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.treeView<'a>.drawLine, view.DrawLine, v))
 
     props
     |> Props.tryFind PKey.treeView<'a>.objectActivated
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.treeView<'a>.objectActivated, view.ObjectActivated, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.treeView<'a>.objectActivated, view.ObjectActivated, v))
 
     props
     |> Props.tryFind PKey.treeView<'a>.selectionChanged
-    |> Option.iter (fun v -> elementData.EventRegistry.setEventHandler(PKey.treeView<'a>.selectionChanged, view.SelectionChanged, v))
+    |> Option.iter (fun v -> terminalElement.EventRegistry.setEventHandler(PKey.treeView<'a>.selectionChanged, view.SelectionChanged, v))
 
   override this.newView() = new TreeView<'a>()
 
@@ -3786,12 +3925,12 @@ type TreeViewElement(props: Props) =
 type WindowElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) = base.removeProps (elementData, props)
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) = base.removeProps (terminalElement, props)
   // No properties or events Window
 
   override _.name = $"Window"
 
-  override _.setProps(elementData: ElementData, props: Props) = base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) = base.setProps (terminalElement, props)
   // No properties or events Window
 
 
@@ -3801,9 +3940,12 @@ type WindowElement(props: Props) =
 type WizardElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> Wizard
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Wizard
+
     // Properties
     props
     |> Props.tryFind PKey.wizard.currentStep
@@ -3813,24 +3955,25 @@ type WizardElement(props: Props) =
     |> Props.tryFind PKey.wizard.modal
     |> Option.iter (fun _ -> view.SetIsModal(Unchecked.defaultof<_>))
     // Events
-    elementData.tryRemoveEventHandler PKey.wizard.cancelled
+    terminalElement.tryRemoveEventHandler PKey.wizard.cancelled
 
-    elementData.tryRemoveEventHandler PKey.wizard.finished
+    terminalElement.tryRemoveEventHandler PKey.wizard.finished
 
-    elementData.tryRemoveEventHandler PKey.wizard.movingBack
+    terminalElement.tryRemoveEventHandler PKey.wizard.movingBack
 
-    elementData.tryRemoveEventHandler PKey.wizard.movingNext
+    terminalElement.tryRemoveEventHandler PKey.wizard.movingNext
 
-    elementData.tryRemoveEventHandler PKey.wizard.stepChanged
+    terminalElement.tryRemoveEventHandler PKey.wizard.stepChanged
 
-    elementData.tryRemoveEventHandler PKey.wizard.stepChanging
+    terminalElement.tryRemoveEventHandler PKey.wizard.stepChanging
 
   override _.name = $"Wizard"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> Wizard
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Wizard
 
     // Properties
     props
@@ -3841,17 +3984,17 @@ type WizardElement(props: Props) =
     |> Props.tryFind PKey.wizard.modal
     |> Option.iter (fun v -> view.SetIsModal(v))
     // Events
-    elementData.trySetEventHandler(PKey.wizard.cancelled, view.Cancelled)
+    terminalElement.trySetEventHandler(PKey.wizard.cancelled, view.Cancelled)
 
-    elementData.trySetEventHandler(PKey.wizard.finished, view.Finished)
+    terminalElement.trySetEventHandler(PKey.wizard.finished, view.Finished)
 
-    elementData.trySetEventHandler(PKey.wizard.movingBack, view.MovingBack)
+    terminalElement.trySetEventHandler(PKey.wizard.movingBack, view.MovingBack)
 
-    elementData.trySetEventHandler(PKey.wizard.movingNext, view.MovingNext)
+    terminalElement.trySetEventHandler(PKey.wizard.movingNext, view.MovingNext)
 
-    elementData.trySetEventHandler(PKey.wizard.stepChanged, view.StepChanged)
+    terminalElement.trySetEventHandler(PKey.wizard.stepChanged, view.StepChanged)
 
-    elementData.trySetEventHandler(PKey.wizard.stepChanging, view.StepChanging)
+    terminalElement.trySetEventHandler(PKey.wizard.stepChanging, view.StepChanging)
 
 
   override this.newView() = new Wizard()
@@ -3860,9 +4003,12 @@ type WizardElement(props: Props) =
 type WizardStepElement(props: Props) =
   inherit TerminalElement(props)
 
-  override _.removeProps(elementData: ElementData, props: Props) =
-    base.removeProps (elementData, props)
-    let view = elementData.View :?> WizardStep
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps (terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> WizardStep
+
     // Properties
     props
     |> Props.tryFind PKey.wizardStep.backButtonText
@@ -3878,10 +4024,11 @@ type WizardStepElement(props: Props) =
 
   override _.name = $"WizardStep"
 
-  override _.setProps(elementData: ElementData, props: Props) =
-    base.setProps (elementData, props)
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps (terminalElement, props)
 
-    let view = elementData.View :?> WizardStep
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> WizardStep
 
     // Properties
     props

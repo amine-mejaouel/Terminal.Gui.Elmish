@@ -2,38 +2,23 @@
 
 module internal Differ =
 
-  let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
-    let cve1 =
-      ve1.children
-      |> Seq.map (fun e -> e.name)
-      |> Seq.toList
-      |> List.sort
+  let sortedChildNames (ve: IInternalTerminalElement) =
+    ve.children
+    |> Seq.map (fun e -> e.name)
+    |> Seq.toList
+    |> List.sort
 
-    let cve2 =
-      ve2.children
-      |> Seq.map (fun e -> e.name)
-      |> Seq.toList
-      |> List.sort
-    //let cve1 = getChildrenNames(ve1)
-    //let cve2 = getChildrenNames(ve2)
+  let (|OnlyPropsChanged|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
+
+    let cve1 = sortedChildNames ve1
+    let cve2 = sortedChildNames ve2
 
     if cve1 = cve2 then Some() else None
 
-  let (|ChildsDifferent|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
-    //let cve1 = getChildrenNames(ve1)
-    //let cve2 = getChildrenNames(ve2)
+  let (|DifferentChildren|_|) (ve1: IInternalTerminalElement, ve2: IInternalTerminalElement) =
 
-    let cve1 =
-      ve1.children
-      |> Seq.map (fun e -> e.name)
-      |> Seq.toList
-      |> List.sort
-
-    let cve2 =
-      ve2.children
-      |> Seq.map (fun e -> e.name)
-      |> Seq.toList
-      |> List.sort
+    let cve1 = sortedChildNames ve1
+    let cve2 = sortedChildNames ve2
 
     if cve1 <> cve2 then Some() else None
 
@@ -48,7 +33,7 @@ module internal Differ =
       | rt, nt when rt.name <> nt.name ->
 
         let parent =
-          prevTree.view |> Interop.getParent
+          prevTree.View |> Interop.getParent
 
         prevTree.Dispose()
 
@@ -56,10 +41,7 @@ module internal Differ =
 
       | OnlyPropsChanged ->
 
-        let prevElementData = prevTree.detachElementData()
-
-        PositionService.Current.SignalReuse prevElementData
-        newTree.reuse prevElementData
+        newTree.reuse prevTree
 
         let sortedRootChildren =
           prevTree.children
@@ -77,12 +59,9 @@ module internal Differ =
         prevTree.Dispose()
 
       // TODO: should also consider the SubElements in the pattern matching
-      | ChildsDifferent ->
+      | DifferentChildren ->
 
-        let prevElementData = prevTree.detachElementData()
-
-        PositionService.Current.SignalReuse prevElementData
-        newTree.reuse prevElementData
+        newTree.reuse prevTree
 
         let allTypes =
           seq {
@@ -94,7 +73,7 @@ module internal Differ =
           |> Seq.toList
 
         let prevParent =
-          prevElementData.view
+          prevTree.View
 
         allTypes
         |> List.iter (fun et ->
@@ -117,8 +96,8 @@ module internal Differ =
                 // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                 // don't know
                 // TODO: check if this is still needed
-                if prevElementData.view.SubViews.Count = 0 then
-                  prevElementData.view.CanFocus <- true
+                if prevTree.View.SubViews.Count = 0 then
+                  prevTree.View.CanFocus <- true
 
                 let newElem =
                   ne.initializeTree (Some prevParent)

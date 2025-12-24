@@ -1,1 +1,4 @@
-FSharp.Core
+Terminal.Gui
+
+group generator
+Fabulous.AST

@@ -42,7 +42,8 @@
     <Compile Include="Types.fs" />
     <Compile Include="PKey.fs" />
     <Compile Include="PositionService.fs" />
-    <Compile Include="Elements.fs" />
+    <Compile Include="TerminalElement.Base.fs" />
+    <Compile Include="TerminalElement.Elements.fs" />
     <Compile Include="Props.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="Views.fs" />

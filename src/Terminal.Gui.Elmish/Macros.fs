@@ -1,7 +1,5 @@
 namespace Terminal.Gui.Elmish
 
-open Terminal.Gui.Elmish.Elements
-
 type menuBarItemMacros internal (props: menuBarItemProps) =
   member _.menuItems(value: ITerminalElement list) =
     let popoverMenu =

@@ -9,7 +9,6 @@ namespace Terminal.Gui.Elmish
 
 open System
 open Terminal.Gui.Elmish
-open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 

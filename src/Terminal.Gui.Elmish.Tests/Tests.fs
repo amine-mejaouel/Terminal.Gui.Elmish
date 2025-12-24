@@ -3,7 +3,6 @@
 open System.Linq
 open NUnit.Framework
 open Terminal.Gui.Elmish
-open Terminal.Gui.Elmish.Elements
 open Terminal.Gui.Views
 open Elmish
 

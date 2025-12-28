@@ -4,11 +4,16 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
-    <RootNamespace>Terminal.Gui.Elemish.Generator</RootNamespace>
+    <RootNamespace>Terminal.Gui.Elmish.Generator</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="File.fs" />
     <Compile Include="Program.fs" />
     <Content Include="paket.references" />
+    <None Include="..\..\Terminal.Gui.Elmish\TerminalElement.Elements.fs">
+      <Link>src\TerminalElement.Elements.fs</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

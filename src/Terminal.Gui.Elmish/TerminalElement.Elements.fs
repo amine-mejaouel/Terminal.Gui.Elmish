@@ -9,32 +9,9 @@ open Terminal.Gui.Views
 type internal AdornmentElement(props: Props) =
   inherit ViewTerminalElement(props)
 
-  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
-
-    let terminalElement = terminalElement :?> TerminalElement
-
-    base.removeProps (terminalElement, props)
-    let view = terminalElement.View :?> Adornment
-    // Properties
-    props
-    |> Props.tryFind PKey.adornment.diagnostics
-    |> Option.iter (fun _ -> view.Diagnostics <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.adornment.superViewRendersLineCanvas
-    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.adornment.thickness
-    |> Option.iter (fun _ -> view.Thickness <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.adornment.viewport
-    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
-    // Events
-    terminalElement.tryRemoveEventHandler PKey.adornment.thicknessChanged
-
   override _.name = $"Adornment"
+
+  override _.newView() = new Adornment()
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps (terminalElement, props)
@@ -61,7 +38,30 @@ type internal AdornmentElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.adornment.thicknessChanged, view.ThicknessChanged)
 
-  override this.newView() = new Adornment()
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+
+    let terminalElement = terminalElement :?> TerminalElement
+
+    base.removeProps (terminalElement, props)
+    let view = terminalElement.View :?> Adornment
+    // Properties
+    props
+    |> Props.tryFind PKey.adornment.diagnostics
+    |> Option.iter (fun _ -> view.Diagnostics <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.adornment.superViewRendersLineCanvas
+    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.adornment.thickness
+    |> Option.iter (fun _ -> view.Thickness <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.adornment.viewport
+    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
+    // Events
+    terminalElement.tryRemoveEventHandler PKey.adornment.thicknessChanged
 
 
 // Bar

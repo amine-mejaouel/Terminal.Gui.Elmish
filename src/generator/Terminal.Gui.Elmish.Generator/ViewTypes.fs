@@ -61,7 +61,7 @@ let orderedByInheritance =
   let pendingTypes = System.Collections.Generic.List<Type>()
   seq {
     yield typeof<Terminal.Gui.ViewBase.View>
-    
+
     for viewType in viewTypes do
       if parentIsReturned returnedTypes viewType then
         returnedTypes.Add viewType

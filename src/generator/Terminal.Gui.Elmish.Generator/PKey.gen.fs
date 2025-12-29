@@ -3,41 +3,23 @@ module Terminal.Gui.Elmish.Generator.PKey_gen
 open System
 open System.IO
 
-let lowerCamelCase (s: String) =
-  if String.IsNullOrEmpty s then s
-  else s.[0..0].ToLower() + s.[1..]
-
 let escapeReservedKeywords (name: string) =
   match name with
-  | "type" | "module" | "open" | "let" | "in" | "do" | "if" | "then" | "else" 
-  | "match" | "with" | "function" | "val" | "mutable" | "when" | "rec" 
+  | "type" | "module" | "open" | "let" | "in" | "do" | "if" | "then" | "else"
+  | "match" | "with" | "function" | "val" | "mutable" | "when" | "rec"
   | "begin" | "end" | "for" | "to" | "done" | "while" | "and" | "or"
   | "not" | "true" | "false" | "namespace" | "as" | "assert" | "inherit" -> $"``{name}``"
   | _ -> name
 
-let properties (viewType: Type) =
-  viewType.GetProperties(
-    System.Reflection.BindingFlags.Public |||
-    System.Reflection.BindingFlags.Instance |||
-    System.Reflection.BindingFlags.DeclaredOnly)
-  |> Array.filter (fun p -> p.CanRead && p.CanWrite)
-
-let events (viewType: Type) =
-  viewType.GetEvents(
-    System.Reflection.BindingFlags.Public |||
-    System.Reflection.BindingFlags.Instance |||
-    System.Reflection.BindingFlags.DeclaredOnly)
-  |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
-
 let rec formatTypeName (t: Type) =
   let name = t.Name
-  
+
   // If this is a generic parameter, just return the name without any prefix
   if t.IsGenericParameter then
     name
   else
     // Handle .NET to F# type mappings
-    let baseName = 
+    let baseName =
       match name with
       | "Boolean" -> "bool"
       | "Int32" -> "int"
@@ -47,7 +29,7 @@ let rec formatTypeName (t: Type) =
       | "Double" -> "float"
       | "Char" -> "char"
       | _ -> name
-    
+
     // Handle generic types
     if t.IsGenericType then
       let genericArgs = t.GetGenericArguments()
@@ -68,7 +50,7 @@ let eventKeyType (event: System.Reflection.EventInfo) =
   if handlerType.IsGenericType && handlerType.Name = "EventHandler`1" then
     let genericArgs = handlerType.GetGenericArguments()
     if genericArgs.Length > 0 then
-      $"IEventPropKey<{formatTypeName genericArgs.[0]} -> unit>"
+      $"IEventPropKey<{formatTypeName genericArgs[0]} -> unit>"
     else
       "IEventPropKey<EventArgs -> unit>"
   else
@@ -79,26 +61,26 @@ let generatePKeyClass (viewType: Type) =
     let typeName = viewType.Name
     // Remove generic suffix from type name for class name
     let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-    let className = lowerCamelCase cleanTypeName
-    let parentType = ViewTypes.parentViewType viewType
-    
+    let className = String.lowerCamelCase cleanTypeName
+    let parentType = ViewType.parentViewType viewType
+
     yield $"  // {cleanTypeName}"
-    
+
     // Handle generic types properly
     if viewType.IsGenericType then
       let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
       yield $"  type {className}PKeys<{genericParams}>() ="
     else
       yield $"  type {className}PKeys() ="
-    
+
     // Handle inheritance
     let isViewBaseType = viewType.Name = "View" || viewType.FullName.Contains("Terminal.Gui.ViewBase.View")
-    
+
     if not isViewBaseType then
       match parentType with
       | Some parent when parent.Name <> "View" && not (parent.FullName.Contains("Terminal.Gui.ViewBase.View")) ->
           let parentName = if parent.Name.Contains("`") then parent.Name.Substring(0, parent.Name.IndexOf("`")) else parent.Name
-          let parentClassName = lowerCamelCase parentName
+          let parentClassName = String.lowerCamelCase parentName
           if parent.IsGenericType then
             let genericParams = parent.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
             yield $"    inherit {parentClassName}PKeys<{genericParams}>()"
@@ -106,21 +88,21 @@ let generatePKeyClass (viewType: Type) =
             yield $"    inherit {parentClassName}PKeys()"
       | _ ->
           yield $"    inherit viewPKeys()"
-    
+
     // For View base type, add children property
     if isViewBaseType then
       yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
-    
-    let props = properties viewType
-    let evts = events viewType
-    
+
+    let props = ViewType.properties viewType
+    let evts = ViewType.events viewType
+
     if props.Length > 0 then
       yield "    // Properties"
       for prop in props do
-        let propName = escapeReservedKeywords (lowerCamelCase prop.Name)
-        let keyName = $"{className}.{lowerCamelCase prop.Name}"
-        
+        let propName = escapeReservedKeywords (String.lowerCamelCase prop.Name)
+        let keyName = $"{className}.{String.lowerCamelCase prop.Name}"
+
         // Check if this is a delayed pos property
         if prop.Name = "X" || prop.Name = "Y" then
           yield $"    member val {propName}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
@@ -128,26 +110,26 @@ let generatePKeyClass (viewType: Type) =
         else
           let propType = formatTypeName prop.PropertyType
           yield $"    member val {propName}: ISimplePropKey<{propType}> = PropKey.Create.simple \"{keyName}\""
-    
+
     if evts.Length > 0 then
       if props.Length > 0 then yield ""
       yield "    // Events"
       for event in evts do
-        let eventName = escapeReservedKeywords (lowerCamelCase event.Name)
-        let keyName = $"{className}.{lowerCamelCase event.Name}_event"
+        let eventName = escapeReservedKeywords (String.lowerCamelCase event.Name)
+        let keyName = $"{className}.{String.lowerCamelCase event.Name}_event"
         let eventType = eventKeyType event
         yield $"    member val {eventName}: {eventType} = PropKey.Create.event \"{keyName}\""
-    
+
     yield ""
   }
 
 let generateModuleInstances () =
   seq {
-    for viewType in ViewTypes.orderedByInheritance do
+    for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
       let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-      let className = lowerCamelCase cleanTypeName
-      
+      let className = String.lowerCamelCase cleanTypeName
+
       // Check if it's a generic type
       if viewType.IsGenericType then
         let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
@@ -157,9 +139,9 @@ let generateModuleInstances () =
   }
 
 let generateInterfaceKeys (interfaceType: Type) =
-  let props = properties interfaceType
-  let evts = events interfaceType
-  
+  let props = ViewType.properties interfaceType
+  let evts = ViewType.events interfaceType
+
   // Skip interfaces with no properties or events
   if props.Length = 0 && evts.Length = 0 then
     Seq.empty
@@ -167,23 +149,23 @@ let generateInterfaceKeys (interfaceType: Type) =
     seq {
       let interfaceName = interfaceType.Name
       let cleanName = if interfaceName.StartsWith("I") then interfaceName.Substring(1) else interfaceName
-      let moduleName = $"{lowerCamelCase cleanName}Interface"
-      
+      let moduleName = $"{String.lowerCamelCase cleanName}Interface"
+
       yield $"  // {interfaceName}"
       yield $"  module internal {moduleName} ="
-      
+
       if props.Length > 0 then
         yield "    // Properties"
         for prop in props do
-          let propName = lowerCamelCase prop.Name
+          let propName = String.lowerCamelCase prop.Name
           let propType = formatTypeName prop.PropertyType
           yield $"    let {propName}: ISimplePropKey<{propType}> = PropKey.Create.simple \"{moduleName}.{propName}\""
-      
+
       if evts.Length > 0 then
         if props.Length > 0 then ()
         yield "    // Events"
         for event in evts do
-          let eventName = lowerCamelCase event.Name
+          let eventName = String.lowerCamelCase event.Name
           let eventType = eventKeyType event
           yield $"    let {eventName}: {eventType} = PropKey.Create.event \"{moduleName}.{eventName}_event\""
     }
@@ -203,18 +185,18 @@ let generateOrientationInterface () =
 
 let gen () =
   let outputPath = Path.Combine (Environment.CurrentDirectory, "src", "Terminal.Gui.Elmish", "PKey.fs")
-  
+
   // Get all interfaces from Terminal.Gui that we need to handle
-  let interfaces = 
+  let interfaces =
     typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
-    |> Array.filter (fun t -> 
-      t.IsInterface && 
+    |> Array.filter (fun t ->
+      t.IsInterface &&
       t.Namespace = "Terminal.Gui.ViewBase" &&
       t.Name.StartsWith("I") &&
       t.Name <> "IApplication" &&
       t.Name <> "IDesignTimeProperties")
     |> Array.sortBy (fun t -> t.Name)
-  
+
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
@@ -244,16 +226,16 @@ let gen () =
     yield "[<RequireQualifiedAccess>]"
     yield "module internal PKey ="
     yield ""
-    
+
     // Generate all types - ViewTypes.orderedByInheritance already includes View first
-    for viewType in ViewTypes.orderedByInheritance do
+    for viewType in ViewType.viewTypesOrderedByInheritance do
       yield! generatePKeyClass viewType
-    
+
     // Generate interface keys
     for interfaceType in interfaces do
       yield! generateInterfaceKeys interfaceType
     yield ""
-    
+
     // Generate module instances
     yield! generateModuleInstances ()
   }

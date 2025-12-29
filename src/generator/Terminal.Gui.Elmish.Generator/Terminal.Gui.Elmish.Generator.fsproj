@@ -7,8 +7,9 @@
     <RootNamespace>Terminal.Gui.Elmish.Generator</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="String.fs" />
     <Compile Include="File.fs" />
-    <Compile Include="ViewTypes.fs" />
+    <Compile Include="ViewType.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="TerminalElement.Interfaces.gen.fs" />

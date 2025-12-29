@@ -156,7 +156,41 @@ let generateModuleInstances () =
         yield $"  let {className} = {className}PKeys ()"
   }
 
+let generateInterfaceKeys (interfaceType: Type) =
+  let props = properties interfaceType
+  let evts = events interfaceType
+  
+  // Skip interfaces with no properties or events
+  if props.Length = 0 && evts.Length = 0 then
+    Seq.empty
+  else
+    seq {
+      let interfaceName = interfaceType.Name
+      let cleanName = if interfaceName.StartsWith("I") then interfaceName.Substring(1) else interfaceName
+      let moduleName = $"{lowerCamelCase cleanName}Interface"
+      
+      yield $"  // {interfaceName}"
+      yield $"  module internal {moduleName} ="
+      
+      if props.Length > 0 then
+        yield "    // Properties"
+        for prop in props do
+          let propName = lowerCamelCase prop.Name
+          let propType = formatTypeName prop.PropertyType
+          yield $"    let {propName}: ISimplePropKey<{propType}> = PropKey.Create.simple \"{moduleName}.{propName}\""
+      
+      if evts.Length > 0 then
+        if props.Length > 0 then ()
+        yield "    // Events"
+        for event in evts do
+          let eventName = lowerCamelCase event.Name
+          let eventType = eventKeyType event
+          yield $"    let {eventName}: {eventType} = PropKey.Create.event \"{moduleName}.{eventName}_event\""
+    }
+
 let generateOrientationInterface () =
+  // This is now deprecated, use generateInterfaceKeys instead
+  // Keeping for backward compatibility
   seq {
     yield "  // IOrientation"
     yield "  module internal orientationInterface ="
@@ -169,6 +203,17 @@ let generateOrientationInterface () =
 
 let gen () =
   let outputPath = Path.Combine (Environment.CurrentDirectory, "src", "Terminal.Gui.Elmish", "PKey.fs")
+  
+  // Get all interfaces from Terminal.Gui that we need to handle
+  let interfaces = 
+    typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
+    |> Array.filter (fun t -> 
+      t.IsInterface && 
+      t.Namespace = "Terminal.Gui.ViewBase" &&
+      t.Name.StartsWith("I") &&
+      t.Name <> "IApplication" &&
+      t.Name <> "IDesignTimeProperties")
+    |> Array.sortBy (fun t -> t.Name)
   
   seq {
     yield "namespace Terminal.Gui.Elmish"
@@ -200,31 +245,17 @@ let gen () =
     yield "module internal PKey ="
     yield ""
     
-    // Generate View base type first
-    yield! generatePKeyClass typeof<Terminal.Gui.ViewBase.View>
-    
+    // Generate all types - ViewTypes.orderedByInheritance already includes View first
     for viewType in ViewTypes.orderedByInheritance do
-      // Skip View since we already generated it
-      if viewType.Name <> "View" && not (viewType.FullName.Contains("Terminal.Gui.ViewBase.View")) then
-        yield! generatePKeyClass viewType
+      yield! generatePKeyClass viewType
     
-    yield! generateOrientationInterface ()
+    // Generate interface keys
+    for interfaceType in interfaces do
+      yield! generateInterfaceKeys interfaceType
     yield ""
     
     // Generate module instances
-    yield $"  let view = viewPKeys ()"
-    for viewType in ViewTypes.orderedByInheritance do
-      if viewType.Name <> "View" && not (viewType.FullName.Contains("Terminal.Gui.ViewBase.View")) then
-        let typeName = viewType.Name
-        let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-        let className = lowerCamelCase cleanTypeName
-        
-        // Check if it's a generic type
-        if viewType.IsGenericType then
-          let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-          yield $"  let {className}<{genericParams}> = {className}PKeys<{genericParams}> ()"
-        else
-          yield $"  let {className} = {className}PKeys ()"
+    yield! generateModuleInstances ()
   }
   |> String.concat Environment.NewLine
   |> File.writeAllText outputPath

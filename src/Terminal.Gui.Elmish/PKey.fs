@@ -865,13 +865,17 @@ module internal PKey =
     member val helpText: ISimplePropKey<string> = PropKey.Create.simple "wizardStep.helpText"
     member val nextButtonText: ISimplePropKey<string> = PropKey.Create.simple "wizardStep.nextButtonText"
 
+  // IMouseHeldDown
+  module internal mouseHeldDownInterface =
+    // Events
+    let mouseIsHeldDownTick: IEventPropKey<CancelEventArgs -> unit> = PropKey.Create.event "mouseHeldDownInterface.mouseIsHeldDownTick_event"
   // IOrientation
   module internal orientationInterface =
     // Properties
-    let orientation : ISimplePropKey<Orientation> = PropKey.Create.simple "orientation.orientation"
+    let orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "orientationInterface.orientation"
     // Events
-    let orientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "orientation.orientationChanged_event"
-    let orientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "orientation.orientationChanging_event"
+    let orientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "orientationInterface.orientationChanging_event"
+    let orientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "orientationInterface.orientationChanged_event"
 
   let view = viewPKeys ()
   let adornment = adornmentPKeys ()

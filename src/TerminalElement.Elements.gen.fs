@@ -6,6 +6,606 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 
+type internal ViewTerminalElement(props: Props) =
+
+  override _.name = "View"
+
+  override _.newView() = new Terminal.Gui.ViewBase.View()
+
+  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Terminal.Gui.ViewBase.View
+
+    // Properties
+    props
+    |> Props.tryFind PKey.view.margin
+    |> Option.iter (fun v -> view.Margin <- v)
+
+    props
+    |> Props.tryFind PKey.view.shadowStyle
+    |> Option.iter (fun v -> view.ShadowStyle <- v)
+
+    props
+    |> Props.tryFind PKey.view.border
+    |> Option.iter (fun v -> view.Border <- v)
+
+    props
+    |> Props.tryFind PKey.view.borderStyle
+    |> Option.iter (fun v -> view.BorderStyle <- v)
+
+    props
+    |> Props.tryFind PKey.view.padding
+    |> Option.iter (fun v -> view.Padding <- v)
+
+    props
+    |> Props.tryFind PKey.view.arrangement
+    |> Option.iter (fun v -> view.Arrangement <- v)
+
+    props
+    |> Props.tryFind PKey.view.contentSizeTracksViewport
+    |> Option.iter (fun v -> view.ContentSizeTracksViewport <- v)
+
+    props
+    |> Props.tryFind PKey.view.viewportSettings
+    |> Option.iter (fun v -> view.ViewportSettings <- v)
+
+    props
+    |> Props.tryFind PKey.view.viewport
+    |> Option.iter (fun v -> view.Viewport <- v)
+
+    props
+    |> Props.tryFind PKey.view.data
+    |> Option.iter (fun v -> view.Data <- v)
+
+    props
+    |> Props.tryFind PKey.view.id
+    |> Option.iter (fun v -> view.Id <- v)
+
+    props
+    |> Props.tryFind PKey.view.app
+    |> Option.iter (fun v -> view.App <- v)
+
+    props
+    |> Props.tryFind PKey.view.isInitialized
+    |> Option.iter (fun v -> view.IsInitialized <- v)
+
+    props
+    |> Props.tryFind PKey.view.enabled
+    |> Option.iter (fun v -> view.Enabled <- v)
+
+    props
+    |> Props.tryFind PKey.view.visible
+    |> Option.iter (fun v -> view.Visible <- v)
+
+    props
+    |> Props.tryFind PKey.view.title
+    |> Option.iter (fun v -> view.Title <- v)
+
+    props
+    |> Props.tryFind PKey.view.cursorVisibility
+    |> Option.iter (fun v -> view.CursorVisibility <- v)
+
+    props
+    |> Props.tryFind PKey.view.superViewRendersLineCanvas
+    |> Option.iter (fun v -> view.SuperViewRendersLineCanvas <- v)
+
+    props
+    |> Props.tryFind PKey.view.schemeName
+    |> Option.iter (fun v -> view.SchemeName <- v)
+
+    props
+    |> Props.tryFind PKey.view.superView
+    |> Option.iter (fun v -> view.SuperView <- v)
+
+    props
+    |> Props.tryFind PKey.view.hotKey
+    |> Option.iter (fun v -> view.HotKey <- v)
+
+    props
+    |> Props.tryFind PKey.view.hotKeySpecifier
+    |> Option.iter (fun v -> view.HotKeySpecifier <- v)
+
+    props
+    |> Props.tryFind PKey.view.keyBindings
+    |> Option.iter (fun v -> view.KeyBindings <- v)
+
+    props
+    |> Props.tryFind PKey.view.hotKeyBindings
+    |> Option.iter (fun v -> view.HotKeyBindings <- v)
+
+    props
+    |> Props.tryFind PKey.view.frame
+    |> Option.iter (fun v -> view.Frame <- v)
+
+    props
+    |> Props.tryFind PKey.view.x
+    |> Option.iter (fun v -> view.X <- v)
+
+    props
+    |> Props.tryFind PKey.view.y
+    |> Option.iter (fun v -> view.Y <- v)
+
+    props
+    |> Props.tryFind PKey.view.height
+    |> Option.iter (fun v -> view.Height <- v)
+
+    props
+    |> Props.tryFind PKey.view.width
+    |> Option.iter (fun v -> view.Width <- v)
+
+    props
+    |> Props.tryFind PKey.view.needsLayout
+    |> Option.iter (fun v -> view.NeedsLayout <- v)
+
+    props
+    |> Props.tryFind PKey.view.validatePosDim
+    |> Option.iter (fun v -> view.ValidatePosDim <- v)
+
+    props
+    |> Props.tryFind PKey.view.mouseHeldDown
+    |> Option.iter (fun v -> view.MouseHeldDown <- v)
+
+    props
+    |> Props.tryFind PKey.view.mouseBindings
+    |> Option.iter (fun v -> view.MouseBindings <- v)
+
+    props
+    |> Props.tryFind PKey.view.wantContinuousButtonPressed
+    |> Option.iter (fun v -> view.WantContinuousButtonPressed <- v)
+
+    props
+    |> Props.tryFind PKey.view.wantMousePositionReports
+    |> Option.iter (fun v -> view.WantMousePositionReports <- v)
+
+    props
+    |> Props.tryFind PKey.view.mouseState
+    |> Option.iter (fun v -> view.MouseState <- v)
+
+    props
+    |> Props.tryFind PKey.view.highlightStates
+    |> Option.iter (fun v -> view.HighlightStates <- v)
+
+    props
+    |> Props.tryFind PKey.view.canFocus
+    |> Option.iter (fun v -> view.CanFocus <- v)
+
+    props
+    |> Props.tryFind PKey.view.hasFocus
+    |> Option.iter (fun v -> view.HasFocus <- v)
+
+    props
+    |> Props.tryFind PKey.view.tabStop
+    |> Option.iter (fun v -> view.TabStop <- v)
+
+    props
+    |> Props.tryFind PKey.view.preserveTrailingSpaces
+    |> Option.iter (fun v -> view.PreserveTrailingSpaces <- v)
+
+    props
+    |> Props.tryFind PKey.view.text
+    |> Option.iter (fun v -> view.Text <- v)
+
+    props
+    |> Props.tryFind PKey.view.textAlignment
+    |> Option.iter (fun v -> view.TextAlignment <- v)
+
+    props
+    |> Props.tryFind PKey.view.textDirection
+    |> Option.iter (fun v -> view.TextDirection <- v)
+
+    props
+    |> Props.tryFind PKey.view.textFormatter
+    |> Option.iter (fun v -> view.TextFormatter <- v)
+
+    props
+    |> Props.tryFind PKey.view.verticalTextAlignment
+    |> Option.iter (fun v -> view.VerticalTextAlignment <- v)
+
+    // Events
+    terminalElement.trySetEventHandler(PKey.view.borderStyleChanged, view.BorderStyleChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.commandNotBound, view.CommandNotBound)
+
+    terminalElement.trySetEventHandler(PKey.view.accepting, view.Accepting)
+
+    terminalElement.trySetEventHandler(PKey.view.accepted, view.Accepted)
+
+    terminalElement.trySetEventHandler(PKey.view.activating, view.Activating)
+
+    terminalElement.trySetEventHandler(PKey.view.handlingHotKey, view.HandlingHotKey)
+
+    terminalElement.trySetEventHandler(PKey.view.contentSizeChanged, view.ContentSizeChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.viewportChanged, view.ViewportChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.disposing, view.Disposing)
+
+    terminalElement.trySetEventHandler(PKey.view.initialized, view.Initialized)
+
+    terminalElement.trySetEventHandler(PKey.view.enabledChanged, view.EnabledChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.visibleChanging, view.VisibleChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.visibleChanged, view.VisibleChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.titleChanged, view.TitleChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.titleChanging, view.TitleChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.gettingAttributeForRole, view.GettingAttributeForRole)
+
+    terminalElement.trySetEventHandler(PKey.view.clearingViewport, view.ClearingViewport)
+
+    terminalElement.trySetEventHandler(PKey.view.clearedViewport, view.ClearedViewport)
+
+    terminalElement.trySetEventHandler(PKey.view.drawingText, view.DrawingText)
+
+    terminalElement.trySetEventHandler(PKey.view.drewText, view.DrewText)
+
+    terminalElement.trySetEventHandler(PKey.view.drawingContent, view.DrawingContent)
+
+    terminalElement.trySetEventHandler(PKey.view.drawingSubViews, view.DrawingSubViews)
+
+    terminalElement.trySetEventHandler(PKey.view.drawComplete, view.DrawComplete)
+
+    terminalElement.trySetEventHandler(PKey.view.schemeNameChanging, view.SchemeNameChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.schemeNameChanged, view.SchemeNameChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.gettingScheme, view.GettingScheme)
+
+    terminalElement.trySetEventHandler(PKey.view.schemeChanging, view.SchemeChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.schemeChanged, view.SchemeChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.superViewChanged, view.SuperViewChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.subViewAdded, view.SubViewAdded)
+
+    terminalElement.trySetEventHandler(PKey.view.subViewRemoved, view.SubViewRemoved)
+
+    terminalElement.trySetEventHandler(PKey.view.removed, view.Removed)
+
+    terminalElement.trySetEventHandler(PKey.view.hotKeyChanged, view.HotKeyChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.keyDown, view.KeyDown)
+
+    terminalElement.trySetEventHandler(PKey.view.keyDownNotHandled, view.KeyDownNotHandled)
+
+    terminalElement.trySetEventHandler(PKey.view.keyUp, view.KeyUp)
+
+    terminalElement.trySetEventHandler(PKey.view.frameChanged, view.FrameChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.heightChanging, view.HeightChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.heightChanged, view.HeightChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.widthChanging, view.WidthChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.widthChanged, view.WidthChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.subViewLayout, view.SubViewLayout)
+
+    terminalElement.trySetEventHandler(PKey.view.subViewsLaidOut, view.SubViewsLaidOut)
+
+    terminalElement.trySetEventHandler(PKey.view.mouseEnter, view.MouseEnter)
+
+    terminalElement.trySetEventHandler(PKey.view.mouseLeave, view.MouseLeave)
+
+    terminalElement.trySetEventHandler(PKey.view.mouseEvent, view.MouseEvent)
+
+    terminalElement.trySetEventHandler(PKey.view.mouseWheel, view.MouseWheel)
+
+    terminalElement.trySetEventHandler(PKey.view.mouseStateChanged, view.MouseStateChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.advancingFocus, view.AdvancingFocus)
+
+    terminalElement.trySetEventHandler(PKey.view.canFocusChanged, view.CanFocusChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.focusedChanged, view.FocusedChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.hasFocusChanging, view.HasFocusChanging)
+
+    terminalElement.trySetEventHandler(PKey.view.hasFocusChanged, view.HasFocusChanged)
+
+    terminalElement.trySetEventHandler(PKey.view.textChanged, view.TextChanged)
+
+
+  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.removeProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Terminal.Gui.ViewBase.View
+
+    // Properties
+    props
+    |> Props.tryFind PKey.view.margin
+    |> Option.iter (fun _ -> 
+        view.Margin <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.shadowStyle
+    |> Option.iter (fun _ -> 
+        view.ShadowStyle <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.border
+    |> Option.iter (fun _ -> 
+        view.Border <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.borderStyle
+    |> Option.iter (fun _ -> 
+        view.BorderStyle <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.padding
+    |> Option.iter (fun _ -> 
+        view.Padding <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.arrangement
+    |> Option.iter (fun _ -> 
+        view.Arrangement <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.contentSizeTracksViewport
+    |> Option.iter (fun _ -> 
+        view.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.viewportSettings
+    |> Option.iter (fun _ -> 
+        view.ViewportSettings <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.viewport
+    |> Option.iter (fun _ -> 
+        view.Viewport <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.data
+    |> Option.iter (fun _ -> 
+        view.Data <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.id
+    |> Option.iter (fun _ -> 
+        view.Id <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.app
+    |> Option.iter (fun _ -> 
+        view.App <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.isInitialized
+    |> Option.iter (fun _ -> 
+        view.IsInitialized <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.enabled
+    |> Option.iter (fun _ -> 
+        view.Enabled <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.visible
+    |> Option.iter (fun _ -> 
+        view.Visible <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.title
+    |> Option.iter (fun _ -> 
+        view.Title <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.cursorVisibility
+    |> Option.iter (fun _ -> 
+        view.CursorVisibility <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.superViewRendersLineCanvas
+    |> Option.iter (fun _ -> 
+        view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.schemeName
+    |> Option.iter (fun _ -> 
+        view.SchemeName <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.superView
+    |> Option.iter (fun _ -> 
+        view.SuperView <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.hotKey
+    |> Option.iter (fun _ -> 
+        view.HotKey <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.hotKeySpecifier
+    |> Option.iter (fun _ -> 
+        view.HotKeySpecifier <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.keyBindings
+    |> Option.iter (fun _ -> 
+        view.KeyBindings <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.hotKeyBindings
+    |> Option.iter (fun _ -> 
+        view.HotKeyBindings <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.frame
+    |> Option.iter (fun _ -> 
+        view.Frame <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.x
+    |> Option.iter (fun _ -> 
+        view.X <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.y
+    |> Option.iter (fun _ -> 
+        view.Y <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.height
+    |> Option.iter (fun _ -> 
+        view.Height <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.width
+    |> Option.iter (fun _ -> 
+        view.Width <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.needsLayout
+    |> Option.iter (fun _ -> 
+        view.NeedsLayout <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.validatePosDim
+    |> Option.iter (fun _ -> 
+        view.ValidatePosDim <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.mouseHeldDown
+    |> Option.iter (fun _ -> 
+        view.MouseHeldDown <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.mouseBindings
+    |> Option.iter (fun _ -> 
+        view.MouseBindings <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.wantContinuousButtonPressed
+    |> Option.iter (fun _ -> 
+        view.WantContinuousButtonPressed <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.wantMousePositionReports
+    |> Option.iter (fun _ -> 
+        view.WantMousePositionReports <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.mouseState
+    |> Option.iter (fun _ -> 
+        view.MouseState <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.highlightStates
+    |> Option.iter (fun _ -> 
+        view.HighlightStates <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.canFocus
+    |> Option.iter (fun _ -> 
+        view.CanFocus <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.hasFocus
+    |> Option.iter (fun _ -> 
+        view.HasFocus <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.tabStop
+    |> Option.iter (fun _ -> 
+        view.TabStop <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.preserveTrailingSpaces
+    |> Option.iter (fun _ -> 
+        view.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.text
+    |> Option.iter (fun _ -> 
+        view.Text <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.textAlignment
+    |> Option.iter (fun _ -> 
+        view.TextAlignment <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.textDirection
+    |> Option.iter (fun _ -> 
+        view.TextDirection <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.textFormatter
+    |> Option.iter (fun _ -> 
+        view.TextFormatter <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.view.verticalTextAlignment
+    |> Option.iter (fun _ -> 
+        view.VerticalTextAlignment <- Unchecked.defaultof<_>)
+
+    // Events
+    terminalElement.tryRemoveEventHandler PKey.View.BorderStyleChanged
+    terminalElement.tryRemoveEventHandler PKey.View.CommandNotBound
+    terminalElement.tryRemoveEventHandler PKey.View.Accepting
+    terminalElement.tryRemoveEventHandler PKey.View.Accepted
+    terminalElement.tryRemoveEventHandler PKey.View.Activating
+    terminalElement.tryRemoveEventHandler PKey.View.HandlingHotKey
+    terminalElement.tryRemoveEventHandler PKey.View.ContentSizeChanged
+    terminalElement.tryRemoveEventHandler PKey.View.ViewportChanged
+    terminalElement.tryRemoveEventHandler PKey.View.Disposing
+    terminalElement.tryRemoveEventHandler PKey.View.Initialized
+    terminalElement.tryRemoveEventHandler PKey.View.EnabledChanged
+    terminalElement.tryRemoveEventHandler PKey.View.VisibleChanging
+    terminalElement.tryRemoveEventHandler PKey.View.VisibleChanged
+    terminalElement.tryRemoveEventHandler PKey.View.TitleChanged
+    terminalElement.tryRemoveEventHandler PKey.View.TitleChanging
+    terminalElement.tryRemoveEventHandler PKey.View.GettingAttributeForRole
+    terminalElement.tryRemoveEventHandler PKey.View.ClearingViewport
+    terminalElement.tryRemoveEventHandler PKey.View.ClearedViewport
+    terminalElement.tryRemoveEventHandler PKey.View.DrawingText
+    terminalElement.tryRemoveEventHandler PKey.View.DrewText
+    terminalElement.tryRemoveEventHandler PKey.View.DrawingContent
+    terminalElement.tryRemoveEventHandler PKey.View.DrawingSubViews
+    terminalElement.tryRemoveEventHandler PKey.View.DrawComplete
+    terminalElement.tryRemoveEventHandler PKey.View.SchemeNameChanging
+    terminalElement.tryRemoveEventHandler PKey.View.SchemeNameChanged
+    terminalElement.tryRemoveEventHandler PKey.View.GettingScheme
+    terminalElement.tryRemoveEventHandler PKey.View.SchemeChanging
+    terminalElement.tryRemoveEventHandler PKey.View.SchemeChanged
+    terminalElement.tryRemoveEventHandler PKey.View.SuperViewChanged
+    terminalElement.tryRemoveEventHandler PKey.View.SubViewAdded
+    terminalElement.tryRemoveEventHandler PKey.View.SubViewRemoved
+    terminalElement.tryRemoveEventHandler PKey.View.Removed
+    terminalElement.tryRemoveEventHandler PKey.View.HotKeyChanged
+    terminalElement.tryRemoveEventHandler PKey.View.KeyDown
+    terminalElement.tryRemoveEventHandler PKey.View.KeyDownNotHandled
+    terminalElement.tryRemoveEventHandler PKey.View.KeyUp
+    terminalElement.tryRemoveEventHandler PKey.View.FrameChanged
+    terminalElement.tryRemoveEventHandler PKey.View.HeightChanging
+    terminalElement.tryRemoveEventHandler PKey.View.HeightChanged
+    terminalElement.tryRemoveEventHandler PKey.View.WidthChanging
+    terminalElement.tryRemoveEventHandler PKey.View.WidthChanged
+    terminalElement.tryRemoveEventHandler PKey.View.SubViewLayout
+    terminalElement.tryRemoveEventHandler PKey.View.SubViewsLaidOut
+    terminalElement.tryRemoveEventHandler PKey.View.MouseEnter
+    terminalElement.tryRemoveEventHandler PKey.View.MouseLeave
+    terminalElement.tryRemoveEventHandler PKey.View.MouseEvent
+    terminalElement.tryRemoveEventHandler PKey.View.MouseWheel
+    terminalElement.tryRemoveEventHandler PKey.View.MouseStateChanged
+    terminalElement.tryRemoveEventHandler PKey.View.AdvancingFocus
+    terminalElement.tryRemoveEventHandler PKey.View.CanFocusChanged
+    terminalElement.tryRemoveEventHandler PKey.View.FocusedChanged
+    terminalElement.tryRemoveEventHandler PKey.View.HasFocusChanging
+    terminalElement.tryRemoveEventHandler PKey.View.HasFocusChanged
+    terminalElement.tryRemoveEventHandler PKey.View.TextChanged
+
 type internal AdornmentTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 

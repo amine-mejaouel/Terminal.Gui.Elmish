@@ -3,12 +3,6 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 open System
 open System.IO
 
-
-let viewTypes =
-  typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
-  |> Array.filter _.IsAssignableTo(typeof<Terminal.Gui.ViewBase.View>)
-  |> Array.sortBy _.Name
-
 let properties (viewType: Type) =
   viewType.GetProperties(
     System.Reflection.BindingFlags.Public |||
@@ -81,9 +75,13 @@ let gen () =
     yield "open Terminal.Gui.Views"
     yield ""
     yield ""
-    for viewType in viewTypes do
-      yield $"type internal {viewType.Name}Element(props: Props) ="
-      yield $"  inherit ViewTerminalElement(props)"
+    for viewType in ViewTypes.orderedByInheritance do
+      yield $"type internal {viewType.Name}TerminalElement(props: Props) ="
+      match ViewTypes.parentViewType viewType with
+      | Some t ->
+          yield $"  inherit {t.Name}TerminalElement(props)"
+      | None ->
+        ()
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""

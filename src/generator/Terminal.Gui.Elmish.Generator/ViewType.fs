@@ -98,6 +98,7 @@ let properties (viewType: Type) =
     System.Reflection.BindingFlags.Instance |||
     System.Reflection.BindingFlags.DeclaredOnly)
   |> Array.filter (fun p -> p.CanRead && p.CanWrite)
+  |> Array.sortBy _.Name
 
 let events (viewType: Type) =
   viewType.GetEvents(
@@ -105,3 +106,4 @@ let events (viewType: Type) =
     System.Reflection.BindingFlags.Instance |||
     System.Reflection.BindingFlags.DeclaredOnly)
   |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
+  |> Array.sortBy _.Name

@@ -1,5 +1,5 @@
 [<RequireQualifiedAccess>]
-module Terminal.Gui.Elmish.Generator.ViewTypes
+module Terminal.Gui.Elmish.Generator.ViewType
 
 open System
 
@@ -48,7 +48,7 @@ let private inheritanceChains =
         inhChains @ [ tChain ]
   ) []
 
-let orderedByInheritance =
+let viewTypesOrderedByInheritance =
 
   let parentIsReturned (returnedTypes: System.Collections.Generic.List<Type>) (viewType: Type) =
     match viewType.BaseType with
@@ -91,3 +91,17 @@ let parentViewType (viewType: Type) =
     Some baseType
   else
     None
+
+let properties (viewType: Type) =
+  viewType.GetProperties(
+    System.Reflection.BindingFlags.Public |||
+    System.Reflection.BindingFlags.Instance |||
+    System.Reflection.BindingFlags.DeclaredOnly)
+  |> Array.filter (fun p -> p.CanRead && p.CanWrite)
+
+let events (viewType: Type) =
+  viewType.GetEvents(
+    System.Reflection.BindingFlags.Public |||
+    System.Reflection.BindingFlags.Instance |||
+    System.Reflection.BindingFlags.DeclaredOnly)
+  |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)

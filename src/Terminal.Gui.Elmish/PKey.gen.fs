@@ -2,6 +2,7 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
+open System.Collections.Specialized
 open System.Text
 open System.Drawing
 open System.ComponentModel
@@ -29,9 +30,7 @@ module internal PKey =
     member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple "children"
 
     // Properties
-    member val app: ISimplePropKey<IApplication> = PropKey.Create.simple "view.app"
     member val arrangement: ISimplePropKey<ViewArrangement> = PropKey.Create.simple "view.arrangement"
-    member val border: ISimplePropKey<Border> = PropKey.Create.simple "view.border"
     member val borderStyle: ISimplePropKey<LineStyle> = PropKey.Create.simple "view.borderStyle"
     member val canFocus: ISimplePropKey<bool> = PropKey.Create.simple "view.canFocus"
     member val contentSizeTracksViewport: ISimplePropKey<bool> = PropKey.Create.simple "view.contentSizeTracksViewport"
@@ -43,27 +42,18 @@ module internal PKey =
     member val height: ISimplePropKey<Dim> = PropKey.Create.simple "view.height"
     member val highlightStates: ISimplePropKey<MouseState> = PropKey.Create.simple "view.highlightStates"
     member val hotKey: ISimplePropKey<Key> = PropKey.Create.simple "view.hotKey"
-    member val hotKeyBindings: ISimplePropKey<KeyBindings> = PropKey.Create.simple "view.hotKeyBindings"
     member val hotKeySpecifier: ISimplePropKey<Rune> = PropKey.Create.simple "view.hotKeySpecifier"
     member val id: ISimplePropKey<string> = PropKey.Create.simple "view.id"
     member val isInitialized: ISimplePropKey<bool> = PropKey.Create.simple "view.isInitialized"
-    member val keyBindings: ISimplePropKey<KeyBindings> = PropKey.Create.simple "view.keyBindings"
-    member val margin: ISimplePropKey<Margin> = PropKey.Create.simple "view.margin"
-    member val mouseBindings: ISimplePropKey<MouseBindings> = PropKey.Create.simple "view.mouseBindings"
     member val mouseHeldDown: ISimplePropKey<IMouseHeldDown> = PropKey.Create.simple "view.mouseHeldDown"
-    member val mouseState: ISimplePropKey<MouseState> = PropKey.Create.simple "view.mouseState"
-    member val needsLayout: ISimplePropKey<bool> = PropKey.Create.simple "view.needsLayout"
-    member val padding: ISimplePropKey<Padding> = PropKey.Create.simple "view.padding"
     member val preserveTrailingSpaces: ISimplePropKey<bool> = PropKey.Create.simple "view.preserveTrailingSpaces"
     member val schemeName: ISimplePropKey<string> = PropKey.Create.simple "view.schemeName"
     member val shadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "view.shadowStyle"
-    member val superView: ISimplePropKey<View> = PropKey.Create.simple "view.superView"
     member val superViewRendersLineCanvas: ISimplePropKey<bool> = PropKey.Create.simple "view.superViewRendersLineCanvas"
     member val tabStop: ISimplePropKey<TabBehavior option> = PropKey.Create.simple "view.tabStop"
     member val text: ISimplePropKey<string> = PropKey.Create.simple "view.text"
     member val textAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "view.textAlignment"
     member val textDirection: ISimplePropKey<TextDirection> = PropKey.Create.simple "view.textDirection"
-    member val textFormatter: ISimplePropKey<TextFormatter> = PropKey.Create.simple "view.textFormatter"
     member val title: ISimplePropKey<string> = PropKey.Create.simple "view.title"
     member val validatePosDim: ISimplePropKey<bool> = PropKey.Create.simple "view.validatePosDim"
     member val verticalTextAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "view.verticalTextAlignment"
@@ -162,7 +152,6 @@ module internal PKey =
   type borderPKeys() =
     inherit adornmentPKeys()
     // Properties
-    member val drawIndicator: ISimplePropKey<SpinnerView> = PropKey.Create.simple "border.drawIndicator"
     member val lineStyle: ISimplePropKey<LineStyle> = PropKey.Create.simple "border.lineStyle"
     member val settings: ISimplePropKey<BorderSettings> = PropKey.Create.simple "border.settings"
 
@@ -229,7 +218,6 @@ module internal PKey =
     inherit viewPKeys()
     // Properties
     member val hideDropdownListOnClick: ISimplePropKey<bool> = PropKey.Create.simple "comboBox.hideDropdownListOnClick"
-    member val isShow: ISimplePropKey<bool> = PropKey.Create.simple "comboBox.isShow"
     member val readOnly: ISimplePropKey<bool> = PropKey.Create.simple "comboBox.readOnly"
     member val searchText: ISimplePropKey<string> = PropKey.Create.simple "comboBox.searchText"
     member val selectedItem: ISimplePropKey<int> = PropKey.Create.simple "comboBox.selectedItem"
@@ -314,7 +302,7 @@ module internal PKey =
     member val topItem: ISimplePropKey<int> = PropKey.Create.simple "listView.topItem"
 
     // Events
-    member val collectionChanged: IEventPropKey<EventArgs -> unit> = PropKey.Create.event "listView.collectionChanged_event"
+    member val collectionChanged: IEventPropKey<NotifyCollectionChangedEventArgs -> unit> = PropKey.Create.event "listView.collectionChanged_event"
     member val openSelectedItem: IEventPropKey<ListViewItemEventArgs -> unit> = PropKey.Create.event "listView.openSelectedItem_event"
     member val rowRender: IEventPropKey<ListViewRowEventArgs -> unit> = PropKey.Create.event "listView.rowRender_event"
     member val selectedItemChanged: IEventPropKey<ListViewItemEventArgs -> unit> = PropKey.Create.event "listView.selectedItemChanged_event"
@@ -339,7 +327,6 @@ module internal PKey =
   type menuBarPKeys() =
     inherit menuPKeys()
     // Properties
-    member val active: ISimplePropKey<bool> = PropKey.Create.simple "menuBar.active"
     member val key: ISimplePropKey<Key> = PropKey.Create.simple "menuBar.key"
 
     // Events
@@ -622,15 +609,11 @@ module internal PKey =
     inherit viewPKeys()
     // Properties
     member val autocomplete: ISimplePropKey<IAutocomplete> = PropKey.Create.simple "textField.autocomplete"
-    member val contextMenu: ISimplePropKey<PopoverMenu> = PropKey.Create.simple "textField.contextMenu"
     member val cursorPosition: ISimplePropKey<int> = PropKey.Create.simple "textField.cursorPosition"
     member val readOnly: ISimplePropKey<bool> = PropKey.Create.simple "textField.readOnly"
-    member val scrollOffset: ISimplePropKey<int> = PropKey.Create.simple "textField.scrollOffset"
     member val secret: ISimplePropKey<bool> = PropKey.Create.simple "textField.secret"
     member val selectWordOnlyOnDoubleClick: ISimplePropKey<bool> = PropKey.Create.simple "textField.selectWordOnlyOnDoubleClick"
-    member val selectedLength: ISimplePropKey<int> = PropKey.Create.simple "textField.selectedLength"
     member val selectedStart: ISimplePropKey<int> = PropKey.Create.simple "textField.selectedStart"
-    member val selectedText: ISimplePropKey<string> = PropKey.Create.simple "textField.selectedText"
     member val text: ISimplePropKey<string> = PropKey.Create.simple "textField.text"
     member val useSameRuneTypeForWords: ISimplePropKey<bool> = PropKey.Create.simple "textField.useSameRuneTypeForWords"
     member val used: ISimplePropKey<bool> = PropKey.Create.simple "textField.used"
@@ -662,10 +645,6 @@ module internal PKey =
     // Properties
     member val allowsReturn: ISimplePropKey<bool> = PropKey.Create.simple "textView.allowsReturn"
     member val allowsTab: ISimplePropKey<bool> = PropKey.Create.simple "textView.allowsTab"
-    member val autocomplete: ISimplePropKey<IAutocomplete> = PropKey.Create.simple "textView.autocomplete"
-    member val contextMenu: ISimplePropKey<PopoverMenu> = PropKey.Create.simple "textView.contextMenu"
-    member val currentColumn: ISimplePropKey<int> = PropKey.Create.simple "textView.currentColumn"
-    member val currentRow: ISimplePropKey<int> = PropKey.Create.simple "textView.currentRow"
     member val cursorPosition: ISimplePropKey<Point> = PropKey.Create.simple "textView.cursorPosition"
     member val inheritsPreviousAttribute: ISimplePropKey<bool> = PropKey.Create.simple "textView.inheritsPreviousAttribute"
     member val isDirty: ISimplePropKey<bool> = PropKey.Create.simple "textView.isDirty"
@@ -734,7 +713,6 @@ module internal PKey =
     // Properties
     member val buttonAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "dialog.buttonAlignment"
     member val buttonAlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "dialog.buttonAlignmentModes"
-    member val buttons: ISimplePropKey<Button[]> = PropKey.Create.simple "dialog.buttons"
     member val canceled: ISimplePropKey<bool> = PropKey.Create.simple "dialog.canceled"
 
   // FileDialog
@@ -743,9 +721,7 @@ module internal PKey =
     // Properties
     member val allowedTypes: ISimplePropKey<List<IAllowedType>> = PropKey.Create.simple "fileDialog.allowedTypes"
     member val allowsMultipleSelection: ISimplePropKey<bool> = PropKey.Create.simple "fileDialog.allowsMultipleSelection"
-    member val currentFilter: ISimplePropKey<IAllowedType> = PropKey.Create.simple "fileDialog.currentFilter"
     member val fileOperationsHandler: ISimplePropKey<IFileOperations> = PropKey.Create.simple "fileDialog.fileOperationsHandler"
-    member val multiSelected: ISimplePropKey<IReadOnlyList<string>> = PropKey.Create.simple "fileDialog.multiSelected"
     member val mustExist: ISimplePropKey<bool> = PropKey.Create.simple "fileDialog.mustExist"
     member val openMode: ISimplePropKey<OpenMode> = PropKey.Create.simple "fileDialog.openMode"
     member val path: ISimplePropKey<string> = PropKey.Create.simple "fileDialog.path"
@@ -808,12 +784,7 @@ module internal PKey =
   let colorPicker = colorPickerPKeys ()
   let colorPicker16 = colorPicker16PKeys ()
   let comboBox = comboBoxPKeys ()
-  let dateField = dateFieldPKeys ()
   let datePicker = datePickerPKeys ()
-  let dialog = dialogPKeys ()
-  let fileDialog = fileDialogPKeys ()
-  let flagSelector = flagSelectorPKeys ()
-  let flagSelector'<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)> = flagSelectorPKeys<'TFlagsEnum>()
   let frameView = frameViewPKeys ()
   let graphView = graphViewPKeys ()
   let hexView = hexViewPKeys ()
@@ -824,23 +795,23 @@ module internal PKey =
   let margin = marginPKeys ()
   let menu = menuPKeys ()
   let menuBar = menuBarPKeys ()
-  let menuBarItem = menuBarItemPKeys ()
-  let menuItem = menuItemPKeys ()
   let numericUpDown<'T> = numericUpDownPKeys<'T>()
-  let openDialog = openDialogPKeys ()
-  let optionSelector = optionSelectorPKeys ()
-  let optionSelector'<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum)> = optionSelectorPKeys<'TEnum>()
   let padding = paddingPKeys ()
   let popoverBaseImpl = popoverBaseImplPKeys ()
   let popoverMenu = popoverMenuPKeys ()
   let progressBar = progressBarPKeys ()
   let runnable = runnablePKeys ()
   let runnable'<'TResult> = runnablePKeys<'TResult>()
-  let saveDialog = saveDialogPKeys ()
   let scrollBar = scrollBarPKeys ()
   let scrollSlider = scrollSliderPKeys ()
   let selectorBase = selectorBasePKeys ()
+  let flagSelector = flagSelectorPKeys ()
+  let optionSelector = optionSelectorPKeys ()
+  let flagSelector'<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)> = flagSelectorPKeys<'TFlagsEnum>()
+  let optionSelector'<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum)> = optionSelectorPKeys<'TEnum>()
   let shortcut = shortcutPKeys ()
+  let menuItem = menuItemPKeys ()
+  let menuBarItem = menuBarItemPKeys ()
   let slider<'T> = sliderPKeys<'T>()
   let spinnerView = spinnerViewPKeys ()
   let statusBar = statusBarPKeys ()
@@ -848,10 +819,15 @@ module internal PKey =
   let tabView = tabViewPKeys ()
   let tableView = tableViewPKeys ()
   let textField = textFieldPKeys ()
+  let dateField = dateFieldPKeys ()
   let textValidateField = textValidateFieldPKeys ()
   let textView = textViewPKeys ()
   let timeField = timeFieldPKeys ()
   let treeView<'T when 'T: not struct> = treeViewPKeys<'T>()
   let window = windowPKeys ()
+  let dialog = dialogPKeys ()
+  let fileDialog = fileDialogPKeys ()
+  let openDialog = openDialogPKeys ()
+  let saveDialog = saveDialogPKeys ()
   let wizard = wizardPKeys ()
   let wizardStep = wizardStepPKeys ()

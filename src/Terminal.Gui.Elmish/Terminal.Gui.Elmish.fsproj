@@ -40,10 +40,12 @@
   <ItemGroup>
     <Compile Include="Interop.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="PKey.gen.fs" />
     <Compile Include="PKey.fs" />
     <Compile Include="PositionService.fs" />
     <Compile Include="TerminalElement.Base.fs" />
     <Compile Include="TerminalElement.Interfaces.fs" />
+    <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="TerminalElement.Elements.fs" />
     <Compile Include="Props.fs" />
     <Compile Include="Macros.fs" />
@@ -62,5 +64,22 @@
     </None>
     <Content Include="paket.references" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\generator\Terminal.Gui.Elmish.Generator\Terminal.Gui.Elmish.Generator.fsproj"
+      ReferenceOutputAssembly="false"
+    />
+  </ItemGroup>
+  <Target
+    Name="Auto generate code"
+    BeforeTargets="CoreCompile"
+    Inputs="$(MSBuildAllProjects)"
+    Outputs="Generated\MyGeneratedFile.cs">
+    <Message Text="Generating source files..." Importance="high" />
+    <Exec Command="dotnet run --project ../generator/Terminal.Gui.Elmish.Generator/Terminal.Gui.Elmish.Generator.fsproj" />
+    <ItemGroup>
+      <Compile Include="Generated\**\*.fs" />
+    </ItemGroup>
+  </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

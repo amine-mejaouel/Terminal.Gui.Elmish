@@ -28,7 +28,7 @@ let private  isSubChainOf (subChain: 'T list) (superChain: 'T list) =
 
 let private viewTypes =
   typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
-  |> Seq.filter _.IsAssignableTo(typeof<Terminal.Gui.ViewBase.View>)
+  |> Seq.filter (fun t -> t.IsAssignableTo(typeof<Terminal.Gui.ViewBase.View>) && t.IsPublic)
   |> Seq.sortBy _.Name
   |> Seq.toList
 

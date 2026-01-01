@@ -9,7 +9,10 @@ let setPropsCode (viewType: Type) =
     yield $"    base.setProps(terminalElement, props)"
     yield $""
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
-    yield $"    let view = terminalElement.View :?> {viewType.FullName}"
+    if viewType <> typeof<Terminal.Gui.ViewBase.View> then
+      yield $"    let view = terminalElement.View :?> {viewType.FullName}"
+    else
+      yield $"    let view = terminalElement.View"
     yield $""
     yield "    // Properties"
     for prop in ViewType.properties viewType do
@@ -61,9 +64,9 @@ let gen () =
       yield $"type internal {viewType.Name}TerminalElement(props: Props) ="
       match ViewType.parentViewType viewType with
       | Some t ->
-          yield $"  inherit {t.Name}TerminalElement(props)"
+        yield $"  inherit {t.Name}TerminalElement(props)"
       | None ->
-        ()
+        yield $"  inherit TerminalElement(props)"
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""
@@ -75,4 +78,4 @@ let gen () =
       yield ""
   }
   |> String.concat Environment.NewLine
-  |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "src", "TerminalElement.Elements.gen.fs"))
+  |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "TerminalElement.Elements.gen.fs"))

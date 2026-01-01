@@ -61,6 +61,11 @@ module CodeGen =
     else
       ""
 
+  let asPKey (name: string) =
+    name
+    |> String.lowerCamelCase
+    |> String.escapeReservedKeywords
+
 let eventKeyType (event: System.Reflection.EventInfo) =
   let handlerType = event.EventHandlerType
   let genericArgs = handlerType.GetGenericArguments()
@@ -117,7 +122,7 @@ let generatePKeyClass (viewType: Type) =
     if props.Length > 0 then
       yield "    // Properties"
       for prop in props do
-        let propName = String.escapeReservedKeywords (String.lowerCamelCase prop.Name)
+        let propName = prop.Name |> CodeGen.asPKey
         let keyName = $"{className}.{String.lowerCamelCase prop.Name}"
 
         // Check if this is a delayed pos property
@@ -131,7 +136,7 @@ let generatePKeyClass (viewType: Type) =
       if props.Length > 0 then yield ""
       yield "    // Events"
       for event in evts do
-        let eventName = String.escapeReservedKeywords (String.lowerCamelCase event.Name)
+        let eventName = event.Name |> CodeGen.asPKey
         let keyName = $"{className}.{String.lowerCamelCase event.Name}_event"
         let eventType = eventKeyType event
         yield $"    member val {eventName}: {eventType} = PropKey.Create.event \"{keyName}\""

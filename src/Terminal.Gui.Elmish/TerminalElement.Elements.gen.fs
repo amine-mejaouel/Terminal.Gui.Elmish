@@ -1918,7 +1918,7 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.runnable<'TResult>.result
+    |> Props.tryFind PKey.runnable'<'TResult>.result
     |> Option.iter (fun v -> view.Result <- v)
 
     // Events
@@ -1931,7 +1931,7 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.runnable<'TResult>.result
+    |> Props.tryFind PKey.runnable'<'TResult>.result
     |> Option.iter (fun _ ->
         view.Result <- Unchecked.defaultof<_>)
 
@@ -2318,11 +2318,11 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.flagSelector<'TFlagsEnum>.value
+    |> Props.tryFind PKey.flagSelector'<'TFlagsEnum>.value
     |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
 
     // Events
-    terminalElement.trySetEventHandler(PKey.flagSelector<'TFlagsEnum>.valueChanged, view.ValueChanged)
+    terminalElement.trySetEventHandler(PKey.flagSelector'<'TFlagsEnum>.valueChanged, view.ValueChanged)
 
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
@@ -2333,12 +2333,12 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.flagSelector<'TFlagsEnum>.value
+    |> Props.tryFind PKey.flagSelector'<'TFlagsEnum>.value
     |> Option.iter (fun _ ->
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.tryRemoveEventHandler PKey.flagSelector<'TFlagsEnum>.valueChanged
+    terminalElement.tryRemoveEventHandler PKey.flagSelector'<'TFlagsEnum>.valueChanged
 
 type internal OptionSelectorTerminalElement<'TEnum>(props: Props) =
   inherit OptionSelectorTerminalElement(props)
@@ -2355,15 +2355,15 @@ type internal OptionSelectorTerminalElement<'TEnum>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector<'TEnum>.value
+    |> Props.tryFind PKey.optionSelector'<'TEnum>.value
     |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
 
     props
-    |> Props.tryFind PKey.optionSelector<'TEnum>.values
+    |> Props.tryFind PKey.optionSelector'<'TEnum>.values
     |> Option.iter (fun v -> view.Values <- v)
 
     // Events
-    terminalElement.trySetEventHandler(PKey.optionSelector<'TEnum>.valueChanged, view.ValueChanged)
+    terminalElement.trySetEventHandler(PKey.optionSelector'<'TEnum>.valueChanged, view.ValueChanged)
 
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
@@ -2374,17 +2374,17 @@ type internal OptionSelectorTerminalElement<'TEnum>(props: Props) =
 
     // Properties
     props
-    |> Props.tryFind PKey.optionSelector<'TEnum>.value
+    |> Props.tryFind PKey.optionSelector'<'TEnum>.value
     |> Option.iter (fun _ ->
         view.Value <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.optionSelector<'TEnum>.values
+    |> Props.tryFind PKey.optionSelector'<'TEnum>.values
     |> Option.iter (fun _ ->
         view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.tryRemoveEventHandler PKey.optionSelector<'TEnum>.valueChanged
+    terminalElement.tryRemoveEventHandler PKey.optionSelector'<'TEnum>.valueChanged
 
 type internal ShortcutTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)

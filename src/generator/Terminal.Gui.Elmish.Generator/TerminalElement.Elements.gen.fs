@@ -15,7 +15,7 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{(CodeGen.cleanTypeName >> String.lowerCamelCase) viewType}{CodeGen.genericTypeParams viewType}"
+  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{CodeGen.genericTypeParams viewType}"
 
 let setPropsCode (viewType: Type) =
   let properties = ViewType.properties viewType

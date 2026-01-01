@@ -66,6 +66,26 @@ module CodeGen =
     |> String.lowerCamelCase
     |> String.escapeReservedKeywords
 
+type PKeyRegistry =
+  static member val private Registry = System.Collections.Generic.Dictionary<string, string>()
+  static member GetPKeySegment(viewType: Type) =
+    match PKeyRegistry.Registry.TryGetValue(viewType.FullName) with
+    | true, pkey -> pkey
+    | _ ->
+        let uniquePKey =
+          let pkeyCandidate =
+            viewType
+            |> CodeGen.cleanTypeName
+            |> String.lowerCamelCase
+          let rec findUniquePKey candidate =
+            if PKeyRegistry.Registry.ContainsValue candidate then
+              findUniquePKey (candidate + "'")
+            else
+              candidate
+          findUniquePKey pkeyCandidate
+        PKeyRegistry.Registry.Add(viewType.FullName, uniquePKey)
+        uniquePKey
+
 let eventKeyType (event: System.Reflection.EventInfo) =
   let handlerType = event.EventHandlerType
   let genericArgs = handlerType.GetGenericArguments()
@@ -146,26 +166,19 @@ let generatePKeyClass (viewType: Type) =
 
 let generateModuleInstances () =
   seq {
-    let yieldedPropertyNames = System.Collections.Generic.HashSet<string>()
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
       let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
       let className = String.lowerCamelCase cleanTypeName
-      let propertyName =
-        if yieldedPropertyNames.Contains(className) then
-          $"{className}'"
-        else
-          className
+      let viewName = PKeyRegistry.GetPKeySegment viewType
 
       // Check if it's a generic type
       if viewType.IsGenericType then
         let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
         let genericConstraints = CodeGen.genericConstraints viewType
-        yield $"  let {propertyName}<{genericParams}{genericConstraints}> = {className}PKeys<{genericParams}>()"
+        yield $"  let {viewName}<{genericParams}{genericConstraints}> = {className}PKeys<{genericParams}>()"
       else
-        yield $"  let {propertyName} = {className}PKeys ()"
-
-      yieldedPropertyNames.Add(propertyName) |> ignore
+        yield $"  let {viewName} = {className}PKeys ()"
   }
 
 let generateInterfaceKeys (interfaceType: Type) =

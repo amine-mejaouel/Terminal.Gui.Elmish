@@ -2,53 +2,72 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 
 open System
 open System.IO
+open Terminal.Gui.Elmish.Generator
+open Terminal.Gui.Elmish.Generator.PKey_gen
 
-let setPropsCode (viewType: Type) =
+let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
-    yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
-    yield $"    base.setProps(terminalElement, props)"
-    yield $""
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
       yield $"    let view = terminalElement.View :?> {viewType.FullName}"
     else
       yield $"    let view = terminalElement.View"
-    yield $""
-    yield "    // Properties"
-    for prop in ViewType.properties viewType do
-      yield $"    props"
-      yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
-      yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
-      yield ""
-    yield "    // Events"
-    for event in ViewType.events viewType do
-      yield $"    terminalElement.trySetEventHandler(PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase event.Name}, view.{event.Name})"
-      yield ""
   }
 
-let removePropsCode (viewType: Type) =
-  seq {
-    yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
-    yield $"    base.removeProps(terminalElement, props)"
-    yield $""
-    yield $"    let terminalElement = terminalElement :?> TerminalElement"
-    yield $"    let view = terminalElement.View :?> {viewType.FullName}"
-    yield $""
-    let properties = ViewType.properties viewType
-    if properties |> (not << Array.isEmpty) then
+let setPropsCode (viewType: Type) =
+  let properties = ViewType.properties viewType
+  let events = ViewType.events viewType
+  if properties.Length = 0 && events.Length = 0 then
+    Seq.empty
+  else
+    seq {
+      yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"    base.setProps(terminalElement, props)"
+      yield $""
+      yield! terminalElementAndViewDeclaration viewType
+      yield $""
       yield "    // Properties"
-    for prop in properties do
-      yield $"    props"
-      yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
-      yield $"    |> Option.iter (fun _ -> "
-      yield $"        view.{prop.Name} <- Unchecked.defaultof<_>)"
-      yield ""
-    let events = ViewType.events viewType
-    if events |> (not << Array.isEmpty) then
+      for prop in properties do
+        yield $"    props"
+        yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
+        if CodeGen.isNullable prop.PropertyType then
+          yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v |> Option.toNullable)"
+        else
+          yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
+        yield ""
       yield "    // Events"
-    for event in events do
-      yield $"    terminalElement.tryRemoveEventHandler PKey.{viewType.Name}.{event.Name}"
-  }
+      for event in events do
+        yield $"    terminalElement.trySetEventHandler(PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase event.Name}, view.{event.Name})"
+        yield ""
+    }
+
+let removePropsCode (viewType: Type) =
+  let properties = ViewType.properties viewType
+  let events = ViewType.events viewType
+  if properties.Length = 0 && events.Length = 0 then
+    Seq.empty
+  else
+    seq {
+      yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"    base.removeProps(terminalElement, props)"
+      yield $""
+      yield! terminalElementAndViewDeclaration viewType
+      yield $""
+      let properties = ViewType.properties viewType
+      if properties |> (not << Array.isEmpty) then
+        yield "    // Properties"
+      for prop in properties do
+        yield $"    props"
+        yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
+        yield $"    |> Option.iter (fun _ -> "
+        yield $"        view.{prop.Name} <- Unchecked.defaultof<_>)"
+        yield ""
+      let events = ViewType.events viewType
+      if events |> (not << Array.isEmpty) then
+        yield "    // Events"
+      for event in events do
+        yield $"    terminalElement.tryRemoveEventHandler PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase event.Name}"
+    }
 
 let gen () =
   seq {

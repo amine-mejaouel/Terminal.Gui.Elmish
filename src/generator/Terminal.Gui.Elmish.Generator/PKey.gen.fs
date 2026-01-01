@@ -6,8 +6,11 @@ open System.IO
 [<RequireQualifiedAccess>]
 module CodeGen =
 
+  let isNullable (t: Type) =
+    t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Nullable<_>>
+
   let rec genericTypeParam (t: Type) =
-    if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Nullable<_>> then
+    if isNullable t then
       let genericArg = t.GetGenericArguments().[0]
       $"%s{genericTypeParam genericArg} option"
     else if t.IsGenericType then
@@ -59,7 +62,8 @@ let eventKeyType (event: System.Reflection.EventInfo) =
   if genericArgs.Length = 1 then
     $"IEventPropKey<{CodeGen.genericTypeParam genericArgs[0]} -> unit>"
   else if genericArgs.Length = 0 then
-    "IEventPropKey<EventArgs -> unit>"
+    let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
+    $"IEventPropKey<{CodeGen.genericTypeParam eventArgs} -> unit>"
   else
     raise (NotImplementedException())
 
@@ -206,6 +210,7 @@ let gen () =
     yield ""
     yield "open System"
     yield "open System.Collections.Generic"
+    yield "open System.Collections.Specialized"
     yield "open System.Text"
     yield "open System.Drawing"
     yield "open System.ComponentModel"

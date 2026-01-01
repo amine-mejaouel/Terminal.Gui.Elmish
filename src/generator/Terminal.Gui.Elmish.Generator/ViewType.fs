@@ -2,6 +2,7 @@
 module Terminal.Gui.Elmish.Generator.ViewType
 
 open System
+open System.Reflection
 
 let private inheritanceChain (viewType: Type) =
   let rec collectChain (t: Type) (acc: Type list) =
@@ -82,7 +83,7 @@ let viewTypesOrderedByInheritance =
             pendingTypes.Remove readyType |> ignore
             returnedTypes.Add readyType
             yield readyType
-  }
+  } |> Seq.toList
 
 let parentViewType (viewType: Type) =
   let baseType = viewType.BaseType
@@ -92,12 +93,24 @@ let parentViewType (viewType: Type) =
   else
     None
 
+let isInitOnly (property: PropertyInfo) =
+  match property.SetMethod with
+  | null ->
+    false
+  | setMethod ->
+    setMethod.ReturnParameter.GetRequiredCustomModifiers()
+    |> Option.ofObj
+    |> Option.defaultValue [||]
+    |> Array.contains typeof<System.Runtime.CompilerServices.IsExternalInit>
+
 let properties (viewType: Type) =
   viewType.GetProperties(
     System.Reflection.BindingFlags.Public |||
     System.Reflection.BindingFlags.Instance |||
     System.Reflection.BindingFlags.DeclaredOnly)
-  |> Array.filter (fun p -> p.CanRead && p.CanWrite)
+  |> Array.filter (fun p ->
+    p.CanRead && p.GetMethod.IsPublic && p.CanWrite && p.SetMethod.IsPublic && (not <| isInitOnly p)
+  )
   |> Array.sortBy _.Name
 
 let events (viewType: Type) =

@@ -1,7 +1,5 @@
 namespace Terminal.Gui.Elmish
 
-open System
-open System.Collections.ObjectModel
 open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
@@ -1686,12 +1684,13 @@ type internal PaddingTerminalElement(props: Props) =
 
 
 
+[<AbstractClass>]
 type internal PopoverBaseImplTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
   override _.name = "PopoverBaseImpl"
 
-  override _.newView() = new PopoverBaseImpl()
+  override _.newView() = failwith "Cannot instantiate abstract view type PopoverBaseImpl"
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2122,12 +2121,13 @@ type internal ScrollSliderTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.scrollSlider.positionChanging
     terminalElement.tryRemoveEventHandler PKey.scrollSlider.scrolled
 
+[<AbstractClass>]
 type internal SelectorBaseTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
   override _.name = "SelectorBase"
 
-  override _.newView() = new SelectorBase()
+  override _.newView() = failwith "Cannot instantiate abstract view type SelectorBase"
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2672,7 +2672,7 @@ type internal SliderTerminalElement<'T>(props: Props) =
     |> Option.iter (fun v -> view.Text <- v)
 
     props
-    |> Props.tryFind PKey.slider<'T>.type
+    |> Props.tryFind PKey.slider<'T>.``type``
     |> Option.iter (fun v -> view.Type <- v)
 
     props
@@ -2752,7 +2752,7 @@ type internal SliderTerminalElement<'T>(props: Props) =
         view.Text <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.slider<'T>.type
+    |> Props.tryFind PKey.slider<'T>.``type``
     |> Option.iter (fun _ ->
         view.Type <- Unchecked.defaultof<_>)
 

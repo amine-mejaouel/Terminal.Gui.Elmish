@@ -3,16 +3,65 @@ module Terminal.Gui.Elmish.Generator.PKey_gen
 open System
 open System.IO
 
+[<RequireQualifiedAccess>]
+module CodeGen =
+
+  let rec genericTypeParam (t: Type) =
+    if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Nullable<_>> then
+      let genericArg = t.GetGenericArguments().[0]
+      $"%s{genericTypeParam genericArg} option"
+    else if t.IsGenericType then
+      let baseName = t.Name.Substring(0, t.Name.IndexOf('`'))
+      $"{baseName}<{genericTypeParams t}>"
+    else if t.IsGenericParameter then
+      $"'{t.Name}"
+    else if t.Name = "Boolean" then
+      "bool"
+    else if t.Name = "Int32" then
+      "int"
+    else if t.Name = "String" then
+      "string"
+    else
+      t.Name
+
+  and genericTypeParams (t: Type) =
+    String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam)
+
+  let genericConstraints (t: Type) =
+    let constraints =
+      t.GetGenericArguments()
+      |> Array.choose (fun t ->
+          let constraints = ResizeArray<string>()
+          let attrs = t.GenericParameterAttributes
+
+          if attrs.HasFlag(System.Reflection.GenericParameterAttributes.ReferenceTypeConstraint) then
+            constraints.Add($"'{t.Name}: not struct")
+          if attrs.HasFlag(System.Reflection.GenericParameterAttributes.NotNullableValueTypeConstraint) then
+            constraints.Add($"'{t.Name}: struct")
+          if attrs.HasFlag(System.Reflection.GenericParameterAttributes.DefaultConstructorConstraint) then
+            constraints.Add($"'{t.Name}: (new: unit -> '{t.Name})")
+
+          if constraints.Count > 0 then
+            constraints
+            |> String.concat " and "
+            |> Some
+          else
+            None
+      )
+    if constraints.Length > 0 then
+      " when " + (constraints |> String.concat " and ")
+    else
+      ""
+
 let eventKeyType (event: System.Reflection.EventInfo) =
   let handlerType = event.EventHandlerType
-  if handlerType.IsGenericType && handlerType.Name = "EventHandler`1" then
-    let genericArgs = handlerType.GetGenericArguments()
-    if genericArgs.Length > 0 then
-      $"IEventPropKey<{genericArgs[0]} -> unit>"
-    else
-      "IEventPropKey<EventArgs -> unit>"
-  else
+  let genericArgs = handlerType.GetGenericArguments()
+  if genericArgs.Length = 1 then
+    $"IEventPropKey<{CodeGen.genericTypeParam genericArgs[0]} -> unit>"
+  else if genericArgs.Length = 0 then
     "IEventPropKey<EventArgs -> unit>"
+  else
+    raise (NotImplementedException())
 
 let generatePKeyClass (viewType: Type) =
   seq {
@@ -27,7 +76,9 @@ let generatePKeyClass (viewType: Type) =
     // Handle generic types properly
     if viewType.IsGenericType then
       let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-      yield $"  type {className}PKeys<{genericParams}>() ="
+      let genericConstraints = CodeGen.genericConstraints viewType
+
+      yield $"  type {className}PKeys<{genericParams}{genericConstraints}>() ="
     else
       yield $"  type {className}PKeys() ="
 
@@ -66,8 +117,7 @@ let generatePKeyClass (viewType: Type) =
           yield $"    member val {propName}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
           yield $"    member val {propName}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
         else
-          let propType = prop.PropertyType
-          yield $"    member val {propName}: ISimplePropKey<{propType}> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {propName}: ISimplePropKey<{CodeGen.genericTypeParam prop.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
     if evts.Length > 0 then
       if props.Length > 0 then yield ""
@@ -83,17 +133,26 @@ let generatePKeyClass (viewType: Type) =
 
 let generateModuleInstances () =
   seq {
+    let yieldedPropertyNames = System.Collections.Generic.HashSet<string>()
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
       let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
       let className = String.lowerCamelCase cleanTypeName
+      let propertyName =
+        if yieldedPropertyNames.Contains(className) then
+          $"{className}'"
+        else
+          className
 
       // Check if it's a generic type
       if viewType.IsGenericType then
         let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-        yield $"  let {className}<{genericParams}> = {className}PKeys<{genericParams}> ()"
+        let genericConstraints = CodeGen.genericConstraints viewType
+        yield $"  let {propertyName}<{genericParams}{genericConstraints}> = {className}PKeys<{genericParams}>()"
       else
-        yield $"  let {className} = {className}PKeys ()"
+        yield $"  let {propertyName} = {className}PKeys ()"
+
+      yieldedPropertyNames.Add(propertyName) |> ignore
   }
 
 let generateInterfaceKeys (interfaceType: Type) =
@@ -129,7 +188,7 @@ let generateInterfaceKeys (interfaceType: Type) =
     }
 
 let gen () =
-  let outputPath = Path.Combine (Environment.CurrentDirectory, "src", "PKey.gen.fs")
+  let outputPath = Path.Combine (Environment.CurrentDirectory, "PKey.gen.fs")
 
   // Get all interfaces from Terminal.Gui that we need to handle
   let interfaces =
@@ -151,12 +210,10 @@ let gen () =
     yield "open System.Drawing"
     yield "open System.ComponentModel"
     yield "open System.IO"
-    yield "open System.Collections.Specialized"
     yield "open System.Globalization"
     yield "open Terminal.Gui.App"
     yield "open Terminal.Gui.Drawing"
     yield "open Terminal.Gui.Drivers"
-    yield "open Terminal.Gui"
     yield ""
     yield "open Terminal.Gui.FileServices"
     yield "open Terminal.Gui.Input"

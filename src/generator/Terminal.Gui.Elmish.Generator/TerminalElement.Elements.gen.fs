@@ -9,10 +9,13 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    let view = terminalElement.View :?> {viewType.FullName}"
+      yield $"    let view = terminalElement.View :?> {CodeGen.cleanTypeName viewType}{CodeGen.genericTypeParams viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
+
+let pkeyPrefix (viewType: Type) =
+  $"PKey.{(CodeGen.cleanTypeName >> String.lowerCamelCase) viewType}{CodeGen.genericTypeParams viewType}"
 
 let setPropsCode (viewType: Type) =
   let properties = ViewType.properties viewType
@@ -29,7 +32,7 @@ let setPropsCode (viewType: Type) =
       yield "    // Properties"
       for prop in properties do
         yield $"    props"
-        yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
+        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{String.lowerCamelCase prop.Name}"
         if CodeGen.isNullable prop.PropertyType then
           yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v |> Option.toNullable)"
         else
@@ -37,7 +40,7 @@ let setPropsCode (viewType: Type) =
         yield ""
       yield "    // Events"
       for event in events do
-        yield $"    terminalElement.trySetEventHandler(PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase event.Name}, view.{event.Name})"
+        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{String.lowerCamelCase event.Name}, view.{event.Name})"
         yield ""
     }
 
@@ -58,7 +61,7 @@ let removePropsCode (viewType: Type) =
         yield "    // Properties"
       for prop in properties do
         yield $"    props"
-        yield $"    |> Props.tryFind PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase prop.Name}"
+        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{String.lowerCamelCase prop.Name}"
         yield $"    |> Option.iter (fun _ -> "
         yield $"        view.{prop.Name} <- Unchecked.defaultof<_>)"
         yield ""
@@ -66,7 +69,7 @@ let removePropsCode (viewType: Type) =
       if events |> (not << Array.isEmpty) then
         yield "    // Events"
       for event in events do
-        yield $"    terminalElement.tryRemoveEventHandler PKey.{String.lowerCamelCase viewType.Name}.{String.lowerCamelCase event.Name}"
+        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix viewType}.{String.lowerCamelCase event.Name}"
     }
 
 let gen () =
@@ -80,7 +83,8 @@ let gen () =
     yield ""
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      yield $"type internal {viewType.Name}TerminalElement(props: Props) ="
+      let genericParams = CodeGen.genericTypeParams viewType
+      yield $"type internal {CodeGen.cleanTypeName viewType}TerminalElement{genericParams}(props: Props) ="
       match ViewType.parentViewType viewType with
       | Some t ->
         yield $"  inherit {t.Name}TerminalElement(props)"
@@ -89,7 +93,7 @@ let gen () =
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""
-      yield $"  override _.newView() = new {viewType.FullName}()"
+      yield $"  override _.newView() = new {CodeGen.cleanTypeName viewType}{genericParams}()"
       yield ""
       yield! setPropsCode viewType
       yield ""

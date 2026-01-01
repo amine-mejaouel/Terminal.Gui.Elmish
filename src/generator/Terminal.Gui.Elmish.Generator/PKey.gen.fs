@@ -6,6 +6,9 @@ open System.IO
 [<RequireQualifiedAccess>]
 module CodeGen =
 
+  let cleanTypeName (t: Type) =
+    if t.Name.Contains("`") then t.Name.Substring(0, t.Name.IndexOf("`")) else t.Name
+
   let isNullable (t: Type) =
     t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Nullable<_>>
 
@@ -15,7 +18,7 @@ module CodeGen =
       $"%s{genericTypeParam genericArg} option"
     else if t.IsGenericType then
       let baseName = t.Name.Substring(0, t.Name.IndexOf('`'))
-      $"{baseName}<{genericTypeParams t}>"
+      $"{baseName}{genericTypeParams t}"
     else if t.IsGenericParameter then
       $"'{t.Name}"
     else if t.Name = "Boolean" then
@@ -28,7 +31,9 @@ module CodeGen =
       t.Name
 
   and genericTypeParams (t: Type) =
-    String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam)
+    match String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam) with
+    | "" -> ""
+    | args -> $"<{args}>"
 
   let genericConstraints (t: Type) =
     let constraints =
@@ -69,9 +74,8 @@ let eventKeyType (event: System.Reflection.EventInfo) =
 
 let generatePKeyClass (viewType: Type) =
   seq {
-    let typeName = viewType.Name
+    let cleanTypeName = CodeGen.cleanTypeName viewType
     // Remove generic suffix from type name for class name
-    let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
     let className = String.lowerCamelCase cleanTypeName
     let parentType = ViewType.parentViewType viewType
 

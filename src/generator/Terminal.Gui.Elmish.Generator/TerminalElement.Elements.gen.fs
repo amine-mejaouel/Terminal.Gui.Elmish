@@ -9,13 +9,13 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    let view = terminalElement.View :?> {CodeGen.cleanTypeName viewType}{CodeGen.genericTypeParams viewType}"
+      yield $"    let view = terminalElement.View :?> {CodeGen.cleanTypeName viewType}{CodeGen.genericTypeParamsBlock viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{CodeGen.genericTypeParams viewType}"
+  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{CodeGen.genericTypeParamsBlock viewType}"
 
 let setPropsCode (viewType: Type) =
   let properties = ViewType.properties viewType
@@ -25,7 +25,8 @@ let setPropsCode (viewType: Type) =
   else
     seq {
       yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      yield $"    base.setProps(terminalElement, props)"
+      if not (viewType = typeof<Terminal.Gui.ViewBase.View>) then
+        yield $"    base.setProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration viewType
       yield $""
@@ -33,10 +34,7 @@ let setPropsCode (viewType: Type) =
       for prop in properties do
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix viewType}.{CodeGen.asPKey prop.Name}"
-        if CodeGen.isNullable prop.PropertyType then
-          yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v |> Option.toNullable)"
-        else
-          yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
+        yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
         yield ""
       yield "    // Events"
       for event in events do
@@ -52,7 +50,8 @@ let removePropsCode (viewType: Type) =
   else
     seq {
       yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      yield $"    base.removeProps(terminalElement, props)"
+      if not (viewType = typeof<Terminal.Gui.ViewBase.View>) then
+        yield $"    base.removeProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration viewType
       yield $""
@@ -76,16 +75,18 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
+    yield "open System"
     yield "open Terminal.Gui.App"
     yield "open Terminal.Gui.ViewBase"
     yield "open Terminal.Gui.Views"
     yield ""
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      let genericParams = CodeGen.genericTypeParams viewType
+      let genericBlock = CodeGen.genericTypeParamsWithConstraintsBlock viewType
+      let genericParamsBlock = CodeGen.genericTypeParamsBlock viewType
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
-      yield $"type internal {CodeGen.cleanTypeName viewType}TerminalElement{genericParams}(props: Props) ="
+      yield $"type internal {CodeGen.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
       match ViewType.parentViewType viewType with
       | Some t ->
         yield $"  inherit {t.Name}TerminalElement(props)"
@@ -97,7 +98,7 @@ let gen () =
       if viewType.IsAbstract then
         yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {CodeGen.cleanTypeName viewType}\""
       else
-        yield $"  override _.newView() = new {CodeGen.cleanTypeName viewType}{genericParams}()"
+        yield $"  override _.newView() = new {CodeGen.cleanTypeName viewType}{genericParamsBlock}()"
       yield ""
       yield! setPropsCode viewType
       yield ""

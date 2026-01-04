@@ -295,22 +295,22 @@ type internal PropsEventRegistry() =
     eventHandlerRepository[pkey] <- handler
     addToEvent handler
 
-  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
+  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
 
-  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
 
-  member this.setEventHandler (pkey: IPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
 
-  member this.setEventHandler (pkey: IPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
+  member this.setEventHandler (pkey: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
     let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
     this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)

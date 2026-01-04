@@ -1,5 +1,6 @@
 namespace Terminal.Gui.Elmish
 
+open System
 open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
@@ -13,7 +14,6 @@ type internal ViewTerminalElement(props: Props) =
   override _.newView() = new View()
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
-    base.setProps(terminalElement, props)
 
     let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View
@@ -101,7 +101,7 @@ type internal ViewTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.view.tabStop
-    |> Option.iter (fun v -> view.TabStop <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.TabStop <- v)
 
     props
     |> Props.tryFind PKey.view.text
@@ -270,7 +270,6 @@ type internal ViewTerminalElement(props: Props) =
 
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
-    base.removeProps(terminalElement, props)
 
     let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View
@@ -764,7 +763,7 @@ type internal CharMapTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.charMap.showUnicodeCategory
-    |> Option.iter (fun v -> view.ShowUnicodeCategory <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.ShowUnicodeCategory <- v)
 
     props
     |> Props.tryFind PKey.charMap.startCodePoint
@@ -1160,7 +1159,7 @@ type internal GraphViewTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.graphView.graphColor
-    |> Option.iter (fun v -> view.GraphColor <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.GraphColor <- v)
 
     props
     |> Props.tryFind PKey.graphView.marginBottom
@@ -1432,7 +1431,7 @@ type internal ListViewTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.listView.selectedItem
-    |> Option.iter (fun v -> view.SelectedItem <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.SelectedItem <- v)
 
     props
     |> Props.tryFind PKey.listView.source
@@ -2166,7 +2165,7 @@ type internal SelectorBaseTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.selectorBase.value
-    |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.Value <- v)
 
     props
     |> Props.tryFind PKey.selectorBase.values
@@ -2253,7 +2252,7 @@ type internal FlagSelectorTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.flagSelector.value
-    |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.Value <- v)
 
     // Events
 
@@ -2303,7 +2302,7 @@ type internal OptionSelectorTerminalElement(props: Props) =
         view.Cursor <- Unchecked.defaultof<_>)
 
 
-type internal FlagSelectorTerminalElement<'TFlagsEnum>(props: Props) =
+type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(props: Props) =
   inherit FlagSelectorTerminalElement(props)
 
   override _.name = "FlagSelector`1"
@@ -2319,7 +2318,7 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.flagSelector'<'TFlagsEnum>.value
-    |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.Value <- v)
 
     // Events
     terminalElement.trySetEventHandler(PKey.flagSelector'<'TFlagsEnum>.valueChanged, view.ValueChanged)
@@ -2340,7 +2339,7 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum>(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.flagSelector'<'TFlagsEnum>.valueChanged
 
-type internal OptionSelectorTerminalElement<'TEnum>(props: Props) =
+type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(props: Props) =
   inherit OptionSelectorTerminalElement(props)
 
   override _.name = "OptionSelector`1"
@@ -2356,7 +2355,7 @@ type internal OptionSelectorTerminalElement<'TEnum>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.optionSelector'<'TEnum>.value
-    |> Option.iter (fun v -> view.Value <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.Value <- v)
 
     props
     |> Props.tryFind PKey.optionSelector'<'TEnum>.values
@@ -3256,7 +3255,7 @@ type internal DateFieldTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.dateField.date
-    |> Option.iter (fun v -> view.Date <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.Date <- v)
 
     // Events
     terminalElement.trySetEventHandler(PKey.dateField.dateChanged, view.DateChanged)
@@ -3589,7 +3588,7 @@ type internal TimeFieldTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.timeField.timeChanged
 
-type internal TreeViewTerminalElement<'T>(props: Props) =
+type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   inherit ViewTerminalElement(props)
 
   override _.name = "TreeView`1"
@@ -3625,7 +3624,7 @@ type internal TreeViewTerminalElement<'T>(props: Props) =
 
     props
     |> Props.tryFind PKey.treeView<'T>.objectActivationButton
-    |> Option.iter (fun v -> view.ObjectActivationButton <- v |> Option.toNullable)
+    |> Option.iter (fun v -> view.ObjectActivationButton <- v)
 
     props
     |> Props.tryFind PKey.treeView<'T>.objectActivationKey

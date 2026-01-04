@@ -25,7 +25,6 @@ type PKeyRegistry =
 let generatePKeyClass (viewType: Type) =
   seq {
     let className = ViewType.cleanTypeName viewType
-    let parentType = ViewType.parentViewType viewType
 
     yield $"  // {className}"
 
@@ -38,16 +37,13 @@ let generatePKeyClass (viewType: Type) =
       yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
     else
-      match parentType with
-      | Some parent when parent <> typeof<Terminal.Gui.ViewBase.View> ->
-        let parentName = if parent.Name.Contains("`") then parent.Name.Substring(0, parent.Name.IndexOf("`")) else parent.Name
-        if parent.IsGenericType then
-          let genericParams = parent.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-          yield $"    inherit {parentName}PKeys<{genericParams}>()"
-        else
-          yield $"    inherit {parentName}PKeys()"
-      | _ ->
-        yield $"    inherit ViewPKeys()"
+      let parentViewType = ViewType.parentViewType viewType
+      let parentName = if parentViewType.Name.Contains("`") then parentViewType.Name.Substring(0, parentViewType.Name.IndexOf("`")) else parentViewType.Name
+      if parentViewType.IsGenericType then
+        let genericParams = parentViewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
+        yield $"    inherit {parentName}PKeys<{genericParams}>()"
+      else
+        yield $"    inherit {parentName}PKeys()"
 
     let view = ViewType.decompose viewType
 

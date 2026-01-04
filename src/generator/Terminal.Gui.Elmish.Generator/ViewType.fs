@@ -155,9 +155,9 @@ let parentViewType (viewType: Type) =
   let baseType = viewType.BaseType
   if baseType.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
     || baseType = typeof<Terminal.Gui.ViewBase.View> then
-    Some baseType
+    baseType
   else
-    None
+    failwith $"Type {viewType.FullName} does not have Terminal.Gui.ViewBase.View as parent type."
 
 let isInitOnly (property: PropertyInfo) =
   match property.SetMethod with

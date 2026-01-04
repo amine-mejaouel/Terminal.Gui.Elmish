@@ -25,36 +25,29 @@ type PKeyRegistry =
 let generatePKeyClass (viewType: Type) =
   seq {
     let className = ViewType.cleanTypeName viewType
-    // Remove generic suffix from type name for class name
     let parentType = ViewType.parentViewType viewType
 
     yield $"  // {className}"
 
-    // Handle generic types properly
     if viewType.IsGenericType then
       yield $"  type {className}PKeys{ViewType.genericTypeParamsWithConstraintsBlock viewType}() ="
     else
       yield $"  type {className}PKeys() ="
 
-    // Handle inheritance
-    let isViewBaseType = viewType = typeof<Terminal.Gui.ViewBase.View>
-
-    if not isViewBaseType then
-      match parentType with
-      | Some parent when parent.Name <> "View" && not (parent.FullName.Contains("Terminal.Gui.ViewBase.View")) ->
-          let parentName = if parent.Name.Contains("`") then parent.Name.Substring(0, parent.Name.IndexOf("`")) else parent.Name
-          if parent.IsGenericType then
-            let genericParams = parent.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-            yield $"    inherit {parentName}PKeys<{genericParams}>()"
-          else
-            yield $"    inherit {parentName}PKeys()"
-      | _ ->
-          yield $"    inherit ViewPKeys()"
-
-    // For View base type, add children property
-    if isViewBaseType then
+    if viewType = typeof<Terminal.Gui.ViewBase.View> then
       yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
+    else
+      match parentType with
+      | Some parent when parent <> typeof<Terminal.Gui.ViewBase.View> ->
+        let parentName = if parent.Name.Contains("`") then parent.Name.Substring(0, parent.Name.IndexOf("`")) else parent.Name
+        if parent.IsGenericType then
+          let genericParams = parent.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
+          yield $"    inherit {parentName}PKeys<{genericParams}>()"
+        else
+          yield $"    inherit {parentName}PKeys()"
+      | _ ->
+        yield $"    inherit ViewPKeys()"
 
     let view = ViewType.decompose viewType
 

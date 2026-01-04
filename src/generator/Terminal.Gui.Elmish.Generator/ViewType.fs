@@ -103,7 +103,7 @@ let isInitOnly (property: PropertyInfo) =
     |> Option.defaultValue [||]
     |> Array.contains typeof<System.Runtime.CompilerServices.IsExternalInit>
 
-let properties (viewType: Type) =
+let private properties (viewType: Type) =
   viewType.GetProperties(
     System.Reflection.BindingFlags.Public |||
     System.Reflection.BindingFlags.Instance |||
@@ -113,10 +113,18 @@ let properties (viewType: Type) =
   )
   |> Array.sortBy _.Name
 
-let events (viewType: Type) =
+let private events (viewType: Type) =
   viewType.GetEvents(
     System.Reflection.BindingFlags.Public |||
     System.Reflection.BindingFlags.Instance |||
     System.Reflection.BindingFlags.DeclaredOnly)
   |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
   |> Array.sortBy _.Name
+
+let decompose (viewType: Type) =
+  let props = properties viewType
+  let evts = events viewType
+  {| ViewType = viewType
+     Properties = props
+     Events = evts
+     HasNoEventsOrProperties = props.Length = 0 && evts.Length = 0 |}

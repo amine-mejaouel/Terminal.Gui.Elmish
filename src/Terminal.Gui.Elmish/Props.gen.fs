@@ -35,7 +35,7 @@ type ViewProps() =
         |> List.map (fun x -> x :?> IInternalTerminalElement)
       )
     )
-
+  
   // Properties
   member this.Arrangement (value: ViewArrangement) =
     this.props.add (PKey.View.Arrangement, value)
@@ -561,23 +561,23 @@ type NumericUpDownProps<'T>() =
   inherit ViewProps()
   // Properties
   member this.Format (value: string) =
-    this.props.add (PKey.NumericUpDown.Format, value)
+    this.props.add (PKey.NumericUpDown<'T>.Format, value)
 
   member this.Increment (value: 'T) =
-    this.props.add (PKey.NumericUpDown.Increment, value)
+    this.props.add (PKey.NumericUpDown<'T>.Increment, value)
 
   member this.Value (value: 'T) =
-    this.props.add (PKey.NumericUpDown.Value, value)
+    this.props.add (PKey.NumericUpDown<'T>.Value, value)
 
   // Events
   member this.FormatChanged (handler: EventArgs<string> -> unit) =
-    this.props.add (PKey.NumericUpDown.FormatChanged, handler)
+    this.props.add (PKey.NumericUpDown<'T>.FormatChanged, handler)
   member this.IncrementChanged (handler: EventArgs<'T> -> unit) =
-    this.props.add (PKey.NumericUpDown.IncrementChanged, handler)
+    this.props.add (PKey.NumericUpDown<'T>.IncrementChanged, handler)
   member this.ValueChanged (handler: EventArgs<'T> -> unit) =
-    this.props.add (PKey.NumericUpDown.ValueChanged, handler)
+    this.props.add (PKey.NumericUpDown<'T>.ValueChanged, handler)
   member this.ValueChanging (handler: CancelEventArgs<'T> -> unit) =
-    this.props.add (PKey.NumericUpDown.ValueChanging, handler)
+    this.props.add (PKey.NumericUpDown<'T>.ValueChanging, handler)
 type PaddingProps() =
   inherit ViewProps()
 type PopoverBaseImplProps() =
@@ -642,7 +642,7 @@ type RunnableProps<'TResult>() =
   inherit ViewProps()
   // Properties
   member this.Result (value: 'TResult) =
-    this.props.add (PKey.Runnable'.Result, value)
+    this.props.add (PKey.Runnable'<'TResult>.Result, value)
 
 type ScrollBarProps() =
   inherit ViewProps()
@@ -762,23 +762,23 @@ type FlagSelectorProps<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (ne
   inherit ViewProps()
   // Properties
   member this.Value (value: Nullable<'TFlagsEnum>) =
-    this.props.add (PKey.FlagSelector'.Value, value)
+    this.props.add (PKey.FlagSelector'<'TFlagsEnum>.Value, value)
 
   // Events
   member this.ValueChanged (handler: EventArgs<Nullable<'TFlagsEnum>> -> unit) =
-    this.props.add (PKey.FlagSelector'.ValueChanged, handler)
+    this.props.add (PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, handler)
 type OptionSelectorProps<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
   inherit ViewProps()
   // Properties
   member this.Value (value: Nullable<'TEnum>) =
-    this.props.add (PKey.OptionSelector'<_>.Value, value)
+    this.props.add (PKey.OptionSelector'<'TEnum>.Value, value)
 
   member this.Values (value: IReadOnlyList<int>) =
-    this.props.add (PKey.OptionSelector'<_>.Values, value)
+    this.props.add (PKey.OptionSelector'<'TEnum>.Values, value)
 
   // Events
   member this.ValueChanged (handler: EventArgs<Nullable<'TEnum>> -> unit) =
-    this.props.add (PKey.OptionSelector'.ValueChanged, handler)
+    this.props.add (PKey.OptionSelector'<'TEnum>.ValueChanged, handler)
 type ShortcutProps() =
   inherit ViewProps()
   // Properties
@@ -848,53 +848,53 @@ type SliderProps<'T>() =
   inherit ViewProps()
   // Properties
   member this.AllowEmpty (value: bool) =
-    this.props.add (PKey.Slider.AllowEmpty, value)
+    this.props.add (PKey.Slider<'T>.AllowEmpty, value)
 
   member this.FocusedOption (value: int) =
-    this.props.add (PKey.Slider.FocusedOption, value)
+    this.props.add (PKey.Slider<'T>.FocusedOption, value)
 
   member this.LegendsOrientation (value: Orientation) =
-    this.props.add (PKey.Slider.LegendsOrientation, value)
+    this.props.add (PKey.Slider<'T>.LegendsOrientation, value)
 
   member this.MinimumInnerSpacing (value: int) =
-    this.props.add (PKey.Slider.MinimumInnerSpacing, value)
+    this.props.add (PKey.Slider<'T>.MinimumInnerSpacing, value)
 
   member this.Options (value: List<SliderOption<'T>>) =
-    this.props.add (PKey.Slider.Options, value)
+    this.props.add (PKey.Slider<'T>.Options, value)
 
   member this.Orientation (value: Orientation) =
-    this.props.add (PKey.Slider.Orientation, value)
+    this.props.add (PKey.Slider<'T>.Orientation, value)
 
   member this.RangeAllowSingle (value: bool) =
-    this.props.add (PKey.Slider.RangeAllowSingle, value)
+    this.props.add (PKey.Slider<'T>.RangeAllowSingle, value)
 
   member this.ShowEndSpacing (value: bool) =
-    this.props.add (PKey.Slider.ShowEndSpacing, value)
+    this.props.add (PKey.Slider<'T>.ShowEndSpacing, value)
 
   member this.ShowLegends (value: bool) =
-    this.props.add (PKey.Slider.ShowLegends, value)
+    this.props.add (PKey.Slider<'T>.ShowLegends, value)
 
   member this.Style (value: SliderStyle) =
-    this.props.add (PKey.Slider.Style, value)
+    this.props.add (PKey.Slider<'T>.Style, value)
 
   member this.Text (value: string) =
-    this.props.add (PKey.Slider.Text, value)
+    this.props.add (PKey.Slider<'T>.Text, value)
 
   member this.Type (value: SliderType) =
-    this.props.add (PKey.Slider.Type, value)
+    this.props.add (PKey.Slider<'T>.Type, value)
 
   member this.UseMinimumSize (value: bool) =
-    this.props.add (PKey.Slider.UseMinimumSize, value)
+    this.props.add (PKey.Slider<'T>.UseMinimumSize, value)
 
   // Events
   member this.OptionFocused (handler: SliderEventArgs<'T> -> unit) =
-    this.props.add (PKey.Slider.OptionFocused, handler)
+    this.props.add (PKey.Slider<'T>.OptionFocused, handler)
   member this.OptionsChanged (handler: SliderEventArgs<'T> -> unit) =
-    this.props.add (PKey.Slider.OptionsChanged, handler)
+    this.props.add (PKey.Slider<'T>.OptionsChanged, handler)
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.Slider.OrientationChanged, handler)
+    this.props.add (PKey.Slider<'T>.OrientationChanged, handler)
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.Slider.OrientationChanging, handler)
+    this.props.add (PKey.Slider<'T>.OrientationChanging, handler)
 type SpinnerViewProps() =
   inherit ViewProps()
   // Properties
@@ -1145,48 +1145,48 @@ type TreeViewProps<'T when 'T: not struct>() =
   inherit ViewProps()
   // Properties
   member this.AllowLetterBasedNavigation (value: bool) =
-    this.props.add (PKey.TreeView.AllowLetterBasedNavigation, value)
+    this.props.add (PKey.TreeView<'T>.AllowLetterBasedNavigation, value)
 
   member this.AspectGetter (value: AspectGetterDelegate<'T>) =
-    this.props.add (PKey.TreeView.AspectGetter, value)
+    this.props.add (PKey.TreeView<'T>.AspectGetter, value)
 
   member this.ColorGetter (value: Func<'T, Scheme>) =
-    this.props.add (PKey.TreeView.ColorGetter, value)
+    this.props.add (PKey.TreeView<'T>.ColorGetter, value)
 
   member this.MaxDepth (value: int) =
-    this.props.add (PKey.TreeView.MaxDepth, value)
+    this.props.add (PKey.TreeView<'T>.MaxDepth, value)
 
   member this.MultiSelect (value: bool) =
-    this.props.add (PKey.TreeView.MultiSelect, value)
+    this.props.add (PKey.TreeView<'T>.MultiSelect, value)
 
   member this.ObjectActivationButton (value: Nullable<MouseFlags>) =
-    this.props.add (PKey.TreeView.ObjectActivationButton, value)
+    this.props.add (PKey.TreeView<'T>.ObjectActivationButton, value)
 
   member this.ObjectActivationKey (value: KeyCode) =
-    this.props.add (PKey.TreeView.ObjectActivationKey, value)
+    this.props.add (PKey.TreeView<'T>.ObjectActivationKey, value)
 
   member this.ScrollOffsetHorizontal (value: int) =
-    this.props.add (PKey.TreeView.ScrollOffsetHorizontal, value)
+    this.props.add (PKey.TreeView<'T>.ScrollOffsetHorizontal, value)
 
   member this.ScrollOffsetVertical (value: int) =
-    this.props.add (PKey.TreeView.ScrollOffsetVertical, value)
+    this.props.add (PKey.TreeView<'T>.ScrollOffsetVertical, value)
 
   member this.SelectedObject (value: 'T) =
-    this.props.add (PKey.TreeView.SelectedObject, value)
+    this.props.add (PKey.TreeView<'T>.SelectedObject, value)
 
   member this.Style (value: TreeStyle) =
-    this.props.add (PKey.TreeView.Style, value)
+    this.props.add (PKey.TreeView<'T>.Style, value)
 
   member this.TreeBuilder (value: ITreeBuilder<'T>) =
-    this.props.add (PKey.TreeView.TreeBuilder, value)
+    this.props.add (PKey.TreeView<'T>.TreeBuilder, value)
 
   // Events
   member this.DrawLine (handler: DrawTreeViewLineEventArgs<'T> -> unit) =
-    this.props.add (PKey.TreeView.DrawLine, handler)
+    this.props.add (PKey.TreeView<'T>.DrawLine, handler)
   member this.ObjectActivated (handler: ObjectActivatedEventArgs<'T> -> unit) =
-    this.props.add (PKey.TreeView.ObjectActivated, handler)
+    this.props.add (PKey.TreeView<'T>.ObjectActivated, handler)
   member this.SelectionChanged (handler: SelectionChangedEventArgs<'T> -> unit) =
-    this.props.add (PKey.TreeView.SelectionChanged, handler)
+    this.props.add (PKey.TreeView<'T>.SelectionChanged, handler)
 type WindowProps() =
   inherit ViewProps()
 type DialogProps() =

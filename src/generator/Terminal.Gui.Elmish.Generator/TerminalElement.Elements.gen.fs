@@ -9,13 +9,13 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    let view = terminalElement.View :?> {CodeGen.cleanTypeName viewType}{CodeGen.genericTypeParamsBlock viewType}"
+      yield $"    let view = terminalElement.View :?> {ViewType.cleanTypeName viewType}{ViewType.genericTypeParamsBlock viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{CodeGen.genericTypeParamsBlock viewType}"
+  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{ViewType.genericTypeParamsBlock viewType}"
 
 let setPropsCode (viewType: Type) =
   let view = ViewType.decompose viewType
@@ -32,12 +32,12 @@ let setPropsCode (viewType: Type) =
       yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{CodeGen.asPKey prop.Name}"
-        yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
+        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
+        yield $"    |> Option.iter (fun v -> view.{prop.PropertyInfo.Name} <- v)"
         yield ""
       yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{CodeGen.asPKey event.Name}, view.{event.Name})"
+        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{event.PKey}, view.{event.EventInfo.Name})"
         yield ""
     }
 
@@ -57,14 +57,14 @@ let removePropsCode (viewType: Type) =
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{CodeGen.asPKey prop.Name}"
+        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
-        yield $"        view.{prop.Name} <- Unchecked.defaultof<_>)"
+        yield $"        view.{prop.PropertyInfo.Name} <- Unchecked.defaultof<_>)"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix viewType}.{CodeGen.asPKey event.Name}"
+        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix viewType}.{event.PKey}"
     }
 
 let gen () =
@@ -78,11 +78,11 @@ let gen () =
     yield ""
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      let genericBlock = CodeGen.genericTypeParamsWithConstraintsBlock viewType
-      let genericParamsBlock = CodeGen.genericTypeParamsBlock viewType
+      let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
+      let genericParamsBlock = ViewType.genericTypeParamsBlock viewType
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
-      yield $"type internal {CodeGen.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
+      yield $"type internal {ViewType.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
       match ViewType.parentViewType viewType with
       | Some t ->
         yield $"  inherit {t.Name}TerminalElement(props)"
@@ -92,9 +92,9 @@ let gen () =
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""
       if viewType.IsAbstract then
-        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {CodeGen.cleanTypeName viewType}\""
+        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {ViewType.cleanTypeName viewType}\""
       else
-        yield $"  override _.newView() = new {CodeGen.cleanTypeName viewType}{genericParamsBlock}()"
+        yield $"  override _.newView() = new {ViewType.cleanTypeName viewType}{genericParamsBlock}()"
       yield ""
       yield! setPropsCode viewType
       yield ""

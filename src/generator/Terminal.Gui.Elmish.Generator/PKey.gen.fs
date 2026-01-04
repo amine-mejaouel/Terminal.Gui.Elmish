@@ -123,7 +123,7 @@ let generatePKeyClass (viewType: Type) =
       yield $"  type {className}PKeys() ="
 
     // Handle inheritance
-    let isViewBaseType = viewType.Name = "View" || viewType.FullName.Contains("Terminal.Gui.ViewBase.View")
+    let isViewBaseType = viewType = typeof<Terminal.Gui.ViewBase.View>
 
     if not isViewBaseType then
       match parentType with
@@ -143,12 +143,11 @@ let generatePKeyClass (viewType: Type) =
       yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
 
-    let props = ViewType.properties viewType
-    let evts = ViewType.events viewType
+    let view = ViewType.decompose viewType
 
-    if props.Length > 0 then
+    if view.Properties.Length > 0 then
       yield "    // Properties"
-      for prop in props do
+      for prop in view.Properties do
         let propName = prop.Name |> CodeGen.asPKey
         let keyName = $"{className}.{String.lowerCamelCase prop.Name}"
 
@@ -159,10 +158,10 @@ let generatePKeyClass (viewType: Type) =
         else
           yield $"    member val {propName}: ISimplePropKey<{CodeGen.genericTypeParam prop.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
-    if evts.Length > 0 then
-      if props.Length > 0 then yield ""
+    if view.Events.Length > 0 then
+      if view.Properties.Length > 0 then yield ""
       yield "    // Events"
-      for event in evts do
+      for event in view.Events do
         let eventName = event.Name |> CodeGen.asPKey
         let keyName = $"{className}.{String.lowerCamelCase event.Name}_event"
         let eventType = eventKeyType event
@@ -189,11 +188,10 @@ let generateModuleInstances () =
   }
 
 let generateInterfaceKeys (interfaceType: Type) =
-  let props = ViewType.properties interfaceType
-  let evts = ViewType.events interfaceType
+  let i = ViewType.decompose interfaceType
 
   // Skip interfaces with no properties or events
-  if props.Length = 0 && evts.Length = 0 then
+  if i.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
@@ -204,17 +202,16 @@ let generateInterfaceKeys (interfaceType: Type) =
       yield $"  // {interfaceName}"
       yield $"  module internal {moduleName} ="
 
-      if props.Length > 0 then
+      if i.Properties.Length > 0 then
         yield "    // Properties"
-        for prop in props do
+        for prop in i.Properties do
           let propName = String.lowerCamelCase prop.Name
           let propType = prop.PropertyType
           yield $"    let {propName}: ISimplePropKey<{propType}> = PropKey.Create.simple \"{moduleName}.{propName}\""
 
-      if evts.Length > 0 then
-        if props.Length > 0 then ()
+      if i.Events.Length > 0 then
         yield "    // Events"
-        for event in evts do
+        for event in i.Events do
           let eventName = String.lowerCamelCase event.Name
           let eventType = eventKeyType event
           yield $"    let {eventName}: {eventType} = PropKey.Create.event \"{moduleName}.{eventName}_event\""

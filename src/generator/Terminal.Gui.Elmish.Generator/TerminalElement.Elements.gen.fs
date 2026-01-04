@@ -18,9 +18,8 @@ let pkeyPrefix (viewType: Type) =
   $"PKey.{PKeyRegistry.GetPKeySegment viewType}{CodeGen.genericTypeParamsBlock viewType}"
 
 let setPropsCode (viewType: Type) =
-  let properties = ViewType.properties viewType
-  let events = ViewType.events viewType
-  if properties.Length = 0 && events.Length = 0 then
+  let view = ViewType.decompose viewType
+  if view.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
@@ -31,21 +30,20 @@ let setPropsCode (viewType: Type) =
       yield! terminalElementAndViewDeclaration viewType
       yield $""
       yield "    // Properties"
-      for prop in properties do
+      for prop in view.Properties do
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix viewType}.{CodeGen.asPKey prop.Name}"
         yield $"    |> Option.iter (fun v -> view.{prop.Name} <- v)"
         yield ""
       yield "    // Events"
-      for event in events do
+      for event in view.Events do
         yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{CodeGen.asPKey event.Name}, view.{event.Name})"
         yield ""
     }
 
 let removePropsCode (viewType: Type) =
-  let properties = ViewType.properties viewType
-  let events = ViewType.events viewType
-  if properties.Length = 0 && events.Length = 0 then
+  let view = ViewType.decompose viewType
+  if view.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
@@ -55,19 +53,17 @@ let removePropsCode (viewType: Type) =
       yield $""
       yield! terminalElementAndViewDeclaration viewType
       yield $""
-      let properties = ViewType.properties viewType
-      if properties |> (not << Array.isEmpty) then
+      if view.Properties.Length > 0 then
         yield "    // Properties"
-      for prop in properties do
+      for prop in view.Properties do
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix viewType}.{CodeGen.asPKey prop.Name}"
         yield $"    |> Option.iter (fun _ ->"
         yield $"        view.{prop.Name} <- Unchecked.defaultof<_>)"
         yield ""
-      let events = ViewType.events viewType
-      if events |> (not << Array.isEmpty) then
+      if view.Events.Length > 0 then
         yield "    // Events"
-      for event in events do
+      for event in view.Events do
         yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix viewType}.{CodeGen.asPKey event.Name}"
     }
 

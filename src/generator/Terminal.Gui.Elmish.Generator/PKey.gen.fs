@@ -1,4 +1,4 @@
-module Terminal.Gui.Elmish.Generator.PKey_gen
+module Terminal.Gui.Elmish.Generator.PKey
 
 open System
 open System.IO
@@ -21,17 +21,6 @@ type PKeyRegistry =
           findUniquePKey pkeyCandidate
         PKeyRegistry.Registry.Add(viewType.FullName, uniquePKey)
         uniquePKey
-
-let eventKeyType (event: System.Reflection.EventInfo) =
-  let handlerType = event.EventHandlerType
-  let genericArgs = handlerType.GetGenericArguments()
-  if genericArgs.Length = 1 then
-    $"IEventPropKey<{ViewType.genericTypeParam genericArgs[0]} -> unit>"
-  else if genericArgs.Length = 0 then
-    let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
-    $"IEventPropKey<{ViewType.genericTypeParam eventArgs} -> unit>"
-  else
-    raise (NotImplementedException())
 
 let generatePKeyClass (viewType: Type) =
   seq {
@@ -86,8 +75,8 @@ let generatePKeyClass (viewType: Type) =
       yield "    // Events"
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
-        let eventType = eventKeyType event.EventInfo
-        yield $"    member val {event.PKey}: {eventType} = PropKey.Create.event \"{keyName}\""
+        let handlerType = ViewType.eventHandlerType event.EventInfo
+        yield $"    member val {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
 
     yield ""
   }
@@ -131,8 +120,8 @@ let generateInterfaceKeys (interfaceType: Type) =
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
-          let eventType = eventKeyType event.EventInfo
-          yield $"    let {event.PKey}: {eventType} = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+          let handlerType = ViewType.eventHandlerType event.EventInfo
+          yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
     }
 
 let gen () =

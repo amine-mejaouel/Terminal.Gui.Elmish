@@ -3,7 +3,7 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 open System
 open System.IO
 open Terminal.Gui.Elmish.Generator
-open Terminal.Gui.Elmish.Generator.PKey_gen
+open Terminal.Gui.Elmish.Generator.PKey
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {

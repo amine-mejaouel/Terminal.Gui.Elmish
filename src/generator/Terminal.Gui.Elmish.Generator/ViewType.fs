@@ -187,6 +187,17 @@ let private events (viewType: Type) =
   |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
   |> Array.sortBy _.Name
 
+let eventHandlerType (event: System.Reflection.EventInfo) =
+  let handlerType = event.EventHandlerType
+  let genericArgs = handlerType.GetGenericArguments()
+  if genericArgs.Length = 1 then
+    $"{genericTypeParam genericArgs[0]} -> unit"
+  else if genericArgs.Length = 0 then
+    let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
+    $"{genericTypeParam eventArgs} -> unit"
+  else
+    raise (NotImplementedException())
+
 type DecomposedProperty = {
   // FullPKey: string
   PKey: string

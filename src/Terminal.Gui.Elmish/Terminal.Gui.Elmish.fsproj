@@ -48,6 +48,7 @@
     <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="TerminalElement.Elements.fs" />
     <Compile Include="Props.fs" />
+    <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="Views.fs" />
     <Compile Include="TreeDiff.fs" />

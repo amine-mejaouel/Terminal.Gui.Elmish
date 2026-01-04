@@ -12,6 +12,7 @@
     <Compile Include="ViewType.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
+    <Compile Include="Props.gen.fs" />
     <Compile Include="Program.fs" />
     <Content Include="paket.references" />
     <None Include="..\..\Terminal.Gui.Elmish\TerminalElement.Elements.fs">

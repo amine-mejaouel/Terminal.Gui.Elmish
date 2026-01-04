@@ -50,7 +50,7 @@ module internal PKey =
     member val schemeName: ISimplePropKey<string> = PropKey.Create.simple "view.schemeName"
     member val shadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "view.shadowStyle"
     member val superViewRendersLineCanvas: ISimplePropKey<bool> = PropKey.Create.simple "view.superViewRendersLineCanvas"
-    member val tabStop: ISimplePropKey<TabBehavior option> = PropKey.Create.simple "view.tabStop"
+    member val tabStop: ISimplePropKey<Nullable<TabBehavior>> = PropKey.Create.simple "view.tabStop"
     member val text: ISimplePropKey<string> = PropKey.Create.simple "view.text"
     member val textAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "view.textAlignment"
     member val textDirection: ISimplePropKey<TextDirection> = PropKey.Create.simple "view.textDirection"
@@ -171,7 +171,7 @@ module internal PKey =
     // Properties
     member val selectedCodePoint: ISimplePropKey<int> = PropKey.Create.simple "charMap.selectedCodePoint"
     member val showGlyphWidths: ISimplePropKey<bool> = PropKey.Create.simple "charMap.showGlyphWidths"
-    member val showUnicodeCategory: ISimplePropKey<UnicodeCategory option> = PropKey.Create.simple "charMap.showUnicodeCategory"
+    member val showUnicodeCategory: ISimplePropKey<Nullable<UnicodeCategory>> = PropKey.Create.simple "charMap.showUnicodeCategory"
     member val startCodePoint: ISimplePropKey<int> = PropKey.Create.simple "charMap.startCodePoint"
 
     // Events
@@ -248,7 +248,7 @@ module internal PKey =
     member val axisX: ISimplePropKey<HorizontalAxis> = PropKey.Create.simple "graphView.axisX"
     member val axisY: ISimplePropKey<VerticalAxis> = PropKey.Create.simple "graphView.axisY"
     member val cellSize: ISimplePropKey<PointF> = PropKey.Create.simple "graphView.cellSize"
-    member val graphColor: ISimplePropKey<Attribute option> = PropKey.Create.simple "graphView.graphColor"
+    member val graphColor: ISimplePropKey<Nullable<Attribute>> = PropKey.Create.simple "graphView.graphColor"
     member val marginBottom: ISimplePropKey<UInt32> = PropKey.Create.simple "graphView.marginBottom"
     member val marginLeft: ISimplePropKey<UInt32> = PropKey.Create.simple "graphView.marginLeft"
     member val scrollOffset: ISimplePropKey<PointF> = PropKey.Create.simple "graphView.scrollOffset"
@@ -297,7 +297,7 @@ module internal PKey =
     member val allowsMarking: ISimplePropKey<bool> = PropKey.Create.simple "listView.allowsMarking"
     member val allowsMultipleSelection: ISimplePropKey<bool> = PropKey.Create.simple "listView.allowsMultipleSelection"
     member val leftItem: ISimplePropKey<int> = PropKey.Create.simple "listView.leftItem"
-    member val selectedItem: ISimplePropKey<int option> = PropKey.Create.simple "listView.selectedItem"
+    member val selectedItem: ISimplePropKey<Nullable<int>> = PropKey.Create.simple "listView.selectedItem"
     member val source: ISimplePropKey<IListDataSource> = PropKey.Create.simple "listView.source"
     member val topItem: ISimplePropKey<int> = PropKey.Create.simple "listView.topItem"
 
@@ -444,19 +444,19 @@ module internal PKey =
     member val orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "selectorBase.orientation"
     member val styles: ISimplePropKey<SelectorStyles> = PropKey.Create.simple "selectorBase.styles"
     member val usedHotKeys: ISimplePropKey<HashSet<Key>> = PropKey.Create.simple "selectorBase.usedHotKeys"
-    member val value: ISimplePropKey<int option> = PropKey.Create.simple "selectorBase.value"
+    member val value: ISimplePropKey<Nullable<int>> = PropKey.Create.simple "selectorBase.value"
     member val values: ISimplePropKey<IReadOnlyList<int>> = PropKey.Create.simple "selectorBase.values"
 
     // Events
     member val orientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "selectorBase.orientationChanged_event"
     member val orientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "selectorBase.orientationChanging_event"
-    member val valueChanged: IEventPropKey<EventArgs<int option> -> unit> = PropKey.Create.event "selectorBase.valueChanged_event"
+    member val valueChanged: IEventPropKey<EventArgs<Nullable<int>> -> unit> = PropKey.Create.event "selectorBase.valueChanged_event"
 
   // FlagSelector
   type flagSelectorPKeys() =
     inherit selectorBasePKeys()
     // Properties
-    member val value: ISimplePropKey<int option> = PropKey.Create.simple "flagSelector.value"
+    member val value: ISimplePropKey<Nullable<int>> = PropKey.Create.simple "flagSelector.value"
 
   // OptionSelector
   type optionSelectorPKeys() =
@@ -465,23 +465,23 @@ module internal PKey =
     member val cursor: ISimplePropKey<int> = PropKey.Create.simple "optionSelector.cursor"
 
   // FlagSelector
-  type flagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)>() =
+  type flagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
     inherit flagSelectorPKeys()
     // Properties
-    member val value: ISimplePropKey<'TFlagsEnum option> = PropKey.Create.simple "flagSelector.value"
+    member val value: ISimplePropKey<Nullable<'TFlagsEnum>> = PropKey.Create.simple "flagSelector.value"
 
     // Events
-    member val valueChanged: IEventPropKey<EventArgs<'TFlagsEnum option> -> unit> = PropKey.Create.event "flagSelector.valueChanged_event"
+    member val valueChanged: IEventPropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> = PropKey.Create.event "flagSelector.valueChanged_event"
 
   // OptionSelector
-  type optionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum)>() =
+  type optionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
     inherit optionSelectorPKeys()
     // Properties
-    member val value: ISimplePropKey<'TEnum option> = PropKey.Create.simple "optionSelector.value"
+    member val value: ISimplePropKey<Nullable<'TEnum>> = PropKey.Create.simple "optionSelector.value"
     member val values: ISimplePropKey<IReadOnlyList<int>> = PropKey.Create.simple "optionSelector.values"
 
     // Events
-    member val valueChanged: IEventPropKey<EventArgs<'TEnum option> -> unit> = PropKey.Create.event "optionSelector.valueChanged_event"
+    member val valueChanged: IEventPropKey<EventArgs<Nullable<'TEnum>> -> unit> = PropKey.Create.event "optionSelector.valueChanged_event"
 
   // Shortcut
   type shortcutPKeys() =
@@ -627,7 +627,7 @@ module internal PKey =
     // Properties
     member val culture: ISimplePropKey<CultureInfo> = PropKey.Create.simple "dateField.culture"
     member val cursorPosition: ISimplePropKey<int> = PropKey.Create.simple "dateField.cursorPosition"
-    member val date: ISimplePropKey<DateTime option> = PropKey.Create.simple "dateField.date"
+    member val date: ISimplePropKey<Nullable<DateTime>> = PropKey.Create.simple "dateField.date"
 
     // Events
     member val dateChanged: IEventPropKey<EventArgs<DateTime> -> unit> = PropKey.Create.event "dateField.dateChanged_event"
@@ -690,7 +690,7 @@ module internal PKey =
     member val colorGetter: ISimplePropKey<Func<'T, Scheme>> = PropKey.Create.simple "treeView.colorGetter"
     member val maxDepth: ISimplePropKey<int> = PropKey.Create.simple "treeView.maxDepth"
     member val multiSelect: ISimplePropKey<bool> = PropKey.Create.simple "treeView.multiSelect"
-    member val objectActivationButton: ISimplePropKey<MouseFlags option> = PropKey.Create.simple "treeView.objectActivationButton"
+    member val objectActivationButton: ISimplePropKey<Nullable<MouseFlags>> = PropKey.Create.simple "treeView.objectActivationButton"
     member val objectActivationKey: ISimplePropKey<KeyCode> = PropKey.Create.simple "treeView.objectActivationKey"
     member val scrollOffsetHorizontal: ISimplePropKey<int> = PropKey.Create.simple "treeView.scrollOffsetHorizontal"
     member val scrollOffsetVertical: ISimplePropKey<int> = PropKey.Create.simple "treeView.scrollOffsetVertical"
@@ -807,8 +807,8 @@ module internal PKey =
   let selectorBase = selectorBasePKeys ()
   let flagSelector = flagSelectorPKeys ()
   let optionSelector = optionSelectorPKeys ()
-  let flagSelector'<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)> = flagSelectorPKeys<'TFlagsEnum>()
-  let optionSelector'<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum)> = optionSelectorPKeys<'TEnum>()
+  let flagSelector'<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType> = flagSelectorPKeys<'TFlagsEnum>()
+  let optionSelector'<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType> = optionSelectorPKeys<'TEnum>()
   let shortcut = shortcutPKeys ()
   let menuItem = menuItemPKeys ()
   let menuBarItem = menuBarItemPKeys ()

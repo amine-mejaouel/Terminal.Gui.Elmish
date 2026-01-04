@@ -9,16 +9,10 @@ module CodeGen =
   let cleanTypeName (t: Type) =
     if t.Name.Contains("`") then t.Name.Substring(0, t.Name.IndexOf("`")) else t.Name
 
-  let isNullable (t: Type) =
-    t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Nullable<_>>
-
   let rec genericTypeParam (t: Type) =
-    if isNullable t then
-      let genericArg = t.GetGenericArguments().[0]
-      $"%s{genericTypeParam genericArg} option"
-    else if t.IsGenericType then
+    if t.IsGenericType then
       let baseName = t.Name.Substring(0, t.Name.IndexOf('`'))
-      $"{baseName}{genericTypeParams t}"
+      $"{baseName}{genericTypeParamsBlock t}"
     else if t.IsGenericParameter then
       $"'{t.Name}"
     else if t.Name = "Boolean" then
@@ -31,9 +25,11 @@ module CodeGen =
       t.Name
 
   and genericTypeParams (t: Type) =
-    match String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam) with
-    | "" -> ""
-    | args -> $"<{args}>"
+    String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam)
+
+  and genericTypeParamsBlock (t: Type) =
+    genericTypeParams t
+    |> fun s -> if s = "" then "" else $"<{s}>"
 
   let genericConstraints (t: Type) =
     let constraints =
@@ -48,6 +44,9 @@ module CodeGen =
             constraints.Add($"'{t.Name}: struct")
           if attrs.HasFlag(System.Reflection.GenericParameterAttributes.DefaultConstructorConstraint) then
             constraints.Add($"'{t.Name}: (new: unit -> '{t.Name})")
+          let baseTypes = t.GetGenericParameterConstraints()
+          for baseType in baseTypes do
+            constraints.Add($"'{t.Name}:> {genericTypeParam baseType}")
 
           if constraints.Count > 0 then
             constraints
@@ -60,6 +59,14 @@ module CodeGen =
       " when " + (constraints |> String.concat " and ")
     else
       ""
+
+  let rec genericTypeParamsWithConstraintsBlock (t: Type) =
+    if not t.IsGenericType then
+      ""
+    else
+      let genericParams = genericTypeParams t
+      let constraints = genericConstraints t
+      $"<{genericParams}{constraints}>"
 
   let asPKey (name: string) =
     name

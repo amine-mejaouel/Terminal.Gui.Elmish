@@ -59,6 +59,18 @@ let generatePKeyClass (viewType: Type) =
         else
           yield $"    member val {prop.PKey}: ISimplePropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
+        if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
+          yield $"    member val {prop.PKey}_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement \"{keyName}_element\""
+        else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
+          let isEnumerableOfViews =
+            if prop.PropertyInfo.PropertyType.IsGenericType then
+              let genericArg = prop.PropertyInfo.PropertyType.GetGenericArguments().[0]
+              genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
+            else
+              false
+          if isEnumerableOfViews then
+            yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
+
     if view.Events.Length > 0 then
       if view.Properties.Length > 0 then yield ""
       yield "    // Events"

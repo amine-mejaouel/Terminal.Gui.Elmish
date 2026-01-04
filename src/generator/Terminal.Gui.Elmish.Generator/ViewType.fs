@@ -68,7 +68,6 @@ let rec genericTypeParamsWithConstraintsBlock (t: Type) =
 
 let asPKey (name: string) =
   name
-  |> String.lowerCamelCase
   |> String.escapeReservedKeywords
 
 let private inheritanceChain (viewType: Type) =
@@ -189,13 +188,13 @@ let private events (viewType: Type) =
   |> Array.sortBy _.Name
 
 type DecomposedProperty = {
-  FullPKey: string
+  // FullPKey: string
   PKey: string
   PropertyInfo: PropertyInfo
 }
 
 type DecomposedEvent = {
-  FullPKey: string
+  // FullPKey: string
   PKey: string
   EventInfo: EventInfo
 }
@@ -216,7 +215,7 @@ let decompose (viewType: Type) =
       props
       |> Array.map (fun p ->
         {
-          FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey p.Name}"
+          // FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey p.Name}"
           PKey = asPKey p.Name
           PropertyInfo = p
         }
@@ -225,7 +224,7 @@ let decompose (viewType: Type) =
       evts
       |> Array.map (fun e ->
         {
-          FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey e.Name}"
+          // FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey e.Name}"
           PKey = asPKey e.Name
           EventInfo = e
         }

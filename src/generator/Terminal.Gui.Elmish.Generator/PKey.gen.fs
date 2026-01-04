@@ -3,8 +3,6 @@ module Terminal.Gui.Elmish.Generator.PKey_gen
 open System
 open System.IO
 
-
-
 type PKeyRegistry =
   static member val private Registry = System.Collections.Generic.Dictionary<string, string>()
   static member GetPKeySegment(viewType: Type) =
@@ -15,7 +13,6 @@ type PKeyRegistry =
           let pkeyCandidate =
             viewType
             |> ViewType.cleanTypeName
-            |> String.lowerCamelCase
           let rec findUniquePKey candidate =
             if PKeyRegistry.Registry.ContainsValue candidate then
               findUniquePKey (candidate + "'")
@@ -38,12 +35,11 @@ let eventKeyType (event: System.Reflection.EventInfo) =
 
 let generatePKeyClass (viewType: Type) =
   seq {
-    let cleanTypeName = ViewType.cleanTypeName viewType
+    let className = ViewType.cleanTypeName viewType
     // Remove generic suffix from type name for class name
-    let className = String.lowerCamelCase cleanTypeName
     let parentType = ViewType.parentViewType viewType
 
-    yield $"  // {cleanTypeName}"
+    yield $"  // {className}"
 
     // Handle generic types properly
     if viewType.IsGenericType then
@@ -58,14 +54,13 @@ let generatePKeyClass (viewType: Type) =
       match parentType with
       | Some parent when parent.Name <> "View" && not (parent.FullName.Contains("Terminal.Gui.ViewBase.View")) ->
           let parentName = if parent.Name.Contains("`") then parent.Name.Substring(0, parent.Name.IndexOf("`")) else parent.Name
-          let parentClassName = String.lowerCamelCase parentName
           if parent.IsGenericType then
             let genericParams = parent.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-            yield $"    inherit {parentClassName}PKeys<{genericParams}>()"
+            yield $"    inherit {parentName}PKeys<{genericParams}>()"
           else
-            yield $"    inherit {parentClassName}PKeys()"
+            yield $"    inherit {parentName}PKeys()"
       | _ ->
-          yield $"    inherit viewPKeys()"
+          yield $"    inherit ViewPKeys()"
 
     // For View base type, add children property
     if isViewBaseType then
@@ -77,10 +72,10 @@ let generatePKeyClass (viewType: Type) =
     if view.Properties.Length > 0 then
       yield "    // Properties"
       for prop in view.Properties do
-        let keyName = $"{className}.{String.lowerCamelCase prop.PropertyInfo.Name}"
+        let keyName = $"{className}.{prop.PKey}"
 
         // Check if this is a delayed pos property
-        if prop.PropertyInfo.Name = "X" || prop.PropertyInfo.Name = "Y" then
+        if prop.PKey = "X" || prop.PKey = "Y" then
           yield $"    member val {prop.PKey}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
         else
@@ -101,8 +96,7 @@ let generateModuleInstances () =
   seq {
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
-      let cleanTypeName = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-      let className = String.lowerCamelCase cleanTypeName
+      let className = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
       let viewName = PKeyRegistry.GetPKeySegment viewType
 
       // Check if it's a generic type
@@ -124,7 +118,7 @@ let generateInterfaceKeys (interfaceType: Type) =
     seq {
       let interfaceName = interfaceType.Name
       let cleanName = if interfaceName.StartsWith("I") then interfaceName.Substring(1) else interfaceName
-      let moduleName = $"{String.lowerCamelCase cleanName}Interface"
+      let moduleName = $"{cleanName}Interface"
 
       yield $"  // {interfaceName}"
       yield $"  module internal {moduleName} ="

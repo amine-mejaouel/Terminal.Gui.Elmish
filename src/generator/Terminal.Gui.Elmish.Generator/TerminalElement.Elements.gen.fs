@@ -33,11 +33,11 @@ let setPropsCode (viewType: Type) =
       for prop in view.Properties do
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
-        yield $"    |> Option.iter (fun v -> view.{prop.PropertyInfo.Name} <- v)"
+        yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
         yield ""
       yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{event.PKey}, view.{event.EventInfo.Name})"
+        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{event.PKey}, view.{event.PKey})"
         yield ""
     }
 
@@ -59,7 +59,7 @@ let removePropsCode (viewType: Type) =
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
-        yield $"        view.{prop.PropertyInfo.Name} <- Unchecked.defaultof<_>)"
+        yield $"        view.{prop.PKey} <- Unchecked.defaultof<_>)"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"

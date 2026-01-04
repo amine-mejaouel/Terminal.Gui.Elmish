@@ -106,12 +106,12 @@ type internal TerminalElement(props: Props) =
   member this.children
     with get() : List<IInternalTerminalElement> =
       props
-      |> Props.tryFind PKey.view.children
+      |> Props.tryFind PKey.View.children
       |> Option.defaultValue (List<IInternalTerminalElement>())
     and set value =
-      match props.tryFind PKey.view.children with
+      match props.tryFind PKey.View.children with
       | Some _ -> failwith "Children property has already been set."
-      | None -> props.add(PKey.view.children, value)
+      | None -> props.add(PKey.View.children, value)
 
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
   default _.SubElements_PropKeys = []

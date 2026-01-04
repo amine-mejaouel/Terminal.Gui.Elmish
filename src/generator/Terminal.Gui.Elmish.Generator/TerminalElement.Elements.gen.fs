@@ -83,11 +83,10 @@ let gen () =
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
       yield $"type internal {ViewType.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
-      match ViewType.parentViewType viewType with
-      | Some t ->
-        yield $"  inherit {t.Name}TerminalElement(props)"
-      | None ->
+      if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
+      else
+        yield $"  inherit {(ViewType.parentViewType viewType).Name}TerminalElement(props)"
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""

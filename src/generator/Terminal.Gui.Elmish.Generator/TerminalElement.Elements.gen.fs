@@ -15,7 +15,7 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{PKeyRegistry.GetPKeySegment viewType}{ViewType.genericTypeParamsBlock viewType}"
+  $"PKey.{Registry.GetUniqueTypeName viewType}{ViewType.genericTypeParamsBlock viewType}"
 
 let setPropsCode (viewType: Type) =
   let view = ViewType.decompose viewType

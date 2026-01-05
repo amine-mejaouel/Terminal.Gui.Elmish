@@ -21,11 +21,9 @@ open Terminal.Gui.ViewBase
 
 open Terminal.Gui.Views
 
-/// Properties key index
 [<RequireQualifiedAccess>]
 module internal PKey =
 
-  // View
   type ViewPKeys() =
     member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple "children"
 
@@ -124,13 +122,12 @@ module internal PKey =
     member val WidthChanged: IEventPropKey<ValueChangedEventArgs<Dim> -> unit> = PropKey.Create.event "View.WidthChanged_event"
     member val WidthChanging: IEventPropKey<ValueChangingEventArgs<Dim> -> unit> = PropKey.Create.event "View.WidthChanging_event"
 
-  // Adornment
   type AdornmentPKeys() =
     inherit ViewPKeys()
     // Properties
     member val Diagnostics: ISimplePropKey<ViewDiagnosticFlags> = PropKey.Create.simple "Adornment.Diagnostics"
     member val Parent: ISimplePropKey<View> = PropKey.Create.simple "Adornment.Parent"
-    member val Parent_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Adornment.Parent_element"
+    member val Parent_element: ISingleElementPropKey<IViewElement> = PropKey.Create.singleElement "Adornment.Parent_element"
     member val SuperViewRendersLineCanvas: ISimplePropKey<bool> = PropKey.Create.simple "Adornment.SuperViewRendersLineCanvas"
     member val Thickness: ISimplePropKey<Thickness> = PropKey.Create.simple "Adornment.Thickness"
     member val Viewport: ISimplePropKey<Rectangle> = PropKey.Create.simple "Adornment.Viewport"
@@ -138,7 +135,6 @@ module internal PKey =
     // Events
     member val ThicknessChanged: IEventPropKey<EventArgs -> unit> = PropKey.Create.event "Adornment.ThicknessChanged_event"
 
-  // Bar
   type BarPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -149,14 +145,12 @@ module internal PKey =
     member val OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "Bar.OrientationChanged_event"
     member val OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "Bar.OrientationChanging_event"
 
-  // Border
   type BorderPKeys() =
     inherit AdornmentPKeys()
     // Properties
     member val LineStyle: ISimplePropKey<LineStyle> = PropKey.Create.simple "Border.LineStyle"
     member val Settings: ISimplePropKey<BorderSettings> = PropKey.Create.simple "Border.Settings"
 
-  // Button
   type ButtonPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -166,7 +160,6 @@ module internal PKey =
     member val NoPadding: ISimplePropKey<bool> = PropKey.Create.simple "Button.NoPadding"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "Button.Text"
 
-  // CharMap
   type CharMapPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -178,7 +171,6 @@ module internal PKey =
     // Events
     member val SelectedCodePointChanged: IEventPropKey<EventArgs<int> -> unit> = PropKey.Create.event "CharMap.SelectedCodePointChanged_event"
 
-  // CheckBox
   type CheckBoxPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -192,7 +184,6 @@ module internal PKey =
     member val CheckedStateChanged: IEventPropKey<EventArgs<CheckState> -> unit> = PropKey.Create.event "CheckBox.CheckedStateChanged_event"
     member val CheckedStateChanging: IEventPropKey<ResultEventArgs<CheckState> -> unit> = PropKey.Create.event "CheckBox.CheckedStateChanging_event"
 
-  // ColorPicker
   type ColorPickerPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -202,7 +193,6 @@ module internal PKey =
     // Events
     member val ColorChanged: IEventPropKey<ResultEventArgs<Color> -> unit> = PropKey.Create.event "ColorPicker.ColorChanged_event"
 
-  // ColorPicker16
   type ColorPicker16PKeys() =
     inherit ViewPKeys()
     // Properties
@@ -214,7 +204,6 @@ module internal PKey =
     // Events
     member val ColorChanged: IEventPropKey<ResultEventArgs<Color> -> unit> = PropKey.Create.event "ColorPicker16.ColorChanged_event"
 
-  // ComboBox
   type ComboBoxPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -231,18 +220,15 @@ module internal PKey =
     member val OpenSelectedItem: IEventPropKey<ListViewItemEventArgs -> unit> = PropKey.Create.event "ComboBox.OpenSelectedItem_event"
     member val SelectedItemChanged: IEventPropKey<ListViewItemEventArgs -> unit> = PropKey.Create.event "ComboBox.SelectedItemChanged_event"
 
-  // DatePicker
   type DatePickerPKeys() =
     inherit ViewPKeys()
     // Properties
     member val Culture: ISimplePropKey<CultureInfo> = PropKey.Create.simple "DatePicker.Culture"
     member val Date: ISimplePropKey<DateTime> = PropKey.Create.simple "DatePicker.Date"
 
-  // FrameView
   type FrameViewPKeys() =
     inherit ViewPKeys()
 
-  // GraphView
   type GraphViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -254,7 +240,6 @@ module internal PKey =
     member val MarginLeft: ISimplePropKey<UInt32> = PropKey.Create.simple "GraphView.MarginLeft"
     member val ScrollOffset: ISimplePropKey<PointF> = PropKey.Create.simple "GraphView.ScrollOffset"
 
-  // HexView
   type HexViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -268,18 +253,15 @@ module internal PKey =
     member val Edited: IEventPropKey<HexViewEditEventArgs -> unit> = PropKey.Create.event "HexView.Edited_event"
     member val PositionChanged: IEventPropKey<HexViewEventArgs -> unit> = PropKey.Create.event "HexView.PositionChanged_event"
 
-  // Label
   type LabelPKeys() =
     inherit ViewPKeys()
     // Properties
     member val HotKeySpecifier: ISimplePropKey<Rune> = PropKey.Create.simple "Label.HotKeySpecifier"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "Label.Text"
 
-  // LegendAnnotation
   type LegendAnnotationPKeys() =
     inherit ViewPKeys()
 
-  // Line
   type LinePKeys() =
     inherit ViewPKeys()
     // Properties
@@ -291,7 +273,6 @@ module internal PKey =
     member val OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "Line.OrientationChanged_event"
     member val OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "Line.OrientationChanging_event"
 
-  // ListView
   type ListViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -308,25 +289,22 @@ module internal PKey =
     member val RowRender: IEventPropKey<ListViewRowEventArgs -> unit> = PropKey.Create.event "ListView.RowRender_event"
     member val SelectedItemChanged: IEventPropKey<ListViewItemEventArgs -> unit> = PropKey.Create.event "ListView.SelectedItemChanged_event"
 
-  // Margin
   type MarginPKeys() =
     inherit AdornmentPKeys()
     // Properties
     member val ShadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "Margin.ShadowStyle"
 
-  // Menu
   type MenuPKeys() =
     inherit BarPKeys()
     // Properties
     member val SelectedMenuItem: ISimplePropKey<MenuItem> = PropKey.Create.simple "Menu.SelectedMenuItem"
-    member val SelectedMenuItem_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Menu.SelectedMenuItem_element"
+    member val SelectedMenuItem_element: ISingleElementPropKey<IMenuItemElement> = PropKey.Create.singleElement "Menu.SelectedMenuItem_element"
     member val SuperMenuItem: ISimplePropKey<MenuItem> = PropKey.Create.simple "Menu.SuperMenuItem"
-    member val SuperMenuItem_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Menu.SuperMenuItem_element"
+    member val SuperMenuItem_element: ISingleElementPropKey<IMenuItemElement> = PropKey.Create.singleElement "Menu.SuperMenuItem_element"
 
     // Events
     member val SelectedMenuItemChanged: IEventPropKey<MenuItem -> unit> = PropKey.Create.event "Menu.SelectedMenuItemChanged_event"
 
-  // MenuBar
   type MenuBarPKeys() =
     inherit MenuPKeys()
     // Properties
@@ -335,7 +313,6 @@ module internal PKey =
     // Events
     member val KeyChanged: IEventPropKey<KeyChangedEventArgs -> unit> = PropKey.Create.event "MenuBar.KeyChanged_event"
 
-  // NumericUpDown
   type NumericUpDownPKeys<'T>() =
     inherit ViewPKeys()
     // Properties
@@ -349,29 +326,25 @@ module internal PKey =
     member val ValueChanged: IEventPropKey<EventArgs<'T> -> unit> = PropKey.Create.event "NumericUpDown.ValueChanged_event"
     member val ValueChanging: IEventPropKey<CancelEventArgs<'T> -> unit> = PropKey.Create.event "NumericUpDown.ValueChanging_event"
 
-  // Padding
   type PaddingPKeys() =
     inherit AdornmentPKeys()
 
-  // PopoverBaseImpl
   type PopoverBaseImplPKeys() =
     inherit ViewPKeys()
     // Properties
     member val Current: ISimplePropKey<IRunnable> = PropKey.Create.simple "PopoverBaseImpl.Current"
 
-  // PopoverMenu
   type PopoverMenuPKeys() =
     inherit PopoverBaseImplPKeys()
     // Properties
     member val Key: ISimplePropKey<Key> = PropKey.Create.simple "PopoverMenu.Key"
     member val MouseFlags: ISimplePropKey<MouseFlags> = PropKey.Create.simple "PopoverMenu.MouseFlags"
     member val Root: ISimplePropKey<Menu> = PropKey.Create.simple "PopoverMenu.Root"
-    member val Root_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "PopoverMenu.Root_element"
+    member val Root_element: ISingleElementPropKey<IMenuElement> = PropKey.Create.singleElement "PopoverMenu.Root_element"
 
     // Events
     member val KeyChanged: IEventPropKey<KeyChangedEventArgs -> unit> = PropKey.Create.event "PopoverMenu.KeyChanged_event"
 
-  // ProgressBar
   type ProgressBarPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -382,7 +355,6 @@ module internal PKey =
     member val SegmentCharacter: ISimplePropKey<Rune> = PropKey.Create.simple "ProgressBar.SegmentCharacter"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "ProgressBar.Text"
 
-  // Runnable
   type RunnablePKeys() =
     inherit ViewPKeys()
     // Properties
@@ -394,13 +366,11 @@ module internal PKey =
     member val IsRunningChanged: IEventPropKey<EventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanged_event"
     member val IsRunningChanging: IEventPropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanging_event"
 
-  // Runnable
   type RunnablePKeys<'TResult>() =
     inherit RunnablePKeys()
     // Properties
     member val Result: ISimplePropKey<'TResult> = PropKey.Create.simple "Runnable.Result"
 
-  // ScrollBar
   type ScrollBarPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -420,7 +390,6 @@ module internal PKey =
     member val Scrolled: IEventPropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.Scrolled_event"
     member val SliderPositionChanged: IEventPropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.SliderPositionChanged_event"
 
-  // ScrollSlider
   type ScrollSliderPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -437,7 +406,6 @@ module internal PKey =
     member val PositionChanging: IEventPropKey<CancelEventArgs<int> -> unit> = PropKey.Create.event "ScrollSlider.PositionChanging_event"
     member val Scrolled: IEventPropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollSlider.Scrolled_event"
 
-  // SelectorBase
   type SelectorBasePKeys() =
     inherit ViewPKeys()
     // Properties
@@ -456,19 +424,16 @@ module internal PKey =
     member val OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "SelectorBase.OrientationChanging_event"
     member val ValueChanged: IEventPropKey<EventArgs<Nullable<int>> -> unit> = PropKey.Create.event "SelectorBase.ValueChanged_event"
 
-  // FlagSelector
   type FlagSelectorPKeys() =
     inherit SelectorBasePKeys()
     // Properties
     member val Value: ISimplePropKey<Nullable<int>> = PropKey.Create.simple "FlagSelector.Value"
 
-  // OptionSelector
   type OptionSelectorPKeys() =
     inherit SelectorBasePKeys()
     // Properties
     member val Cursor: ISimplePropKey<int> = PropKey.Create.simple "OptionSelector.Cursor"
 
-  // FlagSelector
   type FlagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
     inherit FlagSelectorPKeys()
     // Properties
@@ -477,7 +442,6 @@ module internal PKey =
     // Events
     member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> = PropKey.Create.event "FlagSelector.ValueChanged_event"
 
-  // OptionSelector
   type OptionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
     inherit OptionSelectorPKeys()
     // Properties
@@ -487,7 +451,6 @@ module internal PKey =
     // Events
     member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TEnum>> -> unit> = PropKey.Create.event "OptionSelector.ValueChanged_event"
 
-  // Shortcut
   type ShortcutPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -495,7 +458,7 @@ module internal PKey =
     member val AlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Shortcut.AlignmentModes"
     member val BindKeyToApplication: ISimplePropKey<bool> = PropKey.Create.simple "Shortcut.BindKeyToApplication"
     member val CommandView: ISimplePropKey<View> = PropKey.Create.simple "Shortcut.CommandView"
-    member val CommandView_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Shortcut.CommandView_element"
+    member val CommandView_element: ISingleElementPropKey<IViewElement> = PropKey.Create.singleElement "Shortcut.CommandView_element"
     member val ForceFocusColors: ISimplePropKey<bool> = PropKey.Create.simple "Shortcut.ForceFocusColors"
     member val HelpText: ISimplePropKey<string> = PropKey.Create.simple "Shortcut.HelpText"
     member val Key: ISimplePropKey<Key> = PropKey.Create.simple "Shortcut.Key"
@@ -507,30 +470,27 @@ module internal PKey =
     member val OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "Shortcut.OrientationChanged_event"
     member val OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "Shortcut.OrientationChanging_event"
 
-  // MenuItem
   type MenuItemPKeys() =
     inherit ShortcutPKeys()
     // Properties
     member val Command: ISimplePropKey<Command> = PropKey.Create.simple "MenuItem.Command"
     member val SubMenu: ISimplePropKey<Menu> = PropKey.Create.simple "MenuItem.SubMenu"
-    member val SubMenu_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "MenuItem.SubMenu_element"
+    member val SubMenu_element: ISingleElementPropKey<IMenuElement> = PropKey.Create.singleElement "MenuItem.SubMenu_element"
     member val TargetView: ISimplePropKey<View> = PropKey.Create.simple "MenuItem.TargetView"
-    member val TargetView_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "MenuItem.TargetView_element"
+    member val TargetView_element: ISingleElementPropKey<IViewElement> = PropKey.Create.singleElement "MenuItem.TargetView_element"
 
-  // MenuBarItem
   type MenuBarItemPKeys() =
     inherit MenuItemPKeys()
     // Properties
     member val PopoverMenu: ISimplePropKey<PopoverMenu> = PropKey.Create.simple "MenuBarItem.PopoverMenu"
-    member val PopoverMenu_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "MenuBarItem.PopoverMenu_element"
+    member val PopoverMenu_element: ISingleElementPropKey<IPopoverMenuElement> = PropKey.Create.singleElement "MenuBarItem.PopoverMenu_element"
     member val PopoverMenuOpen: ISimplePropKey<bool> = PropKey.Create.simple "MenuBarItem.PopoverMenuOpen"
     member val SubMenu: ISimplePropKey<Menu> = PropKey.Create.simple "MenuBarItem.SubMenu"
-    member val SubMenu_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "MenuBarItem.SubMenu_element"
+    member val SubMenu_element: ISingleElementPropKey<IMenuElement> = PropKey.Create.singleElement "MenuBarItem.SubMenu_element"
 
     // Events
     member val PopoverMenuOpenChanged: IEventPropKey<EventArgs<bool> -> unit> = PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
 
-  // Slider
   type SliderPKeys<'T>() =
     inherit ViewPKeys()
     // Properties
@@ -554,7 +514,6 @@ module internal PKey =
     member val OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "Slider.OrientationChanged_event"
     member val OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "Slider.OrientationChanging_event"
 
-  // SpinnerView
   type SpinnerViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -565,25 +524,22 @@ module internal PKey =
     member val SpinReverse: ISimplePropKey<bool> = PropKey.Create.simple "SpinnerView.SpinReverse"
     member val Style: ISimplePropKey<SpinnerStyle> = PropKey.Create.simple "SpinnerView.Style"
 
-  // StatusBar
   type StatusBarPKeys() =
     inherit BarPKeys()
 
-  // Tab
   type TabPKeys() =
     inherit ViewPKeys()
     // Properties
     member val DisplayText: ISimplePropKey<string> = PropKey.Create.simple "Tab.DisplayText"
     member val View: ISimplePropKey<View> = PropKey.Create.simple "Tab.View"
-    member val View_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Tab.View_element"
+    member val View_element: ISingleElementPropKey<IViewElement> = PropKey.Create.singleElement "Tab.View_element"
 
-  // TabView
   type TabViewPKeys() =
     inherit ViewPKeys()
     // Properties
     member val MaxTabTextWidth: ISimplePropKey<UInt32> = PropKey.Create.simple "TabView.MaxTabTextWidth"
     member val SelectedTab: ISimplePropKey<Tab> = PropKey.Create.simple "TabView.SelectedTab"
-    member val SelectedTab_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "TabView.SelectedTab_element"
+    member val SelectedTab_element: ISingleElementPropKey<ITabElement> = PropKey.Create.singleElement "TabView.SelectedTab_element"
     member val Style: ISimplePropKey<TabStyle> = PropKey.Create.simple "TabView.Style"
     member val TabScrollOffset: ISimplePropKey<int> = PropKey.Create.simple "TabView.TabScrollOffset"
 
@@ -591,7 +547,6 @@ module internal PKey =
     member val SelectedTabChanged: IEventPropKey<TabChangedEventArgs -> unit> = PropKey.Create.event "TabView.SelectedTabChanged_event"
     member val TabClicked: IEventPropKey<TabMouseEventArgs -> unit> = PropKey.Create.event "TabView.TabClicked_event"
 
-  // TableView
   type TableViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -615,7 +570,6 @@ module internal PKey =
     member val CellToggled: IEventPropKey<CellToggledEventArgs -> unit> = PropKey.Create.event "TableView.CellToggled_event"
     member val SelectedCellChanged: IEventPropKey<SelectedCellChangedEventArgs -> unit> = PropKey.Create.event "TableView.SelectedCellChanged_event"
 
-  // TextField
   type TextFieldPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -632,7 +586,6 @@ module internal PKey =
     // Events
     member val TextChanging: IEventPropKey<ResultEventArgs<string> -> unit> = PropKey.Create.event "TextField.TextChanging_event"
 
-  // DateField
   type DateFieldPKeys() =
     inherit TextFieldPKeys()
     // Properties
@@ -643,14 +596,12 @@ module internal PKey =
     // Events
     member val DateChanged: IEventPropKey<EventArgs<DateTime> -> unit> = PropKey.Create.event "DateField.DateChanged_event"
 
-  // TextValidateField
   type TextValidateFieldPKeys() =
     inherit ViewPKeys()
     // Properties
     member val Provider: ISimplePropKey<ITextValidateProvider> = PropKey.Create.simple "TextValidateField.Provider"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "TextValidateField.Text"
 
-  // TextView
   type TextViewPKeys() =
     inherit ViewPKeys()
     // Properties
@@ -681,7 +632,6 @@ module internal PKey =
     member val DrawUsedColor: IEventPropKey<CellEventArgs -> unit> = PropKey.Create.event "TextView.DrawUsedColor_event"
     member val UnwrappedCursorPosition: IEventPropKey<Point -> unit> = PropKey.Create.event "TextView.UnwrappedCursorPosition_event"
 
-  // TimeField
   type TimeFieldPKeys() =
     inherit TextFieldPKeys()
     // Properties
@@ -692,7 +642,6 @@ module internal PKey =
     // Events
     member val TimeChanged: IEventPropKey<EventArgs<TimeSpan> -> unit> = PropKey.Create.event "TimeField.TimeChanged_event"
 
-  // TreeView
   type TreeViewPKeys<'T when 'T: not struct>() =
     inherit ViewPKeys()
     // Properties
@@ -714,11 +663,9 @@ module internal PKey =
     member val ObjectActivated: IEventPropKey<ObjectActivatedEventArgs<'T> -> unit> = PropKey.Create.event "TreeView.ObjectActivated_event"
     member val SelectionChanged: IEventPropKey<SelectionChangedEventArgs<'T> -> unit> = PropKey.Create.event "TreeView.SelectionChanged_event"
 
-  // Window
   type WindowPKeys() =
     inherit RunnablePKeys()
 
-  // Dialog
   type DialogPKeys() =
     inherit WindowPKeys()
     // Properties
@@ -726,7 +673,6 @@ module internal PKey =
     member val ButtonAlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Dialog.ButtonAlignmentModes"
     member val Canceled: ISimplePropKey<bool> = PropKey.Create.simple "Dialog.Canceled"
 
-  // FileDialog
   type FileDialogPKeys() =
     inherit DialogPKeys()
     // Properties
@@ -741,22 +687,19 @@ module internal PKey =
     // Events
     member val FilesSelected: IEventPropKey<FilesSelectedEventArgs -> unit> = PropKey.Create.event "FileDialog.FilesSelected_event"
 
-  // OpenDialog
   type OpenDialogPKeys() =
     inherit FileDialogPKeys()
     // Properties
     member val OpenMode: ISimplePropKey<OpenMode> = PropKey.Create.simple "OpenDialog.OpenMode"
 
-  // SaveDialog
   type SaveDialogPKeys() =
     inherit FileDialogPKeys()
 
-  // Wizard
   type WizardPKeys() =
     inherit DialogPKeys()
     // Properties
     member val CurrentStep: ISimplePropKey<WizardStep> = PropKey.Create.simple "Wizard.CurrentStep"
-    member val CurrentStep_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement "Wizard.CurrentStep_element"
+    member val CurrentStep_element: ISingleElementPropKey<IWizardStepElement> = PropKey.Create.singleElement "Wizard.CurrentStep_element"
 
     // Events
     member val Cancelled: IEventPropKey<WizardButtonEventArgs -> unit> = PropKey.Create.event "Wizard.Cancelled_event"
@@ -766,7 +709,6 @@ module internal PKey =
     member val StepChanged: IEventPropKey<StepChangeEventArgs -> unit> = PropKey.Create.event "Wizard.StepChanged_event"
     member val StepChanging: IEventPropKey<StepChangeEventArgs -> unit> = PropKey.Create.event "Wizard.StepChanging_event"
 
-  // WizardStep
   type WizardStepPKeys() =
     inherit ViewPKeys()
     // Properties

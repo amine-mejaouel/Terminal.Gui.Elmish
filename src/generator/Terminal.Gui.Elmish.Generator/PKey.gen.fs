@@ -3,30 +3,10 @@ module Terminal.Gui.Elmish.Generator.PKey
 open System
 open System.IO
 
-type PKeyRegistry =
-  static member val private Registry = System.Collections.Generic.Dictionary<string, string>()
-  static member GetPKeySegment(viewType: Type) =
-    match PKeyRegistry.Registry.TryGetValue(viewType.FullName) with
-    | true, pkey -> pkey
-    | _ ->
-        let uniquePKey =
-          let pkeyCandidate =
-            viewType
-            |> ViewType.cleanTypeName
-          let rec findUniquePKey candidate =
-            if PKeyRegistry.Registry.ContainsValue candidate then
-              findUniquePKey (candidate + "'")
-            else
-              candidate
-          findUniquePKey pkeyCandidate
-        PKeyRegistry.Registry.Add(viewType.FullName, uniquePKey)
-        uniquePKey
 
 let generatePKeyClass (viewType: Type) =
   seq {
     let className = ViewType.cleanTypeName viewType
-
-    yield $"  // {className}"
 
     if viewType.IsGenericType then
       yield $"  type {className}PKeys{ViewType.genericTypeParamsWithConstraintsBlock viewType}() ="
@@ -60,7 +40,9 @@ let generatePKeyClass (viewType: Type) =
           yield $"    member val {prop.PKey}: ISimplePropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
         if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
-          yield $"    member val {prop.PKey}_element: ISingleElementPropKey<IInternalTerminalElement> = PropKey.Create.singleElement \"{keyName}_element\""
+          let interfaceName = $"I{prop.PropertyInfo.PropertyType.Name}Element"
+          Registry.SetNeededIElementInterface(interfaceName)
+          yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
           let isEnumerableOfViews =
             if prop.PropertyInfo.PropertyType.IsGenericType then
@@ -87,7 +69,7 @@ let generateModuleInstances () =
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
       let className = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-      let viewName = PKeyRegistry.GetPKeySegment viewType
+      let viewName = Registry.GetUniqueTypeName viewType
 
       // Check if it's a generic type
       if viewType.IsGenericType then
@@ -125,23 +107,8 @@ let generateInterfaceKeys (interfaceType: Type) =
           yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
     }
 
-let gen () =
-  let outputPath = Path.Combine (Environment.CurrentDirectory, "PKey.gen.fs")
-
-  // Get all interfaces from Terminal.Gui that we need to handle
-  let interfaces =
-    typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
-    |> Array.filter (fun t ->
-      t.IsInterface &&
-      t.Namespace = "Terminal.Gui.ViewBase" &&
-      t.Name.StartsWith("I") &&
-      t.Name <> "IApplication" &&
-      t.Name <> "IDesignTimeProperties")
-    |> Array.sortBy (fun t -> t.Name)
-
+let opens =
   seq {
-    yield "namespace Terminal.Gui.Elmish"
-    yield ""
     yield "open System"
     yield "open System.Collections.Generic"
     yield "open System.Collections.Specialized"
@@ -162,22 +129,38 @@ let gen () =
     yield "open Terminal.Gui.ViewBase"
     yield ""
     yield "open Terminal.Gui.Views"
+  }
+
+let gen () =
+  let outputPath = Path.Combine (Environment.CurrentDirectory, "PKey.gen.fs")
+
+  // Get all interfaces from Terminal.Gui that we need to handle
+  let interfaces =
+    typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
+    |> Array.filter (fun t ->
+      t.IsInterface &&
+      t.Namespace = "Terminal.Gui.ViewBase" &&
+      t.Name.StartsWith("I") &&
+      t.Name <> "IApplication" &&
+      t.Name <> "IDesignTimeProperties")
+    |> Array.sortBy (fun t -> t.Name)
+
+  seq {
+    yield "namespace Terminal.Gui.Elmish"
     yield ""
-    yield "/// Properties key index"
+    yield! opens
+    yield ""
     yield "[<RequireQualifiedAccess>]"
     yield "module internal PKey ="
     yield ""
 
-    // Generate all types - ViewTypes.orderedByInheritance already includes View first
     for viewType in ViewType.viewTypesOrderedByInheritance do
       yield! generatePKeyClass viewType
 
-    // Generate interface keys
     for interfaceType in interfaces do
       yield! generateInterfaceKeys interfaceType
     yield ""
 
-    // Generate module instances
     yield! generateModuleInstances ()
   }
   |> String.concat Environment.NewLine

@@ -425,24 +425,6 @@ module Element =
     abstract isElmishComponent: bool with get
     abstract ViewSet: IEvent<View>
 
-  type IMenuElement =
-    inherit ITerminalElement
-
-  type IPopoverMenuElement =
-    inherit ITerminalElement
-
-  type IMenuBarItemElement =
-    inherit ITerminalElement
-
-  type INumericUpDownElement =
-    inherit ITerminalElement
-
-  type ISliderElement =
-    inherit ITerminalElement
-
-  type ITreeViewElement =
-    inherit ITerminalElement
-
   /// <summary>
   /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
   /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,

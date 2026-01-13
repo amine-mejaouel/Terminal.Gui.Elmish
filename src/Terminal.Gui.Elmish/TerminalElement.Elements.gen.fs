@@ -268,7 +268,6 @@ type internal ViewTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
 
     let terminalElement = terminalElement :?> TerminalElement
@@ -543,7 +542,6 @@ type internal AdornmentTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.Adornment.ThicknessChanged, view.ThicknessChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -606,7 +604,6 @@ type internal BarTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.Bar.OrientationChanging, view.OrientationChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -651,7 +648,6 @@ type internal BorderTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Settings <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -705,7 +701,6 @@ type internal ButtonTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -771,7 +766,6 @@ type internal CharMapTerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.CharMap.SelectedCodePointChanged, view.SelectedCodePointChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -842,7 +836,6 @@ type internal CheckBoxTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.CheckBox.CheckedStateChanging, view.CheckedStateChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -904,7 +897,6 @@ type internal ColorPickerTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.ColorPicker.ColorChanged, view.ColorChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -957,7 +949,6 @@ type internal ColorPicker16TerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.ColorPicker16.ColorChanged, view.ColorChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -1036,7 +1027,6 @@ type internal ComboBoxTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.ComboBox.SelectedItemChanged, view.SelectedItemChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1103,7 +1093,6 @@ type internal DatePickerTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Date <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1128,7 +1117,6 @@ type internal FrameViewTerminalElement(props: Props) =
   override _.name = "FrameView"
 
   override _.newView() = new FrameView()
-
 
 
 type internal GraphViewTerminalElement(props: Props) =
@@ -1174,7 +1162,6 @@ type internal GraphViewTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.ScrollOffset <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1257,7 +1244,6 @@ type internal HexViewTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.HexView.PositionChanged, view.PositionChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1317,7 +1303,6 @@ type internal LabelTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1342,7 +1327,6 @@ type internal LegendAnnotationTerminalElement(props: Props) =
   override _.name = "LegendAnnotation"
 
   override _.newView() = new LegendAnnotation()
-
 
 
 type internal LineTerminalElement(props: Props) =
@@ -1375,7 +1359,6 @@ type internal LineTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.Line.OrientationChanged, view.OrientationChanged)
 
     terminalElement.trySetEventHandler(PKey.Line.OrientationChanging, view.OrientationChanging)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -1450,7 +1433,6 @@ type internal ListViewTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.ListView.SelectedItemChanged, view.SelectedItemChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1513,7 +1495,6 @@ type internal MarginTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.ShadowStyle <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1534,6 +1515,13 @@ type internal MenuTerminalElement(props: Props) =
 
   override _.newView() = new Menu()
 
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Menu.SelectedMenuItem_element
+      SubElementPropKey.from PKey.Menu.SuperMenuItem_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1551,7 +1539,6 @@ type internal MenuTerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.Menu.SelectedMenuItemChanged, view.SelectedMenuItemChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -1593,7 +1580,6 @@ type internal MenuBarTerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -1645,7 +1631,6 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.NumericUpDown<'T>.ValueChanging, view.ValueChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1682,7 +1667,6 @@ type internal PaddingTerminalElement(props: Props) =
   override _.newView() = new Padding()
 
 
-
 [<AbstractClass>]
 type internal PopoverBaseImplTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1703,7 +1687,6 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Current <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1723,6 +1706,12 @@ type internal PopoverMenuTerminalElement(props: Props) =
   override _.name = "PopoverMenu"
 
   override _.newView() = new PopoverMenu()
+
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.PopoverMenu.Root_element
+    ]
+    |> List.append base.SubElements_PropKeys
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1745,7 +1734,6 @@ type internal PopoverMenuTerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.PopoverMenu.KeyChanged, view.KeyChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -1811,7 +1799,6 @@ type internal ProgressBarTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1879,7 +1866,6 @@ type internal RunnableTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.Runnable.IsRunningChanging, view.IsRunningChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1921,7 +1907,6 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
     |> Option.iter (fun v -> view.Result <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1987,7 +1972,6 @@ type internal ScrollBarTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.ScrollBar.Scrolled, view.Scrolled)
 
     terminalElement.trySetEventHandler(PKey.ScrollBar.SliderPositionChanged, view.SliderPositionChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2079,7 +2063,6 @@ type internal ScrollSliderTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.ScrollSlider.PositionChanging, view.PositionChanging)
 
     terminalElement.trySetEventHandler(PKey.ScrollSlider.Scrolled, view.Scrolled)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2178,7 +2161,6 @@ type internal SelectorBaseTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.SelectorBase.ValueChanged, view.ValueChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2255,7 +2237,6 @@ type internal FlagSelectorTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2288,7 +2269,6 @@ type internal OptionSelectorTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Cursor <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2322,7 +2302,6 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
 
     // Events
     terminalElement.trySetEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, view.ValueChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2363,7 +2342,6 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
 
     // Events
     terminalElement.trySetEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged, view.ValueChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2444,7 +2422,6 @@ type internal ShortcutTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.Shortcut.OrientationChanging, view.OrientationChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2513,6 +2490,12 @@ type internal MenuItemTerminalElement(props: Props) =
 
   override _.newView() = new MenuItem()
 
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.MenuItem.SubMenu_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2533,7 +2516,6 @@ type internal MenuItemTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.TargetView <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2564,6 +2546,13 @@ type internal MenuBarItemTerminalElement(props: Props) =
 
   override _.newView() = new MenuBarItem()
 
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.MenuBarItem.PopoverMenu_element
+      SubElementPropKey.from PKey.MenuBarItem.SubMenu_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2585,7 +2574,6 @@ type internal MenuBarItemTerminalElement(props: Props) =
 
     // Events
     terminalElement.trySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2686,7 +2674,6 @@ type internal SliderTerminalElement<'T>(props: Props) =
     terminalElement.trySetEventHandler(PKey.Slider<'T>.OrientationChanged, view.OrientationChanged)
 
     terminalElement.trySetEventHandler(PKey.Slider<'T>.OrientationChanging, view.OrientationChanging)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -2805,7 +2792,6 @@ type internal SpinnerViewTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Style <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2852,7 +2838,6 @@ type internal StatusBarTerminalElement(props: Props) =
   override _.newView() = new StatusBar()
 
 
-
 type internal TabTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -2876,7 +2861,6 @@ type internal TabTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.View <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2901,6 +2885,12 @@ type internal TabViewTerminalElement(props: Props) =
   override _.name = "TabView"
 
   override _.newView() = new TabView()
+
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.TabView.SelectedTab_element
+    ]
+    |> List.append base.SubElements_PropKeys
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2929,7 +2919,6 @@ type internal TabViewTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.TabView.SelectedTabChanged, view.SelectedTabChanged)
 
     terminalElement.trySetEventHandler(PKey.TabView.TabClicked, view.TabClicked)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -3038,7 +3027,6 @@ type internal TableViewTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.TableView.CellToggled, view.CellToggled)
 
     terminalElement.trySetEventHandler(PKey.TableView.SelectedCellChanged, view.SelectedCellChanged)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -3175,7 +3163,6 @@ type internal TextFieldTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.TextField.TextChanging, view.TextChanging)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3260,7 +3247,6 @@ type internal DateFieldTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.DateField.DateChanged, view.DateChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3309,7 +3295,6 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3426,7 +3411,6 @@ type internal TextViewTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.TextView.DrawUsedColor, view.DrawUsedColor)
 
     terminalElement.trySetEventHandler(PKey.TextView.UnwrappedCursorPosition, view.UnwrappedCursorPosition)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -3562,7 +3546,6 @@ type internal TimeFieldTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.TimeField.TimeChanged, view.TimeChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3657,7 +3640,6 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.TreeView<'T>.SelectionChanged, view.SelectionChanged)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3738,7 +3720,6 @@ type internal WindowTerminalElement(props: Props) =
   override _.newView() = new Window()
 
 
-
 type internal DialogTerminalElement(props: Props) =
   inherit WindowTerminalElement(props)
 
@@ -3766,7 +3747,6 @@ type internal DialogTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.Canceled <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3835,7 +3815,6 @@ type internal FileDialogTerminalElement(props: Props) =
     // Events
     terminalElement.trySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
 
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3900,7 +3879,6 @@ type internal OpenDialogTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.OpenMode <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3922,13 +3900,18 @@ type internal SaveDialogTerminalElement(props: Props) =
   override _.newView() = new SaveDialog()
 
 
-
 type internal WizardTerminalElement(props: Props) =
   inherit DialogTerminalElement(props)
 
   override _.name = "Wizard"
 
   override _.newView() = new Wizard()
+
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Wizard.CurrentStep_element
+    ]
+    |> List.append base.SubElements_PropKeys
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3953,7 +3936,6 @@ type internal WizardTerminalElement(props: Props) =
     terminalElement.trySetEventHandler(PKey.Wizard.StepChanged, view.StepChanged)
 
     terminalElement.trySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
-
 
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
@@ -4002,7 +3984,6 @@ type internal WizardStepTerminalElement(props: Props) =
     |> Option.iter (fun v -> view.NextButtonText <- v)
 
     // Events
-
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 

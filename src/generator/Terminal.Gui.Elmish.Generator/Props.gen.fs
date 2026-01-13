@@ -2,7 +2,6 @@ module Terminal.Gui.Elmish.Generator.Props
 
 open System
 open System.IO
-open Terminal.Gui.Elmish.Generator.PKey
 
 let gen () =
   seq {
@@ -57,7 +56,7 @@ let gen () =
       else
         yield "  inherit ViewProps()"
 
-      let view = ViewType.decompose viewType
+      let view = ViewType.analyzeViewType viewType
       let genericBlock = ViewType.genericTypeParamsBlock viewType
 
       if view.Properties.Length > 0 then

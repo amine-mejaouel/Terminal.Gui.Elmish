@@ -25,7 +25,7 @@ let generatePKeyClass (viewType: Type) =
       else
         yield $"    inherit {parentName}PKeys()"
 
-    let view = ViewType.decompose viewType
+    let view = ViewType.analyzeViewType viewType
 
     if view.Properties.Length > 0 then
       yield "    // Properties"
@@ -39,6 +39,7 @@ let generatePKeyClass (viewType: Type) =
         else
           yield $"    member val {prop.PKey}: ISimplePropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
+        // Extra PKeys for properties that are Views or collections of Views
         if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
           let interfaceName = $"I{prop.PropertyInfo.PropertyType.Name}Element"
           Registry.SetNeededIElementInterface(interfaceName)
@@ -81,7 +82,7 @@ let generateModuleInstances () =
   }
 
 let generateInterfaceKeys (interfaceType: Type) =
-  let i = ViewType.decompose interfaceType
+  let i = ViewType.analyzeViewType interfaceType
 
   // Skip interfaces with no properties or events
   if i.HasNoEventsOrProperties then

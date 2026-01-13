@@ -2,6 +2,7 @@
 module Terminal.Gui.Elmish.Generator.ViewType
 
 open System
+open System.Collections
 open System.Reflection
 
 let cleanTypeName (t: Type) =
@@ -198,47 +199,64 @@ let eventHandlerType (event: System.Reflection.EventInfo) =
   else
     raise (NotImplementedException())
 
-type DecomposedProperty = {
-  // FullPKey: string
+type PropertyMetadata = {
   PKey: string
   PropertyInfo: PropertyInfo
 }
 
-type DecomposedEvent = {
-  // FullPKey: string
+type EventMetadata = {
   PKey: string
   EventInfo: EventInfo
 }
 
-type DecomposedView = {
+type ViewMetadata = {
   ViewType: Type
-  Properties: DecomposedProperty[]
-  Events: DecomposedEvent[]
+  Properties: PropertyMetadata[]
+  View_Typed_Properties: PropertyMetadata[]
+  ViewsCollection_Typed_Properties: PropertyMetadata[]
+  Events: EventMetadata[]
   HasNoEventsOrProperties: bool
 }
 
-let decompose (viewType: Type) =
+let analyzeViewType (viewType: Type) =
+  let toPropertyMetadata (p: PropertyInfo) =
+    {
+      PKey = asPKey p.Name
+      PropertyInfo = p
+    }
+  let toEventMetadata (e: EventInfo) =
+    {
+      PKey = asPKey e.Name
+      EventInfo = e
+    }
+
   let props = properties viewType
-  let evts = events viewType
+  let view_Typed_SubElementsProps =
+    props
+    |> Array.filter (fun p ->
+      p.PropertyType.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
+    )
+    |> Array.sortBy _.Name
+    |> Array.map toPropertyMetadata
+  let viewsCollection_Typed_SubElementsProps =
+    props
+    |> Array.filter (fun p ->
+      p.PropertyType.IsAssignableTo typeof<IEnumerable> &&
+      (if p.PropertyType.IsGenericType then
+          let genericArg = p.PropertyType.GetGenericArguments().[0]
+          genericArg.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
+       else
+          false)
+    )
+    |> Array.sortBy _.Name
+    |> Array.map toPropertyMetadata
+  let evts = events viewType |> Array.map toEventMetadata
+
   {
     ViewType = viewType
-    Properties =
-      props
-      |> Array.map (fun p ->
-        {
-          // FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey p.Name}"
-          PKey = asPKey p.Name
-          PropertyInfo = p
-        }
-      )
-    Events =
-      evts
-      |> Array.map (fun e ->
-        {
-          // FullPKey = $"PKey.%s{viewType.Name}.%s{asPKey e.Name}"
-          PKey = asPKey e.Name
-          EventInfo = e
-        }
-      )
+    Properties = props |> Array.map toPropertyMetadata
+    View_Typed_Properties = view_Typed_SubElementsProps
+    ViewsCollection_Typed_Properties = viewsCollection_Typed_SubElementsProps
+    Events = evts
     HasNoEventsOrProperties = (props.Length = 0 && evts.Length = 0)
   }

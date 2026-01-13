@@ -3,7 +3,6 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 open System
 open System.IO
 open Terminal.Gui.Elmish.Generator
-open Terminal.Gui.Elmish.Generator.PKey
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
@@ -17,54 +16,64 @@ let terminalElementAndViewDeclaration (viewType: Type) =
 let pkeyPrefix (viewType: Type) =
   $"PKey.{Registry.GetUniqueTypeName viewType}{ViewType.genericTypeParamsBlock viewType}"
 
-let setPropsCode (viewType: Type) =
-  let view = ViewType.decompose viewType
+let subElementsPropKeys (view: ViewType.ViewMetadata) =
+  seq {
+    yield $"  override this.SubElements_PropKeys ="
+    yield $"    ["
+    for prop in view.View_Typed_Properties do
+      yield $"      SubElementPropKey.from {pkeyPrefix view.ViewType}.{prop.PKey}_element"
+    for prop in view.ViewsCollection_Typed_Properties do
+      yield $"      SubElementPropKey.from {pkeyPrefix view.ViewType}.{prop.PKey}_elements"
+    yield $"    ]"
+    yield $"    |> List.append base.SubElements_PropKeys"
+  }
+
+let setPropsCode (view: ViewType.ViewMetadata) =
   if view.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
       yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      if not (viewType = typeof<Terminal.Gui.ViewBase.View>) then
+      if not (view.ViewType = typeof<Terminal.Gui.ViewBase.View>) then
         yield $"    base.setProps(terminalElement, props)"
       yield $""
-      yield! terminalElementAndViewDeclaration viewType
+      yield! terminalElementAndViewDeclaration view.ViewType
       yield $""
       yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
+        yield $"    |> Props.tryFind {pkeyPrefix view.ViewType}.{prop.PKey}"
         yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
         yield ""
       yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({pkeyPrefix viewType}.{event.PKey}, view.{event.PKey})"
+        yield $"    terminalElement.trySetEventHandler({pkeyPrefix view.ViewType}.{event.PKey}, view.{event.PKey})"
         yield ""
     }
 
-let removePropsCode (viewType: Type) =
-  let view = ViewType.decompose viewType
+let removePropsCode (view: ViewType.ViewMetadata) =
   if view.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
       yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      if not (viewType = typeof<Terminal.Gui.ViewBase.View>) then
+      if not (view.ViewType = typeof<Terminal.Gui.ViewBase.View>) then
         yield $"    base.removeProps(terminalElement, props)"
       yield $""
-      yield! terminalElementAndViewDeclaration viewType
+      yield! terminalElementAndViewDeclaration view.ViewType
       yield $""
       if view.Properties.Length > 0 then
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix viewType}.{prop.PKey}"
+        yield $"    |> Props.tryFind {pkeyPrefix view.ViewType}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
         yield $"        view.{prop.PKey} <- Unchecked.defaultof<_>)"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix viewType}.{event.PKey}"
+        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix view.ViewType}.{event.PKey}"
     }
 
 let gen () =
@@ -80,6 +89,8 @@ let gen () =
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
       let genericParamsBlock = ViewType.genericTypeParamsBlock viewType
+      let viewMetadata = ViewType.analyzeViewType viewType
+
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
       yield $"type internal {ViewType.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
@@ -95,9 +106,12 @@ let gen () =
       else
         yield $"  override _.newView() = new {ViewType.cleanTypeName viewType}{genericParamsBlock}()"
       yield ""
-      yield! setPropsCode viewType
-      yield ""
-      yield! removePropsCode viewType
+      if viewMetadata.View_Typed_Properties .Length > 0 ||
+         viewMetadata.ViewsCollection_Typed_Properties.Length > 0 then
+        yield! subElementsPropKeys viewMetadata
+        yield ""
+      yield! setPropsCode viewMetadata
+      yield! removePropsCode viewMetadata
       yield ""
   }
   |> String.concat Environment.NewLine

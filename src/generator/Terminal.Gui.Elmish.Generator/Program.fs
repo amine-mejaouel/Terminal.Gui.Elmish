@@ -4,4 +4,5 @@ PKey.gen()
 Types.gen()
 TerminalElement_Elements.gen()
 Props.gen()
+Views.gen()
 

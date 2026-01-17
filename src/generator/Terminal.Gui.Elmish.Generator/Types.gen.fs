@@ -1,20 +1,19 @@
-module Terminal.Gui.Elmish.Generator.Types
+namespace Terminal.Gui.Elmish
 
-open System
-open System.IO
+type IMenuItemTerminalElement =
+  inherit ITerminalElement
 
-let outputPath = Path.Combine (Environment.CurrentDirectory, "Types.gen.fs")
+type IMenuTerminalElement =
+  inherit ITerminalElement
 
-/// Should be called after PKey.gen() as it depends on Registry.NeededIElementInterfaces
-let gen () =
-  seq {
-    yield "namespace Terminal.Gui.Elmish"
-    yield ""
-    for i in Registry.GetNeededIElementInterfaces() do
-      yield $"type {i} ="
-      yield "  inherit ITerminalElement"
-      yield ""
-  }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText outputPath
+type IPopoverMenuTerminalElement =
+  inherit ITerminalElement
 
+type ITabTerminalElement =
+  inherit ITerminalElement
+
+type IViewTerminalElement =
+  inherit ITerminalElement
+
+type IWizardStepTerminalElement =
+  inherit ITerminalElement

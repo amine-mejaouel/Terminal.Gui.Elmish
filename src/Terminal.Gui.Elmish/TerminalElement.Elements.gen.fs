@@ -647,7 +647,6 @@ type internal BorderTerminalElement(props: Props) =
     |> Props.tryFind PKey.Border.Settings
     |> Option.iter (fun v -> view.Settings <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -700,7 +699,6 @@ type internal ButtonTerminalElement(props: Props) =
     |> Props.tryFind PKey.Button.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1092,7 +1090,6 @@ type internal DatePickerTerminalElement(props: Props) =
     |> Props.tryFind PKey.DatePicker.Date
     |> Option.iter (fun v -> view.Date <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1161,7 +1158,6 @@ type internal GraphViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.GraphView.ScrollOffset
     |> Option.iter (fun v -> view.ScrollOffset <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1302,7 +1298,6 @@ type internal LabelTerminalElement(props: Props) =
     |> Props.tryFind PKey.Label.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1494,7 +1489,6 @@ type internal MarginTerminalElement(props: Props) =
     |> Props.tryFind PKey.Margin.ShadowStyle
     |> Option.iter (fun v -> view.ShadowStyle <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1686,7 +1680,6 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
     |> Props.tryFind PKey.PopoverBaseImpl.Current
     |> Option.iter (fun v -> view.Current <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1798,7 +1791,6 @@ type internal ProgressBarTerminalElement(props: Props) =
     |> Props.tryFind PKey.ProgressBar.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -1906,7 +1898,6 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
     |> Props.tryFind PKey.Runnable'<'TResult>.Result
     |> Option.iter (fun v -> view.Result <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2236,7 +2227,6 @@ type internal FlagSelectorTerminalElement(props: Props) =
     |> Props.tryFind PKey.FlagSelector.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2268,7 +2258,6 @@ type internal OptionSelectorTerminalElement(props: Props) =
     |> Props.tryFind PKey.OptionSelector.Cursor
     |> Option.iter (fun v -> view.Cursor <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2515,7 +2504,6 @@ type internal MenuItemTerminalElement(props: Props) =
     |> Props.tryFind PKey.MenuItem.TargetView
     |> Option.iter (fun v -> view.TargetView <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2791,7 +2779,6 @@ type internal SpinnerViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.SpinnerView.Style
     |> Option.iter (fun v -> view.Style <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -2860,7 +2847,6 @@ type internal TabTerminalElement(props: Props) =
     |> Props.tryFind PKey.Tab.View
     |> Option.iter (fun v -> view.View <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3294,7 +3280,6 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     |> Props.tryFind PKey.TextValidateField.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3746,7 +3731,6 @@ type internal DialogTerminalElement(props: Props) =
     |> Props.tryFind PKey.Dialog.Canceled
     |> Option.iter (fun v -> view.Canceled <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3878,7 +3862,6 @@ type internal OpenDialogTerminalElement(props: Props) =
     |> Props.tryFind PKey.OpenDialog.OpenMode
     |> Option.iter (fun v -> view.OpenMode <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 
@@ -3983,7 +3966,6 @@ type internal WizardStepTerminalElement(props: Props) =
     |> Props.tryFind PKey.WizardStep.NextButtonText
     |> Option.iter (fun v -> view.NextButtonText <- v)
 
-    // Events
   override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.removeProps(terminalElement, props)
 

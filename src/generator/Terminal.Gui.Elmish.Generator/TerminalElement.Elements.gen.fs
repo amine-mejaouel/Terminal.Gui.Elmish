@@ -39,16 +39,21 @@ let setPropsCode (view: ViewType.ViewMetadata) =
       yield $""
       yield! terminalElementAndViewDeclaration view.ViewType
       yield $""
-      yield "    // Properties"
+
+      if view.Properties.Length > 0 then
+        yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
         yield $"    |> Props.tryFind {pkeyPrefix view.ViewType}.{prop.PKey}"
         yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
         yield ""
-      yield "    // Events"
+
+      if view.Events.Length > 0 then
+        yield "    // Events"
       for event in view.Events do
         yield $"    terminalElement.trySetEventHandler({pkeyPrefix view.ViewType}.{event.PKey}, view.{event.PKey})"
         yield ""
+
     }
 
 let removePropsCode (view: ViewType.ViewMetadata) =

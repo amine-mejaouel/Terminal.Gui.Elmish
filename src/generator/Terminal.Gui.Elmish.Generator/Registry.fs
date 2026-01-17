@@ -4,7 +4,7 @@ open System
 
 type Registry =
   static member val private TypesNames = System.Collections.Generic.Dictionary<string, string>()
-  static member val NeededIElementInterfaces = System.Collections.Generic.HashSet<string>()
+  static member val NeededIElementInterfaces = System.Collections.Generic.HashSet<Type>()
   /// Especially useful to generate unique names for generic types that may also exist with same name but different generic parameters
   static member GetUniqueTypeName(viewType: Type) =
     match Registry.TypesNames.TryGetValue(viewType.FullName) with
@@ -24,8 +24,15 @@ type Registry =
         Registry.TypesNames.Add(viewType.FullName, uniquePKey)
         uniquePKey
 
-  static member SetNeededIElementInterface(interfaceName) =
-    Registry.NeededIElementInterfaces.Add(interfaceName) |> ignore
+  static member SetNeededIElementInterface(propertyType: Type) =
+    Registry.NeededIElementInterfaces.Add(propertyType) |> ignore
+    $"I{propertyType.Name}TerminalElement"
 
   static member GetNeededIElementInterfaces() =
-    Registry.NeededIElementInterfaces |> Seq.toList |> List.sort
+    Registry.NeededIElementInterfaces |> Seq.map (fun t -> $"I{t.Name}TerminalElement") |> Seq.toList |> List.sort
+
+  static member TryGetNeededIElementInterface(propertyType: Type) =
+    if Registry.NeededIElementInterfaces.Contains(propertyType) then
+      Some $"I{propertyType.Name}TerminalElement"
+    else
+      None

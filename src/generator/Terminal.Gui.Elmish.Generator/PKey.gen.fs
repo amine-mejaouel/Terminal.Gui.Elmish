@@ -41,8 +41,7 @@ let generatePKeyClass (viewType: Type) =
 
         // Extra PKeys for properties that are Views or collections of Views
         if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
-          let interfaceName = $"I{prop.PropertyInfo.PropertyType.Name}Element"
-          Registry.SetNeededIElementInterface(interfaceName)
+          let interfaceName = Registry.SetNeededIElementInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
           let isEnumerableOfViews =

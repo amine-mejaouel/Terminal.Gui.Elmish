@@ -10,7 +10,7 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    for i in Registry.NeededIElementInterfaces do
+    for i in Registry.GetNeededIElementInterfaces() do
       yield $"type {i} ="
       yield "  inherit ITerminalElement"
       yield ""

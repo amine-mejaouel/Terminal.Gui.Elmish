@@ -1,19 +1,19 @@
 namespace Terminal.Gui.Elmish
 
-type IViewElement =
+type IMenuItemTerminalElement =
   inherit ITerminalElement
 
-type IMenuItemElement =
+type IMenuTerminalElement =
   inherit ITerminalElement
 
-type IMenuElement =
+type IPopoverMenuTerminalElement =
   inherit ITerminalElement
 
-type IPopoverMenuElement =
+type ITabTerminalElement =
   inherit ITerminalElement
 
-type ITabElement =
+type IViewTerminalElement =
   inherit ITerminalElement
 
-type IWizardStepElement =
+type IWizardStepTerminalElement =
   inherit ITerminalElement

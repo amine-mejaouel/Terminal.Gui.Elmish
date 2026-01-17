@@ -118,6 +118,12 @@ let gen () =
       yield! setPropsCode viewMetadata
       yield! removePropsCode viewMetadata
       yield ""
+
+      match Registry.TryGetNeededIElementInterface viewType with
+      | Some interfaceName ->
+          yield $"  interface {interfaceName}"
+          yield ""
+      | None -> ()
   }
   |> String.concat Environment.NewLine
   |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "TerminalElement.Elements.gen.fs"))

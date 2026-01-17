@@ -1,28 +1,28 @@
 namespace Terminal.Gui.Elmish
 
-type menuBarItemMacros internal (props: menuBarItemProps) =
+type menuBarItemMacros internal (props: MenuBarItemProps) =
   member _.menuItems(value: ITerminalElement list) =
     let popoverMenu =
-      props.props.getOrInit PKey.menuBarItem.popoverMenu_element (fun () -> new PopoverMenuElement(Props())) :?> PopoverMenuElement
+      props.props.getOrInit PKey.MenuBarItem.PopoverMenu_element (fun () -> new PopoverMenuTerminalElement(Props())) :?> PopoverMenuTerminalElement
 
     let menu =
-      popoverMenu.Props.getOrInit PKey.popoverMenu.root_element (fun () -> new MenuElement(Props())) :?> MenuElement
+      popoverMenu.Props.getOrInit PKey.PopoverMenu.Root_element (fun () -> new MenuTerminalElement(Props())) :?> MenuTerminalElement
 
     menu.Props.add (
-      PKey.menu.children,
+      PKey.Menu.children,
       System.Collections.Generic.List<_>(
         value
         |> List.map (fun x -> x :?> IInternalTerminalElement)
       )
     )
 
-type menuBarMacros internal (props: menuBarProps) =
-  member _.menuBarItem(set: menuBarItemProps -> menuBarItemMacros -> unit) =
+type menuBarMacros internal (props: MenuBarProps) =
+  member _.menuBarItem(set: MenuBarItemProps -> menuBarItemMacros -> unit) =
     let menus =
-      props.props.getOrInit PKey.menuBar.children (fun () -> System.Collections.Generic.List<IInternalTerminalElement>())
+      props.props.getOrInit PKey.MenuBar.children (fun () -> System.Collections.Generic.List<IInternalTerminalElement>())
 
-    let props = menuBarItemProps ()
+    let props = MenuBarItemProps ()
     let macros = menuBarItemMacros (props)
     set props macros
 
-    menus.Add(new MenuBarItemElement(props.props))
+    menus.Add(new MenuBarItemTerminalElement(props.props))

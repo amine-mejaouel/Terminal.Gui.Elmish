@@ -505,6 +505,8 @@ type internal ViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.View.WidthChanged
     terminalElement.tryRemoveEventHandler PKey.View.WidthChanging
 
+  interface IViewTerminalElement
+
 type internal AdornmentTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -1554,6 +1556,8 @@ type internal MenuTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.Menu.SelectedMenuItemChanged
 
+  interface IMenuTerminalElement
+
 type internal MenuBarTerminalElement(props: Props) =
   inherit MenuTerminalElement(props)
 
@@ -1752,6 +1756,8 @@ type internal PopoverMenuTerminalElement(props: Props) =
 
     // Events
     terminalElement.tryRemoveEventHandler PKey.PopoverMenu.KeyChanged
+
+  interface IPopoverMenuTerminalElement
 
 type internal ProgressBarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2527,6 +2533,8 @@ type internal MenuItemTerminalElement(props: Props) =
         view.TargetView <- Unchecked.defaultof<_>)
 
 
+  interface IMenuItemTerminalElement
+
 type internal MenuBarItemTerminalElement(props: Props) =
   inherit MenuItemTerminalElement(props)
 
@@ -2864,6 +2872,8 @@ type internal TabTerminalElement(props: Props) =
     |> Option.iter (fun _ ->
         view.View <- Unchecked.defaultof<_>)
 
+
+  interface ITabTerminalElement
 
 type internal TabViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3988,3 +3998,5 @@ type internal WizardStepTerminalElement(props: Props) =
     |> Option.iter (fun _ ->
         view.NextButtonText <- Unchecked.defaultof<_>)
 
+
+  interface IWizardStepTerminalElement

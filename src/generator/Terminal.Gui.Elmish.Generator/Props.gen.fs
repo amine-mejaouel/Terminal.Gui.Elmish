@@ -70,6 +70,7 @@ let gen () =
       for event in view.Events do
         yield $"  member this.{event.PKey} (handler: {ViewType.eventHandlerType event.EventInfo}) ="
         yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{event.PKey}, handler)"
+        yield ""
   }
   |> String.concat Environment.NewLine
   |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "Props.gen.fs"))

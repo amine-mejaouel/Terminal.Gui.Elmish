@@ -36,6 +36,13 @@ type ViewProps() =
       )
     )
   
+  // Delayed Positions
+  member this.X (value: TPos) =
+    this.props.add (PKey.View.X_delayedPos, value)
+
+  member this.Y (value: TPos) =
+    this.props.add (PKey.View.Y_delayedPos, value)
+
   // Properties
   member this.Arrangement (value: ViewArrangement) =
     this.props.add (PKey.View.Arrangement, value)

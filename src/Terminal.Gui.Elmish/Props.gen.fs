@@ -145,112 +145,166 @@ type ViewProps() =
   // Events
   member this.Accepted (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.Accepted, handler)
+
   member this.Accepting (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.Accepting, handler)
+
   member this.Activating (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.Activating, handler)
+
   member this.AdvancingFocus (handler: AdvanceFocusEventArgs -> unit) =
     this.props.add (PKey.View.AdvancingFocus, handler)
+
   member this.BorderStyleChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.BorderStyleChanged, handler)
+
   member this.CanFocusChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.CanFocusChanged, handler)
+
   member this.ClearedViewport (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.ClearedViewport, handler)
+
   member this.ClearingViewport (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.ClearingViewport, handler)
+
   member this.CommandNotBound (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.CommandNotBound, handler)
+
   member this.ContentSizeChanged (handler: SizeChangedEventArgs -> unit) =
     this.props.add (PKey.View.ContentSizeChanged, handler)
+
   member this.Disposing (handler: EventArgs -> unit) =
     this.props.add (PKey.View.Disposing, handler)
+
   member this.DrawComplete (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.DrawComplete, handler)
+
   member this.DrawingContent (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.DrawingContent, handler)
+
   member this.DrawingSubViews (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.DrawingSubViews, handler)
+
   member this.DrawingText (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.DrawingText, handler)
+
   member this.DrewText (handler: EventArgs -> unit) =
     this.props.add (PKey.View.DrewText, handler)
+
   member this.EnabledChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.EnabledChanged, handler)
+
   member this.FocusedChanged (handler: HasFocusEventArgs -> unit) =
     this.props.add (PKey.View.FocusedChanged, handler)
+
   member this.FrameChanged (handler: EventArgs<Rectangle> -> unit) =
     this.props.add (PKey.View.FrameChanged, handler)
+
   member this.GettingAttributeForRole (handler: VisualRoleEventArgs -> unit) =
     this.props.add (PKey.View.GettingAttributeForRole, handler)
+
   member this.GettingScheme (handler: ResultEventArgs<Scheme> -> unit) =
     this.props.add (PKey.View.GettingScheme, handler)
+
   member this.HandlingHotKey (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.HandlingHotKey, handler)
+
   member this.HasFocusChanged (handler: HasFocusEventArgs -> unit) =
     this.props.add (PKey.View.HasFocusChanged, handler)
+
   member this.HasFocusChanging (handler: HasFocusEventArgs -> unit) =
     this.props.add (PKey.View.HasFocusChanging, handler)
+
   member this.HeightChanged (handler: ValueChangedEventArgs<Dim> -> unit) =
     this.props.add (PKey.View.HeightChanged, handler)
+
   member this.HeightChanging (handler: ValueChangingEventArgs<Dim> -> unit) =
     this.props.add (PKey.View.HeightChanging, handler)
+
   member this.HotKeyChanged (handler: KeyChangedEventArgs -> unit) =
     this.props.add (PKey.View.HotKeyChanged, handler)
+
   member this.Initialized (handler: EventArgs -> unit) =
     this.props.add (PKey.View.Initialized, handler)
+
   member this.KeyDown (handler: Key -> unit) =
     this.props.add (PKey.View.KeyDown, handler)
+
   member this.KeyDownNotHandled (handler: Key -> unit) =
     this.props.add (PKey.View.KeyDownNotHandled, handler)
+
   member this.KeyUp (handler: Key -> unit) =
     this.props.add (PKey.View.KeyUp, handler)
+
   member this.MouseEnter (handler: CancelEventArgs -> unit) =
     this.props.add (PKey.View.MouseEnter, handler)
+
   member this.MouseEvent (handler: MouseEventArgs -> unit) =
     this.props.add (PKey.View.MouseEvent, handler)
+
   member this.MouseLeave (handler: EventArgs -> unit) =
     this.props.add (PKey.View.MouseLeave, handler)
+
   member this.MouseStateChanged (handler: EventArgs<MouseState> -> unit) =
     this.props.add (PKey.View.MouseStateChanged, handler)
+
   member this.MouseWheel (handler: MouseEventArgs -> unit) =
     this.props.add (PKey.View.MouseWheel, handler)
+
   member this.Removed (handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.View.Removed, handler)
+
   member this.SchemeChanged (handler: ValueChangedEventArgs<Scheme> -> unit) =
     this.props.add (PKey.View.SchemeChanged, handler)
+
   member this.SchemeChanging (handler: ValueChangingEventArgs<Scheme> -> unit) =
     this.props.add (PKey.View.SchemeChanging, handler)
+
   member this.SchemeNameChanged (handler: ValueChangedEventArgs<string> -> unit) =
     this.props.add (PKey.View.SchemeNameChanged, handler)
+
   member this.SchemeNameChanging (handler: ValueChangingEventArgs<string> -> unit) =
     this.props.add (PKey.View.SchemeNameChanging, handler)
+
   member this.SubViewAdded (handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.View.SubViewAdded, handler)
+
   member this.SubViewLayout (handler: LayoutEventArgs -> unit) =
     this.props.add (PKey.View.SubViewLayout, handler)
+
   member this.SubViewRemoved (handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.View.SubViewRemoved, handler)
+
   member this.SubViewsLaidOut (handler: LayoutEventArgs -> unit) =
     this.props.add (PKey.View.SubViewsLaidOut, handler)
+
   member this.SuperViewChanged (handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.View.SuperViewChanged, handler)
+
   member this.TextChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.TextChanged, handler)
+
   member this.TitleChanged (handler: EventArgs<string> -> unit) =
     this.props.add (PKey.View.TitleChanged, handler)
+
   member this.TitleChanging (handler: CancelEventArgs<string> -> unit) =
     this.props.add (PKey.View.TitleChanging, handler)
+
   member this.ViewportChanged (handler: DrawEventArgs -> unit) =
     this.props.add (PKey.View.ViewportChanged, handler)
+
   member this.VisibleChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.VisibleChanged, handler)
+
   member this.VisibleChanging (handler: CancelEventArgs<bool> -> unit) =
     this.props.add (PKey.View.VisibleChanging, handler)
+
   member this.WidthChanged (handler: ValueChangedEventArgs<Dim> -> unit) =
     this.props.add (PKey.View.WidthChanged, handler)
+
   member this.WidthChanging (handler: ValueChangingEventArgs<Dim> -> unit) =
     this.props.add (PKey.View.WidthChanging, handler)
+
 type AdornmentProps() =
   inherit ViewProps()
   // Properties
@@ -272,6 +326,7 @@ type AdornmentProps() =
   // Events
   member this.ThicknessChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.Adornment.ThicknessChanged, handler)
+
 type BarProps() =
   inherit ViewProps()
   // Properties
@@ -284,8 +339,10 @@ type BarProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.Bar.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.Bar.OrientationChanging, handler)
+
 type BorderProps() =
   inherit ViewProps()
   // Properties
@@ -331,6 +388,7 @@ type CharMapProps() =
   // Events
   member this.SelectedCodePointChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.CharMap.SelectedCodePointChanged, handler)
+
 type CheckBoxProps() =
   inherit ViewProps()
   // Properties
@@ -352,8 +410,10 @@ type CheckBoxProps() =
   // Events
   member this.CheckedStateChanged (handler: EventArgs<CheckState> -> unit) =
     this.props.add (PKey.CheckBox.CheckedStateChanged, handler)
+
   member this.CheckedStateChanging (handler: ResultEventArgs<CheckState> -> unit) =
     this.props.add (PKey.CheckBox.CheckedStateChanging, handler)
+
 type ColorPickerProps() =
   inherit ViewProps()
   // Properties
@@ -366,6 +426,7 @@ type ColorPickerProps() =
   // Events
   member this.ColorChanged (handler: ResultEventArgs<Color> -> unit) =
     this.props.add (PKey.ColorPicker.ColorChanged, handler)
+
 type ColorPicker16Props() =
   inherit ViewProps()
   // Properties
@@ -384,6 +445,7 @@ type ColorPicker16Props() =
   // Events
   member this.ColorChanged (handler: ResultEventArgs<Color> -> unit) =
     this.props.add (PKey.ColorPicker16.ColorChanged, handler)
+
 type ComboBoxProps() =
   inherit ViewProps()
   // Properties
@@ -408,12 +470,16 @@ type ComboBoxProps() =
   // Events
   member this.Collapsed (handler: EventArgs -> unit) =
     this.props.add (PKey.ComboBox.Collapsed, handler)
+
   member this.Expanded (handler: EventArgs -> unit) =
     this.props.add (PKey.ComboBox.Expanded, handler)
+
   member this.OpenSelectedItem (handler: ListViewItemEventArgs -> unit) =
     this.props.add (PKey.ComboBox.OpenSelectedItem, handler)
+
   member this.SelectedItemChanged (handler: ListViewItemEventArgs -> unit) =
     this.props.add (PKey.ComboBox.SelectedItemChanged, handler)
+
 type DatePickerProps() =
   inherit ViewProps()
   // Properties
@@ -470,8 +536,10 @@ type HexViewProps() =
   // Events
   member this.Edited (handler: HexViewEditEventArgs -> unit) =
     this.props.add (PKey.HexView.Edited, handler)
+
   member this.PositionChanged (handler: HexViewEventArgs -> unit) =
     this.props.add (PKey.HexView.PositionChanged, handler)
+
 type LabelProps() =
   inherit ViewProps()
   // Properties
@@ -498,8 +566,10 @@ type LineProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.Line.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.Line.OrientationChanging, handler)
+
 type ListViewProps() =
   inherit ViewProps()
   // Properties
@@ -524,12 +594,16 @@ type ListViewProps() =
   // Events
   member this.CollectionChanged (handler: NotifyCollectionChangedEventArgs -> unit) =
     this.props.add (PKey.ListView.CollectionChanged, handler)
+
   member this.OpenSelectedItem (handler: ListViewItemEventArgs -> unit) =
     this.props.add (PKey.ListView.OpenSelectedItem, handler)
+
   member this.RowRender (handler: ListViewRowEventArgs -> unit) =
     this.props.add (PKey.ListView.RowRender, handler)
+
   member this.SelectedItemChanged (handler: ListViewItemEventArgs -> unit) =
     this.props.add (PKey.ListView.SelectedItemChanged, handler)
+
 type MarginProps() =
   inherit ViewProps()
   // Properties
@@ -548,6 +622,7 @@ type MenuProps() =
   // Events
   member this.SelectedMenuItemChanged (handler: MenuItem -> unit) =
     this.props.add (PKey.Menu.SelectedMenuItemChanged, handler)
+
 type MenuBarProps() =
   inherit ViewProps()
   // Properties
@@ -557,6 +632,7 @@ type MenuBarProps() =
   // Events
   member this.KeyChanged (handler: KeyChangedEventArgs -> unit) =
     this.props.add (PKey.MenuBar.KeyChanged, handler)
+
 type NumericUpDownProps<'T>() =
   inherit ViewProps()
   // Properties
@@ -572,12 +648,16 @@ type NumericUpDownProps<'T>() =
   // Events
   member this.FormatChanged (handler: EventArgs<string> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.FormatChanged, handler)
+
   member this.IncrementChanged (handler: EventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.IncrementChanged, handler)
+
   member this.ValueChanged (handler: EventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.ValueChanged, handler)
+
   member this.ValueChanging (handler: CancelEventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.ValueChanging, handler)
+
 type PaddingProps() =
   inherit ViewProps()
 type PopoverBaseImplProps() =
@@ -601,6 +681,7 @@ type PopoverMenuProps() =
   // Events
   member this.KeyChanged (handler: KeyChangedEventArgs -> unit) =
     this.props.add (PKey.PopoverMenu.KeyChanged, handler)
+
 type ProgressBarProps() =
   inherit ViewProps()
   // Properties
@@ -634,10 +715,13 @@ type RunnableProps() =
   // Events
   member this.IsModalChanged (handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.Runnable.IsModalChanged, handler)
+
   member this.IsRunningChanged (handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.Runnable.IsRunningChanged, handler)
+
   member this.IsRunningChanging (handler: CancelEventArgs<bool> -> unit) =
     this.props.add (PKey.Runnable.IsRunningChanging, handler)
+
 type RunnableProps<'TResult>() =
   inherit ViewProps()
   // Properties
@@ -668,18 +752,25 @@ type ScrollBarProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.ScrollBar.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.ScrollBar.OrientationChanging, handler)
+
   member this.PositionChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.PositionChanged, handler)
+
   member this.PositionChanging (handler: CancelEventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.PositionChanging, handler)
+
   member this.ScrollableContentSizeChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.ScrollableContentSizeChanged, handler)
+
   member this.Scrolled (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.Scrolled, handler)
+
   member this.SliderPositionChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.SliderPositionChanged, handler)
+
 type ScrollSliderProps() =
   inherit ViewProps()
   // Properties
@@ -701,14 +792,19 @@ type ScrollSliderProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.ScrollSlider.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.ScrollSlider.OrientationChanging, handler)
+
   member this.PositionChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollSlider.PositionChanged, handler)
+
   member this.PositionChanging (handler: CancelEventArgs<int> -> unit) =
     this.props.add (PKey.ScrollSlider.PositionChanging, handler)
+
   member this.Scrolled (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollSlider.Scrolled, handler)
+
 type SelectorBaseProps() =
   inherit ViewProps()
   // Properties
@@ -742,10 +838,13 @@ type SelectorBaseProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.SelectorBase.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.SelectorBase.OrientationChanging, handler)
+
   member this.ValueChanged (handler: EventArgs<Nullable<int>> -> unit) =
     this.props.add (PKey.SelectorBase.ValueChanged, handler)
+
 type FlagSelectorProps() =
   inherit ViewProps()
   // Properties
@@ -767,6 +866,7 @@ type FlagSelectorProps<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (ne
   // Events
   member this.ValueChanged (handler: EventArgs<Nullable<'TFlagsEnum>> -> unit) =
     this.props.add (PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, handler)
+
 type OptionSelectorProps<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
   inherit ViewProps()
   // Properties
@@ -779,6 +879,7 @@ type OptionSelectorProps<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'T
   // Events
   member this.ValueChanged (handler: EventArgs<Nullable<'TEnum>> -> unit) =
     this.props.add (PKey.OptionSelector'<'TEnum>.ValueChanged, handler)
+
 type ShortcutProps() =
   inherit ViewProps()
   // Properties
@@ -815,8 +916,10 @@ type ShortcutProps() =
   // Events
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.Shortcut.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.Shortcut.OrientationChanging, handler)
+
 type MenuItemProps() =
   inherit ViewProps()
   // Properties
@@ -844,6 +947,7 @@ type MenuBarItemProps() =
   // Events
   member this.PopoverMenuOpenChanged (handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.MenuBarItem.PopoverMenuOpenChanged, handler)
+
 type SliderProps<'T>() =
   inherit ViewProps()
   // Properties
@@ -889,12 +993,16 @@ type SliderProps<'T>() =
   // Events
   member this.OptionFocused (handler: SliderEventArgs<'T> -> unit) =
     this.props.add (PKey.Slider<'T>.OptionFocused, handler)
+
   member this.OptionsChanged (handler: SliderEventArgs<'T> -> unit) =
     this.props.add (PKey.Slider<'T>.OptionsChanged, handler)
+
   member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
     this.props.add (PKey.Slider<'T>.OrientationChanged, handler)
+
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.Slider<'T>.OrientationChanging, handler)
+
 type SpinnerViewProps() =
   inherit ViewProps()
   // Properties
@@ -945,8 +1053,10 @@ type TabViewProps() =
   // Events
   member this.SelectedTabChanged (handler: TabChangedEventArgs -> unit) =
     this.props.add (PKey.TabView.SelectedTabChanged, handler)
+
   member this.TabClicked (handler: TabMouseEventArgs -> unit) =
     this.props.add (PKey.TabView.TabClicked, handler)
+
 type TableViewProps() =
   inherit ViewProps()
   // Properties
@@ -995,10 +1105,13 @@ type TableViewProps() =
   // Events
   member this.CellActivated (handler: CellActivatedEventArgs -> unit) =
     this.props.add (PKey.TableView.CellActivated, handler)
+
   member this.CellToggled (handler: CellToggledEventArgs -> unit) =
     this.props.add (PKey.TableView.CellToggled, handler)
+
   member this.SelectedCellChanged (handler: SelectedCellChangedEventArgs -> unit) =
     this.props.add (PKey.TableView.SelectedCellChanged, handler)
+
 type TextFieldProps() =
   inherit ViewProps()
   // Properties
@@ -1032,6 +1145,7 @@ type TextFieldProps() =
   // Events
   member this.TextChanging (handler: ResultEventArgs<string> -> unit) =
     this.props.add (PKey.TextField.TextChanging, handler)
+
 type DateFieldProps() =
   inherit ViewProps()
   // Properties
@@ -1047,6 +1161,7 @@ type DateFieldProps() =
   // Events
   member this.DateChanged (handler: EventArgs<DateTime> -> unit) =
     this.props.add (PKey.DateField.DateChanged, handler)
+
 type TextValidateFieldProps() =
   inherit ViewProps()
   // Properties
@@ -1116,16 +1231,22 @@ type TextViewProps() =
   // Events
   member this.ContentsChanged (handler: ContentsChangedEventArgs -> unit) =
     this.props.add (PKey.TextView.ContentsChanged, handler)
+
   member this.DrawNormalColor (handler: CellEventArgs -> unit) =
     this.props.add (PKey.TextView.DrawNormalColor, handler)
+
   member this.DrawReadOnlyColor (handler: CellEventArgs -> unit) =
     this.props.add (PKey.TextView.DrawReadOnlyColor, handler)
+
   member this.DrawSelectionColor (handler: CellEventArgs -> unit) =
     this.props.add (PKey.TextView.DrawSelectionColor, handler)
+
   member this.DrawUsedColor (handler: CellEventArgs -> unit) =
     this.props.add (PKey.TextView.DrawUsedColor, handler)
+
   member this.UnwrappedCursorPosition (handler: Point -> unit) =
     this.props.add (PKey.TextView.UnwrappedCursorPosition, handler)
+
 type TimeFieldProps() =
   inherit ViewProps()
   // Properties
@@ -1141,6 +1262,7 @@ type TimeFieldProps() =
   // Events
   member this.TimeChanged (handler: EventArgs<TimeSpan> -> unit) =
     this.props.add (PKey.TimeField.TimeChanged, handler)
+
 type TreeViewProps<'T when 'T: not struct>() =
   inherit ViewProps()
   // Properties
@@ -1183,10 +1305,13 @@ type TreeViewProps<'T when 'T: not struct>() =
   // Events
   member this.DrawLine (handler: DrawTreeViewLineEventArgs<'T> -> unit) =
     this.props.add (PKey.TreeView<'T>.DrawLine, handler)
+
   member this.ObjectActivated (handler: ObjectActivatedEventArgs<'T> -> unit) =
     this.props.add (PKey.TreeView<'T>.ObjectActivated, handler)
+
   member this.SelectionChanged (handler: SelectionChangedEventArgs<'T> -> unit) =
     this.props.add (PKey.TreeView<'T>.SelectionChanged, handler)
+
 type WindowProps() =
   inherit ViewProps()
 type DialogProps() =
@@ -1228,6 +1353,7 @@ type FileDialogProps() =
   // Events
   member this.FilesSelected (handler: FilesSelectedEventArgs -> unit) =
     this.props.add (PKey.FileDialog.FilesSelected, handler)
+
 type OpenDialogProps() =
   inherit ViewProps()
   // Properties
@@ -1245,16 +1371,22 @@ type WizardProps() =
   // Events
   member this.Cancelled (handler: WizardButtonEventArgs -> unit) =
     this.props.add (PKey.Wizard.Cancelled, handler)
+
   member this.Finished (handler: WizardButtonEventArgs -> unit) =
     this.props.add (PKey.Wizard.Finished, handler)
+
   member this.MovingBack (handler: WizardButtonEventArgs -> unit) =
     this.props.add (PKey.Wizard.MovingBack, handler)
+
   member this.MovingNext (handler: WizardButtonEventArgs -> unit) =
     this.props.add (PKey.Wizard.MovingNext, handler)
+
   member this.StepChanged (handler: StepChangeEventArgs -> unit) =
     this.props.add (PKey.Wizard.StepChanged, handler)
+
   member this.StepChanging (handler: StepChangeEventArgs -> unit) =
     this.props.add (PKey.Wizard.StepChanging, handler)
+
 type WizardStepProps() =
   inherit ViewProps()
   // Properties

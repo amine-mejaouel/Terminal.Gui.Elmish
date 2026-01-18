@@ -40,7 +40,7 @@ let gen () =
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield "  member val internal props = Props()"
         yield """
-  member this.children(children: ITerminalElement list) =
+  member this.Children(children: ITerminalElement list) =
     this.props.add (
       PKey.View.children,
       List<_>(

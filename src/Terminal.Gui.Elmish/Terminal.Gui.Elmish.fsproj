@@ -51,6 +51,7 @@
     <Compile Include="Props.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
+    <Compile Include="View.gen.fs" />
     <Compile Include="Views.fs" />
     <Compile Include="TreeDiff.fs" />
     <Compile Include="ElmishTerminal.fs" />

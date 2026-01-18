@@ -32,10 +32,6 @@ let gen () =
     yield "open Terminal.Gui.Views"
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      // let genericBlock = CodeGen.genericTypeParamsWithConstraintsBlock viewType
-      // let genericParamsBlock = CodeGen.genericTypeParamsBlock viewType
-      // if viewType.IsAbstract then
-        // yield "[<AbstractClass>]"
       if viewType.IsGenericType then
         let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
         yield $"type {ViewType.cleanTypeName viewType}Props{genericBlock}() ="
@@ -58,6 +54,15 @@ let gen () =
 
       let view = ViewType.analyzeViewType viewType
       let genericBlock = ViewType.genericTypeParamsBlock viewType
+
+      if view.ViewType = typeof<Terminal.Gui.ViewBase.View> then
+        yield $"  // Delayed Positions"
+        yield $"  member this.X (value: TPos) ="
+        yield $"    this.props.add (PKey.View.X_delayedPos, value)"
+        yield $""
+        yield $"  member this.Y (value: TPos) ="
+        yield $"    this.props.add (PKey.View.Y_delayedPos, value)"
+        yield $""
 
       if view.Properties.Length > 0 then
         yield "  // Properties"

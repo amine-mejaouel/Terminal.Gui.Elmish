@@ -14,7 +14,7 @@ type View =
 
   static member adornment(children: ITerminalElement list) =
     let viewProps = AdornmentProps ()
-    viewProps.children children
+    viewProps.Children children
     new AdornmentTerminalElement(viewProps.props) :> ITerminalElement
 
   static member adornment(x: int, y: int, title: string) =
@@ -35,7 +35,7 @@ type View =
 
   static member bar(children: ITerminalElement list) =
     let viewProps = BarProps ()
-    viewProps.children children
+    viewProps.Children children
     new BarTerminalElement(viewProps.props) :> ITerminalElement
 
   static member bar(x: int, y: int, title: string) =
@@ -56,7 +56,7 @@ type View =
 
   static member border(children: ITerminalElement list) =
     let viewProps = BorderProps ()
-    viewProps.children children
+    viewProps.Children children
     new BorderTerminalElement(viewProps.props) :> ITerminalElement
 
   static member border(x: int, y: int, title: string) =
@@ -77,7 +77,7 @@ type View =
 
   static member button(children: ITerminalElement list) =
     let viewProps = ButtonProps ()
-    viewProps.children children
+    viewProps.Children children
     new ButtonTerminalElement(viewProps.props) :> ITerminalElement
 
   static member button(x: int, y: int, title: string) =
@@ -98,7 +98,7 @@ type View =
 
   static member charMap(children: ITerminalElement list) =
     let viewProps = CharMapProps ()
-    viewProps.children children
+    viewProps.Children children
     new CharMapTerminalElement(viewProps.props) :> ITerminalElement
 
   static member charMap(x: int, y: int, title: string) =
@@ -119,7 +119,7 @@ type View =
 
   static member checkBox(children: ITerminalElement list) =
     let viewProps = CheckBoxProps ()
-    viewProps.children children
+    viewProps.Children children
     new CheckBoxTerminalElement(viewProps.props) :> ITerminalElement
 
   static member checkBox(x: int, y: int, title: string) =
@@ -140,7 +140,7 @@ type View =
 
   static member colorPicker(children: ITerminalElement list) =
     let viewProps = ColorPickerProps ()
-    viewProps.children children
+    viewProps.Children children
     new ColorPickerTerminalElement(viewProps.props) :> ITerminalElement
 
   static member colorPicker(x: int, y: int, title: string) =
@@ -161,7 +161,7 @@ type View =
 
   static member colorPicker16(children: ITerminalElement list) =
     let viewProps = ColorPicker16Props ()
-    viewProps.children children
+    viewProps.Children children
     new ColorPicker16TerminalElement(viewProps.props) :> ITerminalElement
 
   static member colorPicker16(x: int, y: int, title: string) =
@@ -182,7 +182,7 @@ type View =
 
   static member comboBox(children: ITerminalElement list) =
     let viewProps = ComboBoxProps ()
-    viewProps.children children
+    viewProps.Children children
     new ComboBoxTerminalElement(viewProps.props) :> ITerminalElement
 
   static member comboBox(x: int, y: int, title: string) =
@@ -203,7 +203,7 @@ type View =
 
   static member datePicker(children: ITerminalElement list) =
     let viewProps = DatePickerProps ()
-    viewProps.children children
+    viewProps.Children children
     new DatePickerTerminalElement(viewProps.props) :> ITerminalElement
 
   static member datePicker(x: int, y: int, title: string) =
@@ -224,7 +224,7 @@ type View =
 
   static member frameView(children: ITerminalElement list) =
     let viewProps = FrameViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new FrameViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member frameView(x: int, y: int, title: string) =
@@ -245,7 +245,7 @@ type View =
 
   static member graphView(children: ITerminalElement list) =
     let viewProps = GraphViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new GraphViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member graphView(x: int, y: int, title: string) =
@@ -266,7 +266,7 @@ type View =
 
   static member hexView(children: ITerminalElement list) =
     let viewProps = HexViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new HexViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member hexView(x: int, y: int, title: string) =
@@ -287,7 +287,7 @@ type View =
 
   static member label(children: ITerminalElement list) =
     let viewProps = LabelProps ()
-    viewProps.children children
+    viewProps.Children children
     new LabelTerminalElement(viewProps.props) :> ITerminalElement
 
   static member label(x: int, y: int, title: string) =
@@ -308,7 +308,7 @@ type View =
 
   static member legendAnnotation(children: ITerminalElement list) =
     let viewProps = LegendAnnotationProps ()
-    viewProps.children children
+    viewProps.Children children
     new LegendAnnotationTerminalElement(viewProps.props) :> ITerminalElement
 
   static member legendAnnotation(x: int, y: int, title: string) =
@@ -329,7 +329,7 @@ type View =
 
   static member line(children: ITerminalElement list) =
     let viewProps = LineProps ()
-    viewProps.children children
+    viewProps.Children children
     new LineTerminalElement(viewProps.props) :> ITerminalElement
 
   static member line(x: int, y: int, title: string) =
@@ -350,7 +350,7 @@ type View =
 
   static member listView(children: ITerminalElement list) =
     let viewProps = ListViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new ListViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member listView(x: int, y: int, title: string) =
@@ -371,7 +371,7 @@ type View =
 
   static member margin(children: ITerminalElement list) =
     let viewProps = MarginProps ()
-    viewProps.children children
+    viewProps.Children children
     new MarginTerminalElement(viewProps.props) :> ITerminalElement
 
   static member margin(x: int, y: int, title: string) =
@@ -392,7 +392,7 @@ type View =
 
   static member menu(children: ITerminalElement list) =
     let viewProps = MenuProps ()
-    viewProps.children children
+    viewProps.Children children
     new MenuTerminalElement(viewProps.props) :> IMenuTerminalElement
 
   static member menu(x: int, y: int, title: string) =
@@ -414,7 +414,7 @@ type View =
 
   static member menuBar(children: ITerminalElement list) =
     let viewProps = MenuBarProps ()
-    viewProps.children children
+    viewProps.Children children
     new MenuBarTerminalElement(viewProps.props) :> ITerminalElement
 
   static member menuBar(x: int, y: int, title: string) =
@@ -438,7 +438,7 @@ type View =
   static member numericUpDown<'T>(children: ITerminalElement list) =
     let viewProps = NumericUpDownProps<'T> ()
 
-    viewProps.children children
+    viewProps.Children children
     new NumericUpDownTerminalElement<'T>(viewProps.props)
      :> ITerminalElement
 
@@ -462,7 +462,7 @@ type View =
 
   static member padding(children: ITerminalElement list) =
     let viewProps = PaddingProps ()
-    viewProps.children children
+    viewProps.Children children
     new PaddingTerminalElement(viewProps.props) :> ITerminalElement
 
   static member padding(x: int, y: int, title: string) =
@@ -483,7 +483,7 @@ type View =
 
   static member popoverMenu(children: ITerminalElement list) =
     let viewProps = PopoverMenuProps ()
-    viewProps.children children
+    viewProps.Children children
     new PopoverMenuTerminalElement(viewProps.props) :> IPopoverMenuTerminalElement
 
   static member popoverMenu(x: int, y: int, title: string) =
@@ -504,7 +504,7 @@ type View =
 
   static member progressBar(children: ITerminalElement list) =
     let viewProps = ProgressBarProps ()
-    viewProps.children children
+    viewProps.Children children
     new ProgressBarTerminalElement(viewProps.props) :> ITerminalElement
 
   static member progressBar(x: int, y: int, title: string) =
@@ -525,7 +525,7 @@ type View =
 
   static member runnable(children: ITerminalElement list) =
     let viewProps = RunnableProps ()
-    viewProps.children children
+    viewProps.Children children
     new RunnableTerminalElement(viewProps.props) :> ITerminalElement
 
   static member runnable(x: int, y: int, title: string) =
@@ -549,7 +549,7 @@ type View =
   static member runnable<'TResult>(children: ITerminalElement list) =
     let viewProps = RunnableProps<'TResult> ()
 
-    viewProps.children children
+    viewProps.Children children
     new RunnableTerminalElement<'TResult>(viewProps.props)
      :> ITerminalElement
 
@@ -573,7 +573,7 @@ type View =
 
   static member scrollBar(children: ITerminalElement list) =
     let viewProps = ScrollBarProps ()
-    viewProps.children children
+    viewProps.Children children
     new ScrollBarTerminalElement(viewProps.props) :> ITerminalElement
 
   static member scrollBar(x: int, y: int, title: string) =
@@ -594,7 +594,7 @@ type View =
 
   static member scrollSlider(children: ITerminalElement list) =
     let viewProps = ScrollSliderProps ()
-    viewProps.children children
+    viewProps.Children children
     new ScrollSliderTerminalElement(viewProps.props) :> ITerminalElement
 
   static member scrollSlider(x: int, y: int, title: string) =
@@ -615,7 +615,7 @@ type View =
 
   static member flagSelector(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps ()
-    viewProps.children children
+    viewProps.Children children
     new FlagSelectorTerminalElement(viewProps.props) :> ITerminalElement
 
   static member flagSelector(x: int, y: int, title: string) =
@@ -636,7 +636,7 @@ type View =
 
   static member optionSelector(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps ()
-    viewProps.children children
+    viewProps.Children children
     new OptionSelectorTerminalElement(viewProps.props) :> ITerminalElement
 
   static member optionSelector(x: int, y: int, title: string) =
@@ -660,7 +660,7 @@ type View =
   static member flagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
 
-    viewProps.children children
+    viewProps.Children children
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
      :> ITerminalElement
 
@@ -687,7 +687,7 @@ type View =
   static member optionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps<'TEnum> ()
 
-    viewProps.children children
+    viewProps.Children children
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
      :> ITerminalElement
 
@@ -711,7 +711,7 @@ type View =
 
   static member shortcut(children: ITerminalElement list) =
     let viewProps = ShortcutProps ()
-    viewProps.children children
+    viewProps.Children children
     new ShortcutTerminalElement(viewProps.props) :> ITerminalElement
 
   static member shortcut(x: int, y: int, title: string) =
@@ -732,7 +732,7 @@ type View =
 
   static member menuItem(children: ITerminalElement list) =
     let viewProps = MenuItemProps ()
-    viewProps.children children
+    viewProps.Children children
     new MenuItemTerminalElement(viewProps.props) :> IMenuItemTerminalElement
 
   static member menuItem(x: int, y: int, title: string) =
@@ -754,7 +754,7 @@ type View =
 
   static member menuBarItem(children: ITerminalElement list) =
     let viewProps = MenuBarItemProps ()
-    viewProps.children children
+    viewProps.Children children
     new MenuBarItemTerminalElement(viewProps.props) :> ITerminalElement
 
   static member menuBarItem(x: int, y: int, title: string) =
@@ -778,7 +778,7 @@ type View =
   static member slider<'T>(children: ITerminalElement list) =
     let viewProps = SliderProps<'T> ()
 
-    viewProps.children children
+    viewProps.Children children
     new SliderTerminalElement<'T>(viewProps.props)
      :> ITerminalElement
 
@@ -802,7 +802,7 @@ type View =
 
   static member spinnerView(children: ITerminalElement list) =
     let viewProps = SpinnerViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new SpinnerViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member spinnerView(x: int, y: int, title: string) =
@@ -823,7 +823,7 @@ type View =
 
   static member statusBar(children: ITerminalElement list) =
     let viewProps = StatusBarProps ()
-    viewProps.children children
+    viewProps.Children children
     new StatusBarTerminalElement(viewProps.props) :> ITerminalElement
 
   static member statusBar(x: int, y: int, title: string) =
@@ -844,7 +844,7 @@ type View =
 
   static member tab(children: ITerminalElement list) =
     let viewProps = TabProps ()
-    viewProps.children children
+    viewProps.Children children
     new TabTerminalElement(viewProps.props) :> ITabTerminalElement
 
   static member tab(x: int, y: int, title: string) =
@@ -865,7 +865,7 @@ type View =
 
   static member tabView(children: ITerminalElement list) =
     let viewProps = TabViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new TabViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member tabView(x: int, y: int, title: string) =
@@ -886,7 +886,7 @@ type View =
 
   static member tableView(children: ITerminalElement list) =
     let viewProps = TableViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new TableViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member tableView(x: int, y: int, title: string) =
@@ -907,7 +907,7 @@ type View =
 
   static member textField(children: ITerminalElement list) =
     let viewProps = TextFieldProps ()
-    viewProps.children children
+    viewProps.Children children
     new TextFieldTerminalElement(viewProps.props) :> ITerminalElement
 
   static member textField(x: int, y: int, title: string) =
@@ -928,7 +928,7 @@ type View =
 
   static member dateField(children: ITerminalElement list) =
     let viewProps = DateFieldProps ()
-    viewProps.children children
+    viewProps.Children children
     new DateFieldTerminalElement(viewProps.props) :> ITerminalElement
 
   static member dateField(x: int, y: int, title: string) =
@@ -949,7 +949,7 @@ type View =
 
   static member textValidateField(children: ITerminalElement list) =
     let viewProps = TextValidateFieldProps ()
-    viewProps.children children
+    viewProps.Children children
     new TextValidateFieldTerminalElement(viewProps.props) :> ITerminalElement
 
   static member textValidateField(x: int, y: int, title: string) =
@@ -970,7 +970,7 @@ type View =
 
   static member textView(children: ITerminalElement list) =
     let viewProps = TextViewProps ()
-    viewProps.children children
+    viewProps.Children children
     new TextViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member textView(x: int, y: int, title: string) =
@@ -991,7 +991,7 @@ type View =
 
   static member timeField(children: ITerminalElement list) =
     let viewProps = TimeFieldProps ()
-    viewProps.children children
+    viewProps.Children children
     new TimeFieldTerminalElement(viewProps.props) :> ITerminalElement
 
   static member timeField(x: int, y: int, title: string) =
@@ -1015,7 +1015,7 @@ type View =
   static member treeView<'T when 'T: not struct>(children: ITerminalElement list) =
     let viewProps = TreeViewProps<'T> ()
 
-    viewProps.children children
+    viewProps.Children children
     new TreeViewTerminalElement<'T>(viewProps.props)
      :> ITerminalElement
 
@@ -1039,7 +1039,7 @@ type View =
 
   static member window(children: ITerminalElement list) =
     let viewProps = WindowProps ()
-    viewProps.children children
+    viewProps.Children children
     new WindowTerminalElement(viewProps.props) :> ITerminalElement
 
   static member window(x: int, y: int, title: string) =
@@ -1060,7 +1060,7 @@ type View =
 
   static member dialog(children: ITerminalElement list) =
     let viewProps = DialogProps ()
-    viewProps.children children
+    viewProps.Children children
     new DialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member dialog(x: int, y: int, title: string) =
@@ -1081,7 +1081,7 @@ type View =
 
   static member fileDialog(children: ITerminalElement list) =
     let viewProps = FileDialogProps ()
-    viewProps.children children
+    viewProps.Children children
     new FileDialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member fileDialog(x: int, y: int, title: string) =
@@ -1102,7 +1102,7 @@ type View =
 
   static member openDialog(children: ITerminalElement list) =
     let viewProps = OpenDialogProps ()
-    viewProps.children children
+    viewProps.Children children
     new OpenDialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member openDialog(x: int, y: int, title: string) =
@@ -1123,7 +1123,7 @@ type View =
 
   static member saveDialog(children: ITerminalElement list) =
     let viewProps = SaveDialogProps ()
-    viewProps.children children
+    viewProps.Children children
     new SaveDialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member saveDialog(x: int, y: int, title: string) =
@@ -1144,7 +1144,7 @@ type View =
 
   static member wizard(children: ITerminalElement list) =
     let viewProps = WizardProps ()
-    viewProps.children children
+    viewProps.Children children
     new WizardTerminalElement(viewProps.props) :> ITerminalElement
 
   static member wizard(x: int, y: int, title: string) =
@@ -1165,7 +1165,7 @@ type View =
 
   static member wizardStep(children: ITerminalElement list) =
     let viewProps = WizardStepProps ()
-    viewProps.children children
+    viewProps.Children children
     new WizardStepTerminalElement(viewProps.props) :> IWizardStepTerminalElement
 
   static member wizardStep(x: int, y: int, title: string) =

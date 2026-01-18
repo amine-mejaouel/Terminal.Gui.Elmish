@@ -52,13 +52,13 @@ let generateMethods (viewType: Type) =
       yield $"  static member {viewName}{genericBlock}(children: ITerminalElement list) ="
       yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
       yield ""
-      yield $"    viewProps.children children"
+      yield $"    viewProps.Children children"
       yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
       yield $"    {returnInterface}"
     else
       yield $"  static member {viewName}(children: ITerminalElement list) ="
       yield $"    let viewProps = {propsName} ()"
-      yield $"    viewProps.children children"
+      yield $"    viewProps.Children children"
       yield $"    new {elementName}(viewProps.props){returnInterface}"
     yield ""
 

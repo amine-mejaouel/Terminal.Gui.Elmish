@@ -27,7 +27,7 @@ open Terminal.Gui.Views
 type ViewProps() =
   member val internal props = Props()
 
-  member this.children(children: ITerminalElement list) =
+  member this.Children(children: ITerminalElement list) =
     this.props.add (
       PKey.View.children,
       List<_>(

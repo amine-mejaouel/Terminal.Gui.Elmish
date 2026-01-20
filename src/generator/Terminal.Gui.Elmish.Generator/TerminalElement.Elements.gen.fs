@@ -81,6 +81,12 @@ let removePropsCode (view: ViewType.ViewMetadata) =
         yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix view.ViewType}.{event.PKey}"
     }
 
+let setAsChildOfParentView (viewType: Type) =
+  let exceptions =
+    [ typeof<Terminal.Gui.Views.Menu> ]
+
+  exceptions |> Seq.filter (fun t -> t = viewType) |> Seq.isEmpty
+
 let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
@@ -95,6 +101,7 @@ let gen () =
       let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
       let genericParamsBlock = ViewType.genericTypeParamsBlock viewType
       let viewMetadata = ViewType.analyzeViewType viewType
+      let setAsChildOfParentView = setAsChildOfParentView viewType
 
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
@@ -110,6 +117,8 @@ let gen () =
         yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {ViewType.cleanTypeName viewType}\""
       else
         yield $"  override _.newView() = new {ViewType.cleanTypeName viewType}{genericParamsBlock}()"
+      yield ""
+      yield $"  override _.setAsChildOfParentView = %b{setAsChildOfParentView}"
       yield ""
       if viewMetadata.View_Typed_Properties .Length > 0 ||
          viewMetadata.ViewsCollection_Typed_Properties.Length > 0 then

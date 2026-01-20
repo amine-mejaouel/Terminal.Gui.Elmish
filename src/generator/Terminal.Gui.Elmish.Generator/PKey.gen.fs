@@ -32,24 +32,32 @@ let generatePKeyClass (viewType: Type) =
       for prop in view.Properties do
         let keyName = $"{className}.{prop.PKey}"
 
+        let isViewProperty = prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
+        let isEnumerableOfViews =
+          let propertyType = prop.PropertyInfo.PropertyType
+          if propertyType.IsGenericType && propertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
+            let genericArg = propertyType.GetGenericArguments().[0]
+            genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
+          else
+            false
+
         // Check if this is a delayed pos property
         if prop.PKey = "X" || prop.PKey = "Y" then
           yield $"    member val {prop.PKey}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
+        else if isViewProperty then
+          yield $"    member val {prop.PKey}: IViewPropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.view \"{keyName}_view\""
+        // TODO: isEnumerableOfViews does not seem to be used anywhere
+        else if isEnumerableOfViews then
+          yield $"    member val {prop.PKey}: IMultiViewPropKey<System.Collections.Generic.List<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}>> = PropKey.Create.multiView \"{keyName}_views\""
         else
           yield $"    member val {prop.PKey}: ISimplePropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
         // Extra PKeys for properties that are Views or collections of Views
-        if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
+        if isViewProperty then
           let interfaceName = Registry.SetNeededIElementInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
-          let isEnumerableOfViews =
-            if prop.PropertyInfo.PropertyType.IsGenericType then
-              let genericArg = prop.PropertyInfo.PropertyType.GetGenericArguments().[0]
-              genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
-            else
-              false
           if isEnumerableOfViews then
             yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
 

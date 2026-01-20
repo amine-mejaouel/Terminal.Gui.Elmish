@@ -13,6 +13,8 @@ type internal ViewTerminalElement(props: Props) =
 
   override _.newView() = new View()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
 
     let terminalElement = terminalElement :?> TerminalElement
@@ -514,6 +516,8 @@ type internal AdornmentTerminalElement(props: Props) =
 
   override _.newView() = new Adornment()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -586,6 +590,8 @@ type internal BarTerminalElement(props: Props) =
 
   override _.newView() = new Bar()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -634,6 +640,8 @@ type internal BorderTerminalElement(props: Props) =
 
   override _.newView() = new Border()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -673,6 +681,8 @@ type internal ButtonTerminalElement(props: Props) =
   override _.name = "Button"
 
   override _.newView() = new Button()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -741,6 +751,8 @@ type internal CharMapTerminalElement(props: Props) =
 
   override _.newView() = new CharMap()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -803,6 +815,8 @@ type internal CheckBoxTerminalElement(props: Props) =
   override _.name = "CheckBox"
 
   override _.newView() = new CheckBox()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -879,6 +893,8 @@ type internal ColorPickerTerminalElement(props: Props) =
 
   override _.newView() = new ColorPicker()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -923,6 +939,8 @@ type internal ColorPicker16TerminalElement(props: Props) =
   override _.name = "ColorPicker16"
 
   override _.newView() = new ColorPicker16()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -986,6 +1004,8 @@ type internal ComboBoxTerminalElement(props: Props) =
   override _.name = "ComboBox"
 
   override _.newView() = new ComboBox()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1077,6 +1097,8 @@ type internal DatePickerTerminalElement(props: Props) =
 
   override _.newView() = new DatePicker()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1117,6 +1139,8 @@ type internal FrameViewTerminalElement(props: Props) =
 
   override _.newView() = new FrameView()
 
+  override _.setAsChildOfParentView = true
+
 
 type internal GraphViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1124,6 +1148,8 @@ type internal GraphViewTerminalElement(props: Props) =
   override _.name = "GraphView"
 
   override _.newView() = new GraphView()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1210,6 +1236,8 @@ type internal HexViewTerminalElement(props: Props) =
 
   override _.newView() = new HexView()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1285,6 +1313,8 @@ type internal LabelTerminalElement(props: Props) =
 
   override _.newView() = new Label()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1325,6 +1355,8 @@ type internal LegendAnnotationTerminalElement(props: Props) =
 
   override _.newView() = new LegendAnnotation()
 
+  override _.setAsChildOfParentView = true
+
 
 type internal LineTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1332,6 +1364,8 @@ type internal LineTerminalElement(props: Props) =
   override _.name = "Line"
 
   override _.newView() = new Line()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1389,6 +1423,8 @@ type internal ListViewTerminalElement(props: Props) =
   override _.name = "ListView"
 
   override _.newView() = new ListView()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1480,6 +1516,8 @@ type internal MarginTerminalElement(props: Props) =
 
   override _.newView() = new Margin()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1510,6 +1548,8 @@ type internal MenuTerminalElement(props: Props) =
   override _.name = "Menu"
 
   override _.newView() = new Menu()
+
+  override _.setAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
     [
@@ -1565,6 +1605,8 @@ type internal MenuBarTerminalElement(props: Props) =
 
   override _.newView() = new MenuBar()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1600,6 +1642,8 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
   override _.name = "NumericUpDown`1"
 
   override _.newView() = new NumericUpDown<'T>()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1664,6 +1708,8 @@ type internal PaddingTerminalElement(props: Props) =
 
   override _.newView() = new Padding()
 
+  override _.setAsChildOfParentView = true
+
 
 [<AbstractClass>]
 type internal PopoverBaseImplTerminalElement(props: Props) =
@@ -1672,6 +1718,8 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
   override _.name = "PopoverBaseImpl"
 
   override _.newView() = failwith "Cannot instantiate abstract view type PopoverBaseImpl"
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1703,6 +1751,8 @@ type internal PopoverMenuTerminalElement(props: Props) =
   override _.name = "PopoverMenu"
 
   override _.newView() = new PopoverMenu()
+
+  override _.setAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
     [
@@ -1765,6 +1815,8 @@ type internal ProgressBarTerminalElement(props: Props) =
   override _.name = "ProgressBar"
 
   override _.newView() = new ProgressBar()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -1842,6 +1894,8 @@ type internal RunnableTerminalElement(props: Props) =
 
   override _.newView() = new Runnable()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1893,6 +1947,8 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
 
   override _.newView() = new Runnable<'TResult>()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -1923,6 +1979,8 @@ type internal ScrollBarTerminalElement(props: Props) =
   override _.name = "ScrollBar"
 
   override _.newView() = new ScrollBar()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2023,6 +2081,8 @@ type internal ScrollSliderTerminalElement(props: Props) =
 
   override _.newView() = new ScrollSlider()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2107,6 +2167,8 @@ type internal SelectorBaseTerminalElement(props: Props) =
   override _.name = "SelectorBase"
 
   override _.newView() = failwith "Cannot instantiate abstract view type SelectorBase"
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2222,6 +2284,8 @@ type internal FlagSelectorTerminalElement(props: Props) =
 
   override _.newView() = new FlagSelector()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2253,6 +2317,8 @@ type internal OptionSelectorTerminalElement(props: Props) =
 
   override _.newView() = new OptionSelector()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2283,6 +2349,8 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
   override _.name = "FlagSelector`1"
 
   override _.newView() = new FlagSelector<'TFlagsEnum>()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2319,6 +2387,8 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
   override _.name = "OptionSelector`1"
 
   override _.newView() = new OptionSelector<'TEnum>()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2364,6 +2434,8 @@ type internal ShortcutTerminalElement(props: Props) =
   override _.name = "Shortcut"
 
   override _.newView() = new Shortcut()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2485,6 +2557,8 @@ type internal MenuItemTerminalElement(props: Props) =
 
   override _.newView() = new MenuItem()
 
+  override _.setAsChildOfParentView = true
+
   override this.SubElements_PropKeys =
     [
       SubElementPropKey.from PKey.MenuItem.SubMenu_element
@@ -2541,6 +2615,8 @@ type internal MenuBarItemTerminalElement(props: Props) =
   override _.name = "MenuBarItem"
 
   override _.newView() = new MenuBarItem()
+
+  override _.setAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
     [
@@ -2602,6 +2678,8 @@ type internal SliderTerminalElement<'T>(props: Props) =
   override _.name = "Slider`1"
 
   override _.newView() = new Slider<'T>()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2756,6 +2834,8 @@ type internal SpinnerViewTerminalElement(props: Props) =
 
   override _.newView() = new SpinnerView()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2832,6 +2912,8 @@ type internal StatusBarTerminalElement(props: Props) =
 
   override _.newView() = new StatusBar()
 
+  override _.setAsChildOfParentView = true
+
 
 type internal TabTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2839,6 +2921,8 @@ type internal TabTerminalElement(props: Props) =
   override _.name = "Tab"
 
   override _.newView() = new Tab()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -2881,6 +2965,8 @@ type internal TabViewTerminalElement(props: Props) =
   override _.name = "TabView"
 
   override _.newView() = new TabView()
+
+  override _.setAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
     [
@@ -2953,6 +3039,8 @@ type internal TableViewTerminalElement(props: Props) =
   override _.name = "TableView"
 
   override _.newView() = new TableView()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3113,6 +3201,8 @@ type internal TextFieldTerminalElement(props: Props) =
 
   override _.newView() = new TextField()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -3221,6 +3311,8 @@ type internal DateFieldTerminalElement(props: Props) =
 
   override _.newView() = new DateField()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -3275,6 +3367,8 @@ type internal TextValidateFieldTerminalElement(props: Props) =
 
   override _.newView() = new TextValidateField()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -3314,6 +3408,8 @@ type internal TextViewTerminalElement(props: Props) =
   override _.name = "TextView"
 
   override _.newView() = new TextView()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3519,6 +3615,8 @@ type internal TimeFieldTerminalElement(props: Props) =
 
   override _.newView() = new TimeField()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -3572,6 +3670,8 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   override _.name = "TreeView`1"
 
   override _.newView() = new TreeView<'T>()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3714,6 +3814,8 @@ type internal WindowTerminalElement(props: Props) =
 
   override _.newView() = new Window()
 
+  override _.setAsChildOfParentView = true
+
 
 type internal DialogTerminalElement(props: Props) =
   inherit WindowTerminalElement(props)
@@ -3721,6 +3823,8 @@ type internal DialogTerminalElement(props: Props) =
   override _.name = "Dialog"
 
   override _.newView() = new Dialog()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3770,6 +3874,8 @@ type internal FileDialogTerminalElement(props: Props) =
   override _.name = "FileDialog"
 
   override _.newView() = new FileDialog()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
@@ -3861,6 +3967,8 @@ type internal OpenDialogTerminalElement(props: Props) =
 
   override _.newView() = new OpenDialog()
 
+  override _.setAsChildOfParentView = true
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -3892,6 +4000,8 @@ type internal SaveDialogTerminalElement(props: Props) =
 
   override _.newView() = new SaveDialog()
 
+  override _.setAsChildOfParentView = true
+
 
 type internal WizardTerminalElement(props: Props) =
   inherit DialogTerminalElement(props)
@@ -3899,6 +4009,8 @@ type internal WizardTerminalElement(props: Props) =
   override _.name = "Wizard"
 
   override _.newView() = new Wizard()
+
+  override _.setAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
     [
@@ -3956,6 +4068,8 @@ type internal WizardStepTerminalElement(props: Props) =
   override _.name = "WizardStep"
 
   override _.newView() = new WizardStep()
+
+  override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)

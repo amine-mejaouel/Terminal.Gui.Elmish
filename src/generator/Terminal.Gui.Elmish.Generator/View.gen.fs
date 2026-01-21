@@ -61,32 +61,6 @@ let generateMethods (viewType: Type) =
       yield $"    viewProps.Children children"
       yield $"    new {elementName}(viewProps.props){returnInterface}"
     yield ""
-
-    if viewType.IsGenericType then
-      yield $"  static member {viewName}{genericBlock}(x: int, y: int, title: string) ="
-      yield $"    let setProps ="
-      yield $"      fun (p: {propsName}{genericParamsBlock}) ->"
-      yield $"        p.X (Pos.Absolute(x))"
-      yield $"        p.Y (Pos.Absolute(y))"
-      yield $"        p.Title title"
-      yield ""
-      yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
-      yield ""
-      yield $"    setProps viewProps"
-      yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-      yield $"    {returnInterface}"
-    else
-      yield $"  static member {viewName}(x: int, y: int, title: string) ="
-      yield $"    let setProps ="
-      yield $"      fun (p: {propsName}) ->"
-      yield $"        p.X (Pos.Absolute(x))"
-      yield $"        p.Y (Pos.Absolute(y))"
-      yield $"        p.Title title"
-      yield ""
-      yield $"    let viewProps = {propsName} ()"
-      yield $"    setProps viewProps"
-      yield $"    new {elementName}(viewProps.props){returnInterface}"
-    yield ""
   }
 
 let gen () =

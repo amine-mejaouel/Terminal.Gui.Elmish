@@ -16,6 +16,7 @@ type internal ViewTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.setProps(terminalElement, props)
 
     let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View

@@ -34,8 +34,7 @@ let setPropsCode (view: ViewType.ViewMetadata) =
   else
     seq {
       yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      if not (view.ViewType = typeof<Terminal.Gui.ViewBase.View>) then
-        yield $"    base.setProps(terminalElement, props)"
+      yield $"    base.setProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration view.ViewType
       yield $""

@@ -366,10 +366,10 @@ module internal PKey =
     member val IsRunningChanged: IEventPropKey<EventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanged_event"
     member val IsRunningChanging: IEventPropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanging_event"
 
-  type Runnable'PKeys<'TResult>() =
+  type RunnablePKeys<'TResult>() =
     inherit RunnablePKeys()
     // Properties
-    member val Result: ISimplePropKey<'TResult> = PropKey.Create.simple "Runnable'.Result"
+    member val Result: ISimplePropKey<'TResult> = PropKey.Create.simple "Runnable.Result"
 
   type ScrollBarPKeys() =
     inherit ViewPKeys()
@@ -434,22 +434,22 @@ module internal PKey =
     // Properties
     member val Cursor: ISimplePropKey<int> = PropKey.Create.simple "OptionSelector.Cursor"
 
-  type FlagSelector'PKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
+  type FlagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
     inherit FlagSelectorPKeys()
     // Properties
-    member val Value: ISimplePropKey<Nullable<'TFlagsEnum>> = PropKey.Create.simple "FlagSelector'.Value"
+    member val Value: ISimplePropKey<Nullable<'TFlagsEnum>> = PropKey.Create.simple "FlagSelector.Value"
 
     // Events
-    member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> = PropKey.Create.event "FlagSelector'.ValueChanged_event"
+    member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> = PropKey.Create.event "FlagSelector.ValueChanged_event"
 
-  type OptionSelector'PKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
+  type OptionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
     inherit OptionSelectorPKeys()
     // Properties
-    member val Value: ISimplePropKey<Nullable<'TEnum>> = PropKey.Create.simple "OptionSelector'.Value"
-    member val Values: ISimplePropKey<IReadOnlyList<int>> = PropKey.Create.simple "OptionSelector'.Values"
+    member val Value: ISimplePropKey<Nullable<'TEnum>> = PropKey.Create.simple "OptionSelector.Value"
+    member val Values: ISimplePropKey<IReadOnlyList<int>> = PropKey.Create.simple "OptionSelector.Values"
 
     // Events
-    member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TEnum>> -> unit> = PropKey.Create.event "OptionSelector'.ValueChanged_event"
+    member val ValueChanged: IEventPropKey<EventArgs<Nullable<'TEnum>> -> unit> = PropKey.Create.event "OptionSelector.ValueChanged_event"
 
   type ShortcutPKeys() =
     inherit ViewPKeys()

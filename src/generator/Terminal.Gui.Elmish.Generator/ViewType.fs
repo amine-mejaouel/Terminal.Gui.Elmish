@@ -199,24 +199,29 @@ let eventHandlerType (event: System.Reflection.EventInfo) =
   else
     raise (NotImplementedException())
 
-type PropertyMetadata = {
-  PKey: string
-  PropertyInfo: PropertyInfo
-}
+type PropertyMetadata =
+  { PKey: string
+    PropertyInfo: PropertyInfo }
+
+  member x.IsViewProperty =
+    x.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
 
 type EventMetadata = {
   PKey: string
   EventInfo: EventInfo
 }
 
-type ViewMetadata = {
-  ViewType: Type
-  Properties: PropertyMetadata[]
-  View_Typed_Properties: PropertyMetadata[]
-  ViewsCollection_Typed_Properties: PropertyMetadata[]
-  Events: EventMetadata[]
-  HasNoEventsOrProperties: bool
-}
+type ViewMetadata =
+  // TODO: Use this {} style to define the record type everywhere
+  // because it allows adding members easily, in contrast to other styles that do not.
+  { ViewType: Type
+    Properties: PropertyMetadata[]
+    View_Typed_Properties: PropertyMetadata[]
+    ViewsCollection_Typed_Properties: PropertyMetadata[]
+    Events: EventMetadata[] }
+
+    member x.HasNoEventsOrProperties =
+      (x.Properties.Length = 0 && x.Events.Length = 0)
 
 let analyzeViewType (viewType: Type) =
   let toPropertyMetadata (p: PropertyInfo) =
@@ -258,5 +263,4 @@ let analyzeViewType (viewType: Type) =
     View_Typed_Properties = view_Typed_SubElementsProps
     ViewsCollection_Typed_Properties = viewsCollection_Typed_SubElementsProps
     Events = evts
-    HasNoEventsOrProperties = (props.Length = 0 && evts.Length = 0)
   }

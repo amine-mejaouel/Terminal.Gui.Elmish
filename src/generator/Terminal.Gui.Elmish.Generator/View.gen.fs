@@ -21,10 +21,7 @@ let generateMethods (viewType: Type) =
       typeof<Terminal.Gui.Views.MenuBarItem> ]
     |> List.contains viewType
 
-  let returnInterface =
-      match Registry.TryGetNeededIElementInterface viewType with
-      | Some interfaceName -> $" :> {interfaceName}"
-      | None -> " :> ITerminalElement"
+  let returnInterface = Registry.GetNeededIElementInterface viewType
 
   seq {
     if hasMacros then
@@ -33,19 +30,21 @@ let generateMethods (viewType: Type) =
       yield $"    let props = {propsName} ()"
       yield $"    let macros = {macrosName} props"
       yield $"    set props macros"
-      yield $"    new {elementName}(props.props){returnInterface}"
+      yield $"    new {elementName}(props.props)"
+      yield $"    :> {returnInterface}"
     else if viewType.IsGenericType then
       yield $"  static member {viewName}{genericBlock}(set: {propsName}{genericParamsBlock} -> unit) ="
       yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
       yield ""
       yield $"    set viewProps"
       yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-      yield $"    {returnInterface}"
+      yield $"    :> {returnInterface}"
     else
       yield $"  static member {viewName}(set: {propsName} -> unit) ="
       yield $"    let viewProps = {propsName} ()"
       yield $"    set viewProps"
-      yield $"    new {elementName}(viewProps.props){returnInterface}"
+      yield $"    new {elementName}(viewProps.props)"
+      yield $"    :> {returnInterface}"
     yield ""
 
     if viewType.IsGenericType then
@@ -54,12 +53,13 @@ let generateMethods (viewType: Type) =
       yield ""
       yield $"    viewProps.Children children"
       yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-      yield $"    {returnInterface}"
+      yield $"    :> {returnInterface}"
     else
       yield $"  static member {viewName}(children: ITerminalElement list) ="
       yield $"    let viewProps = {propsName} ()"
       yield $"    viewProps.Children children"
-      yield $"    new {elementName}(viewProps.props){returnInterface}"
+      yield $"    new {elementName}(viewProps.props)"
+      yield $"    :> {returnInterface}"
     yield ""
   }
 

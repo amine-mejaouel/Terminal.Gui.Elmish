@@ -147,7 +147,7 @@ type internal TerminalElement(props: Props) =
 
       node.TerminalElement.initialize ()
 
-      // Here, the "children" view are added to their parent
+      // Here, the "children" views are added to their parent
       if node.TerminalElement.setAsChildOfParentView then
         node.Parent
         |> Option.iter (fun p -> p.Add node.TerminalElement.View |> ignore)

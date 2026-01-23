@@ -70,6 +70,11 @@ let gen () =
         yield $"  member this.{prop.PKey} (value: {ViewType.genericTypeParam prop.PropertyInfo.PropertyType}) ="
         yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}, value)"
         yield ""
+        if prop.IsViewProperty then
+          let valueType = Registry.SetNeededIElementInterface prop.PropertyInfo.PropertyType
+          yield $"  member this.{prop.PKey}(value: {valueType}) ="
+          yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}_element, value)"
+        yield ""
       if view.Events.Length > 0 then
         yield "  // Events"
       for event in view.Events do

@@ -8,7 +8,7 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    let view = terminalElement.View :?> {ViewType.cleanTypeName viewType}{ViewType.genericTypeParamsBlock viewType}"
+      yield $"    let view = terminalElement.View :?> {ViewType.typeNameWithoutArity viewType}{ViewType.genericTypeParamsBlock viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
@@ -104,7 +104,7 @@ let gen () =
 
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
-      yield $"type internal {ViewType.cleanTypeName viewType}TerminalElement{genericBlock}(props: Props) ="
+      yield $"type internal {ViewType.typeNameWithoutArity viewType}TerminalElement{genericBlock}(props: Props) ="
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
       else
@@ -113,9 +113,9 @@ let gen () =
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""
       if viewType.IsAbstract then
-        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {ViewType.cleanTypeName viewType}\""
+        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {ViewType.typeNameWithoutArity viewType}\""
       else
-        yield $"  override _.newView() = new {ViewType.cleanTypeName viewType}{genericParamsBlock}()"
+        yield $"  override _.newView() = new {ViewType.typeNameWithoutArity viewType}{genericParamsBlock}()"
       yield ""
       yield $"  override _.setAsChildOfParentView = %b{setAsChildOfParentView}"
       yield ""

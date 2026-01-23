@@ -8,7 +8,7 @@ let camelCase (str: string) =
   else Char.ToLowerInvariant(str.[0]).ToString() + str.Substring(1)
 
 let generateMethods (viewType: Type) =
-  let typeName = ViewType.cleanTypeName viewType
+  let typeName = ViewType.typeNameWithoutArity viewType
   let elementName = typeName + "TerminalElement"
   let propsName = typeName + "Props"
   let viewName = camelCase typeName

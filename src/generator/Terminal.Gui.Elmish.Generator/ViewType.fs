@@ -5,7 +5,11 @@ open System
 open System.Collections
 open System.Reflection
 
-let cleanTypeName (t: Type) =
+/// <summary>
+/// <p>Returns the name of the type without generic arity suffix.</p>
+/// <p>Example: For List&lt;T&gt;, the type name is "List`1", and this function returns "List".</p>
+/// </summary>
+let typeNameWithoutArity (t: Type) =
   if t.Name.Contains("`") then t.Name.Substring(0, t.Name.IndexOf("`")) else t.Name
 
 let rec genericTypeParam (t: Type) =

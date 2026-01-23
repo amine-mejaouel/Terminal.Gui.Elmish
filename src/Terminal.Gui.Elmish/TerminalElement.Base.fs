@@ -11,7 +11,6 @@ type internal TreeNode = {
   Parent: View option
 }
 
-
 [<CustomEquality; NoComparison>]
 type internal SubElementPropKey<'a> =
   | SingleElementKey of ISingleElementPropKey<'a>

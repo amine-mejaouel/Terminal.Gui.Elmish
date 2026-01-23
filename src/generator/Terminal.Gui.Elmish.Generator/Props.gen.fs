@@ -34,9 +34,9 @@ let gen () =
     for viewType in ViewType.viewTypesOrderedByInheritance do
       if viewType.IsGenericType then
         let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
-        yield $"type {ViewType.cleanTypeName viewType}Props{genericBlock}() ="
+        yield $"type {ViewType.typeNameWithoutArity viewType}Props{genericBlock}() ="
       else
-        yield $"type {ViewType.cleanTypeName viewType}Props() ="
+        yield $"type {ViewType.typeNameWithoutArity viewType}Props() ="
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield "  member val internal props = Props()"
         yield """

@@ -6,7 +6,7 @@ open System.IO
 
 let generatePKeyClass (viewType: Type) =
   seq {
-    let className = ViewType.cleanTypeName viewType
+    let className = ViewType.typeNameWithoutArity viewType
 
     if viewType.IsGenericType then
       yield $"  type {className}PKeys{ViewType.genericTypeParamsWithConstraintsBlock viewType}() ="

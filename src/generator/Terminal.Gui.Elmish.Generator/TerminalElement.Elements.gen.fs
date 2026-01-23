@@ -8,13 +8,13 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
     yield $"    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    let view = terminalElement.View :?> {ViewType.typeNameWithoutArity viewType}{ViewType.genericTypeParamsBlock viewType}"
+      yield $"    let view = terminalElement.View :?> {getTypeNameWithoutArity viewType}{genericTypeParamsBlock viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{Registry.GetUniqueTypeName viewType}{ViewType.genericTypeParamsBlock viewType}"
+  $"PKey.{Registry.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
 
 let subElementsPropKeys (view: ViewType.ViewMetadata) =
   seq {
@@ -97,14 +97,14 @@ let gen () =
     yield ""
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
-      let genericParamsBlock = ViewType.genericTypeParamsBlock viewType
+      let genericBlock = genericTypeParamsWithConstraintsBlock viewType
+      let genericParamsBlock = genericTypeParamsBlock viewType
       let viewMetadata = ViewType.analyzeViewType viewType
       let setAsChildOfParentView = setAsChildOfParentView viewType
 
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
-      yield $"type internal {ViewType.typeNameWithoutArity viewType}TerminalElement{genericBlock}(props: Props) ="
+      yield $"type internal {getTypeNameWithoutArity viewType}TerminalElement{genericBlock}(props: Props) ="
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
       else
@@ -113,9 +113,9 @@ let gen () =
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""
       if viewType.IsAbstract then
-        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {ViewType.typeNameWithoutArity viewType}\""
+        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {getTypeNameWithoutArity viewType}\""
       else
-        yield $"  override _.newView() = new {ViewType.typeNameWithoutArity viewType}{genericParamsBlock}()"
+        yield $"  override _.newView() = new {getTypeNameWithoutArity viewType}{genericParamsBlock}()"
       yield ""
       yield $"  override _.setAsChildOfParentView = %b{setAsChildOfParentView}"
       yield ""

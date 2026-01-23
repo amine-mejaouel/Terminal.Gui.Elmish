@@ -6,10 +6,10 @@ open System.IO
 
 let generatePKeyClass (viewType: Type) =
   seq {
-    let className = ViewType.typeNameWithoutArity viewType
+    let className = getTypeNameWithoutArity viewType
 
     if viewType.IsGenericType then
-      yield $"  type {className}PKeys{ViewType.genericTypeParamsWithConstraintsBlock viewType}() ="
+      yield $"  type {className}PKeys{genericTypeParamsWithConstraintsBlock viewType}() ="
     else
       yield $"  type {className}PKeys() ="
 
@@ -46,12 +46,12 @@ let generatePKeyClass (viewType: Type) =
           yield $"    member val {prop.PKey}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
         else if isViewProperty then
-          yield $"    member val {prop.PKey}: IViewPropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.view \"{keyName}_view\""
+          yield $"    member val {prop.PKey}: IViewPropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.view \"{keyName}_view\""
         // TODO: isEnumerableOfViews does not seem to be used anywhere
         else if isEnumerableOfViews then
-          yield $"    member val {prop.PKey}: IMultiViewPropKey<System.Collections.Generic.List<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}>> = PropKey.Create.multiView \"{keyName}_views\""
+          yield $"    member val {prop.PKey}: IMultiViewPropKey<System.Collections.Generic.List<{getFSharpTypeName prop.PropertyInfo.PropertyType}>> = PropKey.Create.multiView \"{keyName}_views\""
         else
-          yield $"    member val {prop.PKey}: ISimplePropKey<{ViewType.genericTypeParam prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {prop.PKey}: ISimplePropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
 
         // Extra PKeys for properties that are Views or collections of Views
         if isViewProperty then
@@ -82,7 +82,7 @@ let generateModuleInstances () =
       // Check if it's a generic type
       if viewType.IsGenericType then
         let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-        let genericConstraints = ViewType.genericConstraints viewType
+        let genericConstraints = genericConstraints viewType
         yield $"  let {viewName}<{genericParams}{genericConstraints}> = {className}PKeys<{genericParams}>()"
       else
         yield $"  let {viewName} = {className}PKeys ()"

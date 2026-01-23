@@ -13,7 +13,7 @@ type Registry =
         let uniquePKey =
           let pkeyCandidate =
             viewType
-            |> ViewType.typeNameWithoutArity
+            |> getTypeNameWithoutArity
 
           let rec findUniquePKey candidate =
             if Registry.TypesNames.ContainsValue candidate then

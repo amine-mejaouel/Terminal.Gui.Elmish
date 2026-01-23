@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="String.fs" />
     <Compile Include="File.fs" />
+    <Compile Include="CodeGen.fs" />
     <Compile Include="ViewType.fs" />
     <Compile Include="Registry.fs" />
     <Compile Include="PKey.gen.fs" />

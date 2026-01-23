@@ -8,12 +8,12 @@ let camelCase (str: string) =
   else Char.ToLowerInvariant(str.[0]).ToString() + str.Substring(1)
 
 let generateMethods (viewType: Type) =
-  let typeName = ViewType.typeNameWithoutArity viewType
+  let typeName = getTypeNameWithoutArity viewType
   let elementName = typeName + "TerminalElement"
   let propsName = typeName + "Props"
   let viewName = camelCase typeName
-  let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
-  let genericParamsBlock = ViewType.genericTypeParamsBlock viewType
+  let genericBlock = genericTypeParamsWithConstraintsBlock viewType
+  let genericParamsBlock = genericTypeParamsBlock viewType
 
   // Check if this is a special case with macros
   let hasMacros =

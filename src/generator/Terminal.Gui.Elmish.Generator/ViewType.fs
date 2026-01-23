@@ -5,76 +5,6 @@ open System
 open System.Collections
 open System.Reflection
 
-/// <summary>
-/// <p>Returns the name of the type without generic arity suffix.</p>
-/// <p>Example: For List&lt;T&gt;, the type name is "List`1", and this function returns "List".</p>
-/// </summary>
-let typeNameWithoutArity (t: Type) =
-  if t.Name.Contains("`") then t.Name.Substring(0, t.Name.IndexOf("`")) else t.Name
-
-let rec genericTypeParam (t: Type) =
-  if t.IsGenericType then
-    let baseName = t.Name.Substring(0, t.Name.IndexOf('`'))
-    $"{baseName}{genericTypeParamsBlock t}"
-  else if t.IsGenericParameter then
-    $"'{t.Name}"
-  else if t.Name = "Boolean" then
-    "bool"
-  else if t.Name = "Int32" then
-    "int"
-  else if t.Name = "String" then
-    "string"
-  else
-    t.Name
-
-and genericTypeParams (t: Type) =
-  String.concat ", " (t.GetGenericArguments() |> Array.map genericTypeParam)
-
-and genericTypeParamsBlock (t: Type) =
-  genericTypeParams t
-  |> fun s -> if s = "" then "" else $"<{s}>"
-
-let genericConstraints (t: Type) =
-  let constraints =
-    t.GetGenericArguments()
-    |> Array.choose (fun t ->
-        let constraints = ResizeArray<string>()
-        let attrs = t.GenericParameterAttributes
-
-        if attrs.HasFlag(System.Reflection.GenericParameterAttributes.ReferenceTypeConstraint) then
-          constraints.Add($"'{t.Name}: not struct")
-        if attrs.HasFlag(System.Reflection.GenericParameterAttributes.NotNullableValueTypeConstraint) then
-          constraints.Add($"'{t.Name}: struct")
-        if attrs.HasFlag(System.Reflection.GenericParameterAttributes.DefaultConstructorConstraint) then
-          constraints.Add($"'{t.Name}: (new: unit -> '{t.Name})")
-        let baseTypes = t.GetGenericParameterConstraints()
-        for baseType in baseTypes do
-          constraints.Add($"'{t.Name}:> {genericTypeParam baseType}")
-
-        if constraints.Count > 0 then
-          constraints
-          |> String.concat " and "
-          |> Some
-        else
-          None
-    )
-  if constraints.Length > 0 then
-    " when " + (constraints |> String.concat " and ")
-  else
-    ""
-
-let rec genericTypeParamsWithConstraintsBlock (t: Type) =
-  if not t.IsGenericType then
-    ""
-  else
-    let genericParams = genericTypeParams t
-    let constraints = genericConstraints t
-    $"<{genericParams}{constraints}>"
-
-let asPKey (name: string) =
-  name
-  |> String.escapeReservedKeywords
-
 let private inheritanceChain (viewType: Type) =
   let rec collectChain (t: Type) (acc: Type list) =
     match t.BaseType with
@@ -176,9 +106,9 @@ let isInitOnly (property: PropertyInfo) =
 
 let private properties (viewType: Type) =
   viewType.GetProperties(
-    System.Reflection.BindingFlags.Public |||
-    System.Reflection.BindingFlags.Instance |||
-    System.Reflection.BindingFlags.DeclaredOnly)
+    BindingFlags.Public |||
+    BindingFlags.Instance |||
+    BindingFlags.DeclaredOnly)
   |> Array.filter (fun p ->
     p.CanRead && p.GetMethod.IsPublic && p.CanWrite && p.SetMethod.IsPublic && (not <| isInitOnly p)
   )
@@ -186,20 +116,20 @@ let private properties (viewType: Type) =
 
 let private events (viewType: Type) =
   viewType.GetEvents(
-    System.Reflection.BindingFlags.Public |||
-    System.Reflection.BindingFlags.Instance |||
-    System.Reflection.BindingFlags.DeclaredOnly)
+    BindingFlags.Public |||
+    BindingFlags.Instance |||
+    BindingFlags.DeclaredOnly)
   |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
   |> Array.sortBy _.Name
 
-let eventHandlerType (event: System.Reflection.EventInfo) =
+let eventHandlerType (event: EventInfo) =
   let handlerType = event.EventHandlerType
   let genericArgs = handlerType.GetGenericArguments()
   if genericArgs.Length = 1 then
-    $"{genericTypeParam genericArgs[0]} -> unit"
+    $"{CodeGen.getFSharpTypeName genericArgs[0]} -> unit"
   else if genericArgs.Length = 0 then
     let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
-    $"{genericTypeParam eventArgs} -> unit"
+    $"{CodeGen.getFSharpTypeName eventArgs} -> unit"
   else
     raise (NotImplementedException())
 
@@ -230,12 +160,12 @@ type ViewMetadata =
 let analyzeViewType (viewType: Type) =
   let toPropertyMetadata (p: PropertyInfo) =
     {
-      PKey = asPKey p.Name
+      PKey = String.escapeReservedKeywords p.Name
       PropertyInfo = p
     }
   let toEventMetadata (e: EventInfo) =
     {
-      PKey = asPKey e.Name
+      PKey = String.escapeReservedKeywords e.Name
       EventInfo = e
     }
 
@@ -252,10 +182,10 @@ let analyzeViewType (viewType: Type) =
     |> Array.filter (fun p ->
       p.PropertyType.IsAssignableTo typeof<IEnumerable> &&
       (if p.PropertyType.IsGenericType then
-          let genericArg = p.PropertyType.GetGenericArguments().[0]
-          genericArg.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
+         let genericArg = p.PropertyType.GetGenericArguments().[0]
+         genericArg.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
        else
-          false)
+         false)
     )
     |> Array.sortBy _.Name
     |> Array.map toPropertyMetadata

@@ -33,10 +33,10 @@ let gen () =
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
       if viewType.IsGenericType then
-        let genericBlock = ViewType.genericTypeParamsWithConstraintsBlock viewType
-        yield $"type {ViewType.typeNameWithoutArity viewType}Props{genericBlock}() ="
+        let genericBlock = genericTypeParamsWithConstraintsBlock viewType
+        yield $"type {getTypeNameWithoutArity viewType}Props{genericBlock}() ="
       else
-        yield $"type {ViewType.typeNameWithoutArity viewType}Props() ="
+        yield $"type {getTypeNameWithoutArity viewType}Props() ="
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield "  member val internal props = Props()"
         yield """
@@ -53,7 +53,7 @@ let gen () =
         yield "  inherit ViewProps()"
 
       let view = ViewType.analyzeViewType viewType
-      let genericBlock = ViewType.genericTypeParamsBlock viewType
+      let genericBlock = genericTypeParamsBlock viewType
 
       if view.ViewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  // Delayed Positions"
@@ -67,7 +67,7 @@ let gen () =
       if view.Properties.Length > 0 then
         yield "  // Properties"
       for prop in view.Properties do
-        yield $"  member this.{prop.PKey} (value: {ViewType.genericTypeParam prop.PropertyInfo.PropertyType}) ="
+        yield $"  member this.{prop.PKey} (value: {getFSharpTypeName prop.PropertyInfo.PropertyType}) ="
         yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}, value)"
         yield ""
         if prop.IsViewProperty then

@@ -16,19 +16,19 @@ let terminalElementAndViewDeclaration (viewType: Type) =
 let pkeyPrefix (viewType: Type) =
   $"PKey.{Registry.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
 
-let subElementsPropKeys (view: ViewType.ViewMetadata) =
+let subElementsPropKeys (view: ViewMetadata) =
   seq {
     yield $"  override this.SubElements_PropKeys ="
     yield $"    ["
     for prop in view.View_Typed_Properties do
-      yield $"      SubElementPropKey.from {pkeyPrefix view.ViewType}.{prop.PKey}_element"
+      yield $"      SubElementPropKey.from {pkeyPrefix view.Type}.{prop.PKey}_element"
     for prop in view.ViewsCollection_Typed_Properties do
-      yield $"      SubElementPropKey.from {pkeyPrefix view.ViewType}.{prop.PKey}_elements"
+      yield $"      SubElementPropKey.from {pkeyPrefix view.Type}.{prop.PKey}_elements"
     yield $"    ]"
     yield $"    |> List.append base.SubElements_PropKeys"
   }
 
-let setPropsCode (view: ViewType.ViewMetadata) =
+let setPropsCode (view: ViewMetadata) =
   if view.HasNoEventsOrProperties then
     Seq.empty
   else
@@ -36,48 +36,48 @@ let setPropsCode (view: ViewType.ViewMetadata) =
       yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
       yield $"    base.setProps(terminalElement, props)"
       yield $""
-      yield! terminalElementAndViewDeclaration view.ViewType
+      yield! terminalElementAndViewDeclaration view.Type
       yield $""
 
       if view.Properties.Length > 0 then
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix view.ViewType}.{prop.PKey}"
+        yield $"    |> Props.tryFind {pkeyPrefix view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
         yield ""
 
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({pkeyPrefix view.ViewType}.{event.PKey}, view.{event.PKey})"
+        yield $"    terminalElement.trySetEventHandler({pkeyPrefix view.Type}.{event.PKey}, view.{event.PKey})"
         yield ""
 
     }
 
-let removePropsCode (view: ViewType.ViewMetadata) =
+let removePropsCode (view: ViewMetadata) =
   if view.HasNoEventsOrProperties then
     Seq.empty
   else
     seq {
       yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      if not (view.ViewType = typeof<Terminal.Gui.ViewBase.View>) then
+      if not (view.Type = typeof<Terminal.Gui.ViewBase.View>) then
         yield $"    base.removeProps(terminalElement, props)"
       yield $""
-      yield! terminalElementAndViewDeclaration view.ViewType
+      yield! terminalElementAndViewDeclaration view.Type
       yield $""
       if view.Properties.Length > 0 then
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix view.ViewType}.{prop.PKey}"
+        yield $"    |> Props.tryFind {pkeyPrefix view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
         yield $"        view.{prop.PKey} <- Unchecked.defaultof<_>)"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix view.ViewType}.{event.PKey}"
+        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix view.Type}.{event.PKey}"
     }
 
 let setAsChildOfParentView (viewType: Type) =
@@ -99,7 +99,7 @@ let gen () =
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let genericBlock = genericTypeParamsWithConstraintsBlock viewType
       let genericParamsBlock = genericTypeParamsBlock viewType
-      let viewMetadata = ViewType.analyzeViewType viewType
+      let viewMetadata = ViewMetadata.create viewType
       let setAsChildOfParentView = setAsChildOfParentView viewType
 
       if viewType.IsAbstract then
@@ -108,7 +108,7 @@ let gen () =
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
       else
-        yield $"  inherit {(ViewType.parentViewType viewType).Name}TerminalElement(props)"
+        yield $"  inherit {(ViewType.parentView viewType).Name}TerminalElement(props)"
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""

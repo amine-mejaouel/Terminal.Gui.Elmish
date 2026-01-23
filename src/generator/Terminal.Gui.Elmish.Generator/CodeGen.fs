@@ -89,3 +89,19 @@ module CodeGen =
       let genericParams = genericTypeParams t
       let constraints = genericConstraints t
       $"<{genericParams}{constraints}>"
+
+  /// <summary>
+  /// <p>Returns the F# type name of the event handler type for the given event.</p>
+  /// <p>For example, for an IEvent&lt;EventHandler&lt;MyEventArgs&gt;&gt; event, it will return "MyEventArgs -> unit".</p>
+  /// </summary>
+  /// <param name="event"></param>
+  let eventHandlerType (event: EventInfo) =
+    let handlerType = event.EventHandlerType
+    let genericArgs = handlerType.GetGenericArguments()
+    if genericArgs.Length = 1 then
+      $"{getFSharpTypeName genericArgs[0]} -> unit"
+    else if genericArgs.Length = 0 then
+      let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
+      $"{getFSharpTypeName eventArgs} -> unit"
+    else
+      raise (NotImplementedException())

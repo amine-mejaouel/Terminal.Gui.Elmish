@@ -22,27 +22,28 @@ type Model = unit
 
 type Msg = unit
 
-let init () = (), Cmd.none
+let init _ = (), Cmd.none
 
-let update (msg: Msg) (model: Model) = (), Cmd.none
+let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>> =
+  (), Cmd.none
 
-let view (state: Model) (dispatch: Msg -> unit) =
-  View.topLevel [
-    View.menuBar (fun p m ->
-      p.menus [
-        View.menuBarItem (fun p ->
-          p.title "_File"
+let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement =
+  View.runnable [
+    View.menuBar (fun p _ ->
+      p.Children [
+        View.menuBarItem (fun p _ ->
+          p.Title "_File"
 
-          p.popoverMenu (
+          p.PopoverMenu (
             View.popoverMenu (fun p ->
-              p.root (
+              p.Root (
                 View.menu (fun p ->
-                  p.children [
+                  p.Children [
                     View.menuItem (fun p ->
-                      p.title "Quit"
-                      p.helpText "Quit UI Catalog"
-                      p.key Application.QuitKey
-                      p.command Command.Quit
+                      p.Title "Quit"
+                      // p.HelpText "Quit UI Catalog"
+                      // p.Key Application.QuitKey
+                      p.Command Command.Quit
                     )
                   ]
                 )
@@ -50,61 +51,62 @@ let view (state: Model) (dispatch: Msg -> unit) =
             )
           )
         )
-        View.menuBarItem (fun p ->
-          p.title "_Themes"
+        View.menuBarItem (fun p _ ->
+          p.Title "_Themes"
 
-          p.popoverMenu (
+          p.PopoverMenu (
             View.popoverMenu (fun p ->
-              p.root (
+              p.Root (
                 View.menu (fun p ->
-                  p.children [
+                  p.Children [
                     View.menuItem (fun p ->
-                      p.commandView (
+                      p.TargetView (
                         View.checkBox (fun p ->
-                          p.title "Force _16 Colors"
+                          p.Title "Force _16 Colors"
 
-                          p.checkedState (
-                            if Application.Force16Colors then
-                              CheckState.Checked
-                            else
-                              CheckState.UnChecked
-                          )
+                          // p.CheckedState (
+                          //   if Application.Force16Colors then
+                          //     CheckState.Checked
+                          //   else
+                          //     CheckState.UnChecked
+                          // )
 
-                          p.checkedStateChanging (fun args ->
-                            if
-                              (Application.Force16Colors
-                               && args.Result = CheckState.UnChecked
-                               && not Application.Driver.SupportsTrueColor)
-                            then
+                          // p.CheckedStateChanging (fun args ->
+                          //   if
+                          //     (Application.Force16Colors
+                          //      && args.Result = CheckState.UnChecked
+                          //      && not Application.Driver.SupportsTrueColor)
+                          //   then
+                          //
+                          //     args.Handled <- true
+                          // )
 
-                              args.Handled <- true
-                          )
-
-                          p.checkedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
+                          // p.CheckedStateChanged (fun args -> Application.Force16Colors <- args.Value = CheckState.Checked)
                         )
                       )
                     )
-                    View.menuItem (fun p -> p.commandView (View.line []))
+                    View.menuItem (fun p -> p.TargetView (View.line []))
                     if ConfigurationManager.IsEnabled then
                       View.menuItem (fun p ->
-                        p.helpText "Cycle Through Themes"
-                        p.key Key.T.WithCtrl
+                        // p.HelpText "Cycle Through Themes"
+                        // p.Key Key.T.WithCtrl
 
-                        p.commandView (
+                        p.TargetView (
                           View.optionSelector (fun p ->
-                            p.highlightStates MouseState.None
-                            p.options (ThemeManager.GetThemeNames())
+                            ()
+                            // p.HighlightStates MouseState.None
+                            // p.Options (ThemeManager.GetThemeNames())
 
-                            p.selectedItemChanged (fun args ->
-                              if args.SelectedItem.HasValue then
-                                ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
-                            )
+                            // p.SelectedItemChanged (fun args ->
+                              // if args.SelectedItem.HasValue then
+                                // ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
+                            // )
 
-                            p.selectedItem (
-                              ThemeManager
-                                .GetThemeNames()
-                                .IndexOf(ThemeManager.GetCurrentThemeName())
-                            )
+                            // p.SelectedItem (
+                              // ThemeManager
+                                // .GetThemeNames()
+                                // .IndexOf(ThemeManager.GetCurrentThemeName())
+                            // )
                           )
                         )
                       )
@@ -115,7 +117,7 @@ let view (state: Model) (dispatch: Msg -> unit) =
           )
         )
       ]
-    )
+    ) :> ITerminalElement
   ]
 
 
@@ -123,7 +125,8 @@ let view (state: Model) (dispatch: Msg -> unit) =
 let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
-  ElmishTerminal.mkProgram init update view
+  let x = ElmishTerminal.mkProgram init update view
+  x
   |> ElmishTerminal.runTerminal
 
   0 // return an integer exit code

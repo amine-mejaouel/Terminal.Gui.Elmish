@@ -33,35 +33,36 @@ let _component (set: IProps -> unit) =
        { model with DisplayedView = view }
 
   let view model dispatch =
-    View.runnable (fun p ->
-      props.y_value |> Option.iter p.y
-      p.children [
+    View.runnable (fun (p: RunnableProps) ->
+      props.y_value |> Option.iter p.Y
+      p.Children [
         let first =
           if model.DisplayedView = Button then
             View.button (fun p ->
-              p.text "Click to test changing the Terminal Element type!"
-              p.activating (fun _ -> dispatch (ChangeView Label))
+              p.Text "Click to test changing the Terminal Element type!"
+              p.Activating (fun _ -> dispatch (ChangeView Label))
             )
           else
             View.label (fun p ->
-              p.text "Click to test changing the Terminal Element type!"
-              p.activating (fun _ -> dispatch (ChangeView Button))
+              p.Text "Click to test changing the Terminal Element type!"
+              p.Activating (fun _ -> dispatch (ChangeView Button))
             )
 
         let second =
           View.label (fun p ->
-            p.text "I am a static label below the first element."
-            p.y (TPos.Bottom first))
+            p.Text "I am a static label below the first element."
+            p.Y (TPos.Bottom first))
 
         let third =
           View.label (fun p ->
-            p.text "I am another static label below the second element."
-            p.y (TPos.Bottom second))
+            p.Text "I am another static label below the second element."
+            p.Y (TPos.Bottom second))
 
         first
         second
         third
-      ])
+        // TODO: fix the ElmishTerminal.mkSimple type inference issue so that the cast is not needed
+      ]) :> ITerminalElement
 
   ElmishTerminal.mkSimple init update view
   |> ElmishTerminal.runComponent

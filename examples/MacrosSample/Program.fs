@@ -1,6 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System.Collections.Immutable
+open System.Collections.ObjectModel
 open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Configuration
@@ -43,42 +44,41 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
   let menuBar =
     View.menuBar (fun p m ->
       m.menuBarItem (fun p m ->
-        p.title "_File"
+        p.Title "_File"
 
         m.menuItems [
-          View.menuItem (fun p ->
-            p.title "Quit"
-            p.helpText "Quit UI Catalog"
-            p.key (Key('Q'))
-            // p.mouseClick (fun _ -> dispatch TerminalMsg.Terminate)
-            p.action (fun _ -> dispatch TerminalMsg.Terminate)
-          )
+           View.menuItem (fun p ->
+             p.Title "Quit"
+             // p.HelpText "Quit UI Catalog"
+             // p.Key (Key('Q'))
+             // p.Action (fun _ -> dispatch TerminalMsg.Terminate)
+           )
         ]
       )
 
       m.menuBarItem (fun p m ->
-        p.title "_Themes"
+        p.Title "_Themes"
 
         m.menuItems [
-          View.menuItem (fun p -> p.commandView (View.line []))
+          View.menuItem (fun p -> p.TargetView (View.line []))
           if ConfigurationManager.IsEnabled then
             View.menuItem (fun p ->
-              p.helpText "Cycle Through Themes"
-              p.key Key.T.WithCtrl
+              p.Text "Cycle Through Themes"
+              // p.Key Key.T.WithCtrl
 
-              p.commandView (
-                View.optionSelector (fun p ->
-                  p.highlightStates MouseState.None
-                  p.labels state.AvailableThemes
-
-                  p.valueChanged (fun args ->
-                    if args.Value.HasValue then
-                      dispatch (ThemeIndexChanged args.Value.Value |> TerminalMsg.ofMsg)
-                  )
-
-                  p.value (Some state.SelectedThemeIndex)
-                )
-              )
+              // p.CommandView (
+              //   View.optionSelector (fun p ->
+              //     p.highlightStates MouseState.None
+              //     p.labels state.AvailableThemes
+              //
+              //     p.valueChanged (fun args ->
+              //       if args.Value.HasValue then
+              //         dispatch (ThemeIndexChanged args.Value.Value |> TerminalMsg.ofMsg)
+              //     )
+              //
+              //     p.value (Some state.SelectedThemeIndex)
+              //   )
+              // )
             )
         ]
       )
@@ -86,31 +86,31 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
 
   let categoriesListView =
     View.listView (fun p ->
-      p.borderStyle LineStyle.Rounded
-      p.x 0
-      p.y (TPos.Bottom menuBar)
-      p.height (Dim.Fill())
-      p.width (Dim.Auto())
-      p.title "_Categories"
-      p.source [ "Hey"; "heylow" ]
+      p.BorderStyle LineStyle.Rounded
+      p.X 0
+      p.Y (TPos.Bottom menuBar)
+      p.Height (Dim.Fill())
+      p.Width (Dim.Auto())
+      p.Title "_Categories"
+      p.Source (new ListWrapper<_>(ObservableCollection [ "Hey"; "heylow" ]))
     )
 
   let scenariosListView =
     View.frameView (fun p ->
-      p.borderStyle LineStyle.Rounded
-      p.x (TPos.Right categoriesListView)
-      p.y (TPos.Bottom menuBar)
-      p.height (Dim.Fill())
-      p.width (Dim.Fill())
-      p.title "_Scenarios"
-      p.children [
-        let label = View.label (fun p -> p.title "TextView:")
+      p.BorderStyle LineStyle.Rounded
+      p.X (TPos.Right categoriesListView)
+      p.Y (TPos.Bottom menuBar)
+      p.Height (Dim.Fill())
+      p.Width (Dim.Fill())
+      p.Title "_Scenarios"
+      p.Children [
+        let label = View.label (fun p -> p.Title "TextView:")
         let textView =
           View.textView (fun p ->
-            p.text "This is a TextView"
-            p.y (TPos.Bottom label)
-            p.height 2
-            p.width (Dim.Percent 100)
+            p.Text "This is a TextView"
+            p.Y (TPos.Bottom label)
+            p.Height 2
+            p.Width (Dim.Percent 100)
           )
 
         let sampleComponent =
@@ -131,10 +131,11 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
     )
 
   View.runnable [
-    menuBar
+    // TODO: fix type inference if possible so that the cast is not needed
+    menuBar :> ITerminalElement
     categoriesListView
-    scenariosListView
-  ]
+    // scenariosListView
+  ] :> ITerminalElement
 
 
 [<EntryPoint>]

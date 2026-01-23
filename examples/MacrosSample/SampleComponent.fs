@@ -30,10 +30,10 @@ let _component (set: IProps -> unit) =
       { model with Text = Guid.NewGuid().ToString().Substring(0, 8) }
   let view model dispatch =
     View.label (fun p ->
-      p.text model.Text
-      props.y_value |> Option.iter p.y
-      p.activating (fun _ -> dispatch ChangeText)
-    )
+      p.Text model.Text
+      props.y_value |> Option.iter p.Y
+      p.Activating (fun _ -> dispatch ChangeText)
+    ) :> ITerminalElement
 
   ElmishTerminal.mkSimple init update view
   |> ElmishTerminal.runComponent

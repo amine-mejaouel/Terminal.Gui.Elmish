@@ -17,7 +17,7 @@ let generatePKeyClass (viewType: Type) =
       yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
     else
-      let parentViewType = ViewType.parentViewType viewType
+      let parentViewType = ViewType.parentView viewType
       let parentName = if parentViewType.Name.Contains("`") then parentViewType.Name.Substring(0, parentViewType.Name.IndexOf("`")) else parentViewType.Name
       if parentViewType.IsGenericType then
         let genericParams = parentViewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
@@ -25,7 +25,7 @@ let generatePKeyClass (viewType: Type) =
       else
         yield $"    inherit {parentName}PKeys()"
 
-    let view = ViewType.analyzeViewType viewType
+    let view = ViewMetadata.create viewType
 
     if view.Properties.Length > 0 then
       yield "    // Properties"
@@ -66,7 +66,7 @@ let generatePKeyClass (viewType: Type) =
       yield "    // Events"
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
-        let handlerType = ViewType.eventHandlerType event.EventInfo
+        let handlerType = eventHandlerType event.EventInfo
         yield $"    member val {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
 
     yield ""
@@ -89,7 +89,7 @@ let generateModuleInstances () =
   }
 
 let generateInterfaceKeys (interfaceType: Type) =
-  let i = ViewType.analyzeViewType interfaceType
+  let i = ViewMetadata.create interfaceType
 
   // Skip interfaces with no properties or events
   if i.HasNoEventsOrProperties then
@@ -111,7 +111,7 @@ let generateInterfaceKeys (interfaceType: Type) =
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
-          let handlerType = ViewType.eventHandlerType event.EventInfo
+          let handlerType = eventHandlerType event.EventInfo
           yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
     }
 

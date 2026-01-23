@@ -52,10 +52,10 @@ let gen () =
       else
         yield "  inherit ViewProps()"
 
-      let view = ViewType.analyzeViewType viewType
+      let view = ViewMetadata.create viewType
       let genericBlock = genericTypeParamsBlock viewType
 
-      if view.ViewType = typeof<Terminal.Gui.ViewBase.View> then
+      if view.Type = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  // Delayed Positions"
         yield $"  member this.X (value: TPos) ="
         yield $"    this.props.add (PKey.View.X_delayedPos, value)"
@@ -78,7 +78,7 @@ let gen () =
       if view.Events.Length > 0 then
         yield "  // Events"
       for event in view.Events do
-        yield $"  member this.{event.PKey} (handler: {ViewType.eventHandlerType event.EventInfo}) ="
+        yield $"  member this.{event.PKey} (handler: {eventHandlerType event.EventInfo}) ="
         yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{event.PKey}, handler)"
         yield ""
   }

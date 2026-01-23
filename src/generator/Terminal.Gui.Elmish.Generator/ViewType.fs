@@ -1,161 +1,54 @@
-[<RequireQualifiedAccess>]
-module Terminal.Gui.Elmish.Generator.ViewType
+namespace Terminal.Gui.Elmish.Generator
 
 open System
-open System.Collections
 open System.Reflection
 
-let private viewTypes =
-  typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
-  |> Seq.filter (fun t -> t.IsAssignableTo(typeof<Terminal.Gui.ViewBase.View>) && t.IsPublic)
-  |> Seq.sortBy _.Name
-  |> Seq.toList
+module ViewType =
+  let private viewTypes =
+    typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
+    |> Seq.filter (fun t -> t.IsAssignableTo(typeof<Terminal.Gui.ViewBase.View>) && t.IsPublic)
+    |> Seq.sortBy _.Name
+    |> Seq.toList
 
-let viewTypesOrderedByInheritance =
+  let viewTypesOrderedByInheritance =
 
-  let parentIsReturned (returnedTypes: System.Collections.Generic.List<Type>) (viewType: Type) =
-    match viewType.BaseType with
-    | null -> true
-    | baseType when baseType = typeof<Terminal.Gui.ViewBase.View> -> true
-    | baseType ->
-        returnedTypes.Contains baseType
+    let parentIsReturned (returnedTypes: System.Collections.Generic.List<Type>) (viewType: Type) =
+      match viewType.BaseType with
+      | null -> true
+      | baseType when baseType = typeof<Terminal.Gui.ViewBase.View> -> true
+      | baseType ->
+          returnedTypes.Contains baseType
 
-  let returnedTypes = System.Collections.Generic.List<Type>()
-  let pendingTypes = System.Collections.Generic.List<Type>()
-  seq {
-    yield typeof<Terminal.Gui.ViewBase.View>
+    let returnedTypes = System.Collections.Generic.List<Type>()
+    let pendingTypes = System.Collections.Generic.List<Type>()
+    seq {
+      yield typeof<Terminal.Gui.ViewBase.View>
 
-    for viewType in viewTypes do
-      if parentIsReturned returnedTypes viewType then
-        returnedTypes.Add viewType
-        yield viewType
-      else
-        pendingTypes.Add viewType
-
-      let mutable iterate = true
-      while iterate do
-        let readyTypes =
-          pendingTypes
-          |> Seq.filter (parentIsReturned returnedTypes)
-          |> Seq.toArray
-        if readyTypes.Length = 0 then
-          iterate <- false
+      for viewType in viewTypes do
+        if parentIsReturned returnedTypes viewType then
+          returnedTypes.Add viewType
+          yield viewType
         else
-          for readyType in readyTypes do
-            pendingTypes.Remove readyType |> ignore
-            returnedTypes.Add readyType
-            yield readyType
-  } |> Seq.toList
+          pendingTypes.Add viewType
 
-let parentViewType (viewType: Type) =
-  let baseType = viewType.BaseType
-  if baseType.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
-    || baseType = typeof<Terminal.Gui.ViewBase.View> then
-    baseType
-  else
-    failwith $"Type {viewType.FullName} does not have Terminal.Gui.ViewBase.View as parent type."
+        let mutable iterate = true
+        while iterate do
+          let readyTypes =
+            pendingTypes
+            |> Seq.filter (parentIsReturned returnedTypes)
+            |> Seq.toArray
+          if readyTypes.Length = 0 then
+            iterate <- false
+          else
+            for readyType in readyTypes do
+              pendingTypes.Remove readyType |> ignore
+              returnedTypes.Add readyType
+              yield readyType
+    } |> Seq.toList
 
-let isInitOnly (property: PropertyInfo) =
-  match property.SetMethod with
-  | null ->
-    false
-  | setMethod ->
-    setMethod.ReturnParameter.GetRequiredCustomModifiers()
-    |> Option.ofObj
-    |> Option.defaultValue [||]
-    |> Array.contains typeof<System.Runtime.CompilerServices.IsExternalInit>
-
-let private properties (viewType: Type) =
-  viewType.GetProperties(
-    BindingFlags.Public |||
-    BindingFlags.Instance |||
-    BindingFlags.DeclaredOnly)
-  |> Array.filter (fun p ->
-    p.CanRead && p.GetMethod.IsPublic && p.CanWrite && p.SetMethod.IsPublic && (not <| isInitOnly p)
-  )
-  |> Array.sortBy _.Name
-
-let private events (viewType: Type) =
-  viewType.GetEvents(
-    BindingFlags.Public |||
-    BindingFlags.Instance |||
-    BindingFlags.DeclaredOnly)
-  |> Array.filter (fun e -> e.AddMethod.IsPublic && e.RemoveMethod.IsPublic)
-  |> Array.sortBy _.Name
-
-let eventHandlerType (event: EventInfo) =
-  let handlerType = event.EventHandlerType
-  let genericArgs = handlerType.GetGenericArguments()
-  if genericArgs.Length = 1 then
-    $"{CodeGen.getFSharpTypeName genericArgs[0]} -> unit"
-  else if genericArgs.Length = 0 then
-    let eventArgs = handlerType.GetMethod("Invoke").GetParameters().[1].ParameterType
-    $"{CodeGen.getFSharpTypeName eventArgs} -> unit"
-  else
-    raise (NotImplementedException())
-
-type PropertyMetadata =
-  { PKey: string
-    PropertyInfo: PropertyInfo }
-
-  member x.IsViewProperty =
-    x.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
-
-type EventMetadata = {
-  PKey: string
-  EventInfo: EventInfo
-}
-
-type ViewMetadata =
-  // TODO: Use this {} style to define the record type everywhere
-  // because it allows adding members easily, in contrast to other styles that do not.
-  { ViewType: Type
-    Properties: PropertyMetadata[]
-    View_Typed_Properties: PropertyMetadata[]
-    ViewsCollection_Typed_Properties: PropertyMetadata[]
-    Events: EventMetadata[] }
-
-    member x.HasNoEventsOrProperties =
-      (x.Properties.Length = 0 && x.Events.Length = 0)
-
-let analyzeViewType (viewType: Type) =
-  let toPropertyMetadata (p: PropertyInfo) =
-    {
-      PKey = String.escapeReservedKeywords p.Name
-      PropertyInfo = p
-    }
-  let toEventMetadata (e: EventInfo) =
-    {
-      PKey = String.escapeReservedKeywords e.Name
-      EventInfo = e
-    }
-
-  let props = properties viewType
-  let view_Typed_SubElementsProps =
-    props
-    |> Array.filter (fun p ->
-      p.PropertyType.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
-    )
-    |> Array.sortBy _.Name
-    |> Array.map toPropertyMetadata
-  let viewsCollection_Typed_SubElementsProps =
-    props
-    |> Array.filter (fun p ->
-      p.PropertyType.IsAssignableTo typeof<IEnumerable> &&
-      (if p.PropertyType.IsGenericType then
-         let genericArg = p.PropertyType.GetGenericArguments().[0]
-         genericArg.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
-       else
-         false)
-    )
-    |> Array.sortBy _.Name
-    |> Array.map toPropertyMetadata
-  let evts = events viewType |> Array.map toEventMetadata
-
-  {
-    ViewType = viewType
-    Properties = props |> Array.map toPropertyMetadata
-    View_Typed_Properties = view_Typed_SubElementsProps
-    ViewsCollection_Typed_Properties = viewsCollection_Typed_SubElementsProps
-    Events = evts
-  }
+  let parentView (viewType: Type) =
+    let baseType = viewType.BaseType
+    if baseType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
+      baseType
+    else
+      failwith $"Type {viewType.FullName} does not have Terminal.Gui.ViewBase.View as parent type."

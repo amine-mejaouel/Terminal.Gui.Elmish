@@ -8,13 +8,14 @@ let genPKeyClassDefinition (viewType: Type) =
 
     yield $"  type {className}PKeys{genericTypeParamsWithConstraintsBlock viewType}() ="
 
-    if viewType = typeof<Terminal.Gui.ViewBase.View> then
-      yield "    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
-      yield ""
-    else
+    if viewType <> typeof<Terminal.Gui.ViewBase.View> then
       let parentViewType = ViewType.parentView viewType
       let parentName = getTypeNameWithoutArity parentViewType
       yield $"    inherit {parentName}PKeys{genericTypeParamsBlock parentViewType}()"
+    else
+      yield "    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
+
+    yield ""
 
     let view = ViewMetadata.create viewType
 

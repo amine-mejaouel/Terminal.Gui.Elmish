@@ -120,6 +120,7 @@ module internal PKey =
 
   type AdornmentPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Diagnostics: ISimplePropKey<ViewDiagnosticFlags> = PropKey.Create.simple "Adornment.Diagnostics"
     member val Parent: IViewPropKey<View> = PropKey.Create.view "Adornment.Parent_view"
@@ -133,6 +134,7 @@ module internal PKey =
 
   type BarPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Bar.AlignmentModes"
     member val Orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "Bar.Orientation"
@@ -143,12 +145,14 @@ module internal PKey =
 
   type BorderPKeys() =
     inherit AdornmentPKeys()
+
     // Properties
     member val LineStyle: ISimplePropKey<LineStyle> = PropKey.Create.simple "Border.LineStyle"
     member val Settings: ISimplePropKey<BorderSettings> = PropKey.Create.simple "Border.Settings"
 
   type ButtonPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val HotKeySpecifier: ISimplePropKey<Rune> = PropKey.Create.simple "Button.HotKeySpecifier"
     member val IsDefault: ISimplePropKey<bool> = PropKey.Create.simple "Button.IsDefault"
@@ -158,6 +162,7 @@ module internal PKey =
 
   type CharMapPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val SelectedCodePoint: ISimplePropKey<int> = PropKey.Create.simple "CharMap.SelectedCodePoint"
     member val ShowGlyphWidths: ISimplePropKey<bool> = PropKey.Create.simple "CharMap.ShowGlyphWidths"
@@ -169,6 +174,7 @@ module internal PKey =
 
   type CheckBoxPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AllowCheckStateNone: ISimplePropKey<bool> = PropKey.Create.simple "CheckBox.AllowCheckStateNone"
     member val CheckedState: ISimplePropKey<CheckState> = PropKey.Create.simple "CheckBox.CheckedState"
@@ -182,6 +188,7 @@ module internal PKey =
 
   type ColorPickerPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val SelectedColor: ISimplePropKey<Color> = PropKey.Create.simple "ColorPicker.SelectedColor"
     member val Style: ISimplePropKey<ColorPickerStyle> = PropKey.Create.simple "ColorPicker.Style"
@@ -191,6 +198,7 @@ module internal PKey =
 
   type ColorPicker16PKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val BoxHeight: ISimplePropKey<int> = PropKey.Create.simple "ColorPicker16.BoxHeight"
     member val BoxWidth: ISimplePropKey<int> = PropKey.Create.simple "ColorPicker16.BoxWidth"
@@ -202,6 +210,7 @@ module internal PKey =
 
   type ComboBoxPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val HideDropdownListOnClick: ISimplePropKey<bool> = PropKey.Create.simple "ComboBox.HideDropdownListOnClick"
     member val ReadOnly: ISimplePropKey<bool> = PropKey.Create.simple "ComboBox.ReadOnly"
@@ -218,6 +227,7 @@ module internal PKey =
 
   type DatePickerPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Culture: ISimplePropKey<CultureInfo> = PropKey.Create.simple "DatePicker.Culture"
     member val Date: ISimplePropKey<DateTime> = PropKey.Create.simple "DatePicker.Date"
@@ -225,8 +235,10 @@ module internal PKey =
   type FrameViewPKeys() =
     inherit ViewPKeys()
 
+
   type GraphViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AxisX: ISimplePropKey<HorizontalAxis> = PropKey.Create.simple "GraphView.AxisX"
     member val AxisY: ISimplePropKey<VerticalAxis> = PropKey.Create.simple "GraphView.AxisY"
@@ -238,6 +250,7 @@ module internal PKey =
 
   type HexViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Address: ISimplePropKey<Int64> = PropKey.Create.simple "HexView.Address"
     member val AddressWidth: ISimplePropKey<int> = PropKey.Create.simple "HexView.AddressWidth"
@@ -251,6 +264,7 @@ module internal PKey =
 
   type LabelPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val HotKeySpecifier: ISimplePropKey<Rune> = PropKey.Create.simple "Label.HotKeySpecifier"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "Label.Text"
@@ -258,8 +272,10 @@ module internal PKey =
   type LegendAnnotationPKeys() =
     inherit ViewPKeys()
 
+
   type LinePKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Length: ISimplePropKey<Dim> = PropKey.Create.simple "Line.Length"
     member val Orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "Line.Orientation"
@@ -271,6 +287,7 @@ module internal PKey =
 
   type ListViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AllowsMarking: ISimplePropKey<bool> = PropKey.Create.simple "ListView.AllowsMarking"
     member val AllowsMultipleSelection: ISimplePropKey<bool> = PropKey.Create.simple "ListView.AllowsMultipleSelection"
@@ -287,11 +304,13 @@ module internal PKey =
 
   type MarginPKeys() =
     inherit AdornmentPKeys()
+
     // Properties
     member val ShadowStyle: ISimplePropKey<ShadowStyle> = PropKey.Create.simple "Margin.ShadowStyle"
 
   type MenuPKeys() =
     inherit BarPKeys()
+
     // Properties
     member val SelectedMenuItem: IViewPropKey<MenuItem> = PropKey.Create.view "Menu.SelectedMenuItem_view"
     member val SelectedMenuItem_element: ISingleElementPropKey<IMenuItemTerminalElement> = PropKey.Create.singleElement "Menu.SelectedMenuItem_element"
@@ -303,6 +322,7 @@ module internal PKey =
 
   type MenuBarPKeys() =
     inherit MenuPKeys()
+
     // Properties
     member val Key: ISimplePropKey<Key> = PropKey.Create.simple "MenuBar.Key"
 
@@ -311,6 +331,7 @@ module internal PKey =
 
   type NumericUpDownPKeys<'T>() =
     inherit ViewPKeys()
+
     // Properties
     member val Format: ISimplePropKey<string> = PropKey.Create.simple "NumericUpDown.Format"
     member val Increment: ISimplePropKey<'T> = PropKey.Create.simple "NumericUpDown.Increment"
@@ -325,13 +346,16 @@ module internal PKey =
   type PaddingPKeys() =
     inherit AdornmentPKeys()
 
+
   type PopoverBaseImplPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Current: ISimplePropKey<IRunnable> = PropKey.Create.simple "PopoverBaseImpl.Current"
 
   type PopoverMenuPKeys() =
     inherit PopoverBaseImplPKeys()
+
     // Properties
     member val Key: ISimplePropKey<Key> = PropKey.Create.simple "PopoverMenu.Key"
     member val MouseFlags: ISimplePropKey<MouseFlags> = PropKey.Create.simple "PopoverMenu.MouseFlags"
@@ -343,6 +367,7 @@ module internal PKey =
 
   type ProgressBarPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val BidirectionalMarquee: ISimplePropKey<bool> = PropKey.Create.simple "ProgressBar.BidirectionalMarquee"
     member val Fraction: ISimplePropKey<Single> = PropKey.Create.simple "ProgressBar.Fraction"
@@ -353,6 +378,7 @@ module internal PKey =
 
   type RunnablePKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Result: ISimplePropKey<Object> = PropKey.Create.simple "Runnable.Result"
     member val StopRequested: ISimplePropKey<bool> = PropKey.Create.simple "Runnable.StopRequested"
@@ -364,11 +390,13 @@ module internal PKey =
 
   type RunnablePKeys<'TResult>() =
     inherit RunnablePKeys()
+
     // Properties
     member val Result: ISimplePropKey<'TResult> = PropKey.Create.simple "Runnable.Result"
 
   type ScrollBarPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AutoShow: ISimplePropKey<bool> = PropKey.Create.simple "ScrollBar.AutoShow"
     member val Increment: ISimplePropKey<int> = PropKey.Create.simple "ScrollBar.Increment"
@@ -388,6 +416,7 @@ module internal PKey =
 
   type ScrollSliderPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Orientation: ISimplePropKey<Orientation> = PropKey.Create.simple "ScrollSlider.Orientation"
     member val Position: ISimplePropKey<int> = PropKey.Create.simple "ScrollSlider.Position"
@@ -404,6 +433,7 @@ module internal PKey =
 
   type SelectorBasePKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AssignHotKeys: ISimplePropKey<bool> = PropKey.Create.simple "SelectorBase.AssignHotKeys"
     member val DoubleClickAccepts: ISimplePropKey<bool> = PropKey.Create.simple "SelectorBase.DoubleClickAccepts"
@@ -422,16 +452,19 @@ module internal PKey =
 
   type FlagSelectorPKeys() =
     inherit SelectorBasePKeys()
+
     // Properties
     member val Value: ISimplePropKey<Nullable<int>> = PropKey.Create.simple "FlagSelector.Value"
 
   type OptionSelectorPKeys() =
     inherit SelectorBasePKeys()
+
     // Properties
     member val Cursor: ISimplePropKey<int> = PropKey.Create.simple "OptionSelector.Cursor"
 
   type FlagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
     inherit FlagSelectorPKeys()
+
     // Properties
     member val Value: ISimplePropKey<Nullable<'TFlagsEnum>> = PropKey.Create.simple "FlagSelector.Value"
 
@@ -440,6 +473,7 @@ module internal PKey =
 
   type OptionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
     inherit OptionSelectorPKeys()
+
     // Properties
     member val Value: ISimplePropKey<Nullable<'TEnum>> = PropKey.Create.simple "OptionSelector.Value"
     member val Values: ISimplePropKey<IReadOnlyList<int>> = PropKey.Create.simple "OptionSelector.Values"
@@ -449,6 +483,7 @@ module internal PKey =
 
   type ShortcutPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Action: ISimplePropKey<Action> = PropKey.Create.simple "Shortcut.Action"
     member val AlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Shortcut.AlignmentModes"
@@ -468,6 +503,7 @@ module internal PKey =
 
   type MenuItemPKeys() =
     inherit ShortcutPKeys()
+
     // Properties
     member val Command: ISimplePropKey<Command> = PropKey.Create.simple "MenuItem.Command"
     member val SubMenu: IViewPropKey<Menu> = PropKey.Create.view "MenuItem.SubMenu_view"
@@ -477,6 +513,7 @@ module internal PKey =
 
   type MenuBarItemPKeys() =
     inherit MenuItemPKeys()
+
     // Properties
     member val PopoverMenu: IViewPropKey<PopoverMenu> = PropKey.Create.view "MenuBarItem.PopoverMenu_view"
     member val PopoverMenu_element: ISingleElementPropKey<IPopoverMenuTerminalElement> = PropKey.Create.singleElement "MenuBarItem.PopoverMenu_element"
@@ -489,6 +526,7 @@ module internal PKey =
 
   type SliderPKeys<'T>() =
     inherit ViewPKeys()
+
     // Properties
     member val AllowEmpty: ISimplePropKey<bool> = PropKey.Create.simple "Slider.AllowEmpty"
     member val FocusedOption: ISimplePropKey<int> = PropKey.Create.simple "Slider.FocusedOption"
@@ -512,6 +550,7 @@ module internal PKey =
 
   type SpinnerViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AutoSpin: ISimplePropKey<bool> = PropKey.Create.simple "SpinnerView.AutoSpin"
     member val Sequence: ISimplePropKey<String[]> = PropKey.Create.simple "SpinnerView.Sequence"
@@ -523,8 +562,10 @@ module internal PKey =
   type StatusBarPKeys() =
     inherit BarPKeys()
 
+
   type TabPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val DisplayText: ISimplePropKey<string> = PropKey.Create.simple "Tab.DisplayText"
     member val View: IViewPropKey<View> = PropKey.Create.view "Tab.View_view"
@@ -532,6 +573,7 @@ module internal PKey =
 
   type TabViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val MaxTabTextWidth: ISimplePropKey<UInt32> = PropKey.Create.simple "TabView.MaxTabTextWidth"
     member val SelectedTab: IViewPropKey<Tab> = PropKey.Create.view "TabView.SelectedTab_view"
@@ -545,6 +587,7 @@ module internal PKey =
 
   type TableViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val CellActivationKey: ISimplePropKey<KeyCode> = PropKey.Create.simple "TableView.CellActivationKey"
     member val CollectionNavigator: ISimplePropKey<ICollectionNavigator> = PropKey.Create.simple "TableView.CollectionNavigator"
@@ -568,6 +611,7 @@ module internal PKey =
 
   type TextFieldPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Autocomplete: ISimplePropKey<IAutocomplete> = PropKey.Create.simple "TextField.Autocomplete"
     member val CursorPosition: ISimplePropKey<int> = PropKey.Create.simple "TextField.CursorPosition"
@@ -584,6 +628,7 @@ module internal PKey =
 
   type DateFieldPKeys() =
     inherit TextFieldPKeys()
+
     // Properties
     member val Culture: ISimplePropKey<CultureInfo> = PropKey.Create.simple "DateField.Culture"
     member val CursorPosition: ISimplePropKey<int> = PropKey.Create.simple "DateField.CursorPosition"
@@ -594,12 +639,14 @@ module internal PKey =
 
   type TextValidateFieldPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val Provider: ISimplePropKey<ITextValidateProvider> = PropKey.Create.simple "TextValidateField.Provider"
     member val Text: ISimplePropKey<string> = PropKey.Create.simple "TextValidateField.Text"
 
   type TextViewPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val AllowsReturn: ISimplePropKey<bool> = PropKey.Create.simple "TextView.AllowsReturn"
     member val AllowsTab: ISimplePropKey<bool> = PropKey.Create.simple "TextView.AllowsTab"
@@ -630,6 +677,7 @@ module internal PKey =
 
   type TimeFieldPKeys() =
     inherit TextFieldPKeys()
+
     // Properties
     member val CursorPosition: ISimplePropKey<int> = PropKey.Create.simple "TimeField.CursorPosition"
     member val IsShortFormat: ISimplePropKey<bool> = PropKey.Create.simple "TimeField.IsShortFormat"
@@ -640,6 +688,7 @@ module internal PKey =
 
   type TreeViewPKeys<'T when 'T: not struct>() =
     inherit ViewPKeys()
+
     // Properties
     member val AllowLetterBasedNavigation: ISimplePropKey<bool> = PropKey.Create.simple "TreeView.AllowLetterBasedNavigation"
     member val AspectGetter: ISimplePropKey<AspectGetterDelegate<'T>> = PropKey.Create.simple "TreeView.AspectGetter"
@@ -662,8 +711,10 @@ module internal PKey =
   type WindowPKeys() =
     inherit RunnablePKeys()
 
+
   type DialogPKeys() =
     inherit WindowPKeys()
+
     // Properties
     member val ButtonAlignment: ISimplePropKey<Alignment> = PropKey.Create.simple "Dialog.ButtonAlignment"
     member val ButtonAlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Dialog.ButtonAlignmentModes"
@@ -671,6 +722,7 @@ module internal PKey =
 
   type FileDialogPKeys() =
     inherit DialogPKeys()
+
     // Properties
     member val AllowedTypes: ISimplePropKey<List<IAllowedType>> = PropKey.Create.simple "FileDialog.AllowedTypes"
     member val AllowsMultipleSelection: ISimplePropKey<bool> = PropKey.Create.simple "FileDialog.AllowsMultipleSelection"
@@ -685,14 +737,17 @@ module internal PKey =
 
   type OpenDialogPKeys() =
     inherit FileDialogPKeys()
+
     // Properties
     member val OpenMode: ISimplePropKey<OpenMode> = PropKey.Create.simple "OpenDialog.OpenMode"
 
   type SaveDialogPKeys() =
     inherit FileDialogPKeys()
 
+
   type WizardPKeys() =
     inherit DialogPKeys()
+
     // Properties
     member val CurrentStep: IViewPropKey<WizardStep> = PropKey.Create.view "Wizard.CurrentStep_view"
     member val CurrentStep_element: ISingleElementPropKey<IWizardStepTerminalElement> = PropKey.Create.singleElement "Wizard.CurrentStep_element"
@@ -707,6 +762,7 @@ module internal PKey =
 
   type WizardStepPKeys() =
     inherit ViewPKeys()
+
     // Properties
     member val BackButtonText: ISimplePropKey<string> = PropKey.Create.simple "WizardStep.BackButtonText"
     member val HelpText: ISimplePropKey<string> = PropKey.Create.simple "WizardStep.HelpText"

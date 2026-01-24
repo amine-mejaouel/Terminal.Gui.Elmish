@@ -1,7 +1,6 @@
 namespace Terminal.Gui.Elmish.Generator
 
 open System
-open System.Reflection
 
 module ViewType =
   let private viewTypes =

@@ -1,7 +1,6 @@
 module Terminal.Gui.Elmish.Generator.View
 
 open System
-open System.IO
 
 let camelCase (str: string) =
   if String.IsNullOrEmpty(str) then str
@@ -82,5 +81,4 @@ let gen () =
     for viewType in viewTypesToGenerate do
       yield! generateMethods viewType
   }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "View.gen.fs"))
+  |> CodeWriter.write "View.gen.fs"

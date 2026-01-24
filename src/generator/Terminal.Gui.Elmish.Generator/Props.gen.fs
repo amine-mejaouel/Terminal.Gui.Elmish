@@ -1,8 +1,5 @@
 module Terminal.Gui.Elmish.Generator.Props
 
-open System
-open System.IO
-
 let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
@@ -82,5 +79,4 @@ let gen () =
         yield $"    this.props.add (PKey.{Registry.GetUniqueTypeName viewType}{genericBlock}.{event.PKey}, handler)"
         yield ""
   }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "Props.gen.fs"))
+  |> CodeWriter.write "Props.gen.fs"

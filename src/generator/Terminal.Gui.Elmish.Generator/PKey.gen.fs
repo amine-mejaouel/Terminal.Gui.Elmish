@@ -1,8 +1,6 @@
 module Terminal.Gui.Elmish.Generator.PKey
 
 open System
-open System.IO
-
 
 let generatePKeyClass (viewType: Type) =
   seq {
@@ -140,7 +138,6 @@ let opens =
   }
 
 let gen () =
-  let outputPath = Path.Combine (Environment.CurrentDirectory, "PKey.gen.fs")
 
   // Get all interfaces from Terminal.Gui that we need to handle
   let interfaces =
@@ -171,5 +168,4 @@ let gen () =
 
     yield! generateModuleInstances ()
   }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText outputPath
+  |> CodeWriter.write "PKey.gen.fs"

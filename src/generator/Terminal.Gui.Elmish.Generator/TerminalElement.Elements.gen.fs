@@ -6,24 +6,21 @@ open Terminal.Gui.Elmish.Generator.TypeExtensions
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
-    yield $"    let terminalElement = terminalElement :?> TerminalElement"
+    yield "    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
       yield $"    let view = terminalElement.View :?> {getTypeNameWithoutArity viewType}{genericTypeParamsBlock viewType}"
     else
       yield $"    let view = terminalElement.View"
   }
 
-let pkeyPrefix (viewType: Type) =
-  $"PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
-
 let subElementsPropKeys (view: ViewMetadata) =
   seq {
     yield $"  override this.SubElements_PropKeys ="
     yield $"    ["
     for prop in view.View_Typed_Properties do
-      yield $"      SubElementPropKey.from {pkeyPrefix view.Type}.{prop.PKey}_element"
+      yield $"      SubElementPropKey.from {PKey.getAccessor view.Type}.{prop.PKey}_element"
     for prop in view.ViewsCollection_Typed_Properties do
-      yield $"      SubElementPropKey.from {pkeyPrefix view.Type}.{prop.PKey}_elements"
+      yield $"      SubElementPropKey.from {PKey.getAccessor view.Type}.{prop.PKey}_elements"
     yield $"    ]"
     yield $"    |> List.append base.SubElements_PropKeys"
   }
@@ -43,14 +40,14 @@ let setPropsCode (view: ViewMetadata) =
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix view.Type}.{prop.PKey}"
+        yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
         yield ""
 
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({pkeyPrefix view.Type}.{event.PKey}, view.{event.PKey})"
+        yield $"    terminalElement.trySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
         yield ""
 
     }
@@ -70,14 +67,14 @@ let removePropsCode (view: ViewMetadata) =
         yield "    // Properties"
       for prop in view.Properties do
         yield $"    props"
-        yield $"    |> Props.tryFind {pkeyPrefix view.Type}.{prop.PKey}"
+        yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
         yield $"        view.{prop.PKey} <- Unchecked.defaultof<_>)"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.tryRemoveEventHandler {pkeyPrefix view.Type}.{event.PKey}"
+        yield $"    terminalElement.tryRemoveEventHandler {PKey.getAccessor view.Type}.{event.PKey}"
     }
 
 let setAsChildOfParentView (viewType: Type) =
@@ -104,7 +101,6 @@ let gen () =
       let genericBlock = genericTypeParamsWithConstraintsBlock viewType
       let genericParamsBlock = genericTypeParamsBlock viewType
       let viewMetadata = ViewMetadata.create viewType
-      let setAsChildOfParentView = setAsChildOfParentView viewType
 
       if viewType.IsAbstract then
         yield "[<AbstractClass>]"
@@ -121,9 +117,9 @@ let gen () =
       else
         yield $"  override _.newView() = new {getTypeNameWithoutArity viewType}{genericParamsBlock}()"
       yield ""
-      yield $"  override _.setAsChildOfParentView = %b{setAsChildOfParentView}"
+      yield $"  override _.setAsChildOfParentView = %b{(setAsChildOfParentView viewType)}"
       yield ""
-      if viewMetadata.View_Typed_Properties .Length > 0 ||
+      if viewMetadata.View_Typed_Properties.Length > 0 ||
          viewMetadata.ViewsCollection_Typed_Properties.Length > 0 then
         yield! subElementsPropKeys viewMetadata
         yield ""

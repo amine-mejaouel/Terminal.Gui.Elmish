@@ -66,7 +66,7 @@ let gen () =
         yield $"    this.props.add (PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}, value)"
         yield ""
         if prop.IsViewProperty then
-          let valueType = Registry.TEInterfaces.CreateTEInterface prop.PropertyInfo.PropertyType
+          let valueType = Registry.TEInterfaces.CreateInterface prop.PropertyInfo.PropertyType
           yield $"  member this.{prop.PKey}(value: {valueType}) ="
           yield $"    this.props.add (PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}_element, value)"
         yield ""

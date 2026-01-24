@@ -20,7 +20,7 @@ let genMethods (viewType: Type) =
       typeof<Terminal.Gui.Views.MenuBarItem> ]
     |> List.contains viewType
 
-  let returnInterface = Registry.TEInterfaces.Get viewType
+  let returnInterface = Registry.TEInterfaces.GetAssignableInterface viewType
 
   seq {
     if hasMacros then

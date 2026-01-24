@@ -31,7 +31,7 @@ let genPKeyClassDefinition (viewType: Type) =
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
         else if prop.IsViewProperty then
           yield $"    member val {prop.PKey}: IViewPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
-          let interfaceName = Registry.TEInterfaces.CreateTEInterface(prop.PropertyInfo.PropertyType)
+          let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         // TODO: isEnumerableOfViews does not seem to be used anywhere
         else if prop.IsEnumerableOfViews then

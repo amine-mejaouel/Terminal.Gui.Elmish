@@ -6,22 +6,15 @@ let genPKeyClassDefinition (viewType: Type) =
   seq {
     let className = getTypeNameWithoutArity viewType
 
-    if viewType.IsGenericType then
-      yield $"  type {className}PKeys{genericTypeParamsWithConstraintsBlock viewType}() ="
-    else
-      yield $"  type {className}PKeys() ="
+    yield $"  type {className}PKeys{genericTypeParamsWithConstraintsBlock viewType}() ="
 
     if viewType = typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    member val children: ISimplePropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
+      yield "    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
       yield ""
     else
       let parentViewType = ViewType.parentView viewType
-      let parentName = if parentViewType.Name.Contains("`") then parentViewType.Name.Substring(0, parentViewType.Name.IndexOf("`")) else parentViewType.Name
-      if parentViewType.IsGenericType then
-        let genericParams = parentViewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-        yield $"    inherit {parentName}PKeys<{genericParams}>()"
-      else
-        yield $"    inherit {parentName}PKeys()"
+      let parentName = getTypeNameWithoutArity parentViewType
+      yield $"    inherit {parentName}PKeys{genericTypeParamsBlock parentViewType}()"
 
     let view = ViewMetadata.create viewType
 

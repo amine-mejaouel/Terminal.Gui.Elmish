@@ -51,13 +51,14 @@ let genPKeyClassDefinition (viewType: Type) =
     yield ""
   }
 
-let genModuleInstances () =
+let genPKeysAccessors () =
   seq {
     for viewType in Registry.ViewTypes.orderedByInheritance do
       let viewName = Registry.ViewTypes.GetUniqueTypeName viewType
       yield $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
   }
 
+// TODO: code generated here is not currently used anywhere
 let genInterfaceKeys (interfaceType: Type) =
   let i = ViewMetadata.create interfaceType
 
@@ -66,23 +67,22 @@ let genInterfaceKeys (interfaceType: Type) =
     Seq.empty
   else
     seq {
-      let interfaceName = interfaceType.Name
-      let cleanName = if interfaceName.StartsWith("I") then interfaceName.Substring(1) else interfaceName
-      let moduleName = $"{cleanName}Interface"
+      let moduleName = $"{(getTypeNameWithoutArity interfaceType)}Interface"
 
-      yield $"  // {interfaceName}"
       yield $"  module internal {moduleName} ="
 
       if i.Properties.Length > 0 then
         yield "    // Properties"
         for prop in i.Properties do
           yield $"    let {prop.PKey}: ISimplePropKey<{prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+          yield ""
 
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
           let handlerType = eventHandlerType event.EventInfo
           yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+          yield ""
     }
 
 let opens = [
@@ -133,6 +133,6 @@ let gen () =
       yield! genInterfaceKeys interfaceType
     yield ""
 
-    yield! genModuleInstances ()
+    yield! genPKeysAccessors ()
   }
   |> CodeWriter.write "PKey.gen.fs"

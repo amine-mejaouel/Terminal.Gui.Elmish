@@ -768,17 +768,19 @@ module internal PKey =
     member val HelpText: ISimplePropKey<string> = PropKey.Create.simple "WizardStep.HelpText"
     member val NextButtonText: ISimplePropKey<string> = PropKey.Create.simple "WizardStep.NextButtonText"
 
-  // IMouseHeldDown
-  module internal MouseHeldDownInterface =
+  module internal IMouseHeldDownInterface =
     // Events
-    let MouseIsHeldDownTick: IEventPropKey<CancelEventArgs -> unit> = PropKey.Create.event "MouseHeldDownInterface.MouseIsHeldDownTick_event"
-  // IOrientation
-  module internal OrientationInterface =
+    let MouseIsHeldDownTick: IEventPropKey<CancelEventArgs -> unit> = PropKey.Create.event "IMouseHeldDownInterface.MouseIsHeldDownTick_event"
+
+  module internal IOrientationInterface =
     // Properties
-    let Orientation: ISimplePropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "OrientationInterface.Orientation"
+    let Orientation: ISimplePropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "IOrientationInterface.Orientation"
+
     // Events
-    let OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "OrientationInterface.OrientationChanged_event"
-    let OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "OrientationInterface.OrientationChanging_event"
+    let OrientationChanged: IEventPropKey<EventArgs<Orientation> -> unit> = PropKey.Create.event "IOrientationInterface.OrientationChanged_event"
+
+    let OrientationChanging: IEventPropKey<CancelEventArgs<Orientation> -> unit> = PropKey.Create.event "IOrientationInterface.OrientationChanging_event"
+
 
   let View = ViewPKeys()
   let Adornment = AdornmentPKeys()

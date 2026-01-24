@@ -508,7 +508,7 @@ type internal ViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.View.WidthChanged
     terminalElement.tryRemoveEventHandler PKey.View.WidthChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal AdornmentTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -584,7 +584,7 @@ type internal AdornmentTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.Adornment.ThicknessChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal BarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -636,7 +636,7 @@ type internal BarTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Bar.OrientationChanged
     terminalElement.tryRemoveEventHandler PKey.Bar.OrientationChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal BorderTerminalElement(props: Props) =
   inherit AdornmentTerminalElement(props)
@@ -680,7 +680,7 @@ type internal BorderTerminalElement(props: Props) =
         view.Settings <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ButtonTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -751,7 +751,7 @@ type internal ButtonTerminalElement(props: Props) =
         view.Text <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal CharMapTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -818,7 +818,7 @@ type internal CharMapTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.CharMap.SelectedCodePointChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal CheckBoxTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -897,7 +897,7 @@ type internal CheckBoxTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.CheckBox.CheckedStateChanged
     terminalElement.tryRemoveEventHandler PKey.CheckBox.CheckedStateChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ColorPickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -946,7 +946,7 @@ type internal ColorPickerTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.ColorPicker.ColorChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ColorPicker16TerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1013,7 +1013,7 @@ type internal ColorPicker16TerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.ColorPicker16.ColorChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ComboBoxTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1107,7 +1107,7 @@ type internal ComboBoxTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.ComboBox.OpenSelectedItem
     terminalElement.tryRemoveEventHandler PKey.ComboBox.SelectedItemChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal DatePickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1151,7 +1151,7 @@ type internal DatePickerTerminalElement(props: Props) =
         view.Date <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal FrameViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1163,7 +1163,7 @@ type internal FrameViewTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal GraphViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1252,7 +1252,7 @@ type internal GraphViewTerminalElement(props: Props) =
         view.ScrollOffset <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal HexViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1331,7 +1331,7 @@ type internal HexViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.HexView.Edited
     terminalElement.tryRemoveEventHandler PKey.HexView.PositionChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal LabelTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1375,7 +1375,7 @@ type internal LabelTerminalElement(props: Props) =
         view.Text <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal LegendAnnotationTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1387,7 +1387,7 @@ type internal LegendAnnotationTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal LineTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1448,7 +1448,7 @@ type internal LineTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Line.OrientationChanged
     terminalElement.tryRemoveEventHandler PKey.Line.OrientationChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ListViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1542,7 +1542,7 @@ type internal ListViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.ListView.RowRender
     terminalElement.tryRemoveEventHandler PKey.ListView.SelectedItemChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal MarginTerminalElement(props: Props) =
   inherit AdornmentTerminalElement(props)
@@ -1577,7 +1577,7 @@ type internal MarginTerminalElement(props: Props) =
         view.ShadowStyle <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal MenuTerminalElement(props: Props) =
   inherit BarTerminalElement(props)
@@ -1635,7 +1635,7 @@ type internal MenuTerminalElement(props: Props) =
 
   interface IMenuTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal MenuBarTerminalElement(props: Props) =
   inherit MenuTerminalElement(props)
@@ -1677,7 +1677,7 @@ type internal MenuBarTerminalElement(props: Props) =
 
   interface IMenuTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal NumericUpDownTerminalElement<'T>(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1744,7 +1744,7 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.NumericUpDown<'T>.ValueChanged
     terminalElement.tryRemoveEventHandler PKey.NumericUpDown<'T>.ValueChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal PaddingTerminalElement(props: Props) =
   inherit AdornmentTerminalElement(props)
@@ -1756,7 +1756,7 @@ type internal PaddingTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 [<AbstractClass>]
 type internal PopoverBaseImplTerminalElement(props: Props) =
@@ -1792,7 +1792,7 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
         view.Current <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal PopoverMenuTerminalElement(props: Props) =
   inherit PopoverBaseImplTerminalElement(props)
@@ -1858,7 +1858,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
 
   interface IPopoverMenuTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ProgressBarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1938,7 +1938,7 @@ type internal ProgressBarTerminalElement(props: Props) =
         view.Text <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal RunnableTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1993,7 +1993,7 @@ type internal RunnableTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Runnable.IsRunningChanged
     terminalElement.tryRemoveEventHandler PKey.Runnable.IsRunningChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal RunnableTerminalElement<'TResult>(props: Props) =
   inherit RunnableTerminalElement(props)
@@ -2028,7 +2028,7 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
         view.Result <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ScrollBarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2131,7 +2131,7 @@ type internal ScrollBarTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.ScrollBar.Scrolled
     terminalElement.tryRemoveEventHandler PKey.ScrollBar.SliderPositionChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ScrollSliderTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2219,7 +2219,7 @@ type internal ScrollSliderTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.ScrollSlider.PositionChanging
     terminalElement.tryRemoveEventHandler PKey.ScrollSlider.Scrolled
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 [<AbstractClass>]
 type internal SelectorBaseTerminalElement(props: Props) =
@@ -2338,7 +2338,7 @@ type internal SelectorBaseTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.SelectorBase.OrientationChanging
     terminalElement.tryRemoveEventHandler PKey.SelectorBase.ValueChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal FlagSelectorTerminalElement(props: Props) =
   inherit SelectorBaseTerminalElement(props)
@@ -2373,7 +2373,7 @@ type internal FlagSelectorTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal OptionSelectorTerminalElement(props: Props) =
   inherit SelectorBaseTerminalElement(props)
@@ -2408,7 +2408,7 @@ type internal OptionSelectorTerminalElement(props: Props) =
         view.Cursor <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(props: Props) =
   inherit FlagSelectorTerminalElement(props)
@@ -2448,7 +2448,7 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
     // Events
     terminalElement.tryRemoveEventHandler PKey.FlagSelector'<'TFlagsEnum>.ValueChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(props: Props) =
   inherit OptionSelectorTerminalElement(props)
@@ -2497,7 +2497,7 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
     // Events
     terminalElement.tryRemoveEventHandler PKey.OptionSelector'<'TEnum>.ValueChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal ShortcutTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2621,7 +2621,7 @@ type internal ShortcutTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Shortcut.OrientationChanged
     terminalElement.tryRemoveEventHandler PKey.Shortcut.OrientationChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal MenuItemTerminalElement(props: Props) =
   inherit ShortcutTerminalElement(props)
@@ -2682,7 +2682,7 @@ type internal MenuItemTerminalElement(props: Props) =
 
   interface IMenuItemTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal MenuBarItemTerminalElement(props: Props) =
   inherit MenuItemTerminalElement(props)
@@ -2749,7 +2749,7 @@ type internal MenuBarItemTerminalElement(props: Props) =
 
   interface IMenuItemTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal SliderTerminalElement<'T>(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2906,7 +2906,7 @@ type internal SliderTerminalElement<'T>(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Slider<'T>.OrientationChanged
     terminalElement.tryRemoveEventHandler PKey.Slider<'T>.OrientationChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal SpinnerViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -2986,7 +2986,7 @@ type internal SpinnerViewTerminalElement(props: Props) =
         view.Style <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal StatusBarTerminalElement(props: Props) =
   inherit BarTerminalElement(props)
@@ -2998,7 +2998,7 @@ type internal StatusBarTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TabTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3044,7 +3044,7 @@ type internal TabTerminalElement(props: Props) =
 
   interface ITabTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TabViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3120,7 +3120,7 @@ type internal TabViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.TabView.SelectedTabChanged
     terminalElement.tryRemoveEventHandler PKey.TabView.TabClicked
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TableViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3283,7 +3283,7 @@ type internal TableViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.TableView.CellToggled
     terminalElement.tryRemoveEventHandler PKey.TableView.SelectedCellChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TextFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3395,7 +3395,7 @@ type internal TextFieldTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.TextField.TextChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal DateFieldTerminalElement(props: Props) =
   inherit TextFieldTerminalElement(props)
@@ -3453,7 +3453,7 @@ type internal DateFieldTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.DateField.DateChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TextValidateFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3497,7 +3497,7 @@ type internal TextValidateFieldTerminalElement(props: Props) =
         view.Text <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TextViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3705,7 +3705,7 @@ type internal TextViewTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.TextView.DrawUsedColor
     terminalElement.tryRemoveEventHandler PKey.TextView.UnwrappedCursorPosition
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TimeFieldTerminalElement(props: Props) =
   inherit TextFieldTerminalElement(props)
@@ -3763,7 +3763,7 @@ type internal TimeFieldTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.TimeField.TimeChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   inherit ViewTerminalElement(props)
@@ -3908,7 +3908,7 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.TreeView<'T>.ObjectActivated
     terminalElement.tryRemoveEventHandler PKey.TreeView<'T>.SelectionChanged
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal WindowTerminalElement(props: Props) =
   inherit RunnableTerminalElement(props)
@@ -3920,7 +3920,7 @@ type internal WindowTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal DialogTerminalElement(props: Props) =
   inherit WindowTerminalElement(props)
@@ -3973,7 +3973,7 @@ type internal DialogTerminalElement(props: Props) =
         view.Canceled <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal FileDialogTerminalElement(props: Props) =
   inherit DialogTerminalElement(props)
@@ -4067,7 +4067,7 @@ type internal FileDialogTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.FileDialog.FilesSelected
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal OpenDialogTerminalElement(props: Props) =
   inherit FileDialogTerminalElement(props)
@@ -4102,7 +4102,7 @@ type internal OpenDialogTerminalElement(props: Props) =
         view.OpenMode <- Unchecked.defaultof<_>)
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal SaveDialogTerminalElement(props: Props) =
   inherit FileDialogTerminalElement(props)
@@ -4114,7 +4114,7 @@ type internal SaveDialogTerminalElement(props: Props) =
   override _.setAsChildOfParentView = true
 
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal WizardTerminalElement(props: Props) =
   inherit DialogTerminalElement(props)
@@ -4175,7 +4175,7 @@ type internal WizardTerminalElement(props: Props) =
     terminalElement.tryRemoveEventHandler PKey.Wizard.StepChanged
     terminalElement.tryRemoveEventHandler PKey.Wizard.StepChanging
 
-  interface IViewTerminalElement
+  interface ITerminalElement
 
 type internal WizardStepTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -4230,4 +4230,4 @@ type internal WizardStepTerminalElement(props: Props) =
 
   interface IWizardStepTerminalElement
 
-  interface IViewTerminalElement
+  interface ITerminalElement

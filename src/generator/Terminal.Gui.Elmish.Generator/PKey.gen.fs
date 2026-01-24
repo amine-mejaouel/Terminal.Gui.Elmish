@@ -2,7 +2,7 @@ module Terminal.Gui.Elmish.Generator.PKey
 
 open System
 
-let generatePKeyClass (viewType: Type) =
+let genPKeyClassDefinition (viewType: Type) =
   seq {
     let className = getTypeNameWithoutArity viewType
 
@@ -70,7 +70,7 @@ let generatePKeyClass (viewType: Type) =
     yield ""
   }
 
-let generateModuleInstances () =
+let genModuleInstances () =
   seq {
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
@@ -86,7 +86,7 @@ let generateModuleInstances () =
         yield $"  let {viewName} = {className}PKeys ()"
   }
 
-let generateInterfaceKeys (interfaceType: Type) =
+let genInterfaceKeys (interfaceType: Type) =
   let i = ViewMetadata.create interfaceType
 
   // Skip interfaces with no properties or events
@@ -126,14 +126,10 @@ let opens =
     yield "open Terminal.Gui.App"
     yield "open Terminal.Gui.Drawing"
     yield "open Terminal.Gui.Drivers"
-    yield ""
     yield "open Terminal.Gui.FileServices"
     yield "open Terminal.Gui.Input"
-    yield ""
     yield "open Terminal.Gui.Text"
-    yield ""
     yield "open Terminal.Gui.ViewBase"
-    yield ""
     yield "open Terminal.Gui.Views"
   }
 
@@ -160,12 +156,12 @@ let gen () =
     yield ""
 
     for viewType in ViewType.viewTypesOrderedByInheritance do
-      yield! generatePKeyClass viewType
+      yield! genPKeyClassDefinition viewType
 
     for interfaceType in interfaces do
-      yield! generateInterfaceKeys interfaceType
+      yield! genInterfaceKeys interfaceType
     yield ""
 
-    yield! generateModuleInstances ()
+    yield! genModuleInstances ()
   }
   |> CodeWriter.write "PKey.gen.fs"

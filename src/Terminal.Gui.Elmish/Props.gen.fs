@@ -2,7 +2,6 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open System.Collections.ObjectModel
 open System.Text
 open System.Drawing
 open System.ComponentModel
@@ -13,15 +12,10 @@ open Terminal.Gui.App
 open Terminal.Gui.Drawing
 open Terminal.Gui.Drivers
 open Terminal.Gui.Elmish
-open Terminal.Gui
-
 open Terminal.Gui.FileServices
 open Terminal.Gui.Input
-
 open Terminal.Gui.Text
-
 open Terminal.Gui.ViewBase
-
 open Terminal.Gui.Views
 
 type ViewProps() =

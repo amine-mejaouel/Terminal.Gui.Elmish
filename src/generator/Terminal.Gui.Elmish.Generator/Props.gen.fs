@@ -1,32 +1,30 @@
 module Terminal.Gui.Elmish.Generator.Props
 
+let opens = [
+    "open System"
+    "open System.Collections.Generic"
+    "open System.Text"
+    "open System.Drawing"
+    "open System.ComponentModel"
+    "open System.IO"
+    "open System.Collections.Specialized"
+    "open System.Globalization"
+    "open Terminal.Gui.App"
+    "open Terminal.Gui.Drawing"
+    "open Terminal.Gui.Drivers"
+    "open Terminal.Gui.Elmish"
+    "open Terminal.Gui.FileServices"
+    "open Terminal.Gui.Input"
+    "open Terminal.Gui.Text"
+    "open Terminal.Gui.ViewBase"
+    "open Terminal.Gui.Views"
+  ]
+
 let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    yield "open System"
-    yield "open System.Collections.Generic"
-    yield "open System.Collections.ObjectModel"
-    yield "open System.Text"
-    yield "open System.Drawing"
-    yield "open System.ComponentModel"
-    yield "open System.IO"
-    yield "open System.Collections.Specialized"
-    yield "open System.Globalization"
-    yield "open Terminal.Gui.App"
-    yield "open Terminal.Gui.Drawing"
-    yield "open Terminal.Gui.Drivers"
-    yield "open Terminal.Gui.Elmish"
-    yield "open Terminal.Gui"
-    yield ""
-    yield "open Terminal.Gui.FileServices"
-    yield "open Terminal.Gui.Input"
-    yield ""
-    yield "open Terminal.Gui.Text"
-    yield ""
-    yield "open Terminal.Gui.ViewBase"
-    yield ""
-    yield "open Terminal.Gui.Views"
+    yield! opens
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do
       if viewType.IsGenericType then

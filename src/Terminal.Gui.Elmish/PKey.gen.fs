@@ -11,14 +11,10 @@ open System.Globalization
 open Terminal.Gui.App
 open Terminal.Gui.Drawing
 open Terminal.Gui.Drivers
-
 open Terminal.Gui.FileServices
 open Terminal.Gui.Input
-
 open Terminal.Gui.Text
-
 open Terminal.Gui.ViewBase
-
 open Terminal.Gui.Views
 
 [<RequireQualifiedAccess>]

@@ -82,17 +82,26 @@ module Registry =
     static member val TEInterfaces = System.Collections.Generic.HashSet<Type>()
 
 
-    static member CreateTEInterface(propertyType: Type) =
+    static member CreateInterface(propertyType: Type) =
       TEInterfaces.TEInterfaces.Add(propertyType) |> ignore
       getTEInterfaceName propertyType
 
-    static member GetAll() =
+    static member GetAllPreviouslyCreatedInterfaces() =
       TEInterfaces.TEInterfaces
       |> Seq.map getTEInterfaceName
       |> Seq.toList
       |> List.sort
 
-    static member Get(propertyType: Type) =
+    static member GetAllPreviouslyCreatedInterfaces(propertyType: Type) =
+      seq {
+        let mutable propertyType = propertyType
+        while propertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> do
+          if TEInterfaces.TEInterfaces.Contains(propertyType) then
+            yield getTEInterfaceName propertyType
+          propertyType <- propertyType.BaseType
+      }
+
+    static member GetAssignableInterface(propertyType: Type) =
       let mutable propertyType = propertyType
       let mutable result = None
       while result.IsNone && propertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> do
@@ -104,12 +113,3 @@ module Registry =
       match result with
       | Some interfaceName -> interfaceName
       | None -> "ITerminalElement"
-
-    static member GetAll(propertyType: Type) =
-      seq {
-        let mutable propertyType = propertyType
-        while propertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> do
-          if TEInterfaces.TEInterfaces.Contains(propertyType) then
-            yield getTEInterfaceName propertyType
-          propertyType <- propertyType.BaseType
-      }

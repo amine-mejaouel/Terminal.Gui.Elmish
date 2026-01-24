@@ -131,7 +131,7 @@ let gen () =
       yield! removePropsCode viewMetadata
       yield ""
 
-      for i in Registry.TEInterfaces.GetAll viewType do
+      for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces viewType do
         yield $"  interface {i}"
         yield ""
   }

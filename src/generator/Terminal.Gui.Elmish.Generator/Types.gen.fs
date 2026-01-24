@@ -5,7 +5,7 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    for i in Registry.TEInterfaces.GetAll() do
+    for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces() do
       if i <> "ITerminalElement" then
         yield $"type {i} ="
         yield "  inherit ITerminalElement"

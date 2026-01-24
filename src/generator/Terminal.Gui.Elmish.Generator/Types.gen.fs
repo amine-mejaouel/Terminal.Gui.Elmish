@@ -1,10 +1,5 @@
 module Terminal.Gui.Elmish.Generator.Types
 
-open System
-open System.IO
-
-let outputPath = Path.Combine (Environment.CurrentDirectory, "Types.gen.fs")
-
 /// Should be called after PKey.gen() as it depends on Registry.NeededIElementInterfaces
 let gen () =
   seq {
@@ -15,6 +10,5 @@ let gen () =
       yield "  inherit ITerminalElement"
       yield ""
   }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText outputPath
+  |> CodeWriter.write "Types.gen.fs"
 

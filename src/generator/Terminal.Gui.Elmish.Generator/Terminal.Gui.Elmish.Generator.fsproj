@@ -7,8 +7,7 @@
     <RootNamespace>Terminal.Gui.Elmish.Generator</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="String.fs" />
-    <Compile Include="File.fs" />
+    <Compile Include="Helpers.fs" />
     <Compile Include="CodeGen.fs" />
     <Compile Include="ViewMetadata.fs" />
     <Compile Include="ViewType.fs" />

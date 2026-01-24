@@ -5,6 +5,7 @@ open System
 type Registry =
   static member val private TypesNames = System.Collections.Generic.Dictionary<string, string>()
   static member val NeededIElementInterfaces = System.Collections.Generic.HashSet<Type>()
+
   /// Especially useful to generate unique names for generic types that may also exist with same name but different generic parameters
   static member GetUniqueTypeName(viewType: Type) =
     match Registry.TypesNames.TryGetValue(viewType.FullName) with

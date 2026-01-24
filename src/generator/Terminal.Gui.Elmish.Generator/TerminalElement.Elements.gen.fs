@@ -1,7 +1,6 @@
 module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 
 open System
-open System.IO
 open Terminal.Gui.Elmish.Generator
 
 let terminalElementAndViewDeclaration (viewType: Type) =
@@ -131,5 +130,4 @@ let gen () =
         yield $"  interface {i}"
         yield ""
   }
-  |> String.concat Environment.NewLine
-  |> File.writeAllText (Path.Combine (Environment.CurrentDirectory, "TerminalElement.Elements.gen.fs"))
+  |> CodeWriter.write "TerminalElement.Elements.gen.fs"

@@ -6,7 +6,7 @@ let camelCase (str: string) =
   if String.IsNullOrEmpty(str) then str
   else Char.ToLowerInvariant(str.[0]).ToString() + str.Substring(1)
 
-let generateMethods (viewType: Type) =
+let genMethods (viewType: Type) =
   let typeName = getTypeNameWithoutArity viewType
   let elementName = typeName + "TerminalElement"
   let propsName = typeName + "Props"
@@ -63,7 +63,7 @@ let generateMethods (viewType: Type) =
   }
 
 let gen () =
-  let viewTypesToGenerate =
+  let viewTypesToGen =
     ViewType.viewTypesOrderedByInheritance
     |> List.filter (fun t -> t <> typeof<Terminal.Gui.ViewBase.View> && not t.IsAbstract)
 
@@ -78,7 +78,7 @@ let gen () =
     yield "type View ="
     yield ""
 
-    for viewType in viewTypesToGenerate do
-      yield! generateMethods viewType
+    for viewType in viewTypesToGen do
+      yield! genMethods viewType
   }
   |> CodeWriter.write "View.gen.fs"

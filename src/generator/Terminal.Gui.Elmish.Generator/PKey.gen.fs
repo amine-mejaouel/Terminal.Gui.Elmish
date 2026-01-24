@@ -1,6 +1,7 @@
 module Terminal.Gui.Elmish.Generator.PKey
 
 open System
+open Terminal.Gui.Elmish.Generator.TypeExtensions
 
 let genPKeyClassDefinition (viewType: Type) =
   seq {
@@ -9,11 +10,11 @@ let genPKeyClassDefinition (viewType: Type) =
     yield $"  type {className}PKeys{genericTypeParamsWithConstraintsBlock viewType}() ="
 
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      let parentViewType = ViewType.parentView viewType
+      let parentViewType = viewType.ParentViewType
       let parentName = getTypeNameWithoutArity parentViewType
       yield $"    inherit {parentName}PKeys{genericTypeParamsBlock parentViewType}()"
     else
-      yield "    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
+      yield $"    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
 
     yield ""
 
@@ -24,34 +25,20 @@ let genPKeyClassDefinition (viewType: Type) =
       for prop in view.Properties do
         let keyName = $"{className}.{prop.PKey}"
 
-        let isViewProperty = prop.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
-        let isEnumerableOfViews =
-          let propertyType = prop.PropertyInfo.PropertyType
-          if propertyType.IsGenericType && propertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
-            let genericArg = propertyType.GetGenericArguments().[0]
-            genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
-          else
-            false
-
         // Check if this is a delayed pos property
         if prop.PKey = "X" || prop.PKey = "Y" then
           yield $"    member val {prop.PKey}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
-        else if isViewProperty then
-          yield $"    member val {prop.PKey}: IViewPropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.view \"{keyName}_view\""
-        // TODO: isEnumerableOfViews does not seem to be used anywhere
-        else if isEnumerableOfViews then
-          yield $"    member val {prop.PKey}: IMultiViewPropKey<System.Collections.Generic.List<{getFSharpTypeName prop.PropertyInfo.PropertyType}>> = PropKey.Create.multiView \"{keyName}_views\""
-        else
-          yield $"    member val {prop.PKey}: ISimplePropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{keyName}\""
-
-        // Extra PKeys for properties that are Views or collections of Views
-        if isViewProperty then
+        else if prop.IsViewProperty then
+          yield $"    member val {prop.PKey}: IViewPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateTEInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
-        else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
-          if isEnumerableOfViews then
-            yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
+        // TODO: isEnumerableOfViews does not seem to be used anywhere
+        else if prop.IsEnumerableOfViews then
+          yield $"    member val {prop.PKey}: IMultiViewPropKey<List<{prop.FSharpTypeName}>> = PropKey.Create.multiView \"{keyName}_views\""
+          yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
+        else
+          yield $"    member val {prop.PKey}: ISimplePropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 
     if view.Events.Length > 0 then
       if view.Properties.Length > 0 then yield ""
@@ -66,18 +53,9 @@ let genPKeyClassDefinition (viewType: Type) =
 
 let genModuleInstances () =
   seq {
-    for viewType in ViewType.viewTypesOrderedByInheritance do
-      let typeName = viewType.Name
-      let className = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-      let viewName = Registry.Views.GetUniqueTypeName viewType
-
-      // Check if it's a generic type
-      if viewType.IsGenericType then
-        let genericParams = viewType.GetGenericArguments() |> Array.map (fun t -> $"'{t.Name}") |> String.concat ", "
-        let genericConstraints = genericConstraints viewType
-        yield $"  let {viewName}<{genericParams}{genericConstraints}> = {className}PKeys<{genericParams}>()"
-      else
-        yield $"  let {viewName} = {className}PKeys ()"
+    for viewType in Registry.ViewTypes.orderedByInheritance do
+      let viewName = Registry.ViewTypes.GetUniqueTypeName viewType
+      yield $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
   }
 
 let genInterfaceKeys (interfaceType: Type) =
@@ -148,7 +126,7 @@ let gen () =
     yield "module internal PKey ="
     yield ""
 
-    for viewType in ViewType.viewTypesOrderedByInheritance do
+    for viewType in Registry.ViewTypes.orderedByInheritance do
       yield! genPKeyClassDefinition viewType
 
     for interfaceType in interfaces do

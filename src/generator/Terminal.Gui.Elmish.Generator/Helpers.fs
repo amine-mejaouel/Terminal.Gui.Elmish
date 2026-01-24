@@ -18,4 +18,13 @@ module CodeWriter =
     let text = String.concat Environment.NewLine text
     File.WriteAllText (outputPath, text)
 
+module TypeExtensions =
+  type Type with
+    member this.ParentViewType =
+        let baseType = this.BaseType
+        if baseType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> then
+          baseType
+        else
+          failwith $"Type {this.FullName} does not have Terminal.Gui.ViewBase.View as parent type."
+
 

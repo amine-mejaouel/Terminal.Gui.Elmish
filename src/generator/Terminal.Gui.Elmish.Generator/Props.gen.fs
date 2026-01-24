@@ -26,7 +26,7 @@ let gen () =
     yield ""
     yield! opens
     yield ""
-    for viewType in ViewType.viewTypesOrderedByInheritance do
+    for viewType in Registry.ViewTypes.orderedByInheritance do
       if viewType.IsGenericType then
         let genericBlock = genericTypeParamsWithConstraintsBlock viewType
         yield $"type {getTypeNameWithoutArity viewType}Props{genericBlock}() ="
@@ -63,18 +63,18 @@ let gen () =
         yield "  // Properties"
       for prop in view.Properties do
         yield $"  member this.{prop.PKey} (value: {getFSharpTypeName prop.PropertyInfo.PropertyType}) ="
-        yield $"    this.props.add (PKey.{Registry.Views.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}, value)"
+        yield $"    this.props.add (PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}, value)"
         yield ""
         if prop.IsViewProperty then
           let valueType = Registry.TEInterfaces.CreateTEInterface prop.PropertyInfo.PropertyType
           yield $"  member this.{prop.PKey}(value: {valueType}) ="
-          yield $"    this.props.add (PKey.{Registry.Views.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}_element, value)"
+          yield $"    this.props.add (PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericBlock}.{prop.PKey}_element, value)"
         yield ""
       if view.Events.Length > 0 then
         yield "  // Events"
       for event in view.Events do
         yield $"  member this.{event.PKey} (handler: {eventHandlerType event.EventInfo}) ="
-        yield $"    this.props.add (PKey.{Registry.Views.GetUniqueTypeName viewType}{genericBlock}.{event.PKey}, handler)"
+        yield $"    this.props.add (PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericBlock}.{event.PKey}, handler)"
         yield ""
   }
   |> CodeWriter.write "Props.gen.fs"

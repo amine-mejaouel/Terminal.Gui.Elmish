@@ -71,7 +71,7 @@ let opens = [
 
 let gen () =
   let viewTypesToGen =
-    ViewType.viewTypesOrderedByInheritance
+    Registry.ViewTypes.orderedByInheritance
     |> List.filter (fun t -> t <> typeof<Terminal.Gui.ViewBase.View> && not t.IsAbstract)
 
   seq {

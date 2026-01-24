@@ -58,6 +58,10 @@ let genPKeysAccessors () =
       yield $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
   }
 
+let getAccessor (viewType: Type) =
+  let viewName = Registry.ViewTypes.GetUniqueTypeName viewType
+  $"PKey.{viewName}{genericTypeParamsBlock viewType}"
+
 // TODO: code generated here is not currently used anywhere
 let genInterfaceKeys (interfaceType: Type) =
   let i = ViewMetadata.create interfaceType

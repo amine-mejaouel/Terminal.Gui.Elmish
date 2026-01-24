@@ -2,6 +2,7 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 
 open System
 open Terminal.Gui.Elmish.Generator
+open Terminal.Gui.Elmish.Generator.TypeExtensions
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
@@ -13,7 +14,7 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{Registry.Views.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
+  $"PKey.{Registry.ViewTypes.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
 
 let subElementsPropKeys (view: ViewMetadata) =
   seq {
@@ -99,7 +100,7 @@ let gen () =
     yield! opens
     yield ""
     yield ""
-    for viewType in ViewType.viewTypesOrderedByInheritance do
+    for viewType in Registry.ViewTypes.orderedByInheritance do
       let genericBlock = genericTypeParamsWithConstraintsBlock viewType
       let genericParamsBlock = genericTypeParamsBlock viewType
       let viewMetadata = ViewMetadata.create viewType
@@ -111,7 +112,7 @@ let gen () =
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
       else
-        yield $"  inherit {(ViewType.parentView viewType).Name}TerminalElement(props)"
+        yield $"  inherit {viewType.ParentViewType.Name}TerminalElement(props)"
       yield ""
       yield $"  override _.name = \"{viewType.Name}\""
       yield ""

@@ -11,6 +11,17 @@ type PropertyMetadata =
   member x.IsViewProperty =
     x.PropertyInfo.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
 
+  member x.IsEnumerableOfViews =
+    let propertyType = x.PropertyInfo.PropertyType
+    if propertyType.IsGenericType && propertyType.IsAssignableTo typeof<IEnumerable> then
+      let genericArg = propertyType.GetGenericArguments().[0]
+      genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
+    else
+      false
+
+  member x.FSharpTypeName =
+    getFSharpTypeName x.PropertyInfo.PropertyType
+
 type EventMetadata = {
   PKey: string
   EventInfo: EventInfo

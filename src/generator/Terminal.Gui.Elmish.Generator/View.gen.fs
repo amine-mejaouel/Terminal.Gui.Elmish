@@ -62,6 +62,13 @@ let genMethods (viewType: Type) =
     yield ""
   }
 
+let opens = [
+    "open System"
+    "open Terminal.Gui.Elmish"
+    "open Terminal.Gui.ViewBase"
+    "open Terminal.Gui.Views"
+  ]
+
 let gen () =
   let viewTypesToGen =
     ViewType.viewTypesOrderedByInheritance
@@ -70,10 +77,7 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    yield "open System"
-    yield "open Terminal.Gui.Elmish"
-    yield "open Terminal.Gui.ViewBase"
-    yield "open Terminal.Gui.Views"
+    yield! opens
     yield ""
     yield "type View ="
     yield ""

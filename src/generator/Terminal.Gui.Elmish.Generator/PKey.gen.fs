@@ -113,25 +113,24 @@ let genInterfaceKeys (interfaceType: Type) =
           yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
     }
 
-let opens =
-  seq {
-    yield "open System"
-    yield "open System.Collections.Generic"
-    yield "open System.Collections.Specialized"
-    yield "open System.Text"
-    yield "open System.Drawing"
-    yield "open System.ComponentModel"
-    yield "open System.IO"
-    yield "open System.Globalization"
-    yield "open Terminal.Gui.App"
-    yield "open Terminal.Gui.Drawing"
-    yield "open Terminal.Gui.Drivers"
-    yield "open Terminal.Gui.FileServices"
-    yield "open Terminal.Gui.Input"
-    yield "open Terminal.Gui.Text"
-    yield "open Terminal.Gui.ViewBase"
-    yield "open Terminal.Gui.Views"
-  }
+let opens = [
+    "open System"
+    "open System.Collections.Generic"
+    "open System.Collections.Specialized"
+    "open System.Text"
+    "open System.Drawing"
+    "open System.ComponentModel"
+    "open System.IO"
+    "open System.Globalization"
+    "open Terminal.Gui.App"
+    "open Terminal.Gui.Drawing"
+    "open Terminal.Gui.Drivers"
+    "open Terminal.Gui.FileServices"
+    "open Terminal.Gui.Input"
+    "open Terminal.Gui.Text"
+    "open Terminal.Gui.ViewBase"
+    "open Terminal.Gui.Views"
+  ]
 
 let gen () =
 

@@ -85,14 +85,18 @@ let setAsChildOfParentView (viewType: Type) =
 
   exceptions |> Seq.filter (fun t -> t = viewType) |> Seq.isEmpty
 
+let opens = [
+    "open System"
+    "open Terminal.Gui.App"
+    "open Terminal.Gui.ViewBase"
+    "open Terminal.Gui.Views"
+  ]
+
 let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    yield "open System"
-    yield "open Terminal.Gui.App"
-    yield "open Terminal.Gui.ViewBase"
-    yield "open Terminal.Gui.Views"
+    yield! opens
     yield ""
     yield ""
     for viewType in ViewType.viewTypesOrderedByInheritance do

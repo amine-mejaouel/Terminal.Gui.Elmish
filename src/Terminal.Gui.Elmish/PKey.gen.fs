@@ -127,7 +127,7 @@ module internal PKey =
     // Properties
     member val Diagnostics: ISimplePropKey<ViewDiagnosticFlags> = PropKey.Create.simple "Adornment.Diagnostics"
     member val Parent: IViewPropKey<View> = PropKey.Create.view "Adornment.Parent_view"
-    member val Parent_element: ISingleElementPropKey<IViewTerminalElement> = PropKey.Create.singleElement "Adornment.Parent_element"
+    member val Parent_element: ISingleElementPropKey<ITerminalElement> = PropKey.Create.singleElement "Adornment.Parent_element"
     member val SuperViewRendersLineCanvas: ISimplePropKey<bool> = PropKey.Create.simple "Adornment.SuperViewRendersLineCanvas"
     member val Thickness: ISimplePropKey<Thickness> = PropKey.Create.simple "Adornment.Thickness"
     member val Viewport: ISimplePropKey<Rectangle> = PropKey.Create.simple "Adornment.Viewport"
@@ -458,7 +458,7 @@ module internal PKey =
     member val AlignmentModes: ISimplePropKey<AlignmentModes> = PropKey.Create.simple "Shortcut.AlignmentModes"
     member val BindKeyToApplication: ISimplePropKey<bool> = PropKey.Create.simple "Shortcut.BindKeyToApplication"
     member val CommandView: IViewPropKey<View> = PropKey.Create.view "Shortcut.CommandView_view"
-    member val CommandView_element: ISingleElementPropKey<IViewTerminalElement> = PropKey.Create.singleElement "Shortcut.CommandView_element"
+    member val CommandView_element: ISingleElementPropKey<ITerminalElement> = PropKey.Create.singleElement "Shortcut.CommandView_element"
     member val ForceFocusColors: ISimplePropKey<bool> = PropKey.Create.simple "Shortcut.ForceFocusColors"
     member val HelpText: ISimplePropKey<string> = PropKey.Create.simple "Shortcut.HelpText"
     member val Key: ISimplePropKey<Key> = PropKey.Create.simple "Shortcut.Key"
@@ -477,7 +477,7 @@ module internal PKey =
     member val SubMenu: IViewPropKey<Menu> = PropKey.Create.view "MenuItem.SubMenu_view"
     member val SubMenu_element: ISingleElementPropKey<IMenuTerminalElement> = PropKey.Create.singleElement "MenuItem.SubMenu_element"
     member val TargetView: IViewPropKey<View> = PropKey.Create.view "MenuItem.TargetView_view"
-    member val TargetView_element: ISingleElementPropKey<IViewTerminalElement> = PropKey.Create.singleElement "MenuItem.TargetView_element"
+    member val TargetView_element: ISingleElementPropKey<ITerminalElement> = PropKey.Create.singleElement "MenuItem.TargetView_element"
 
   type MenuBarItemPKeys() =
     inherit MenuItemPKeys()
@@ -532,7 +532,7 @@ module internal PKey =
     // Properties
     member val DisplayText: ISimplePropKey<string> = PropKey.Create.simple "Tab.DisplayText"
     member val View: IViewPropKey<View> = PropKey.Create.view "Tab.View_view"
-    member val View_element: ISingleElementPropKey<IViewTerminalElement> = PropKey.Create.singleElement "Tab.View_element"
+    member val View_element: ISingleElementPropKey<ITerminalElement> = PropKey.Create.singleElement "Tab.View_element"
 
   type TabViewPKeys() =
     inherit ViewPKeys()

@@ -53,7 +53,7 @@ let generatePKeyClass (viewType: Type) =
 
         // Extra PKeys for properties that are Views or collections of Views
         if isViewProperty then
-          let interfaceName = Registry.SetNeededIElementInterface(prop.PropertyInfo.PropertyType)
+          let interfaceName = Registry.TEInterfaces.CreateTEInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         else if prop.PropertyInfo.PropertyType.IsAssignableTo typeof<System.Collections.IEnumerable> then
           if isEnumerableOfViews then
@@ -75,7 +75,7 @@ let generateModuleInstances () =
     for viewType in ViewType.viewTypesOrderedByInheritance do
       let typeName = viewType.Name
       let className = if typeName.Contains("`") then typeName.Substring(0, typeName.IndexOf("`")) else typeName
-      let viewName = Registry.GetUniqueTypeName viewType
+      let viewName = Registry.Views.GetUniqueTypeName viewType
 
       // Check if it's a generic type
       if viewType.IsGenericType then

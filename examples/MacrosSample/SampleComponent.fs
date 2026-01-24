@@ -33,7 +33,7 @@ let _component (set: IProps -> unit) =
       p.Text model.Text
       props.y_value |> Option.iter p.Y
       p.Activating (fun _ -> dispatch ChangeText)
-    ) :> ITerminalElement
+    )
 
   ElmishTerminal.mkSimple init update view
   |> ElmishTerminal.runComponent

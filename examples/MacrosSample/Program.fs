@@ -135,7 +135,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
     menuBar :> ITerminalElement
     categoriesListView
     // scenariosListView
-  ] :> ITerminalElement
+  ]
 
 
 [<EntryPoint>]

@@ -61,8 +61,7 @@ let _component (set: IProps -> unit) =
         first
         second
         third
-        // TODO: fix the ElmishTerminal.mkSimple type inference issue so that the cast is not needed
-      ]) :> ITerminalElement
+      ])
 
   ElmishTerminal.mkSimple init update view
   |> ElmishTerminal.runComponent

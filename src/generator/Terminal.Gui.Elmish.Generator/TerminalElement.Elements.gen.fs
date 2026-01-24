@@ -13,7 +13,7 @@ let terminalElementAndViewDeclaration (viewType: Type) =
   }
 
 let pkeyPrefix (viewType: Type) =
-  $"PKey.{Registry.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
+  $"PKey.{Registry.Views.GetUniqueTypeName viewType}{genericTypeParamsBlock viewType}"
 
 let subElementsPropKeys (view: ViewMetadata) =
   seq {
@@ -126,7 +126,7 @@ let gen () =
       yield! removePropsCode viewMetadata
       yield ""
 
-      for i in Registry.GetNeededIElementInterfaces viewType do
+      for i in Registry.TEInterfaces.GetAll viewType do
         yield $"  interface {i}"
         yield ""
   }

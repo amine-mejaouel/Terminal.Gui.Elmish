@@ -5,10 +5,11 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
-    for i in Registry.GetNeededIElementInterfaces() do
-      yield $"type {i} ="
-      yield "  inherit ITerminalElement"
-      yield ""
+    for i in Registry.TEInterfaces.GetAll() do
+      if i <> "ITerminalElement" then
+        yield $"type {i} ="
+        yield "  inherit ITerminalElement"
+        yield ""
   }
   |> CodeWriter.write "Types.gen.fs"
 

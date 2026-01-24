@@ -357,7 +357,7 @@ type AdornmentProps() =
   member this.Parent (value: View) =
     this.props.add (PKey.Adornment.Parent, value)
 
-  member this.Parent(value: IViewTerminalElement) =
+  member this.Parent(value: ITerminalElement) =
     this.props.add (PKey.Adornment.Parent_element, value)
 
   member this.SuperViewRendersLineCanvas (value: bool) =
@@ -1053,7 +1053,7 @@ type ShortcutProps() =
   member this.CommandView (value: View) =
     this.props.add (PKey.Shortcut.CommandView, value)
 
-  member this.CommandView(value: IViewTerminalElement) =
+  member this.CommandView(value: ITerminalElement) =
     this.props.add (PKey.Shortcut.CommandView_element, value)
 
   member this.ForceFocusColors (value: bool) =
@@ -1103,7 +1103,7 @@ type MenuItemProps() =
   member this.TargetView (value: View) =
     this.props.add (PKey.MenuItem.TargetView, value)
 
-  member this.TargetView(value: IViewTerminalElement) =
+  member this.TargetView(value: ITerminalElement) =
     this.props.add (PKey.MenuItem.TargetView_element, value)
 
 type MenuBarItemProps() =
@@ -1236,7 +1236,7 @@ type TabProps() =
   member this.View (value: View) =
     this.props.add (PKey.Tab.View, value)
 
-  member this.View(value: IViewTerminalElement) =
+  member this.View(value: ITerminalElement) =
     this.props.add (PKey.Tab.View_element, value)
 
 type TabViewProps() =

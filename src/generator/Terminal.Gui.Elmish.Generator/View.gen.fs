@@ -2,15 +2,11 @@ module Terminal.Gui.Elmish.Generator.View
 
 open System
 
-let camelCase (str: string) =
-  if String.IsNullOrEmpty(str) then str
-  else Char.ToLowerInvariant(str.[0]).ToString() + str.Substring(1)
-
 let genMethods (viewType: Type) =
   let typeName = getTypeNameWithoutArity viewType
   let elementName = typeName + "TerminalElement"
   let propsName = typeName + "Props"
-  let viewName = camelCase typeName
+  let viewName = typeName
   let genericBlock = genericTypeParamsWithConstraintsBlock viewType
   let genericParamsBlock = genericTypeParamsBlock viewType
 
@@ -24,7 +20,7 @@ let genMethods (viewType: Type) =
 
   seq {
     if hasMacros then
-      let macrosName = camelCase typeName + "Macros"
+      let macrosName = typeName + "Macros"
       yield $"  static member {viewName}(set: {propsName} -> {macrosName} -> unit) ="
       yield $"    let props = {propsName} ()"
       yield $"    let macros = {macrosName} props"

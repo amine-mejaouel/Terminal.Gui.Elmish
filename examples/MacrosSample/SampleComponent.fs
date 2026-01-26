@@ -29,7 +29,7 @@ let _component (set: IProps -> unit) =
     | ChangeText ->
       { model with Text = Guid.NewGuid().ToString().Substring(0, 8) }
   let view model dispatch =
-    View.label (fun p ->
+    View.Label (fun p ->
       p.Text model.Text
       props.y_value |> Option.iter p.Y
       p.Activating (fun _ -> dispatch ChangeText)

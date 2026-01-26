@@ -22,19 +22,18 @@ let render view =
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =
   let view =
-    View.runnable [
-      View.menuBar (fun p m ->
-        p.menus [
-          View.menuBarItem (fun p ->
-            p.title "MenuBarItem"
-
-            p.popoverMenu (
-              View.popoverMenu (fun p ->
-                p.root (
-                  View.menu (fun p ->
-                    p.children [
-                      View.menuItem (fun p -> p.title "MenuItem 0")
-                      View.menuItem (fun p -> p.title "MenuItem 1")
+    View.Runnable [
+      View.MenuBar (fun p m ->
+        p.Children [
+          View.MenuBarItem (fun p m ->
+            p.Title "MenuBarItem"
+            p.PopoverMenu (
+              View.PopoverMenu (fun p ->
+                p.Root (
+                  View.Menu (fun p ->
+                    p.Children [
+                      View.MenuItem (fun p -> p.Title "MenuItem 0")
+                      View.MenuItem (fun p -> p.Title "MenuItem 1")
                     ]
                   )
                 )
@@ -42,27 +41,27 @@ let ``Using properties syntax: Menu should be correctly set`` () =
             )
           )
         ]
-      )
+      ) :> ITerminalElement
     ]
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.Children.Single() :?> MenuBarElement
+    view.Children.Single() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
-     |> Props.find PKey.menuBar.children)
+     |> Props.find PKey.MenuBar.children)
       .Single()
-    :?> MenuBarItemElement
+    :?> MenuBarTerminalElement
 
   let popoverMenu =
     menuBarItemElement.Props
-    |> Props.find PKey.menuBarItem.popoverMenu_element
-    :?> PopoverMenuElement
+    |> Props.find PKey.MenuBarItem.PopoverMenu_element
+    :?> PopoverMenuTerminalElement
 
   let popoverMenuRoot =
     popoverMenu.Props
-    |> Props.find PKey.popoverMenu.root_element
+    |> Props.find PKey.PopoverMenu.Root_element
 
   let view = view |> render
 
@@ -86,37 +85,37 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 [<Test>]
 let ``Using macros syntax: Menu should be correctly set`` () =
   let view =
-    View.runnable [
-      View.menuBar (fun p m ->
-        m.menuBarItem (fun p m ->
-          p.title "MenuBarItem"
+    View.Runnable [
+      View.MenuBar (fun p m ->
+        m.MenuBarItem (fun p m ->
+          p.Title "MenuBarItem"
 
-          m.menuItems [
-            View.menuItem (fun p -> p.title "MenuItem 0")
-            View.menuItem (fun p -> p.title "MenuItem 1")
+          m.MenuItems [
+            View.MenuItem (fun p -> p.Title "MenuItem 0")
+            View.MenuItem (fun p -> p.Title "MenuItem 1")
           ]
         )
-      )
+      ) :> ITerminalElement
     ]
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.Children.Single() :?> MenuBarElement
+    view.Children.Single() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
-     |> Props.find PKey.menuBar.children)
+     |> Props.find PKey.MenuBar.children)
       .Single()
-    :?> MenuBarItemElement
+    :?> MenuBarItemTerminalElement
 
   let popoverMenu =
     menuBarItemElement.Props
-    |> Props.find PKey.menuBarItem.popoverMenu_element
-    :?> PopoverMenuElement
+    |> Props.find PKey.MenuBarItem.PopoverMenu_element
+    :?> PopoverMenuTerminalElement
 
   let popoverMenuRoot =
     popoverMenu.Props
-    |> Props.find PKey.popoverMenu.root_element
+    |> Props.find PKey.PopoverMenu.Root_element
 
 
   let view = view |> render

@@ -7,663 +7,663 @@ open Terminal.Gui.Views
 
 type View =
 
-  static member adornment(set: AdornmentProps -> unit) =
+  static member Adornment(set: AdornmentProps -> unit) =
     let viewProps = AdornmentProps ()
     set viewProps
     new AdornmentTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member adornment(children: ITerminalElement list) =
+  static member Adornment(children: ITerminalElement list) =
     let viewProps = AdornmentProps ()
     viewProps.Children children
     new AdornmentTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member bar(set: BarProps -> unit) =
+  static member Bar(set: BarProps -> unit) =
     let viewProps = BarProps ()
     set viewProps
     new BarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member bar(children: ITerminalElement list) =
+  static member Bar(children: ITerminalElement list) =
     let viewProps = BarProps ()
     viewProps.Children children
     new BarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member border(set: BorderProps -> unit) =
+  static member Border(set: BorderProps -> unit) =
     let viewProps = BorderProps ()
     set viewProps
     new BorderTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member border(children: ITerminalElement list) =
+  static member Border(children: ITerminalElement list) =
     let viewProps = BorderProps ()
     viewProps.Children children
     new BorderTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member button(set: ButtonProps -> unit) =
+  static member Button(set: ButtonProps -> unit) =
     let viewProps = ButtonProps ()
     set viewProps
     new ButtonTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member button(children: ITerminalElement list) =
+  static member Button(children: ITerminalElement list) =
     let viewProps = ButtonProps ()
     viewProps.Children children
     new ButtonTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member charMap(set: CharMapProps -> unit) =
+  static member CharMap(set: CharMapProps -> unit) =
     let viewProps = CharMapProps ()
     set viewProps
     new CharMapTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member charMap(children: ITerminalElement list) =
+  static member CharMap(children: ITerminalElement list) =
     let viewProps = CharMapProps ()
     viewProps.Children children
     new CharMapTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member checkBox(set: CheckBoxProps -> unit) =
+  static member CheckBox(set: CheckBoxProps -> unit) =
     let viewProps = CheckBoxProps ()
     set viewProps
     new CheckBoxTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member checkBox(children: ITerminalElement list) =
+  static member CheckBox(children: ITerminalElement list) =
     let viewProps = CheckBoxProps ()
     viewProps.Children children
     new CheckBoxTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member colorPicker(set: ColorPickerProps -> unit) =
+  static member ColorPicker(set: ColorPickerProps -> unit) =
     let viewProps = ColorPickerProps ()
     set viewProps
     new ColorPickerTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member colorPicker(children: ITerminalElement list) =
+  static member ColorPicker(children: ITerminalElement list) =
     let viewProps = ColorPickerProps ()
     viewProps.Children children
     new ColorPickerTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member colorPicker16(set: ColorPicker16Props -> unit) =
+  static member ColorPicker16(set: ColorPicker16Props -> unit) =
     let viewProps = ColorPicker16Props ()
     set viewProps
     new ColorPicker16TerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member colorPicker16(children: ITerminalElement list) =
+  static member ColorPicker16(children: ITerminalElement list) =
     let viewProps = ColorPicker16Props ()
     viewProps.Children children
     new ColorPicker16TerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member comboBox(set: ComboBoxProps -> unit) =
+  static member ComboBox(set: ComboBoxProps -> unit) =
     let viewProps = ComboBoxProps ()
     set viewProps
     new ComboBoxTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member comboBox(children: ITerminalElement list) =
+  static member ComboBox(children: ITerminalElement list) =
     let viewProps = ComboBoxProps ()
     viewProps.Children children
     new ComboBoxTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member datePicker(set: DatePickerProps -> unit) =
+  static member DatePicker(set: DatePickerProps -> unit) =
     let viewProps = DatePickerProps ()
     set viewProps
     new DatePickerTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member datePicker(children: ITerminalElement list) =
+  static member DatePicker(children: ITerminalElement list) =
     let viewProps = DatePickerProps ()
     viewProps.Children children
     new DatePickerTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member frameView(set: FrameViewProps -> unit) =
+  static member FrameView(set: FrameViewProps -> unit) =
     let viewProps = FrameViewProps ()
     set viewProps
     new FrameViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member frameView(children: ITerminalElement list) =
+  static member FrameView(children: ITerminalElement list) =
     let viewProps = FrameViewProps ()
     viewProps.Children children
     new FrameViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member graphView(set: GraphViewProps -> unit) =
+  static member GraphView(set: GraphViewProps -> unit) =
     let viewProps = GraphViewProps ()
     set viewProps
     new GraphViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member graphView(children: ITerminalElement list) =
+  static member GraphView(children: ITerminalElement list) =
     let viewProps = GraphViewProps ()
     viewProps.Children children
     new GraphViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member hexView(set: HexViewProps -> unit) =
+  static member HexView(set: HexViewProps -> unit) =
     let viewProps = HexViewProps ()
     set viewProps
     new HexViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member hexView(children: ITerminalElement list) =
+  static member HexView(children: ITerminalElement list) =
     let viewProps = HexViewProps ()
     viewProps.Children children
     new HexViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member label(set: LabelProps -> unit) =
+  static member Label(set: LabelProps -> unit) =
     let viewProps = LabelProps ()
     set viewProps
     new LabelTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member label(children: ITerminalElement list) =
+  static member Label(children: ITerminalElement list) =
     let viewProps = LabelProps ()
     viewProps.Children children
     new LabelTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member legendAnnotation(set: LegendAnnotationProps -> unit) =
+  static member LegendAnnotation(set: LegendAnnotationProps -> unit) =
     let viewProps = LegendAnnotationProps ()
     set viewProps
     new LegendAnnotationTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member legendAnnotation(children: ITerminalElement list) =
+  static member LegendAnnotation(children: ITerminalElement list) =
     let viewProps = LegendAnnotationProps ()
     viewProps.Children children
     new LegendAnnotationTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member line(set: LineProps -> unit) =
+  static member Line(set: LineProps -> unit) =
     let viewProps = LineProps ()
     set viewProps
     new LineTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member line(children: ITerminalElement list) =
+  static member Line(children: ITerminalElement list) =
     let viewProps = LineProps ()
     viewProps.Children children
     new LineTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member listView(set: ListViewProps -> unit) =
+  static member ListView(set: ListViewProps -> unit) =
     let viewProps = ListViewProps ()
     set viewProps
     new ListViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member listView(children: ITerminalElement list) =
+  static member ListView(children: ITerminalElement list) =
     let viewProps = ListViewProps ()
     viewProps.Children children
     new ListViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member margin(set: MarginProps -> unit) =
+  static member Margin(set: MarginProps -> unit) =
     let viewProps = MarginProps ()
     set viewProps
     new MarginTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member margin(children: ITerminalElement list) =
+  static member Margin(children: ITerminalElement list) =
     let viewProps = MarginProps ()
     viewProps.Children children
     new MarginTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member menu(set: MenuProps -> unit) =
+  static member Menu(set: MenuProps -> unit) =
     let viewProps = MenuProps ()
     set viewProps
     new MenuTerminalElement(viewProps.props)
     :> IMenuTerminalElement
 
-  static member menu(children: ITerminalElement list) =
+  static member Menu(children: ITerminalElement list) =
     let viewProps = MenuProps ()
     viewProps.Children children
     new MenuTerminalElement(viewProps.props)
     :> IMenuTerminalElement
 
-  static member menuBar(set: MenuBarProps -> menuBarMacros -> unit) =
+  static member MenuBar(set: MenuBarProps -> MenuBarMacros -> unit) =
     let props = MenuBarProps ()
-    let macros = menuBarMacros props
+    let macros = MenuBarMacros props
     set props macros
     new MenuBarTerminalElement(props.props)
     :> IMenuTerminalElement
 
-  static member menuBar(children: ITerminalElement list) =
+  static member MenuBar(children: ITerminalElement list) =
     let viewProps = MenuBarProps ()
     viewProps.Children children
     new MenuBarTerminalElement(viewProps.props)
     :> IMenuTerminalElement
 
-  static member numericUpDown<'T>(set: NumericUpDownProps<'T> -> unit) =
+  static member NumericUpDown<'T>(set: NumericUpDownProps<'T> -> unit) =
     let viewProps = NumericUpDownProps<'T> ()
 
     set viewProps
     new NumericUpDownTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member numericUpDown<'T>(children: ITerminalElement list) =
+  static member NumericUpDown<'T>(children: ITerminalElement list) =
     let viewProps = NumericUpDownProps<'T> ()
 
     viewProps.Children children
     new NumericUpDownTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member padding(set: PaddingProps -> unit) =
+  static member Padding(set: PaddingProps -> unit) =
     let viewProps = PaddingProps ()
     set viewProps
     new PaddingTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member padding(children: ITerminalElement list) =
+  static member Padding(children: ITerminalElement list) =
     let viewProps = PaddingProps ()
     viewProps.Children children
     new PaddingTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member popoverMenu(set: PopoverMenuProps -> unit) =
+  static member PopoverMenu(set: PopoverMenuProps -> unit) =
     let viewProps = PopoverMenuProps ()
     set viewProps
     new PopoverMenuTerminalElement(viewProps.props)
     :> IPopoverMenuTerminalElement
 
-  static member popoverMenu(children: ITerminalElement list) =
+  static member PopoverMenu(children: ITerminalElement list) =
     let viewProps = PopoverMenuProps ()
     viewProps.Children children
     new PopoverMenuTerminalElement(viewProps.props)
     :> IPopoverMenuTerminalElement
 
-  static member progressBar(set: ProgressBarProps -> unit) =
+  static member ProgressBar(set: ProgressBarProps -> unit) =
     let viewProps = ProgressBarProps ()
     set viewProps
     new ProgressBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member progressBar(children: ITerminalElement list) =
+  static member ProgressBar(children: ITerminalElement list) =
     let viewProps = ProgressBarProps ()
     viewProps.Children children
     new ProgressBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member runnable(set: RunnableProps -> unit) =
+  static member Runnable(set: RunnableProps -> unit) =
     let viewProps = RunnableProps ()
     set viewProps
     new RunnableTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member runnable(children: ITerminalElement list) =
+  static member Runnable(children: ITerminalElement list) =
     let viewProps = RunnableProps ()
     viewProps.Children children
     new RunnableTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member runnable<'TResult>(set: RunnableProps<'TResult> -> unit) =
+  static member Runnable<'TResult>(set: RunnableProps<'TResult> -> unit) =
     let viewProps = RunnableProps<'TResult> ()
 
     set viewProps
     new RunnableTerminalElement<'TResult>(viewProps.props)
     :> ITerminalElement
 
-  static member runnable<'TResult>(children: ITerminalElement list) =
+  static member Runnable<'TResult>(children: ITerminalElement list) =
     let viewProps = RunnableProps<'TResult> ()
 
     viewProps.Children children
     new RunnableTerminalElement<'TResult>(viewProps.props)
     :> ITerminalElement
 
-  static member scrollBar(set: ScrollBarProps -> unit) =
+  static member ScrollBar(set: ScrollBarProps -> unit) =
     let viewProps = ScrollBarProps ()
     set viewProps
     new ScrollBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member scrollBar(children: ITerminalElement list) =
+  static member ScrollBar(children: ITerminalElement list) =
     let viewProps = ScrollBarProps ()
     viewProps.Children children
     new ScrollBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member scrollSlider(set: ScrollSliderProps -> unit) =
+  static member ScrollSlider(set: ScrollSliderProps -> unit) =
     let viewProps = ScrollSliderProps ()
     set viewProps
     new ScrollSliderTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member scrollSlider(children: ITerminalElement list) =
+  static member ScrollSlider(children: ITerminalElement list) =
     let viewProps = ScrollSliderProps ()
     viewProps.Children children
     new ScrollSliderTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member flagSelector(set: FlagSelectorProps -> unit) =
+  static member FlagSelector(set: FlagSelectorProps -> unit) =
     let viewProps = FlagSelectorProps ()
     set viewProps
     new FlagSelectorTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member flagSelector(children: ITerminalElement list) =
+  static member FlagSelector(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps ()
     viewProps.Children children
     new FlagSelectorTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member optionSelector(set: OptionSelectorProps -> unit) =
+  static member OptionSelector(set: OptionSelectorProps -> unit) =
     let viewProps = OptionSelectorProps ()
     set viewProps
     new OptionSelectorTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member optionSelector(children: ITerminalElement list) =
+  static member OptionSelector(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps ()
     viewProps.Children children
     new OptionSelectorTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member flagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(set: FlagSelectorProps<'TFlagsEnum> -> unit) =
+  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(set: FlagSelectorProps<'TFlagsEnum> -> unit) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
 
     set viewProps
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member flagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(children: ITerminalElement list) =
+  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
 
     viewProps.Children children
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member optionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(set: OptionSelectorProps<'TEnum> -> unit) =
+  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(set: OptionSelectorProps<'TEnum> -> unit) =
     let viewProps = OptionSelectorProps<'TEnum> ()
 
     set viewProps
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member optionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(children: ITerminalElement list) =
+  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps<'TEnum> ()
 
     viewProps.Children children
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member shortcut(set: ShortcutProps -> unit) =
+  static member Shortcut(set: ShortcutProps -> unit) =
     let viewProps = ShortcutProps ()
     set viewProps
     new ShortcutTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member shortcut(children: ITerminalElement list) =
+  static member Shortcut(children: ITerminalElement list) =
     let viewProps = ShortcutProps ()
     viewProps.Children children
     new ShortcutTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member menuItem(set: MenuItemProps -> unit) =
+  static member MenuItem(set: MenuItemProps -> unit) =
     let viewProps = MenuItemProps ()
     set viewProps
     new MenuItemTerminalElement(viewProps.props)
     :> IMenuItemTerminalElement
 
-  static member menuItem(children: ITerminalElement list) =
+  static member MenuItem(children: ITerminalElement list) =
     let viewProps = MenuItemProps ()
     viewProps.Children children
     new MenuItemTerminalElement(viewProps.props)
     :> IMenuItemTerminalElement
 
-  static member menuBarItem(set: MenuBarItemProps -> menuBarItemMacros -> unit) =
+  static member MenuBarItem(set: MenuBarItemProps -> MenuBarItemMacros -> unit) =
     let props = MenuBarItemProps ()
-    let macros = menuBarItemMacros props
+    let macros = MenuBarItemMacros props
     set props macros
     new MenuBarItemTerminalElement(props.props)
     :> IMenuItemTerminalElement
 
-  static member menuBarItem(children: ITerminalElement list) =
+  static member MenuBarItem(children: ITerminalElement list) =
     let viewProps = MenuBarItemProps ()
     viewProps.Children children
     new MenuBarItemTerminalElement(viewProps.props)
     :> IMenuItemTerminalElement
 
-  static member slider<'T>(set: SliderProps<'T> -> unit) =
+  static member Slider<'T>(set: SliderProps<'T> -> unit) =
     let viewProps = SliderProps<'T> ()
 
     set viewProps
     new SliderTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member slider<'T>(children: ITerminalElement list) =
+  static member Slider<'T>(children: ITerminalElement list) =
     let viewProps = SliderProps<'T> ()
 
     viewProps.Children children
     new SliderTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member spinnerView(set: SpinnerViewProps -> unit) =
+  static member SpinnerView(set: SpinnerViewProps -> unit) =
     let viewProps = SpinnerViewProps ()
     set viewProps
     new SpinnerViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member spinnerView(children: ITerminalElement list) =
+  static member SpinnerView(children: ITerminalElement list) =
     let viewProps = SpinnerViewProps ()
     viewProps.Children children
     new SpinnerViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member statusBar(set: StatusBarProps -> unit) =
+  static member StatusBar(set: StatusBarProps -> unit) =
     let viewProps = StatusBarProps ()
     set viewProps
     new StatusBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member statusBar(children: ITerminalElement list) =
+  static member StatusBar(children: ITerminalElement list) =
     let viewProps = StatusBarProps ()
     viewProps.Children children
     new StatusBarTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member tab(set: TabProps -> unit) =
+  static member Tab(set: TabProps -> unit) =
     let viewProps = TabProps ()
     set viewProps
     new TabTerminalElement(viewProps.props)
     :> ITabTerminalElement
 
-  static member tab(children: ITerminalElement list) =
+  static member Tab(children: ITerminalElement list) =
     let viewProps = TabProps ()
     viewProps.Children children
     new TabTerminalElement(viewProps.props)
     :> ITabTerminalElement
 
-  static member tabView(set: TabViewProps -> unit) =
+  static member TabView(set: TabViewProps -> unit) =
     let viewProps = TabViewProps ()
     set viewProps
     new TabViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member tabView(children: ITerminalElement list) =
+  static member TabView(children: ITerminalElement list) =
     let viewProps = TabViewProps ()
     viewProps.Children children
     new TabViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member tableView(set: TableViewProps -> unit) =
+  static member TableView(set: TableViewProps -> unit) =
     let viewProps = TableViewProps ()
     set viewProps
     new TableViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member tableView(children: ITerminalElement list) =
+  static member TableView(children: ITerminalElement list) =
     let viewProps = TableViewProps ()
     viewProps.Children children
     new TableViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textField(set: TextFieldProps -> unit) =
+  static member TextField(set: TextFieldProps -> unit) =
     let viewProps = TextFieldProps ()
     set viewProps
     new TextFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textField(children: ITerminalElement list) =
+  static member TextField(children: ITerminalElement list) =
     let viewProps = TextFieldProps ()
     viewProps.Children children
     new TextFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member dateField(set: DateFieldProps -> unit) =
+  static member DateField(set: DateFieldProps -> unit) =
     let viewProps = DateFieldProps ()
     set viewProps
     new DateFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member dateField(children: ITerminalElement list) =
+  static member DateField(children: ITerminalElement list) =
     let viewProps = DateFieldProps ()
     viewProps.Children children
     new DateFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textValidateField(set: TextValidateFieldProps -> unit) =
+  static member TextValidateField(set: TextValidateFieldProps -> unit) =
     let viewProps = TextValidateFieldProps ()
     set viewProps
     new TextValidateFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textValidateField(children: ITerminalElement list) =
+  static member TextValidateField(children: ITerminalElement list) =
     let viewProps = TextValidateFieldProps ()
     viewProps.Children children
     new TextValidateFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textView(set: TextViewProps -> unit) =
+  static member TextView(set: TextViewProps -> unit) =
     let viewProps = TextViewProps ()
     set viewProps
     new TextViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member textView(children: ITerminalElement list) =
+  static member TextView(children: ITerminalElement list) =
     let viewProps = TextViewProps ()
     viewProps.Children children
     new TextViewTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member timeField(set: TimeFieldProps -> unit) =
+  static member TimeField(set: TimeFieldProps -> unit) =
     let viewProps = TimeFieldProps ()
     set viewProps
     new TimeFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member timeField(children: ITerminalElement list) =
+  static member TimeField(children: ITerminalElement list) =
     let viewProps = TimeFieldProps ()
     viewProps.Children children
     new TimeFieldTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member treeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
+  static member TreeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
     let viewProps = TreeViewProps<'T> ()
 
     set viewProps
     new TreeViewTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member treeView<'T when 'T: not struct>(children: ITerminalElement list) =
+  static member TreeView<'T when 'T: not struct>(children: ITerminalElement list) =
     let viewProps = TreeViewProps<'T> ()
 
     viewProps.Children children
     new TreeViewTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
-  static member window(set: WindowProps -> unit) =
+  static member Window(set: WindowProps -> unit) =
     let viewProps = WindowProps ()
     set viewProps
     new WindowTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member window(children: ITerminalElement list) =
+  static member Window(children: ITerminalElement list) =
     let viewProps = WindowProps ()
     viewProps.Children children
     new WindowTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member dialog(set: DialogProps -> unit) =
+  static member Dialog(set: DialogProps -> unit) =
     let viewProps = DialogProps ()
     set viewProps
     new DialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member dialog(children: ITerminalElement list) =
+  static member Dialog(children: ITerminalElement list) =
     let viewProps = DialogProps ()
     viewProps.Children children
     new DialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member fileDialog(set: FileDialogProps -> unit) =
+  static member FileDialog(set: FileDialogProps -> unit) =
     let viewProps = FileDialogProps ()
     set viewProps
     new FileDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member fileDialog(children: ITerminalElement list) =
+  static member FileDialog(children: ITerminalElement list) =
     let viewProps = FileDialogProps ()
     viewProps.Children children
     new FileDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member openDialog(set: OpenDialogProps -> unit) =
+  static member OpenDialog(set: OpenDialogProps -> unit) =
     let viewProps = OpenDialogProps ()
     set viewProps
     new OpenDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member openDialog(children: ITerminalElement list) =
+  static member OpenDialog(children: ITerminalElement list) =
     let viewProps = OpenDialogProps ()
     viewProps.Children children
     new OpenDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member saveDialog(set: SaveDialogProps -> unit) =
+  static member SaveDialog(set: SaveDialogProps -> unit) =
     let viewProps = SaveDialogProps ()
     set viewProps
     new SaveDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member saveDialog(children: ITerminalElement list) =
+  static member SaveDialog(children: ITerminalElement list) =
     let viewProps = SaveDialogProps ()
     viewProps.Children children
     new SaveDialogTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member wizard(set: WizardProps -> unit) =
+  static member Wizard(set: WizardProps -> unit) =
     let viewProps = WizardProps ()
     set viewProps
     new WizardTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member wizard(children: ITerminalElement list) =
+  static member Wizard(children: ITerminalElement list) =
     let viewProps = WizardProps ()
     viewProps.Children children
     new WizardTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member wizardStep(set: WizardStepProps -> unit) =
+  static member WizardStep(set: WizardStepProps -> unit) =
     let viewProps = WizardStepProps ()
     set viewProps
     new WizardStepTerminalElement(viewProps.props)
     :> IWizardStepTerminalElement
 
-  static member wizardStep(children: ITerminalElement list) =
+  static member WizardStep(children: ITerminalElement list) =
     let viewProps = WizardStepProps ()
     viewProps.Children children
     new WizardStepTerminalElement(viewProps.props)

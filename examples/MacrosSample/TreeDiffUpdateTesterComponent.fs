@@ -33,28 +33,28 @@ let _component (set: IProps -> unit) =
        { model with DisplayedView = view }
 
   let view model dispatch =
-    View.runnable (fun (p: RunnableProps) ->
+    View.Runnable (fun (p: RunnableProps) ->
       props.y_value |> Option.iter p.Y
       p.Children [
         let first =
           if model.DisplayedView = Button then
-            View.button (fun p ->
+            View.Button (fun p ->
               p.Text "Click to test changing the Terminal Element type!"
               p.Activating (fun _ -> dispatch (ChangeView Label))
             )
           else
-            View.label (fun p ->
+            View.Label (fun p ->
               p.Text "Click to test changing the Terminal Element type!"
               p.Activating (fun _ -> dispatch (ChangeView Button))
             )
 
         let second =
-          View.label (fun p ->
+          View.Label (fun p ->
             p.Text "I am a static label below the first element."
             p.Y (TPos.Bottom first))
 
         let third =
-          View.label (fun p ->
+          View.Label (fun p ->
             p.Text "I am another static label below the second element."
             p.Y (TPos.Bottom second))
 

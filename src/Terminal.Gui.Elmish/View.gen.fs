@@ -242,6 +242,12 @@ type View =
     new MenuBarTerminalElement(props.props)
     :> IMenuTerminalElement
 
+  static member MenuBar(set: MenuBarProps -> unit) =
+    let viewProps = MenuBarProps ()
+    set viewProps
+    new MenuBarTerminalElement(viewProps.props)
+    :> IMenuTerminalElement
+
   static member MenuBar(children: ITerminalElement list) =
     let viewProps = MenuBarProps ()
     viewProps.Children children
@@ -250,14 +256,12 @@ type View =
 
   static member NumericUpDown<'T>(set: NumericUpDownProps<'T> -> unit) =
     let viewProps = NumericUpDownProps<'T> ()
-
     set viewProps
     new NumericUpDownTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
   static member NumericUpDown<'T>(children: ITerminalElement list) =
     let viewProps = NumericUpDownProps<'T> ()
-
     viewProps.Children children
     new NumericUpDownTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
@@ -312,14 +316,12 @@ type View =
 
   static member Runnable<'TResult>(set: RunnableProps<'TResult> -> unit) =
     let viewProps = RunnableProps<'TResult> ()
-
     set viewProps
     new RunnableTerminalElement<'TResult>(viewProps.props)
     :> ITerminalElement
 
   static member Runnable<'TResult>(children: ITerminalElement list) =
     let viewProps = RunnableProps<'TResult> ()
-
     viewProps.Children children
     new RunnableTerminalElement<'TResult>(viewProps.props)
     :> ITerminalElement
@@ -374,28 +376,24 @@ type View =
 
   static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(set: FlagSelectorProps<'TFlagsEnum> -> unit) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
-
     set viewProps
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
   static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
-
     viewProps.Children children
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
   static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(set: OptionSelectorProps<'TEnum> -> unit) =
     let viewProps = OptionSelectorProps<'TEnum> ()
-
     set viewProps
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
     :> ITerminalElement
 
   static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps<'TEnum> ()
-
     viewProps.Children children
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
     :> ITerminalElement
@@ -431,6 +429,12 @@ type View =
     new MenuBarItemTerminalElement(props.props)
     :> IMenuItemTerminalElement
 
+  static member MenuBarItem(set: MenuBarItemProps -> unit) =
+    let viewProps = MenuBarItemProps ()
+    set viewProps
+    new MenuBarItemTerminalElement(viewProps.props)
+    :> IMenuItemTerminalElement
+
   static member MenuBarItem(children: ITerminalElement list) =
     let viewProps = MenuBarItemProps ()
     viewProps.Children children
@@ -439,14 +443,12 @@ type View =
 
   static member Slider<'T>(set: SliderProps<'T> -> unit) =
     let viewProps = SliderProps<'T> ()
-
     set viewProps
     new SliderTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
   static member Slider<'T>(children: ITerminalElement list) =
     let viewProps = SliderProps<'T> ()
-
     viewProps.Children children
     new SliderTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
@@ -573,14 +575,12 @@ type View =
 
   static member TreeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
     let viewProps = TreeViewProps<'T> ()
-
     set viewProps
     new TreeViewTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
   static member TreeView<'T when 'T: not struct>(children: ITerminalElement list) =
     let viewProps = TreeViewProps<'T> ()
-
     viewProps.Children children
     new TreeViewTerminalElement<'T>(viewProps.props)
     :> ITerminalElement

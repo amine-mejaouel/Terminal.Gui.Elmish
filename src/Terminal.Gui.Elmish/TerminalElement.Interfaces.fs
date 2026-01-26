@@ -7,22 +7,22 @@ type internal OrientationInterface =
   static member removeProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
-    |> Props.tryFind PKey.OrientationInterface.Orientation
+    |> Props.tryFind PKey.IOrientationInterface.Orientation
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.tryRemoveEventHandler PKey.OrientationInterface.OrientationChanged
+    terminalElement.tryRemoveEventHandler PKey.IOrientationInterface.OrientationChanged
 
-    terminalElement.tryRemoveEventHandler PKey.OrientationInterface.OrientationChanging
+    terminalElement.tryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging
 
   static member setProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
-    |> Props.tryFind PKey.OrientationInterface.Orientation
+    |> Props.tryFind PKey.IOrientationInterface.Orientation
     |> Option.iter (fun v -> view.Orientation <- v)
 
     // Events
-    terminalElement.trySetEventHandler(PKey.OrientationInterface.OrientationChanged, view.OrientationChanged)
+    terminalElement.trySetEventHandler(PKey.IOrientationInterface.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.trySetEventHandler(PKey.OrientationInterface.OrientationChanging, view.OrientationChanging)
+    terminalElement.trySetEventHandler(PKey.IOrientationInterface.OrientationChanging, view.OrientationChanging)
 

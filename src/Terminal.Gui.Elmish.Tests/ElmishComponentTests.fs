@@ -10,7 +10,7 @@ let ``TerminalElement created by Elmish component is flagged as isElmishComponen
     let init _ = (), Cmd.none
     let update _ _ = (), Cmd.none
 
-    let view _ _ = View.button(fun _ -> ())
+    let view _ _ = View.Button(fun _ -> ())
 
     let terminalElement =
       ElmishTerminal.mkSimple init update view

@@ -28,18 +28,18 @@ let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>
   (), Cmd.none
 
 let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement =
-  View.runnable [
-    View.menuBar (fun p _ ->
+  View.Runnable [
+    View.MenuBar (fun p _ ->
       p.Children [
-        View.menuBarItem (fun p _ ->
+        View.MenuBarItem (fun p _ ->
           p.Title "_File"
 
           p.PopoverMenu (
-            View.popoverMenu (fun p ->
+            View.PopoverMenu (fun p ->
               p.Root (
-                View.menu (fun p ->
+                View.Menu (fun p ->
                   p.Children [
-                    View.menuItem (fun p ->
+                    View.MenuItem (fun p ->
                       p.Title "Quit"
                       // p.HelpText "Quit UI Catalog"
                       // p.Key Application.QuitKey
@@ -51,17 +51,17 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
             )
           )
         )
-        View.menuBarItem (fun p _ ->
+        View.MenuBarItem (fun p _ ->
           p.Title "_Themes"
 
           p.PopoverMenu (
-            View.popoverMenu (fun p ->
+            View.PopoverMenu (fun p ->
               p.Root (
-                View.menu (fun p ->
+                View.Menu (fun p ->
                   p.Children [
-                    View.menuItem (fun p ->
+                    View.MenuItem (fun p ->
                       p.TargetView (
-                        View.checkBox (fun p ->
+                        View.CheckBox (fun p ->
                           p.Title "Force _16 Colors"
 
                           // p.CheckedState (
@@ -85,14 +85,14 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
                         )
                       )
                     )
-                    View.menuItem (fun p -> p.TargetView (View.line []))
+                    View.MenuItem (fun p -> p.TargetView (View.Line []))
                     if ConfigurationManager.IsEnabled then
-                      View.menuItem (fun p ->
+                      View.MenuItem (fun p ->
                         // p.HelpText "Cycle Through Themes"
                         // p.Key Key.T.WithCtrl
 
                         p.TargetView (
-                          View.optionSelector (fun p ->
+                          View.OptionSelector (fun p ->
                             ()
                             // p.HighlightStates MouseState.None
                             // p.Options (ThemeManager.GetThemeNames())

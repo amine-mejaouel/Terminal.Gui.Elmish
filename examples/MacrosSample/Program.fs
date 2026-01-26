@@ -42,12 +42,12 @@ let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>
 
 let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
   let menuBar =
-    View.menuBar (fun p m ->
-      m.menuBarItem (fun p m ->
+    View.MenuBar (fun p m ->
+      m.MenuBarItem (fun p m ->
         p.Title "_File"
 
-        m.menuItems [
-           View.menuItem (fun p ->
+        m.MenuItems [
+           View.MenuItem (fun p ->
              p.Title "Quit"
              // p.HelpText "Quit UI Catalog"
              // p.Key (Key('Q'))
@@ -56,13 +56,13 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
         ]
       )
 
-      m.menuBarItem (fun p m ->
+      m.MenuBarItem (fun p m ->
         p.Title "_Themes"
 
-        m.menuItems [
-          View.menuItem (fun p -> p.TargetView (View.line []))
+        m.MenuItems [
+          View.MenuItem (fun p -> p.TargetView (View.Line []))
           if ConfigurationManager.IsEnabled then
-            View.menuItem (fun p ->
+            View.MenuItem (fun p ->
               p.Text "Cycle Through Themes"
               // p.Key Key.T.WithCtrl
 
@@ -85,7 +85,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
     )
 
   let categoriesListView =
-    View.listView (fun p ->
+    View.ListView (fun p ->
       p.BorderStyle LineStyle.Rounded
       p.X 0
       p.Y (TPos.Bottom menuBar)
@@ -96,7 +96,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
     )
 
   let scenariosListView =
-    View.frameView (fun p ->
+    View.FrameView (fun p ->
       p.BorderStyle LineStyle.Rounded
       p.X (TPos.Right categoriesListView)
       p.Y (TPos.Bottom menuBar)
@@ -104,9 +104,9 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
       p.Width (Dim.Fill())
       p.Title "_Scenarios"
       p.Children [
-        let label = View.label (fun p -> p.Title "TextView:")
+        let label = View.Label (fun p -> p.Title "TextView:")
         let textView =
-          View.textView (fun p ->
+          View.TextView (fun p ->
             p.Text "This is a TextView"
             p.Y (TPos.Bottom label)
             p.Height 2
@@ -130,7 +130,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
       ]
     )
 
-  View.runnable [
+  View.Runnable [
     // TODO: fix type inference if possible so that the cast is not needed
     menuBar :> ITerminalElement
     categoriesListView

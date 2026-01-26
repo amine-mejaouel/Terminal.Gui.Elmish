@@ -2,8 +2,6 @@ namespace Terminal.Gui.Elmish
 
 open System
 open Terminal.Gui.Elmish
-open Terminal.Gui.ViewBase
-open Terminal.Gui.Views
 
 type View =
 

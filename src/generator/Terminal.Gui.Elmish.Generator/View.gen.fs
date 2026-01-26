@@ -49,8 +49,6 @@ let genMethods (viewType: Type) =
 let opens = [
     "open System"
     "open Terminal.Gui.Elmish"
-    "open Terminal.Gui.ViewBase"
-    "open Terminal.Gui.Views"
   ]
 
 let gen () =

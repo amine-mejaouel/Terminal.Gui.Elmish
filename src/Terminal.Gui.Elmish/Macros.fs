@@ -1,7 +1,7 @@
 namespace Terminal.Gui.Elmish
 
 type MenuBarItemMacros internal (props: MenuBarItemProps) =
-  member _.MenuItems(value: ITerminalElement list) =
+  member _.MenuItems(value: IMenuItemTerminalElement list) =
     let popoverMenu =
       props.props.getOrInit PKey.MenuBarItem.PopoverMenu_element (fun () -> new PopoverMenuTerminalElement(Props())) :?> PopoverMenuTerminalElement
 

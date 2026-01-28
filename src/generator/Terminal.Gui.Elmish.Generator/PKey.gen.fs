@@ -78,14 +78,14 @@ let genInterfaceKeys (interfaceType: Type) =
       if i.Properties.Length > 0 then
         yield "    // Properties"
         for prop in i.Properties do
-          yield $"    let {prop.PKey}: ISimplePropKey<{prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: ISimplePropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
           yield ""
 
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
           let handlerType = eventHandlerType event.EventInfo
-          yield $"    let {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
           yield ""
     }
 

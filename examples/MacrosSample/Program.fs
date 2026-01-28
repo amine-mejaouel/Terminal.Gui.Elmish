@@ -50,8 +50,11 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
            View.MenuItem (fun p ->
              p.Title "Quit"
              // p.HelpText "Quit UI Catalog"
-             // p.Key (Key('Q'))
-             // p.Action (fun _ -> dispatch TerminalMsg.Terminate)
+             p.HotKey Key.Q
+             p.MouseEvent (fun e ->
+               if e.IsSingleClicked then
+                 dispatch TerminalMsg.Terminate
+             )
            )
         ]
       )

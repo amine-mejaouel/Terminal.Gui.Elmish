@@ -17,6 +17,18 @@ type View =
     new AdornmentTerminalElement(viewProps.props)
     :> ITerminalElement
 
+  static member AttributePicker(set: AttributePickerProps -> unit) =
+    let viewProps = AttributePickerProps ()
+    set viewProps
+    new AttributePickerTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member AttributePicker(children: ITerminalElement list) =
+    let viewProps = AttributePickerProps ()
+    viewProps.Children children
+    new AttributePickerTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member Bar(set: BarProps -> unit) =
     let viewProps = BarProps ()
     set viewProps
@@ -195,6 +207,18 @@ type View =
     let viewProps = LineProps ()
     viewProps.Children children
     new LineTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member LinearRange<'T>(set: LinearRangeProps<'T> -> unit) =
+    let viewProps = LinearRangeProps<'T> ()
+    set viewProps
+    new LinearRangeTerminalElement<'T>(viewProps.props)
+    :> ITerminalElement
+
+  static member LinearRange<'T>(children: ITerminalElement list) =
+    let viewProps = LinearRangeProps<'T> ()
+    viewProps.Children children
+    new LinearRangeTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
   static member ListView(set: ListViewProps -> unit) =
@@ -439,18 +463,6 @@ type View =
     new MenuBarItemTerminalElement(viewProps.props)
     :> IMenuItemTerminalElement
 
-  static member Slider<'T>(set: SliderProps<'T> -> unit) =
-    let viewProps = SliderProps<'T> ()
-    set viewProps
-    new SliderTerminalElement<'T>(viewProps.props)
-    :> ITerminalElement
-
-  static member Slider<'T>(children: ITerminalElement list) =
-    let viewProps = SliderProps<'T> ()
-    viewProps.Children children
-    new SliderTerminalElement<'T>(viewProps.props)
-    :> ITerminalElement
-
   static member SpinnerView(set: SpinnerViewProps -> unit) =
     let viewProps = SpinnerViewProps ()
     set viewProps
@@ -595,74 +607,14 @@ type View =
     new WindowTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member Dialog(set: DialogProps -> unit) =
-    let viewProps = DialogProps ()
-    set viewProps
-    new DialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member Dialog(children: ITerminalElement list) =
-    let viewProps = DialogProps ()
-    viewProps.Children children
-    new DialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member FileDialog(set: FileDialogProps -> unit) =
-    let viewProps = FileDialogProps ()
-    set viewProps
-    new FileDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member FileDialog(children: ITerminalElement list) =
-    let viewProps = FileDialogProps ()
-    viewProps.Children children
-    new FileDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member OpenDialog(set: OpenDialogProps -> unit) =
-    let viewProps = OpenDialogProps ()
-    set viewProps
-    new OpenDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member OpenDialog(children: ITerminalElement list) =
-    let viewProps = OpenDialogProps ()
-    viewProps.Children children
-    new OpenDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member SaveDialog(set: SaveDialogProps -> unit) =
-    let viewProps = SaveDialogProps ()
-    set viewProps
-    new SaveDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member SaveDialog(children: ITerminalElement list) =
-    let viewProps = SaveDialogProps ()
-    viewProps.Children children
-    new SaveDialogTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member Wizard(set: WizardProps -> unit) =
-    let viewProps = WizardProps ()
-    set viewProps
-    new WizardTerminalElement(viewProps.props)
-    :> ITerminalElement
-
-  static member Wizard(children: ITerminalElement list) =
-    let viewProps = WizardProps ()
-    viewProps.Children children
-    new WizardTerminalElement(viewProps.props)
-    :> ITerminalElement
-
   static member WizardStep(set: WizardStepProps -> unit) =
     let viewProps = WizardStepProps ()
     set viewProps
     new WizardStepTerminalElement(viewProps.props)
-    :> IWizardStepTerminalElement
+    :> ITerminalElement
 
   static member WizardStep(children: ITerminalElement list) =
     let viewProps = WizardStepProps ()
     viewProps.Children children
     new WizardStepTerminalElement(viewProps.props)
-    :> IWizardStepTerminalElement
+    :> ITerminalElement

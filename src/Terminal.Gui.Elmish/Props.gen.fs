@@ -42,6 +42,10 @@ type ViewProps() =
     this.props.add (PKey.View.Arrangement, value)
 
 
+  member this.AssignHotKeys (value: bool) =
+    this.props.add (PKey.View.AssignHotKeys, value)
+
+
   member this.BorderStyle (value: LineStyle) =
     this.props.add (PKey.View.BorderStyle, value)
 
@@ -54,8 +58,8 @@ type ViewProps() =
     this.props.add (PKey.View.ContentSizeTracksViewport, value)
 
 
-  member this.CursorVisibility (value: CursorVisibility) =
-    this.props.add (PKey.View.CursorVisibility, value)
+  member this.Cursor (value: Cursor) =
+    this.props.add (PKey.View.Cursor, value)
 
 
   member this.Data (value: Object) =
@@ -78,10 +82,6 @@ type ViewProps() =
     this.props.add (PKey.View.Height, value)
 
 
-  member this.HighlightStates (value: MouseState) =
-    this.props.add (PKey.View.HighlightStates, value)
-
-
   member this.HotKey (value: Key) =
     this.props.add (PKey.View.HotKey, value)
 
@@ -98,8 +98,16 @@ type ViewProps() =
     this.props.add (PKey.View.IsInitialized, value)
 
 
-  member this.MouseHeldDown (value: IMouseHeldDown) =
-    this.props.add (PKey.View.MouseHeldDown, value)
+  member this.MouseHighlightStates (value: MouseState) =
+    this.props.add (PKey.View.MouseHighlightStates, value)
+
+
+  member this.MouseHoldRepeat (value: Nullable<MouseFlags>) =
+    this.props.add (PKey.View.MouseHoldRepeat, value)
+
+
+  member this.MousePositionTracking (value: bool) =
+    this.props.add (PKey.View.MousePositionTracking, value)
 
 
   member this.PreserveTrailingSpaces (value: bool) =
@@ -138,6 +146,10 @@ type ViewProps() =
     this.props.add (PKey.View.Title, value)
 
 
+  member this.UsedHotKeys (value: HashSet<Key>) =
+    this.props.add (PKey.View.UsedHotKeys, value)
+
+
   member this.ValidatePosDim (value: bool) =
     this.props.add (PKey.View.ValidatePosDim, value)
 
@@ -156,14 +168,6 @@ type ViewProps() =
 
   member this.Visible (value: bool) =
     this.props.add (PKey.View.Visible, value)
-
-
-  member this.WantContinuousButtonPressed (value: bool) =
-    this.props.add (PKey.View.WantContinuousButtonPressed, value)
-
-
-  member this.WantMousePositionReports (value: bool) =
-    this.props.add (PKey.View.WantMousePositionReports, value)
 
 
   member this.Width (value: Dim) =
@@ -206,8 +210,11 @@ type ViewProps() =
   member this.CommandNotBound (handler: CommandEventArgs -> unit) =
     this.props.add (PKey.View.CommandNotBound, handler)
 
-  member this.ContentSizeChanged (handler: SizeChangedEventArgs -> unit) =
+  member this.ContentSizeChanged (handler: ValueChangedEventArgs<Nullable<Size>> -> unit) =
     this.props.add (PKey.View.ContentSizeChanged, handler)
+
+  member this.ContentSizeChanging (handler: ValueChangingEventArgs<Nullable<Size>> -> unit) =
+    this.props.add (PKey.View.ContentSizeChanging, handler)
 
   member this.Disposing (handler: EventArgs -> unit) =
     this.props.add (PKey.View.Disposing, handler)
@@ -269,23 +276,23 @@ type ViewProps() =
   member this.KeyDownNotHandled (handler: Key -> unit) =
     this.props.add (PKey.View.KeyDownNotHandled, handler)
 
-  member this.KeyUp (handler: Key -> unit) =
-    this.props.add (PKey.View.KeyUp, handler)
-
   member this.MouseEnter (handler: CancelEventArgs -> unit) =
     this.props.add (PKey.View.MouseEnter, handler)
 
-  member this.MouseEvent (handler: MouseEventArgs -> unit) =
+  member this.MouseEvent (handler: Mouse -> unit) =
     this.props.add (PKey.View.MouseEvent, handler)
+
+  member this.MouseHoldRepeatChanged (handler: ValueChangedEventArgs<Nullable<MouseFlags>> -> unit) =
+    this.props.add (PKey.View.MouseHoldRepeatChanged, handler)
+
+  member this.MouseHoldRepeatChanging (handler: ValueChangingEventArgs<Nullable<MouseFlags>> -> unit) =
+    this.props.add (PKey.View.MouseHoldRepeatChanging, handler)
 
   member this.MouseLeave (handler: EventArgs -> unit) =
     this.props.add (PKey.View.MouseLeave, handler)
 
   member this.MouseStateChanged (handler: EventArgs<MouseState> -> unit) =
     this.props.add (PKey.View.MouseStateChanged, handler)
-
-  member this.MouseWheel (handler: MouseEventArgs -> unit) =
-    this.props.add (PKey.View.MouseWheel, handler)
 
   member this.Removed (handler: SuperViewChangedEventArgs -> unit) =
     this.props.add (PKey.View.Removed, handler)
@@ -314,8 +321,11 @@ type ViewProps() =
   member this.SubViewsLaidOut (handler: LayoutEventArgs -> unit) =
     this.props.add (PKey.View.SubViewsLaidOut, handler)
 
-  member this.SuperViewChanged (handler: SuperViewChangedEventArgs -> unit) =
+  member this.SuperViewChanged (handler: ValueChangedEventArgs<View> -> unit) =
     this.props.add (PKey.View.SuperViewChanged, handler)
+
+  member this.SuperViewChanging (handler: ValueChangingEventArgs<View> -> unit) =
+    this.props.add (PKey.View.SuperViewChanging, handler)
 
   member this.TextChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.View.TextChanged, handler)
@@ -369,6 +379,24 @@ type AdornmentProps() =
   // Events
   member this.ThicknessChanged (handler: EventArgs -> unit) =
     this.props.add (PKey.Adornment.ThicknessChanged, handler)
+
+type AttributePickerProps() =
+  inherit ViewProps()
+  // Properties
+  member this.SampleText (value: string) =
+    this.props.add (PKey.AttributePicker.SampleText, value)
+
+
+  member this.Value (value: Nullable<Attribute>) =
+    this.props.add (PKey.AttributePicker.Value, value)
+
+
+  // Events
+  member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<Attribute>> -> unit) =
+    this.props.add (PKey.AttributePicker.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Nullable<Attribute>> -> unit) =
+    this.props.add (PKey.AttributePicker.ValueChanging, handler)
 
 type BarProps() =
   inherit ViewProps()
@@ -441,19 +469,22 @@ type CharMapProps() =
     this.props.add (PKey.CharMap.StartCodePoint, value)
 
 
+  member this.Value (value: Rune) =
+    this.props.add (PKey.CharMap.Value, value)
+
+
   // Events
-  member this.SelectedCodePointChanged (handler: EventArgs<int> -> unit) =
-    this.props.add (PKey.CharMap.SelectedCodePointChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<Rune> -> unit) =
+    this.props.add (PKey.CharMap.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Rune> -> unit) =
+    this.props.add (PKey.CharMap.ValueChanging, handler)
 
 type CheckBoxProps() =
   inherit ViewProps()
   // Properties
   member this.AllowCheckStateNone (value: bool) =
     this.props.add (PKey.CheckBox.AllowCheckStateNone, value)
-
-
-  member this.CheckedState (value: CheckState) =
-    this.props.add (PKey.CheckBox.CheckedState, value)
 
 
   member this.HotKeySpecifier (value: Rune) =
@@ -468,12 +499,16 @@ type CheckBoxProps() =
     this.props.add (PKey.CheckBox.Text, value)
 
 
-  // Events
-  member this.CheckedStateChanged (handler: EventArgs<CheckState> -> unit) =
-    this.props.add (PKey.CheckBox.CheckedStateChanged, handler)
+  member this.Value (value: CheckState) =
+    this.props.add (PKey.CheckBox.Value, value)
 
-  member this.CheckedStateChanging (handler: ResultEventArgs<CheckState> -> unit) =
-    this.props.add (PKey.CheckBox.CheckedStateChanging, handler)
+
+  // Events
+  member this.ValueChanged (handler: ValueChangedEventArgs<CheckState> -> unit) =
+    this.props.add (PKey.CheckBox.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<CheckState> -> unit) =
+    this.props.add (PKey.CheckBox.ValueChanging, handler)
 
 type ColorPickerProps() =
   inherit ViewProps()
@@ -486,9 +521,20 @@ type ColorPickerProps() =
     this.props.add (PKey.ColorPicker.Style, value)
 
 
+  member this.Text (value: string) =
+    this.props.add (PKey.ColorPicker.Text, value)
+
+
+  member this.Value (value: Nullable<Color>) =
+    this.props.add (PKey.ColorPicker.Value, value)
+
+
   // Events
-  member this.ColorChanged (handler: ResultEventArgs<Color> -> unit) =
-    this.props.add (PKey.ColorPicker.ColorChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<Color>> -> unit) =
+    this.props.add (PKey.ColorPicker.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Nullable<Color>> -> unit) =
+    this.props.add (PKey.ColorPicker.ValueChanging, handler)
 
 type ColorPicker16Props() =
   inherit ViewProps()
@@ -501,17 +547,24 @@ type ColorPicker16Props() =
     this.props.add (PKey.ColorPicker16.BoxWidth, value)
 
 
-  member this.Cursor (value: Point) =
-    this.props.add (PKey.ColorPicker16.Cursor, value)
+  member this.Caret (value: Point) =
+    this.props.add (PKey.ColorPicker16.Caret, value)
 
 
   member this.SelectedColor (value: ColorName16) =
     this.props.add (PKey.ColorPicker16.SelectedColor, value)
 
 
+  member this.Value (value: ColorName16) =
+    this.props.add (PKey.ColorPicker16.Value, value)
+
+
   // Events
-  member this.ColorChanged (handler: ResultEventArgs<Color> -> unit) =
-    this.props.add (PKey.ColorPicker16.ColorChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<ColorName16> -> unit) =
+    this.props.add (PKey.ColorPicker16.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<ColorName16> -> unit) =
+    this.props.add (PKey.ColorPicker16.ValueChanging, handler)
 
 type ComboBoxProps() =
   inherit ViewProps()
@@ -560,9 +613,20 @@ type DatePickerProps() =
     this.props.add (PKey.DatePicker.Culture, value)
 
 
-  member this.Date (value: DateTime) =
-    this.props.add (PKey.DatePicker.Date, value)
+  member this.Text (value: string) =
+    this.props.add (PKey.DatePicker.Text, value)
 
+
+  member this.Value (value: DateTime) =
+    this.props.add (PKey.DatePicker.Value, value)
+
+
+  // Events
+  member this.ValueChanged (handler: ValueChangedEventArgs<DateTime> -> unit) =
+    this.props.add (PKey.DatePicker.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<DateTime> -> unit) =
+    this.props.add (PKey.DatePicker.ValueChanging, handler)
 
 type FrameViewProps() =
   inherit ViewProps()
@@ -662,23 +726,123 @@ type LineProps() =
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.Line.OrientationChanging, handler)
 
+type LinearRangeProps<'T>() =
+  inherit ViewProps()
+  // Properties
+  member this.AllowEmpty (value: bool) =
+    this.props.add (PKey.LinearRange<'T>.AllowEmpty, value)
+
+
+  member this.FocusedOption (value: int) =
+    this.props.add (PKey.LinearRange<'T>.FocusedOption, value)
+
+
+  member this.LegendsOrientation (value: Orientation) =
+    this.props.add (PKey.LinearRange<'T>.LegendsOrientation, value)
+
+
+  member this.MinimumInnerSpacing (value: int) =
+    this.props.add (PKey.LinearRange<'T>.MinimumInnerSpacing, value)
+
+
+  member this.Options (value: List<LinearRangeOption<'T>>) =
+    this.props.add (PKey.LinearRange<'T>.Options, value)
+
+
+  member this.Orientation (value: Orientation) =
+    this.props.add (PKey.LinearRange<'T>.Orientation, value)
+
+
+  member this.RangeAllowSingle (value: bool) =
+    this.props.add (PKey.LinearRange<'T>.RangeAllowSingle, value)
+
+
+  member this.ShowEndSpacing (value: bool) =
+    this.props.add (PKey.LinearRange<'T>.ShowEndSpacing, value)
+
+
+  member this.ShowLegends (value: bool) =
+    this.props.add (PKey.LinearRange<'T>.ShowLegends, value)
+
+
+  member this.Style (value: LinearRangeStyle) =
+    this.props.add (PKey.LinearRange<'T>.Style, value)
+
+
+  member this.Text (value: string) =
+    this.props.add (PKey.LinearRange<'T>.Text, value)
+
+
+  member this.Type (value: LinearRangeType) =
+    this.props.add (PKey.LinearRange<'T>.Type, value)
+
+
+  member this.UseMinimumSize (value: bool) =
+    this.props.add (PKey.LinearRange<'T>.UseMinimumSize, value)
+
+
+  // Events
+  member this.LegendsOrientationChanged (handler: ValueChangedEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.LegendsOrientationChanged, handler)
+
+  member this.LegendsOrientationChanging (handler: ValueChangingEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.LegendsOrientationChanging, handler)
+
+  member this.MinimumInnerSpacingChanged (handler: ValueChangedEventArgs<int> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.MinimumInnerSpacingChanged, handler)
+
+  member this.MinimumInnerSpacingChanging (handler: ValueChangingEventArgs<int> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.MinimumInnerSpacingChanging, handler)
+
+  member this.OptionFocused (handler: LinearRangeEventArgs<'T> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.OptionFocused, handler)
+
+  member this.OptionsChanged (handler: LinearRangeEventArgs<'T> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.OptionsChanged, handler)
+
+  member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.OrientationChanged, handler)
+
+  member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.OrientationChanging, handler)
+
+  member this.ShowEndSpacingChanged (handler: ValueChangedEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.ShowEndSpacingChanged, handler)
+
+  member this.ShowEndSpacingChanging (handler: ValueChangingEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.ShowEndSpacingChanging, handler)
+
+  member this.ShowLegendsChanged (handler: ValueChangedEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.ShowLegendsChanged, handler)
+
+  member this.ShowLegendsChanging (handler: ValueChangingEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.ShowLegendsChanging, handler)
+
+  member this.TypeChanged (handler: ValueChangedEventArgs<LinearRangeType> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.TypeChanged, handler)
+
+  member this.TypeChanging (handler: ValueChangingEventArgs<LinearRangeType> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.TypeChanging, handler)
+
+  member this.UseMinimumSizeChanged (handler: ValueChangedEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.UseMinimumSizeChanged, handler)
+
+  member this.UseMinimumSizeChanging (handler: ValueChangingEventArgs<bool> -> unit) =
+    this.props.add (PKey.LinearRange<'T>.UseMinimumSizeChanging, handler)
+
 type ListViewProps() =
   inherit ViewProps()
   // Properties
-  member this.AllowsMarking (value: bool) =
-    this.props.add (PKey.ListView.AllowsMarking, value)
-
-
-  member this.AllowsMultipleSelection (value: bool) =
-    this.props.add (PKey.ListView.AllowsMultipleSelection, value)
-
-
-  member this.LeftItem (value: int) =
-    this.props.add (PKey.ListView.LeftItem, value)
+  member this.MarkMultiple (value: bool) =
+    this.props.add (PKey.ListView.MarkMultiple, value)
 
 
   member this.SelectedItem (value: Nullable<int>) =
     this.props.add (PKey.ListView.SelectedItem, value)
+
+
+  member this.ShowMarks (value: bool) =
+    this.props.add (PKey.ListView.ShowMarks, value)
 
 
   member this.Source (value: IListDataSource) =
@@ -689,22 +853,30 @@ type ListViewProps() =
     this.props.add (PKey.ListView.TopItem, value)
 
 
+  member this.Value (value: Nullable<int>) =
+    this.props.add (PKey.ListView.Value, value)
+
+
   // Events
   member this.CollectionChanged (handler: NotifyCollectionChangedEventArgs -> unit) =
     this.props.add (PKey.ListView.CollectionChanged, handler)
 
-  member this.OpenSelectedItem (handler: ListViewItemEventArgs -> unit) =
-    this.props.add (PKey.ListView.OpenSelectedItem, handler)
-
   member this.RowRender (handler: ListViewRowEventArgs -> unit) =
     this.props.add (PKey.ListView.RowRender, handler)
 
-  member this.SelectedItemChanged (handler: ListViewItemEventArgs -> unit) =
-    this.props.add (PKey.ListView.SelectedItemChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<int>> -> unit) =
+    this.props.add (PKey.ListView.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Nullable<int>> -> unit) =
+    this.props.add (PKey.ListView.ValueChanging, handler)
 
 type MarginProps() =
   inherit ViewProps()
   // Properties
+  member this.ShadowSize (value: Size) =
+    this.props.add (PKey.Margin.ShadowSize, value)
+
+
   member this.ShadowStyle (value: ShadowStyle) =
     this.props.add (PKey.Margin.ShadowStyle, value)
 
@@ -761,10 +933,10 @@ type NumericUpDownProps<'T>() =
   member this.IncrementChanged (handler: EventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.IncrementChanged, handler)
 
-  member this.ValueChanged (handler: EventArgs<'T> -> unit) =
+  member this.ValueChanged (handler: ValueChangedEventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.ValueChanged, handler)
 
-  member this.ValueChanging (handler: CancelEventArgs<'T> -> unit) =
+  member this.ValueChanging (handler: ValueChangingEventArgs<'T> -> unit) =
     this.props.add (PKey.NumericUpDown<'T>.ValueChanging, handler)
 
 type PaddingProps() =
@@ -867,12 +1039,12 @@ type ScrollBarProps() =
     this.props.add (PKey.ScrollBar.Orientation, value)
 
 
-  member this.Position (value: int) =
-    this.props.add (PKey.ScrollBar.Position, value)
-
-
   member this.ScrollableContentSize (value: int) =
     this.props.add (PKey.ScrollBar.ScrollableContentSize, value)
+
+
+  member this.Value (value: int) =
+    this.props.add (PKey.ScrollBar.Value, value)
 
 
   member this.VisibleContentSize (value: int) =
@@ -886,12 +1058,6 @@ type ScrollBarProps() =
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.ScrollBar.OrientationChanging, handler)
 
-  member this.PositionChanged (handler: EventArgs<int> -> unit) =
-    this.props.add (PKey.ScrollBar.PositionChanged, handler)
-
-  member this.PositionChanging (handler: CancelEventArgs<int> -> unit) =
-    this.props.add (PKey.ScrollBar.PositionChanging, handler)
-
   member this.ScrollableContentSizeChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.ScrollableContentSizeChanged, handler)
 
@@ -900,6 +1066,12 @@ type ScrollBarProps() =
 
   member this.SliderPositionChanged (handler: EventArgs<int> -> unit) =
     this.props.add (PKey.ScrollBar.SliderPositionChanged, handler)
+
+  member this.ValueChanged (handler: ValueChangedEventArgs<int> -> unit) =
+    this.props.add (PKey.ScrollBar.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<int> -> unit) =
+    this.props.add (PKey.ScrollBar.ValueChanging, handler)
 
 type ScrollSliderProps() =
   inherit ViewProps()
@@ -943,10 +1115,6 @@ type ScrollSliderProps() =
 type SelectorBaseProps() =
   inherit ViewProps()
   // Properties
-  member this.AssignHotKeys (value: bool) =
-    this.props.add (PKey.SelectorBase.AssignHotKeys, value)
-
-
   member this.DoubleClickAccepts (value: bool) =
     this.props.add (PKey.SelectorBase.DoubleClickAccepts, value)
 
@@ -967,10 +1135,6 @@ type SelectorBaseProps() =
     this.props.add (PKey.SelectorBase.Styles, value)
 
 
-  member this.UsedHotKeys (value: HashSet<Key>) =
-    this.props.add (PKey.SelectorBase.UsedHotKeys, value)
-
-
   member this.Value (value: Nullable<int>) =
     this.props.add (PKey.SelectorBase.Value, value)
 
@@ -986,8 +1150,11 @@ type SelectorBaseProps() =
   member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
     this.props.add (PKey.SelectorBase.OrientationChanging, handler)
 
-  member this.ValueChanged (handler: EventArgs<Nullable<int>> -> unit) =
+  member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<int>> -> unit) =
     this.props.add (PKey.SelectorBase.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Nullable<int>> -> unit) =
+    this.props.add (PKey.SelectorBase.ValueChanging, handler)
 
 type FlagSelectorProps() =
   inherit ViewProps()
@@ -1122,74 +1289,6 @@ type MenuBarItemProps() =
   // Events
   member this.PopoverMenuOpenChanged (handler: EventArgs<bool> -> unit) =
     this.props.add (PKey.MenuBarItem.PopoverMenuOpenChanged, handler)
-
-type SliderProps<'T>() =
-  inherit ViewProps()
-  // Properties
-  member this.AllowEmpty (value: bool) =
-    this.props.add (PKey.Slider<'T>.AllowEmpty, value)
-
-
-  member this.FocusedOption (value: int) =
-    this.props.add (PKey.Slider<'T>.FocusedOption, value)
-
-
-  member this.LegendsOrientation (value: Orientation) =
-    this.props.add (PKey.Slider<'T>.LegendsOrientation, value)
-
-
-  member this.MinimumInnerSpacing (value: int) =
-    this.props.add (PKey.Slider<'T>.MinimumInnerSpacing, value)
-
-
-  member this.Options (value: List<SliderOption<'T>>) =
-    this.props.add (PKey.Slider<'T>.Options, value)
-
-
-  member this.Orientation (value: Orientation) =
-    this.props.add (PKey.Slider<'T>.Orientation, value)
-
-
-  member this.RangeAllowSingle (value: bool) =
-    this.props.add (PKey.Slider<'T>.RangeAllowSingle, value)
-
-
-  member this.ShowEndSpacing (value: bool) =
-    this.props.add (PKey.Slider<'T>.ShowEndSpacing, value)
-
-
-  member this.ShowLegends (value: bool) =
-    this.props.add (PKey.Slider<'T>.ShowLegends, value)
-
-
-  member this.Style (value: SliderStyle) =
-    this.props.add (PKey.Slider<'T>.Style, value)
-
-
-  member this.Text (value: string) =
-    this.props.add (PKey.Slider<'T>.Text, value)
-
-
-  member this.Type (value: SliderType) =
-    this.props.add (PKey.Slider<'T>.Type, value)
-
-
-  member this.UseMinimumSize (value: bool) =
-    this.props.add (PKey.Slider<'T>.UseMinimumSize, value)
-
-
-  // Events
-  member this.OptionFocused (handler: SliderEventArgs<'T> -> unit) =
-    this.props.add (PKey.Slider<'T>.OptionFocused, handler)
-
-  member this.OptionsChanged (handler: SliderEventArgs<'T> -> unit) =
-    this.props.add (PKey.Slider<'T>.OptionsChanged, handler)
-
-  member this.OrientationChanged (handler: EventArgs<Orientation> -> unit) =
-    this.props.add (PKey.Slider<'T>.OrientationChanged, handler)
-
-  member this.OrientationChanging (handler: CancelEventArgs<Orientation> -> unit) =
-    this.props.add (PKey.Slider<'T>.OrientationChanging, handler)
 
 type SpinnerViewProps() =
   inherit ViewProps()
@@ -1337,8 +1436,8 @@ type TextFieldProps() =
     this.props.add (PKey.TextField.Autocomplete, value)
 
 
-  member this.CursorPosition (value: int) =
-    this.props.add (PKey.TextField.CursorPosition, value)
+  member this.InsertionPoint (value: int) =
+    this.props.add (PKey.TextField.InsertionPoint, value)
 
 
   member this.ReadOnly (value: bool) =
@@ -1369,9 +1468,19 @@ type TextFieldProps() =
     this.props.add (PKey.TextField.Used, value)
 
 
+  member this.Value (value: string) =
+    this.props.add (PKey.TextField.Value, value)
+
+
   // Events
   member this.TextChanging (handler: ResultEventArgs<string> -> unit) =
     this.props.add (PKey.TextField.TextChanging, handler)
+
+  member this.ValueChanged (handler: ValueChangedEventArgs<string> -> unit) =
+    this.props.add (PKey.TextField.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<string> -> unit) =
+    this.props.add (PKey.TextField.ValueChanging, handler)
 
 type DateFieldProps() =
   inherit ViewProps()
@@ -1380,17 +1489,20 @@ type DateFieldProps() =
     this.props.add (PKey.DateField.Culture, value)
 
 
-  member this.CursorPosition (value: int) =
-    this.props.add (PKey.DateField.CursorPosition, value)
+  member this.InsertionPoint (value: int) =
+    this.props.add (PKey.DateField.InsertionPoint, value)
 
 
-  member this.Date (value: Nullable<DateTime>) =
-    this.props.add (PKey.DateField.Date, value)
+  member this.Value (value: Nullable<DateTime>) =
+    this.props.add (PKey.DateField.Value, value)
 
 
   // Events
-  member this.DateChanged (handler: EventArgs<DateTime> -> unit) =
-    this.props.add (PKey.DateField.DateChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<DateTime>> -> unit) =
+    this.props.add (PKey.DateField.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<Nullable<DateTime>> -> unit) =
+    this.props.add (PKey.DateField.ValueChanging, handler)
 
 type TextValidateFieldProps() =
   inherit ViewProps()
@@ -1406,20 +1518,16 @@ type TextValidateFieldProps() =
 type TextViewProps() =
   inherit ViewProps()
   // Properties
-  member this.AllowsReturn (value: bool) =
-    this.props.add (PKey.TextView.AllowsReturn, value)
-
-
-  member this.AllowsTab (value: bool) =
-    this.props.add (PKey.TextView.AllowsTab, value)
-
-
-  member this.CursorPosition (value: Point) =
-    this.props.add (PKey.TextView.CursorPosition, value)
+  member this.EnterKeyAddsLine (value: bool) =
+    this.props.add (PKey.TextView.EnterKeyAddsLine, value)
 
 
   member this.InheritsPreviousAttribute (value: bool) =
     this.props.add (PKey.TextView.InheritsPreviousAttribute, value)
+
+
+  member this.InsertionPoint (value: Point) =
+    this.props.add (PKey.TextView.InsertionPoint, value)
 
 
   member this.IsDirty (value: bool) =
@@ -1442,6 +1550,10 @@ type TextViewProps() =
     this.props.add (PKey.TextView.ReadOnly, value)
 
 
+  member this.ScrollBars (value: bool) =
+    this.props.add (PKey.TextView.ScrollBars, value)
+
+
   member this.SelectWordOnlyOnDoubleClick (value: bool) =
     this.props.add (PKey.TextView.SelectWordOnlyOnDoubleClick, value)
 
@@ -1452,6 +1564,10 @@ type TextViewProps() =
 
   member this.SelectionStartRow (value: int) =
     this.props.add (PKey.TextView.SelectionStartRow, value)
+
+
+  member this.TabKeyAddsTab (value: bool) =
+    this.props.add (PKey.TextView.TabKeyAddsTab, value)
 
 
   member this.TabWidth (value: int) =
@@ -1500,21 +1616,24 @@ type TextViewProps() =
 type TimeFieldProps() =
   inherit ViewProps()
   // Properties
-  member this.CursorPosition (value: int) =
-    this.props.add (PKey.TimeField.CursorPosition, value)
+  member this.InsertionPoint (value: int) =
+    this.props.add (PKey.TimeField.InsertionPoint, value)
 
 
   member this.IsShortFormat (value: bool) =
     this.props.add (PKey.TimeField.IsShortFormat, value)
 
 
-  member this.Time (value: TimeSpan) =
-    this.props.add (PKey.TimeField.Time, value)
+  member this.Value (value: TimeSpan) =
+    this.props.add (PKey.TimeField.Value, value)
 
 
   // Events
-  member this.TimeChanged (handler: EventArgs<TimeSpan> -> unit) =
-    this.props.add (PKey.TimeField.TimeChanged, handler)
+  member this.ValueChanged (handler: ValueChangedEventArgs<TimeSpan> -> unit) =
+    this.props.add (PKey.TimeField.ValueChanged, handler)
+
+  member this.ValueChanging (handler: ValueChangingEventArgs<TimeSpan> -> unit) =
+    this.props.add (PKey.TimeField.ValueChanging, handler)
 
 type TreeViewProps<'T when 'T: not struct>() =
   inherit ViewProps()
@@ -1579,93 +1698,6 @@ type TreeViewProps<'T when 'T: not struct>() =
 
 type WindowProps() =
   inherit ViewProps()
-type DialogProps() =
-  inherit ViewProps()
-  // Properties
-  member this.ButtonAlignment (value: Alignment) =
-    this.props.add (PKey.Dialog.ButtonAlignment, value)
-
-
-  member this.ButtonAlignmentModes (value: AlignmentModes) =
-    this.props.add (PKey.Dialog.ButtonAlignmentModes, value)
-
-
-  member this.Canceled (value: bool) =
-    this.props.add (PKey.Dialog.Canceled, value)
-
-
-type FileDialogProps() =
-  inherit ViewProps()
-  // Properties
-  member this.AllowedTypes (value: List<IAllowedType>) =
-    this.props.add (PKey.FileDialog.AllowedTypes, value)
-
-
-  member this.AllowsMultipleSelection (value: bool) =
-    this.props.add (PKey.FileDialog.AllowsMultipleSelection, value)
-
-
-  member this.FileOperationsHandler (value: IFileOperations) =
-    this.props.add (PKey.FileDialog.FileOperationsHandler, value)
-
-
-  member this.MustExist (value: bool) =
-    this.props.add (PKey.FileDialog.MustExist, value)
-
-
-  member this.OpenMode (value: OpenMode) =
-    this.props.add (PKey.FileDialog.OpenMode, value)
-
-
-  member this.Path (value: string) =
-    this.props.add (PKey.FileDialog.Path, value)
-
-
-  member this.SearchMatcher (value: ISearchMatcher) =
-    this.props.add (PKey.FileDialog.SearchMatcher, value)
-
-
-  // Events
-  member this.FilesSelected (handler: FilesSelectedEventArgs -> unit) =
-    this.props.add (PKey.FileDialog.FilesSelected, handler)
-
-type OpenDialogProps() =
-  inherit ViewProps()
-  // Properties
-  member this.OpenMode (value: OpenMode) =
-    this.props.add (PKey.OpenDialog.OpenMode, value)
-
-
-type SaveDialogProps() =
-  inherit ViewProps()
-type WizardProps() =
-  inherit ViewProps()
-  // Properties
-  member this.CurrentStep (value: WizardStep) =
-    this.props.add (PKey.Wizard.CurrentStep, value)
-
-  member this.CurrentStep(value: IWizardStepTerminalElement) =
-    this.props.add (PKey.Wizard.CurrentStep_element, value)
-
-  // Events
-  member this.Cancelled (handler: WizardButtonEventArgs -> unit) =
-    this.props.add (PKey.Wizard.Cancelled, handler)
-
-  member this.Finished (handler: WizardButtonEventArgs -> unit) =
-    this.props.add (PKey.Wizard.Finished, handler)
-
-  member this.MovingBack (handler: WizardButtonEventArgs -> unit) =
-    this.props.add (PKey.Wizard.MovingBack, handler)
-
-  member this.MovingNext (handler: WizardButtonEventArgs -> unit) =
-    this.props.add (PKey.Wizard.MovingNext, handler)
-
-  member this.StepChanged (handler: StepChangeEventArgs -> unit) =
-    this.props.add (PKey.Wizard.StepChanged, handler)
-
-  member this.StepChanging (handler: StepChangeEventArgs -> unit) =
-    this.props.add (PKey.Wizard.StepChanging, handler)
-
 type WizardStepProps() =
   inherit ViewProps()
   // Properties

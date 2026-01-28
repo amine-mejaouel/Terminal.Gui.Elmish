@@ -1,8 +1,8 @@
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Core 8.0.301
+nuget FSharp.Core
 nuget Elmish 5.0.2
-nuget Terminal.Gui 2.0.0-develop.4727 prerelease
+nuget Terminal.Gui 2.0.0-alpha.4146 prerelease
 
 group test
     source https://api.nuget.org/v3/index.json

@@ -86,7 +86,7 @@ module ViewMetadata =
     let view_Typed_SubElementsProps =
       props
       |> Array.filter (fun p ->
-        p.PropertyType.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
+        p.PropertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
       )
       |> Array.sortBy _.Name
       |> Array.map toPropertyMetadata
@@ -96,7 +96,7 @@ module ViewMetadata =
         p.PropertyType.IsAssignableTo typeof<IEnumerable> &&
         (if p.PropertyType.IsGenericType then
            let genericArg = p.PropertyType.GetGenericArguments().[0]
-           genericArg.IsSubclassOf typeof<Terminal.Gui.ViewBase.View>
+           genericArg.IsAssignableTo typeof<Terminal.Gui.ViewBase.View>
          else
            false)
       )

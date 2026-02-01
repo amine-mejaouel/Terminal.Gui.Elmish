@@ -13,7 +13,6 @@ let opens = [
     "open Terminal.Gui.Drawing"
     "open Terminal.Gui.Drivers"
     "open Terminal.Gui.Elmish"
-    "open Terminal.Gui.FileServices"
     "open Terminal.Gui.Input"
     "open Terminal.Gui.Text"
     "open Terminal.Gui.ViewBase"
@@ -52,7 +51,7 @@ let gen () =
       let genericBlock = genericTypeParamsWithConstraintsBlock viewType
       yield $"type {getTypeNameWithoutArity viewType}Props{genericBlock}() ="
       if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-        yield "  inherit ViewProps()"
+        yield $"  inherit {viewType.ParentViewType.Name}Props()"
       else
         yield! viewSpecificMembers
 

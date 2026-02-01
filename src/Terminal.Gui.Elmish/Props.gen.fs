@@ -12,7 +12,6 @@ open Terminal.Gui.App
 open Terminal.Gui.Drawing
 open Terminal.Gui.Drivers
 open Terminal.Gui.Elmish
-open Terminal.Gui.FileServices
 open Terminal.Gui.Input
 open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
@@ -417,7 +416,7 @@ type BarProps() =
     this.props.add (PKey.Bar.OrientationChanging, handler)
 
 type BorderProps() =
-  inherit ViewProps()
+  inherit AdornmentProps()
   // Properties
   member this.LineStyle (value: LineStyle) =
     this.props.add (PKey.Border.LineStyle, value)
@@ -871,7 +870,7 @@ type ListViewProps() =
     this.props.add (PKey.ListView.ValueChanging, handler)
 
 type MarginProps() =
-  inherit ViewProps()
+  inherit AdornmentProps()
   // Properties
   member this.ShadowSize (value: Size) =
     this.props.add (PKey.Margin.ShadowSize, value)
@@ -882,7 +881,7 @@ type MarginProps() =
 
 
 type MenuProps() =
-  inherit ViewProps()
+  inherit BarProps()
   // Properties
   member this.SelectedMenuItem (value: MenuItem) =
     this.props.add (PKey.Menu.SelectedMenuItem, value)
@@ -901,7 +900,7 @@ type MenuProps() =
     this.props.add (PKey.Menu.SelectedMenuItemChanged, handler)
 
 type MenuBarProps() =
-  inherit ViewProps()
+  inherit MenuProps()
   // Properties
   member this.Key (value: Key) =
     this.props.add (PKey.MenuBar.Key, value)
@@ -940,7 +939,7 @@ type NumericUpDownProps<'T>() =
     this.props.add (PKey.NumericUpDown<'T>.ValueChanging, handler)
 
 type PaddingProps() =
-  inherit ViewProps()
+  inherit AdornmentProps()
 type PopoverBaseImplProps() =
   inherit ViewProps()
   // Properties
@@ -949,7 +948,7 @@ type PopoverBaseImplProps() =
 
 
 type PopoverMenuProps() =
-  inherit ViewProps()
+  inherit PopoverBaseImplProps()
   // Properties
   member this.Key (value: Key) =
     this.props.add (PKey.PopoverMenu.Key, value)
@@ -1018,7 +1017,7 @@ type RunnableProps() =
     this.props.add (PKey.Runnable.IsRunningChanging, handler)
 
 type RunnableProps<'TResult>() =
-  inherit ViewProps()
+  inherit RunnableProps()
   // Properties
   member this.Result (value: 'TResult) =
     this.props.add (PKey.Runnable'<'TResult>.Result, value)
@@ -1157,21 +1156,21 @@ type SelectorBaseProps() =
     this.props.add (PKey.SelectorBase.ValueChanging, handler)
 
 type FlagSelectorProps() =
-  inherit ViewProps()
+  inherit SelectorBaseProps()
   // Properties
   member this.Value (value: Nullable<int>) =
     this.props.add (PKey.FlagSelector.Value, value)
 
 
 type OptionSelectorProps() =
-  inherit ViewProps()
+  inherit SelectorBaseProps()
   // Properties
   member this.Cursor (value: int) =
     this.props.add (PKey.OptionSelector.Cursor, value)
 
 
 type FlagSelectorProps<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>() =
-  inherit ViewProps()
+  inherit FlagSelectorProps()
   // Properties
   member this.Value (value: Nullable<'TFlagsEnum>) =
     this.props.add (PKey.FlagSelector'<'TFlagsEnum>.Value, value)
@@ -1182,7 +1181,7 @@ type FlagSelectorProps<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (ne
     this.props.add (PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, handler)
 
 type OptionSelectorProps<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>() =
-  inherit ViewProps()
+  inherit OptionSelectorProps()
   // Properties
   member this.Value (value: Nullable<'TEnum>) =
     this.props.add (PKey.OptionSelector'<'TEnum>.Value, value)
@@ -1249,7 +1248,7 @@ type ShortcutProps() =
     this.props.add (PKey.Shortcut.OrientationChanging, handler)
 
 type MenuItemProps() =
-  inherit ViewProps()
+  inherit ShortcutProps()
   // Properties
   member this.Command (value: Command) =
     this.props.add (PKey.MenuItem.Command, value)
@@ -1268,7 +1267,7 @@ type MenuItemProps() =
     this.props.add (PKey.MenuItem.TargetView_element, value)
 
 type MenuBarItemProps() =
-  inherit ViewProps()
+  inherit MenuItemProps()
   // Properties
   member this.PopoverMenu (value: PopoverMenu) =
     this.props.add (PKey.MenuBarItem.PopoverMenu, value)
@@ -1318,7 +1317,7 @@ type SpinnerViewProps() =
 
 
 type StatusBarProps() =
-  inherit ViewProps()
+  inherit BarProps()
 type TabProps() =
   inherit ViewProps()
   // Properties
@@ -1483,7 +1482,7 @@ type TextFieldProps() =
     this.props.add (PKey.TextField.ValueChanging, handler)
 
 type DateFieldProps() =
-  inherit ViewProps()
+  inherit TextFieldProps()
   // Properties
   member this.Culture (value: CultureInfo) =
     this.props.add (PKey.DateField.Culture, value)
@@ -1614,7 +1613,7 @@ type TextViewProps() =
     this.props.add (PKey.TextView.UnwrappedCursorPosition, handler)
 
 type TimeFieldProps() =
-  inherit ViewProps()
+  inherit TextFieldProps()
   // Properties
   member this.InsertionPoint (value: int) =
     this.props.add (PKey.TimeField.InsertionPoint, value)
@@ -1697,7 +1696,7 @@ type TreeViewProps<'T when 'T: not struct>() =
     this.props.add (PKey.TreeView<'T>.SelectionChanged, handler)
 
 type WindowProps() =
-  inherit ViewProps()
+  inherit RunnableProps()
 type WizardStepProps() =
   inherit ViewProps()
   // Properties

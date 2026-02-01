@@ -534,6 +534,12 @@ type internal AdornmentTerminalElement(props: Props) =
 
   override _.setAsChildOfParentView = true
 
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Adornment.Parent_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2824,6 +2830,12 @@ type internal ShortcutTerminalElement(props: Props) =
 
   override _.setAsChildOfParentView = true
 
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Shortcut.CommandView_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)
 
@@ -2951,6 +2963,7 @@ type internal MenuItemTerminalElement(props: Props) =
   override this.SubElements_PropKeys =
     [
       SubElementPropKey.from PKey.MenuItem.SubMenu_element
+      SubElementPropKey.from PKey.MenuItem.TargetView_element
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3167,6 +3180,12 @@ type internal TabTerminalElement(props: Props) =
   override _.newView() = new Tab()
 
   override _.setAsChildOfParentView = true
+
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Tab.View_element
+    ]
+    |> List.append base.SubElements_PropKeys
 
   override _.setProps(terminalElement: IInternalTerminalElement, props: Props) =
     base.setProps(terminalElement, props)

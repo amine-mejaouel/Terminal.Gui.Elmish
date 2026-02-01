@@ -18,6 +18,7 @@ module CodeWriter =
     let text = String.concat Environment.NewLine text
     File.WriteAllText (outputPath, text)
 
+[<AutoOpen>]
 module TypeExtensions =
   type Type with
     member this.ParentViewType =

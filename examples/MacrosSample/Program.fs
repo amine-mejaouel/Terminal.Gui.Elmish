@@ -1,6 +1,4 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System.Collections.Immutable
+﻿open System.Collections.Immutable
 open System.Collections.ObjectModel
 open Elmish
 open Terminal.Gui.App
@@ -69,20 +67,28 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
               p.Text "Cycle Through Themes"
               // p.Key Key.T.WithCtrl
 
-              // p.CommandView (
-              //   View.optionSelector (fun p ->
-              //     p.highlightStates MouseState.None
-              //     p.labels state.AvailableThemes
-              //
-              //     p.valueChanged (fun args ->
-              //       if args.Value.HasValue then
-              //         dispatch (ThemeIndexChanged args.Value.Value |> TerminalMsg.ofMsg)
-              //     )
-              //
-              //     p.value (Some state.SelectedThemeIndex)
-              //   )
-              // )
+              p.SubMenu (
+                View.Menu (fun p ->
+                  p.Children [
+                    View.MenuItem (fun p ->
+                      p.CommandView (
+                        View.OptionSelector (fun (p: OptionSelectorProps) ->
+                          p.MouseHighlightStates MouseState.None
+                          p.Labels state.AvailableThemes
+
+                          p.ValueChanged (fun args ->
+                            if args.NewValue.HasValue then
+                              dispatch (ThemeIndexChanged args.NewValue.Value |> TerminalMsg.ofMsg)
+                          )
+
+                          p.Value (Some state.SelectedThemeIndex |> Option.toNullable)
+                        )
+                      )
+                    )
+                  ]
+              )
             )
+          )
         ]
       )
     )
@@ -134,10 +140,9 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
     )
 
   View.Runnable [
-    // TODO: fix type inference if possible so that the cast is not needed
     menuBar :> ITerminalElement
     categoriesListView
-    // scenariosListView
+    scenariosListView
   ]
 
 
@@ -148,4 +153,4 @@ let main argv =
   ElmishTerminal.mkProgram init update view
   |> ElmishTerminal.runTerminal
 
-  0 // return an integer exit code
+  0

@@ -361,6 +361,7 @@ module internal PKey =
     // Events
     member val CollectionChanged: IEventPropKey<NotifyCollectionChangedEventArgs -> unit> = PropKey.Create.event "ListView.CollectionChanged_event"
     member val RowRender: IEventPropKey<ListViewRowEventArgs -> unit> = PropKey.Create.event "ListView.RowRender_event"
+    member val SourceChanged: IEventPropKey<EventArgs -> unit> = PropKey.Create.event "ListView.SourceChanged_event"
     member val ValueChanged: IEventPropKey<ValueChangedEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "ListView.ValueChanged_event"
     member val ValueChanging: IEventPropKey<ValueChangingEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "ListView.ValueChanging_event"
 

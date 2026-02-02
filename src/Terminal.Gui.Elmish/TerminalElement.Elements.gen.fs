@@ -1823,6 +1823,8 @@ type internal ListViewTerminalElement(props: Props) =
 
     terminalElement.trySetEventHandler(PKey.ListView.RowRender, view.RowRender)
 
+    terminalElement.trySetEventHandler(PKey.ListView.SourceChanged, view.SourceChanged)
+
     terminalElement.trySetEventHandler(PKey.ListView.ValueChanged, view.ValueChanged)
 
     terminalElement.trySetEventHandler(PKey.ListView.ValueChanging, view.ValueChanging)
@@ -1867,6 +1869,7 @@ type internal ListViewTerminalElement(props: Props) =
     // Events
     terminalElement.tryRemoveEventHandler PKey.ListView.CollectionChanged
     terminalElement.tryRemoveEventHandler PKey.ListView.RowRender
+    terminalElement.tryRemoveEventHandler PKey.ListView.SourceChanged
     terminalElement.tryRemoveEventHandler PKey.ListView.ValueChanged
     terminalElement.tryRemoveEventHandler PKey.ListView.ValueChanging
 

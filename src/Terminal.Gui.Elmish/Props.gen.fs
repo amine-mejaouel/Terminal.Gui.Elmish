@@ -863,6 +863,9 @@ type ListViewProps() =
   member this.RowRender (handler: ListViewRowEventArgs -> unit) =
     this.props.add (PKey.ListView.RowRender, handler)
 
+  member this.SourceChanged (handler: EventArgs -> unit) =
+    this.props.add (PKey.ListView.SourceChanged, handler)
+
   member this.ValueChanged (handler: ValueChangedEventArgs<Nullable<int>> -> unit) =
     this.props.add (PKey.ListView.ValueChanged, handler)
 

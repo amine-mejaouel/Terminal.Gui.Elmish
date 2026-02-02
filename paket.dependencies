@@ -2,7 +2,7 @@ source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Core
 nuget Elmish 5.0.2
-nuget Terminal.Gui 2.0.0-alpha.4146 prerelease
+nuget Terminal.Gui 2.0.0-alpha.4170 prerelease
 
 group test
     source https://api.nuget.org/v3/index.json

@@ -353,7 +353,7 @@ type internal ViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.View.Id
     |> Option.iter (fun _ ->
-        view.Id <- Unchecked.defaultof<_>)
+        view.Id <- "")
 
     props
     |> Props.tryFind PKey.View.IsInitialized
@@ -383,7 +383,7 @@ type internal ViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.View.SchemeName
     |> Option.iter (fun _ ->
-        view.SchemeName <- Unchecked.defaultof<_>)
+        view.SchemeName <- "")
 
     props
     |> Props.tryFind PKey.View.ShadowStyle
@@ -403,7 +403,7 @@ type internal ViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.View.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.View.TextAlignment
@@ -418,7 +418,7 @@ type internal ViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.View.Title
     |> Option.iter (fun _ ->
-        view.Title <- Unchecked.defaultof<_>)
+        view.Title <- "")
 
     props
     |> Props.tryFind PKey.View.UsedHotKeys
@@ -646,7 +646,7 @@ type internal AttributePickerTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.AttributePicker.SampleText
     |> Option.iter (fun _ ->
-        view.SampleText <- Unchecked.defaultof<_>)
+        view.SampleText <- "")
 
     props
     |> Props.tryFind PKey.AttributePicker.Value
@@ -821,7 +821,7 @@ type internal ButtonTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.Button.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
 
   interface ITerminalElement
@@ -971,7 +971,7 @@ type internal CheckBoxTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.CheckBox.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.CheckBox.Value
@@ -1041,7 +1041,7 @@ type internal ColorPickerTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ColorPicker.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.ColorPicker.Value
@@ -1202,7 +1202,7 @@ type internal ComboBoxTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ComboBox.SearchText
     |> Option.iter (fun _ ->
-        view.SearchText <- Unchecked.defaultof<_>)
+        view.SearchText <- "")
 
     props
     |> Props.tryFind PKey.ComboBox.SelectedItem
@@ -1217,7 +1217,7 @@ type internal ComboBoxTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ComboBox.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     // Events
     terminalElement.tryRemoveEventHandler PKey.ComboBox.Collapsed
@@ -1275,7 +1275,7 @@ type internal DatePickerTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.DatePicker.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.DatePicker.Value
@@ -1507,7 +1507,7 @@ type internal LabelTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.Label.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
 
   interface ITerminalElement
@@ -1746,7 +1746,7 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
     props
     |> Props.tryFind PKey.LinearRange<'T>.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Type
@@ -2063,7 +2063,7 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
     props
     |> Props.tryFind PKey.NumericUpDown<'T>.Format
     |> Option.iter (fun _ ->
-        view.Format <- Unchecked.defaultof<_>)
+        view.Format <- "")
 
     props
     |> Props.tryFind PKey.NumericUpDown<'T>.Increment
@@ -2272,7 +2272,7 @@ type internal ProgressBarTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ProgressBar.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
 
   interface ITerminalElement
@@ -2923,7 +2923,7 @@ type internal ShortcutTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.Shortcut.HelpText
     |> Option.iter (fun _ ->
-        view.HelpText <- Unchecked.defaultof<_>)
+        view.HelpText <- "")
 
     props
     |> Props.tryFind PKey.Shortcut.Key
@@ -2943,7 +2943,7 @@ type internal ShortcutTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.Shortcut.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     // Events
     terminalElement.tryRemoveEventHandler PKey.Shortcut.OrientationChanged
@@ -3212,7 +3212,7 @@ type internal TabTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.Tab.DisplayText
     |> Option.iter (fun _ ->
-        view.DisplayText <- Unchecked.defaultof<_>)
+        view.DisplayText <- "")
 
     props
     |> Props.tryFind PKey.Tab.View
@@ -3424,7 +3424,7 @@ type internal TableViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.TableView.NullSymbol
     |> Option.iter (fun _ ->
-        view.NullSymbol <- Unchecked.defaultof<_>)
+        view.NullSymbol <- "")
 
     props
     |> Props.tryFind PKey.TableView.RowOffset
@@ -3566,7 +3566,7 @@ type internal TextFieldTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.TextField.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.TextField.UseSameRuneTypeForWords
@@ -3581,7 +3581,7 @@ type internal TextFieldTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.TextField.Value
     |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+        view.Value <- "")
 
     // Events
     terminalElement.tryRemoveEventHandler PKey.TextField.TextChanging
@@ -3690,7 +3690,7 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.TextValidateField.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
 
   interface ITerminalElement
@@ -3880,7 +3880,7 @@ type internal TextViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.TextView.Text
     |> Option.iter (fun _ ->
-        view.Text <- Unchecked.defaultof<_>)
+        view.Text <- "")
 
     props
     |> Props.tryFind PKey.TextView.TopRow
@@ -4168,17 +4168,17 @@ type internal WizardStepTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.WizardStep.BackButtonText
     |> Option.iter (fun _ ->
-        view.BackButtonText <- Unchecked.defaultof<_>)
+        view.BackButtonText <- "")
 
     props
     |> Props.tryFind PKey.WizardStep.HelpText
     |> Option.iter (fun _ ->
-        view.HelpText <- Unchecked.defaultof<_>)
+        view.HelpText <- "")
 
     props
     |> Props.tryFind PKey.WizardStep.NextButtonText
     |> Option.iter (fun _ ->
-        view.NextButtonText <- Unchecked.defaultof<_>)
+        view.NextButtonText <- "")
 
 
   interface ITerminalElement

@@ -66,10 +66,15 @@ let removePropsCode (view: ViewMetadata) =
       if view.Properties.Length > 0 then
         yield "    // Properties"
       for prop in view.Properties do
+        let defaultValue =
+          if prop.PropertyInfo.PropertyType = typeof<string> then
+            "\"\""
+          else
+            "Unchecked.defaultof<_>"
         yield $"    props"
         yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"
-        yield $"        view.{prop.PKey} <- Unchecked.defaultof<_>)"
+        yield $"        view.{prop.PKey} <- {defaultValue})"
         yield ""
       if view.Events.Length > 0 then
         yield "    // Events"

@@ -8,7 +8,7 @@ open Terminal.Gui.ViewBase
 
 type internal TreeNode = {
   TerminalElement: IInternalTerminalElement
-  Parent: View option
+  Parent: IInternalTerminalElement option
 }
 
 [<CustomEquality; NoComparison>]
@@ -78,7 +78,7 @@ type internal TerminalElement(props: Props) =
           curNode.TerminalElement.Children
           |> Seq.map (fun e -> {
             TerminalElement = e
-            Parent = Some curNode.TerminalElement.View
+            Parent = Some curNode.TerminalElement
           })
           |> List.ofSeq
 
@@ -129,20 +129,18 @@ type internal TerminalElement(props: Props) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
 #endif
+    this.View <- this.newView ()
 
-    let newView = this.newView ()
-
-    this.initializeSubElements newView
+    this.initializeSubElements()
     |> Seq.iter this.Props.addNonTyped
 
-    this.View <- newView
     this.setProps (this, this.Props)
 
   abstract reuse: prev: IInternalTerminalElement -> unit
 
   abstract name: string
 
-  member this.InitializeTree(parent: View option) : unit =
+  member this.InitializeTree(parent: IInternalTerminalElement option) : unit =
     let traverse (node: TreeNode) =
 
       node.TerminalElement.InitializeView ()
@@ -150,7 +148,8 @@ type internal TerminalElement(props: Props) =
       // Here, the "children" views are added to their parent
       if node.TerminalElement.SetAsChildOfParentView then
         node.Parent
-        |> Option.iter (fun p -> p.Add node.TerminalElement.View |> ignore)
+        |> Option.map _.View
+        |> Option.iter (fun v -> v.Add node.TerminalElement.View |> ignore)
 
     traverseTree
       [
@@ -162,7 +161,7 @@ type internal TerminalElement(props: Props) =
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.initializeSubElements parent : (IPropKey * obj) seq =
+  member this.initializeSubElements () : (IPropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
         match this.Props |> Props.tryFindByRawKey<obj> x with
@@ -172,14 +171,14 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
-            subElement.InitializeTree (Some parent)
+            subElement.InitializeTree (Some this)
 
             let viewKey = x.viewKey
 
             yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
-            |> Seq.iter (fun e -> e.InitializeTree (Some parent))
+            |> Seq.iter (fun e -> e.InitializeTree (Some this))
 
             let viewKey = x.viewKey
 
@@ -366,6 +365,7 @@ type internal TerminalElement(props: Props) =
     member this.InitializeView() = this.InitializeView()
     member this.InitializeTree(parent) = this.InitializeTree parent
     member this.Reuse prevElementData = this.reuse prevElementData
+    member this.Parent = None
     member this.View = this.View
     member this.Name = this.name
 

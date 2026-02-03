@@ -32,12 +32,9 @@ module internal Differ =
       match prevTree, newTree with
       | rt, nt when rt.Name <> nt.Name ->
 
-        let parent =
-          prevTree.View |> Interop.getParent
-
         prevTree.Dispose()
 
-        newTree.InitializeTree parent
+        newTree.InitializeTree prevTree.Parent
 
       | OnlyPropsChanged ->
 
@@ -72,9 +69,6 @@ module internal Differ =
           |> Seq.distinct
           |> Seq.toList
 
-        let prevParent =
-          prevTree.View
-
         allTypes
         |> List.iter (fun et ->
           let rootElements =
@@ -100,7 +94,7 @@ module internal Differ =
                   prevTree.View.CanFocus <- true
 
                 let newElem =
-                  ne.InitializeTree (Some prevParent)
+                  ne.InitializeTree (Some prevTree)
 
                 newElem
             )

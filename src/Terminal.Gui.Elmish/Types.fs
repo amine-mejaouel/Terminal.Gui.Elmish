@@ -415,8 +415,9 @@ module Element =
     inherit ITerminalElement
     inherit IDisposable
     abstract InitializeView: unit -> unit
-    abstract InitializeTree: parent: View option -> unit
+    abstract InitializeTree: parent: IInternalTerminalElement option -> unit
     abstract Reuse: prev: IInternalTerminalElement -> unit
+    abstract Parent: IInternalTerminalElement option with get
     abstract Props: Props with get
     abstract View: View with get
     abstract Name: string
@@ -435,6 +436,7 @@ module Element =
       member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
       member this.InitializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
       member this.Reuse prevElementData = terminalElement.Reuse prevElementData
+      member this.Parent = terminalElement.Parent
       member this.View = terminalElement.View
 
       member this.Name = terminalElement.Name

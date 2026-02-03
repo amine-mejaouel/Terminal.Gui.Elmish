@@ -21,8 +21,10 @@ module ElmishTerminal =
 
   [<RequireQualifiedAccess>]
   type internal RootView =
-    | Runnable of Runnable
-    | View of View
+    /// Application root view, there is one single instance of these in the application.
+    | AppRootView of Runnable
+    /// Elmish component root view, there can be multiple instances of these in the application.
+    | ComponentRootView of View
 
   type internal InternalModel<'model> = {
     mutable CurrentTreeState: IInternalTerminalElement option
@@ -97,8 +99,8 @@ module ElmishTerminal =
 
         match startState.View with
         | null -> failwith "error state not initialized"
-        | :? Runnable as r -> model.RootView.SetResult(RootView.Runnable r)
-        | view -> model.RootView.SetResult(RootView.View view)
+        | :? Runnable as r -> model.RootView.SetResult(RootView.AppRootView r)
+        | view -> model.RootView.SetResult(RootView.ComponentRootView view)
 
         startState
 
@@ -117,10 +119,10 @@ module ElmishTerminal =
   let private terminate model =
     if not unitTestMode then
       match model.RootView.Task.Result with
-      | RootView.Runnable r ->
+      | RootView.AppRootView r ->
         r.Dispose()
         model.Application.RequestStop()
-      | RootView.View _ ->
+      | RootView.ComponentRootView _ ->
         ()
 
     model.Termination.SetResult()
@@ -156,7 +158,7 @@ module ElmishTerminal =
       let start dispatch =
         let rootView = model.RootView.Task.GetAwaiter().GetResult()
         match rootView with
-        | RootView.Runnable runnable ->
+        | RootView.AppRootView runnable ->
           if not unitTestMode then
             Task.Run(fun () ->
               (

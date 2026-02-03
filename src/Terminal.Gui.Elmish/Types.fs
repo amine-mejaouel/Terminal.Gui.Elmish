@@ -414,15 +414,15 @@ module Element =
   type internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
-    abstract initializeView: unit -> unit
-    abstract initializeTree: parent: View option -> unit
-    abstract reuse: prev: IInternalTerminalElement -> unit
+    abstract InitializeView: unit -> unit
+    abstract InitializeTree: parent: View option -> unit
+    abstract Reuse: prev: IInternalTerminalElement -> unit
     abstract Props: Props with get
     abstract View: View with get
-    abstract name: string
-    abstract setAsChildOfParentView: bool
+    abstract Name: string
+    abstract SetAsChildOfParentView: bool
     abstract Children: List<IInternalTerminalElement>
-    abstract isElmishComponent: bool with get
+    abstract IsElmishComponent: bool with get
     abstract ViewSet: IEvent<View>
 
   /// <summary>
@@ -432,16 +432,17 @@ module Element =
   /// </summary>
   type internal ElmishComponent_TerminalElement_Wrapper(terminalElement: IInternalTerminalElement) =
     interface IInternalTerminalElement with
-      member this.initializeView() = () // Do nothing, initialization is handled by the Elmish component
-      member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
-      member this.reuse prevElementData = terminalElement.reuse prevElementData
+      member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
+      member this.InitializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
+      member this.Reuse prevElementData = terminalElement.Reuse prevElementData
       member this.View = terminalElement.View
 
-      member this.name = terminalElement.name
-      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
-      member this.setAsChildOfParentView = terminalElement.setAsChildOfParentView
+      member this.Name = terminalElement.Name
 
-      member this.isElmishComponent = true
+      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
+      member this.SetAsChildOfParentView = terminalElement.SetAsChildOfParentView
+
+      member this.IsElmishComponent = true
 
       member this.Dispose() = terminalElement.Dispose()
 

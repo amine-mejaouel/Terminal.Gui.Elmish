@@ -72,7 +72,7 @@ type internal TerminalElement(props: Props) =
       traverse curNode
 
       let childNodes =
-        match curNode.TerminalElement.isElmishComponent with
+        match curNode.TerminalElement.IsElmishComponent with
         | true -> []
         | false ->
           curNode.TerminalElement.Children
@@ -125,7 +125,7 @@ type internal TerminalElement(props: Props) =
     PositionService.Current.SignalReuse this
     reused <- true
 
-  member this.initializeView() =
+  member this.InitializeView() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
 #endif
@@ -142,13 +142,13 @@ type internal TerminalElement(props: Props) =
 
   abstract name: string
 
-  member this.initializeTree(parent: View option) : unit =
+  member this.InitializeTree(parent: View option) : unit =
     let traverse (node: TreeNode) =
 
-      node.TerminalElement.initializeView ()
+      node.TerminalElement.InitializeView ()
 
       // Here, the "children" views are added to their parent
-      if node.TerminalElement.setAsChildOfParentView then
+      if node.TerminalElement.SetAsChildOfParentView then
         node.Parent
         |> Option.iter (fun p -> p.Add node.TerminalElement.View |> ignore)
 
@@ -172,14 +172,14 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
-            subElement.initializeTree (Some parent)
+            subElement.InitializeTree (Some parent)
 
             let viewKey = x.viewKey
 
             yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
-            |> Seq.iter (fun e -> e.initializeTree (Some parent))
+            |> Seq.iter (fun e -> e.InitializeTree (Some parent))
 
             let viewKey = x.viewKey
 
@@ -363,18 +363,18 @@ type internal TerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IInternalTerminalElement with
-    member this.initializeView() = this.initializeView()
-    member this.initializeTree(parent) = this.initializeTree parent
-    member this.reuse prevElementData = this.reuse prevElementData
+    member this.InitializeView() = this.InitializeView()
+    member this.InitializeTree(parent) = this.InitializeTree parent
+    member this.Reuse prevElementData = this.reuse prevElementData
     member this.View = this.View
-    member this.name = this.name
+    member this.Name = this.name
 
-    member this.setAsChildOfParentView =
+    member this.SetAsChildOfParentView =
       this.setAsChildOfParentView
 
     member this.Children = this.children
 
-    member this.isElmishComponent = false
+    member this.IsElmishComponent = false
 
     member this.Props = this.Props
 

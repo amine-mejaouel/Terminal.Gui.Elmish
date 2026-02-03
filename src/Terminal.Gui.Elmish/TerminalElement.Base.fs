@@ -58,6 +58,7 @@ type internal SubElementPropKey<'a> =
 [<AbstractClass>]
 type internal TerminalElement(props: Props) =
 
+  /// Go through the tree of TerminalElements and their `Children`, and call the given function on each node.
   let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
 
     match nodes with
@@ -124,7 +125,7 @@ type internal TerminalElement(props: Props) =
     PositionService.Current.SignalReuse this
     reused <- true
 
-  member this.initialize() =
+  member this.initializeView() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.name} created!"
 #endif
@@ -144,7 +145,7 @@ type internal TerminalElement(props: Props) =
   member this.initializeTree(parent: View option) : unit =
     let traverse (node: TreeNode) =
 
-      node.TerminalElement.initialize ()
+      node.TerminalElement.initializeView ()
 
       // Here, the "children" views are added to their parent
       if node.TerminalElement.setAsChildOfParentView then
@@ -362,7 +363,7 @@ type internal TerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IInternalTerminalElement with
-    member this.initialize() = this.initialize()
+    member this.initializeView() = this.initializeView()
     member this.initializeTree(parent) = this.initializeTree parent
     member this.reuse prevElementData = this.reuse prevElementData
     member this.View = this.View

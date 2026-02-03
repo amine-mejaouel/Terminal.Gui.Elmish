@@ -414,7 +414,7 @@ module Element =
   type internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
-    abstract initialize: unit -> unit
+    abstract initializeView: unit -> unit
     abstract initializeTree: parent: View option -> unit
     abstract reuse: prev: IInternalTerminalElement -> unit
     abstract Props: Props with get
@@ -432,7 +432,7 @@ module Element =
   /// </summary>
   type internal ElmishComponent_TerminalElement_Wrapper(terminalElement: IInternalTerminalElement) =
     interface IInternalTerminalElement with
-      member this.initialize() = () // Do nothing, initialization is handled by the Elmish component
+      member this.initializeView() = () // Do nothing, initialization is handled by the Elmish component
       member this.initializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
       member this.reuse prevElementData = terminalElement.reuse prevElementData
       member this.View = terminalElement.View

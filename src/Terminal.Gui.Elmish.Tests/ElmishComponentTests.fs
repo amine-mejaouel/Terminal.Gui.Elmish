@@ -17,4 +17,4 @@ let ``TerminalElement created by Elmish component is flagged as isElmishComponen
       |> ElmishTerminal.runComponent
       :?> IInternalTerminalElement
 
-    Assert.That(terminalElement.isElmishComponent, Is.True)
+    Assert.That(terminalElement.IsElmishComponent, Is.True)

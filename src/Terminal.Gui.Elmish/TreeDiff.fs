@@ -4,7 +4,7 @@ module internal Differ =
 
   let sortedChildNames (ve: IInternalTerminalElement) =
     ve.Children
-    |> Seq.map (fun e -> e.name)
+    |> Seq.map (fun e -> e.Name)
     |> Seq.toList
     |> List.sort
 
@@ -30,28 +30,28 @@ module internal Differ =
     while workStack.Count > 0 do
       let prevTree, newTree = workStack.Pop()
       match prevTree, newTree with
-      | rt, nt when rt.name <> nt.name ->
+      | rt, nt when rt.Name <> nt.Name ->
 
         let parent =
           prevTree.View |> Interop.getParent
 
         prevTree.Dispose()
 
-        newTree.initializeTree parent
+        newTree.InitializeTree parent
 
       | OnlyPropsChanged ->
 
-        newTree.reuse prevTree
+        newTree.Reuse prevTree
 
         let sortedRootChildren =
           prevTree.Children
           |> Seq.toList
-          |> List.sortBy (fun v -> v.name)
+          |> List.sortBy (fun v -> v.Name)
 
         let sortedNewChildren =
           newTree.Children
           |> Seq.toList
-          |> List.sortBy (fun v -> v.name)
+          |> List.sortBy (fun v -> v.Name)
 
         (sortedRootChildren, sortedNewChildren)
         ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
@@ -61,14 +61,14 @@ module internal Differ =
       // TODO: should also consider the SubElements in the pattern matching
       | DifferentChildren ->
 
-        newTree.reuse prevTree
+        newTree.Reuse prevTree
 
         let allTypes =
           seq {
             yield! prevTree.Children
             yield! newTree.Children
           }
-          |> Seq.map (fun v -> v.name)
+          |> Seq.map (fun v -> v.Name)
           |> Seq.distinct
           |> Seq.toList
 
@@ -79,12 +79,12 @@ module internal Differ =
         |> List.iter (fun et ->
           let rootElements =
             prevTree.Children
-            |> Seq.filter (fun e -> e.name = et)
+            |> Seq.filter (fun e -> e.Name = et)
             |> Seq.toList
 
           let newElements =
             newTree.Children
-            |> Seq.filter (fun e -> e.name = et)
+            |> Seq.filter (fun e -> e.Name = et)
             |> Seq.toList
 
           if (newElements.Length > rootElements.Length) then
@@ -100,7 +100,7 @@ module internal Differ =
                   prevTree.View.CanFocus <- true
 
                 let newElem =
-                  ne.initializeTree (Some prevParent)
+                  ne.InitializeTree (Some prevParent)
 
                 newElem
             )

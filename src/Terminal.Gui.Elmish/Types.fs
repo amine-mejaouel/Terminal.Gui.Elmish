@@ -467,6 +467,7 @@ module Element =
       member this.InitializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
       member this.Reuse prevElementData = terminalElement.Reuse prevElementData
       member this.Parent = terminalElement.Parent
+      member this.Id = terminalElement.Id
       member this.View = terminalElement.View
 
       member this.Name = terminalElement.Name

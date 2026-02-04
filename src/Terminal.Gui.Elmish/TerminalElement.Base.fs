@@ -76,18 +76,32 @@ type internal TerminalElement(props: Props) =
         | true -> []
         | false ->
           curNode.TerminalElement.Children
-          |> Seq.map (fun e -> {
-            TerminalElement = e
-            Parent = Some curNode.TerminalElement
-          })
+          |> Seq.mapi (fun i e ->
+            // Set parentPropKey and index for children elements
+            match e with
+            | :? TerminalElement as te ->
+              te.SetParentPropKey (Some PKey.View.children)
+              te.SetIndex (Some i)
+            | _ -> ()
+            {
+              TerminalElement = e
+              Parent = Some curNode.TerminalElement
+            })
           |> List.ofSeq
 
       traverseTree (childNodes @ remainingNodes) traverse
 
   let mutable reused = false
-
+  let mutable parent: IInternalTerminalElement option = None
+  let mutable parentPropKey: IPropKey option = None
+  let mutable index: int option = None
   let mutable view = null
   let viewSetEvent = Event<View>()
+
+  // Internal setters for the ID components
+  member internal this.SetParent (p: IInternalTerminalElement option) = parent <- p
+  member internal this.SetParentPropKey (ppk: IPropKey option) = parentPropKey <- ppk
+  member internal this.SetIndex (i: int option) = index <- i
 
   member this.View
     with get() = view
@@ -102,6 +116,14 @@ type internal TerminalElement(props: Props) =
   member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
 
   member val Props: Props = props with get, set
+
+  member this.id: TerminalElementId =
+    {
+      ExplicitId = this.Props |> Props.tryFind PKey.View.Id
+      Parent = parent
+      ParentPropKey = parentPropKey
+      Index = index
+    }
 
   member this.children
     with get() : List<IInternalTerminalElement> =
@@ -140,7 +162,9 @@ type internal TerminalElement(props: Props) =
 
   abstract name: string
 
-  member this.InitializeTree(parent: IInternalTerminalElement option) : unit =
+  member this.InitializeTree(parentElement: IInternalTerminalElement option) : unit =
+    this.SetParent parentElement
+    
     let traverse (node: TreeNode) =
 
       node.TerminalElement.InitializeView ()
@@ -171,6 +195,9 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
+            // Set the parent prop key and index (None for single element)
+            subElement.SetParentPropKey (Some x)
+            subElement.SetIndex None
             subElement.InitializeTree (Some this)
 
             let viewKey = x.viewKey
@@ -178,7 +205,14 @@ type internal TerminalElement(props: Props) =
             yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
-            |> Seq.iter (fun e -> e.InitializeTree (Some this))
+            |> Seq.iteri (fun i e ->
+              // Set the parent prop key and index for each element
+              match e with
+              | :? TerminalElement as te ->
+                te.SetParentPropKey (Some x)
+                te.SetIndex (Some i)
+              | _ -> ()
+              e.InitializeTree (Some this))
 
             let viewKey = x.viewKey
 
@@ -365,7 +399,8 @@ type internal TerminalElement(props: Props) =
     member this.InitializeView() = this.InitializeView()
     member this.InitializeTree(parent) = this.InitializeTree parent
     member this.Reuse prevElementData = this.reuse prevElementData
-    member this.Parent = None
+    member this.Parent = parent
+    member this.Id = this.id
     member this.View = this.View
     member this.Name = this.name
 

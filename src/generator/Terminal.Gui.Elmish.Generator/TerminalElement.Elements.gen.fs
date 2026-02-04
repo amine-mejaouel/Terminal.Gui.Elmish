@@ -2,7 +2,6 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
 
 open System
 open Terminal.Gui.Elmish.Generator
-open Terminal.Gui.Elmish.Generator.TypeExtensions
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
@@ -30,8 +29,8 @@ let setPropsCode (view: ViewMetadata) =
     Seq.empty
   else
     seq {
-      yield $"  override _.setProps(terminalElement: IInternalTerminalElement, props: Props) ="
-      yield $"    base.setProps(terminalElement, props)"
+      yield $"  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"    base.SetProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration view.Type
       yield $""
@@ -57,9 +56,9 @@ let removePropsCode (view: ViewMetadata) =
     Seq.empty
   else
     seq {
-      yield $"  override _.removeProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) ="
       if not (view.Type = typeof<Terminal.Gui.ViewBase.View>) then
-        yield $"    base.removeProps(terminalElement, props)"
+        yield $"    base.RemoveProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration view.Type
       yield $""
@@ -115,14 +114,14 @@ let gen () =
       else
         yield $"  inherit {viewType.ParentViewType.Name}TerminalElement(props)"
       yield ""
-      yield $"  override _.name = \"{viewType.Name}\""
+      yield $"  override _.Name = \"{viewType.Name}\""
       yield ""
       if viewType.IsAbstract then
-        yield $"  override _.newView() = failwith \"Cannot instantiate abstract view type {getTypeNameWithoutArity viewType}\""
+        yield $"  override _.NewView() = failwith \"Cannot instantiate abstract view type {getTypeNameWithoutArity viewType}\""
       else
-        yield $"  override _.newView() = new {getTypeNameWithoutArity viewType}{genericParamsBlock}()"
+        yield $"  override _.NewView() = new {getTypeNameWithoutArity viewType}{genericParamsBlock}()"
       yield ""
-      yield $"  override _.setAsChildOfParentView = %b{(setAsChildOfParentView viewType)}"
+      yield $"  override _.SetAsChildOfParentView = %b{(setAsChildOfParentView viewType)}"
       yield ""
       if viewMetadata.View_Typed_Properties.Length > 0 ||
          viewMetadata.ViewsCollection_Typed_Properties.Length > 0 then

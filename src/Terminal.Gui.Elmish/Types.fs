@@ -411,13 +411,43 @@ module internal Props =
 [<AutoOpen>]
 module Element =
 
-  type internal IInternalTerminalElement =
+  type internal TerminalElementId =
+    {
+      ExplicitId: string option
+      Parent: IInternalTerminalElement option
+      ParentPropKey: IPropKey option
+      /// Index among siblings for the same ParentPropKey if the ParentPropKey allows multiple children
+      Index: int option
+    }
+    override this.ToString() =
+      match this.ExplicitId with
+      | Some id -> id
+      | None ->
+        let parentId =
+          match this.Parent with
+          | Some parent -> parent.Id.ToString()
+          | None -> "root"
+
+        let propIdStr =
+          match this.ParentPropKey with
+          | Some propId -> $":%s{propId.key}"
+          | None -> ""
+
+        let indexStr =
+          match this.Index with
+          | Some index -> $"[%i{index}]"
+          | None -> ""
+
+        $"{parentId}{propIdStr}{indexStr}"
+
+  and internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
     abstract InitializeView: unit -> unit
     abstract InitializeTree: parent: IInternalTerminalElement option -> unit
     abstract Reuse: prev: IInternalTerminalElement -> unit
     abstract Parent: IInternalTerminalElement option with get
+    abstract Id: TerminalElementId with get
     abstract Props: Props with get
     abstract View: View with get
     abstract Name: string

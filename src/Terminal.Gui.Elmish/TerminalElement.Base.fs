@@ -58,6 +58,14 @@ type internal SubElementPropKey<'a> =
 [<AbstractClass>]
 type internal TerminalElement(props: Props) =
 
+  /// Helper to set parent prop key and index on an element if it's a TerminalElement
+  let setElementPositionInfo (element: IInternalTerminalElement) (propKey: IPropKey option) (idx: int option) =
+    match element with
+    | :? TerminalElement as te ->
+      te.SetParentPropKey propKey
+      te.SetIndex idx
+    | _ -> ()
+
   /// Go through the tree of TerminalElements and their `Children`, and call the given function on each node.
   let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
 
@@ -77,12 +85,7 @@ type internal TerminalElement(props: Props) =
         | false ->
           curNode.TerminalElement.Children
           |> Seq.mapi (fun i e ->
-            // Set parentPropKey and index for children elements
-            match e with
-            | :? TerminalElement as te ->
-              te.SetParentPropKey (Some PKey.View.children)
-              te.SetIndex (Some i)
-            | _ -> ()
+            setElementPositionInfo e (Some PKey.View.children) (Some i)
             {
               TerminalElement = e
               Parent = Some curNode.TerminalElement
@@ -195,9 +198,7 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
-            // Set the parent prop key and index (None for single element)
-            subElement.SetParentPropKey (Some x)
-            subElement.SetIndex None
+            setElementPositionInfo subElement (Some x) None
             subElement.InitializeTree (Some this)
 
             let viewKey = x.viewKey
@@ -206,12 +207,7 @@ type internal TerminalElement(props: Props) =
           | :? List<IInternalTerminalElement> as elements ->
             elements
             |> Seq.iteri (fun i e ->
-              // Set the parent prop key and index for each element
-              match e with
-              | :? TerminalElement as te ->
-                te.SetParentPropKey (Some x)
-                te.SetIndex (Some i)
-              | _ -> ()
+              setElementPositionInfo e (Some x) (Some i)
               e.InitializeTree (Some this))
 
             let viewKey = x.viewKey

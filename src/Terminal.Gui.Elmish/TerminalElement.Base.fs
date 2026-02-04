@@ -103,7 +103,7 @@ type internal TerminalElement(props: Props) =
 
   member val Props: Props = props with get, set
 
-  member this.children
+  member this.Children
     with get() : List<IInternalTerminalElement> =
       props
       |> Props.tryFind PKey.View.children
@@ -116,10 +116,10 @@ type internal TerminalElement(props: Props) =
   abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
   default _.SubElements_PropKeys = []
 
-  abstract newView: unit -> View
+  abstract NewView: unit -> View
 
-  abstract setAsChildOfParentView: bool
-  default _.setAsChildOfParentView = true
+  abstract SetAsChildOfParentView: bool
+  default _.SetAsChildOfParentView = true
 
   member this.SignalReuse() =
     PositionService.Current.SignalReuse this
@@ -127,18 +127,18 @@ type internal TerminalElement(props: Props) =
 
   member this.InitializeView() =
 #if DEBUG
-    Diagnostics.Trace.WriteLine $"{this.name} created!"
+    Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
-    this.View <- this.newView ()
+    this.View <- this.NewView ()
 
-    this.initializeSubElements()
+    this.InitializeSubElements()
     |> Seq.iter this.Props.addNonTyped
 
-    this.setProps (this, this.Props)
+    this.SetProps (this, this.Props)
 
-  abstract reuse: prev: IInternalTerminalElement -> unit
+  abstract Reuse: prev: IInternalTerminalElement -> unit
 
-  abstract name: string
+  abstract Name: string
 
   member this.InitializeTree(parent: IInternalTerminalElement option) : unit =
     let traverse (node: TreeNode) =
@@ -161,7 +161,7 @@ type internal TerminalElement(props: Props) =
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.initializeSubElements () : (IPropKey * obj) seq =
+  member this.InitializeSubElements () : (IPropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
         match this.Props |> Props.tryFindByRawKey<obj> x with
@@ -213,9 +213,9 @@ type internal TerminalElement(props: Props) =
   member this.tryRemoveEventHandler (k: IPropKey) =
     this.EventRegistry.removeHandler k
 
-  abstract setProps: terminalElement: IInternalTerminalElement * props: Props -> unit
+  abstract SetProps: terminalElement: IInternalTerminalElement * props: Props -> unit
 
-  default this.setProps (terminalElement: IInternalTerminalElement, props: Props) =
+  default this.SetProps (terminalElement: IInternalTerminalElement, props: Props) =
     // Custom Props
     props
     |> Props.tryFind PKey.View.X_delayedPos
@@ -227,13 +227,13 @@ type internal TerminalElement(props: Props) =
     |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.Y <- pos)))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
-  abstract removeProps: terminalElement: IInternalTerminalElement * props: Props -> unit
+  abstract RemoveProps: terminalElement: IInternalTerminalElement * props: Props -> unit
 
   /// Reuses:
   /// // TODO: outdated documentation
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
-  override this.reuse prev =
+  override this.Reuse prev =
 
     let prev = prev :?> TerminalElement
 
@@ -263,8 +263,8 @@ type internal TerminalElement(props: Props) =
     view_Props_ToReinject
     |> Props.iter (fun kv -> this.Props.addNonTyped (kv.Key, kv.Value))
 
-    this.removeProps (this, removedProps)
-    this.setProps (this, c.changedProps)
+    this.RemoveProps (this, removedProps)
+    this.SetProps (this, c.changedProps)
 
   member this.equivalentTo(other: TerminalElement) =
     let mutable isEquivalent = true
@@ -344,7 +344,7 @@ type internal TerminalElement(props: Props) =
     if (not reused) then
 
       // Remove any event subscriptions
-      this.removeProps (this, this.Props)
+      this.RemoveProps (this, this.Props)
 
       this.View |> Interop.removeFromParent
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
@@ -354,7 +354,7 @@ type internal TerminalElement(props: Props) =
         |> Option.iter (fun subElement ->
           subElement.Dispose())
 
-      for child in this.children do
+      for child in this.Children do
         child.Dispose()
 
       PositionService.Current.SignalDispose(this)
@@ -364,15 +364,15 @@ type internal TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.InitializeView() = this.InitializeView()
     member this.InitializeTree(parent) = this.InitializeTree parent
-    member this.Reuse prevElementData = this.reuse prevElementData
+    member this.Reuse prevElementData = this.Reuse prevElementData
     member this.Parent = None
     member this.View = this.View
-    member this.Name = this.name
+    member this.Name = this.Name
 
     member this.SetAsChildOfParentView =
-      this.setAsChildOfParentView
+      this.SetAsChildOfParentView
 
-    member this.Children = this.children
+    member this.Children = this.Children
 
     member this.IsElmishComponent = false
 

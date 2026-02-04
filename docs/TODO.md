@@ -5,6 +5,8 @@
 State is not kept between View renderings
 ### Solution
 - Have a centralized DOM service that keeps track of all TerminalElements, including their state
+### Steps
+- Every TerminalElement should have a unique id -> Calculated from its position in the DOM
 
 ## 2. Fix rendering
 ### Issue:

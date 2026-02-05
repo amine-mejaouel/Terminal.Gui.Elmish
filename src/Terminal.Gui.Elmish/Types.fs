@@ -248,6 +248,49 @@ module internal PropKey =
       static member view key = ViewPropKey.create key
       static member delayedPos key = DelayedPosKey.create key
 
+  [<CustomEquality; NoComparison>]
+  type internal SubElementPropKey<'a> =
+    | SingleElementKey of ISingleElementPropKey<'a>
+    | MultiElementKey of IMultiElementPropKey<'a>
+
+    static member createSingleElementKey<'a>(key: string) : SubElementPropKey<'a> =
+      SingleElementKey(PropKey.Create.singleElement<'a> key)
+
+    static member createMultiElementKey<'a>(key: string) : SubElementPropKey<'a> =
+      MultiElementKey(PropKey.Create.multiElement<'a> key)
+
+    static member from(singleElementKey: ISingleElementPropKey<'a>) : SubElementPropKey<'b> =
+      SubElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
+
+    static member from(multiElementKey: IMultiElementPropKey<'a>) : SubElementPropKey<'b> =
+      SubElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
+
+    member this.key =
+      match this with
+      | SingleElementKey key -> key.key
+      | MultiElementKey key -> key.key
+
+    override this.GetHashCode() = this.key.GetHashCode()
+
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
+
+    member this.viewKey =
+      match this with
+      | SingleElementKey key -> key.viewKey
+      | MultiElementKey key -> key.viewKey
+
+    interface IPropKey<'a> with
+      member this.key = this.key
+      member this.isViewKey = false
+
+      member this.isSingleElementKey =
+        match this with
+        | SingleElementKey _ -> true
+        | MultiElementKey _ -> false
+
 
 type internal PropsEventRegistry() =
 
@@ -409,45 +452,60 @@ module internal Props =
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
 
 [<AutoOpen>]
-module Element =
+module rec Element =
 
-  type internal TerminalElementId =
-    {
-      ExplicitId: string option
-      Parent: IInternalTerminalElement option
-      ParentPropKey: IPropKey option
-      /// Index among siblings for the same ParentPropKey if the ParentPropKey allows multiple children
-      Index: int option
-    }
+  /// Represents the relationship between a TerminalElement and its parent.
+  type internal Origin =
+    | Root
+    // TODO: add index of child element
+    | Child of Parent: IInternalTerminalElement * Index: int
+    | SubElement of Parent: IInternalTerminalElement * Index: int option * Property: SubElementPropKey<IInternalTerminalElement>
+    member this.Parent =
+      match this with
+      | Root -> None
+      | Child (parent, _) -> Some parent
+      | SubElement(parent, _, _) -> Some parent
+
     override this.ToString() =
-      match this.ExplicitId with
-      | Some id -> id
-      | None ->
         let parentId =
           match this.Parent with
           | Some parent -> parent.Id.ToString()
           | None -> "root"
 
         let propIdStr =
-          match this.ParentPropKey with
-          | Some propId -> $":%s{propId.key}"
-          | None -> ""
+          match this with
+          | Root -> ""
+          | Child _ -> "child"
+          | SubElement(_, _, subElementPropKey) -> $"{subElementPropKey.key}"
 
         let indexStr =
-          match this.Index with
-          | Some index -> $"[%i{index}]"
-          | None -> ""
+          match this with
+          | Root -> ""
+          | Child(_, index) -> $"[{index}]"
+          | SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
 
-        $"{parentId}{propIdStr}{indexStr}"
+        $"{parentId}|{propIdStr}{indexStr}"
+
+  type internal TerminalElementId =
+    {
+      ExplicitId: string option
+      Origin: Origin
+    }
+
+    static member Null = { ExplicitId = None; Origin = Root }
+
+    override this.ToString() =
+      match this.ExplicitId with
+      | Some id -> id
+      | None -> this.Origin.ToString()
 
   and internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
     abstract InitializeView: unit -> unit
-    abstract InitializeTree: parent: IInternalTerminalElement option -> unit
+    abstract InitializeTree: origin: Origin -> unit
     abstract Reuse: prev: IInternalTerminalElement -> unit
-    abstract Parent: IInternalTerminalElement option with get
-    abstract Id: TerminalElementId with get
+    abstract Id: TerminalElementId with get, set
     abstract Props: Props with get
     abstract View: View with get
     abstract Name: string
@@ -464,9 +522,9 @@ module Element =
   type internal ElmishComponent_TerminalElement_Wrapper(terminalElement: IInternalTerminalElement) =
     interface IInternalTerminalElement with
       member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
-      member this.InitializeTree(parent) = () // Do nothing, initialization is handled by the Elmish component
+      member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
       member this.Reuse prevElementData = terminalElement.Reuse prevElementData
-      member this.Parent = terminalElement.Parent
+      member this.Id with get() = terminalElement.Id and set v = terminalElement.Id <- v
       member this.View = terminalElement.View
 
       member this.Name = terminalElement.Name

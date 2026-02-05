@@ -6,54 +6,11 @@ open System.Collections.Specialized
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 
+
 type internal TreeNode = {
   TerminalElement: IInternalTerminalElement
-  Parent: IInternalTerminalElement option
+  Origin: Origin
 }
-
-[<CustomEquality; NoComparison>]
-type internal SubElementPropKey<'a> =
-  | SingleElementKey of ISingleElementPropKey<'a>
-  | MultiElementKey of IMultiElementPropKey<'a>
-
-  static member createSingleElementKey<'a>(key: string) : SubElementPropKey<'a> =
-    SingleElementKey(PropKey.Create.singleElement<'a> key)
-
-  static member createMultiElementKey<'a>(key: string) : SubElementPropKey<'a> =
-    MultiElementKey(PropKey.Create.multiElement<'a> key)
-
-  static member from(singleElementKey: ISingleElementPropKey<'a>) : SubElementPropKey<'b> =
-    SubElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
-
-  static member from(multiElementKey: IMultiElementPropKey<'a>) : SubElementPropKey<'b> =
-    SubElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
-
-  member this.key =
-    match this with
-    | SingleElementKey key -> key.key
-    | MultiElementKey key -> key.key
-
-  override this.GetHashCode() = this.key.GetHashCode()
-
-  override this.Equals(obj) =
-    match obj with
-    | :? IPropKey as x -> this.key.Equals(x.key)
-    | _ -> false
-
-  member this.viewKey =
-    match this with
-    | SingleElementKey key -> key.viewKey
-    | MultiElementKey key -> key.viewKey
-
-  interface IPropKey<'a> with
-    member this.key = this.key
-    member this.isViewKey = false
-
-    member this.isSingleElementKey =
-      match this with
-      | SingleElementKey _ -> true
-      | MultiElementKey _ -> false
-
 
 [<AbstractClass>]
 type internal TerminalElement(props: Props) =
@@ -66,7 +23,7 @@ type internal TerminalElement(props: Props) =
     | cur :: remainingNodes ->
       let curNode = {
         TerminalElement = cur.TerminalElement
-        Parent = cur.Parent
+        Origin = cur.Origin
       }
 
       traverse curNode
@@ -76,17 +33,18 @@ type internal TerminalElement(props: Props) =
         | true -> []
         | false ->
           curNode.TerminalElement.Children
-          |> Seq.map (fun e -> {
+          |> Seq.mapi (fun i e -> {
             TerminalElement = e
-            Parent = Some curNode.TerminalElement
+            Origin = Child (curNode.TerminalElement, i)
           })
           |> List.ofSeq
 
       traverseTree (childNodes @ remainingNodes) traverse
 
-  let mutable reused = false
-
+  let mutable viewReusedByAnotherTE = false
   let mutable view = null
+  let mutable id = TerminalElementId.Null
+
   let viewSetEvent = Event<View>()
 
   member this.View
@@ -123,7 +81,7 @@ type internal TerminalElement(props: Props) =
 
   member this.SignalReuse() =
     PositionService.Current.SignalReuse this
-    reused <- true
+    viewReusedByAnotherTE <- true
 
   member this.InitializeView() =
 #if DEBUG
@@ -140,14 +98,20 @@ type internal TerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree(parent: IInternalTerminalElement option) : unit =
+  member this.InitializeTree(origin: Origin) : unit =
     let traverse (node: TreeNode) =
 
       node.TerminalElement.InitializeView ()
 
+      node.TerminalElement.Id <- { node.TerminalElement.Id with Origin = origin }
+
+      #if DEBUG
+      Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.Id}:{node.TerminalElement.Name}"
+      #endif
+
       // Here, the "children" views are added to their parent
       if node.TerminalElement.SetAsChildOfParentView then
-        node.Parent
+        node.Origin.Parent
         |> Option.map _.View
         |> Option.iter (fun v -> v.Add node.TerminalElement.View |> ignore)
 
@@ -155,7 +119,7 @@ type internal TerminalElement(props: Props) =
       [
         {
           TerminalElement = this
-          Parent = parent
+          Origin = origin
         }
       ]
       traverse
@@ -171,14 +135,14 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
-            subElement.InitializeTree (Some this)
+            subElement.InitializeTree (SubElement (this, None, x))
 
             let viewKey = x.viewKey
 
             yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
-            |> Seq.iter (fun e -> e.InitializeTree (Some this))
+            |> Seq.iteri (fun i e -> e.InitializeTree (SubElement (this, Some i, x)))
 
             let viewKey = x.viewKey
 
@@ -341,7 +305,7 @@ type internal TerminalElement(props: Props) =
     |}
 
   member this.Dispose() =
-    if (not reused) then
+    if (not viewReusedByAnotherTE) then
 
       // Remove any event subscriptions
       this.RemoveProps (this, this.Props)
@@ -363,9 +327,9 @@ type internal TerminalElement(props: Props) =
 
   interface IInternalTerminalElement with
     member this.InitializeView() = this.InitializeView()
-    member this.InitializeTree(parent) = this.InitializeTree parent
+    member this.InitializeTree(origin) = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
-    member this.Parent = None
+    member this.Id with get() = id and set value = id <- value
     member this.View = this.View
     member this.Name = this.Name
 

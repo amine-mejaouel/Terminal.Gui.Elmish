@@ -95,7 +95,7 @@ module ElmishTerminal =
         let startState =
           view model dispatch :?> IInternalTerminalElement
 
-        startState.InitializeTree None
+        startState.InitializeTree Root
 
         match startState.View with
         | null -> failwith "error state not initialized"

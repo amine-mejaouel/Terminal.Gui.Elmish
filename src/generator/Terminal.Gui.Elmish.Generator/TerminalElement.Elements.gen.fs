@@ -46,7 +46,7 @@ let setPropsCode (view: ViewMetadata) =
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.trySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
+        yield $"    terminalElement.TrySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
         yield ""
 
     }
@@ -78,7 +78,7 @@ let removePropsCode (view: ViewMetadata) =
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.tryRemoveEventHandler {PKey.getAccessor view.Type}.{event.PKey}"
+        yield $"    terminalElement.TryRemoveEventHandler {PKey.getAccessor view.Type}.{event.PKey}"
     }
 
 let setAsChildOfParentView (viewType: Type) =

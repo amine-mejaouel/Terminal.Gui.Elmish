@@ -36,5 +36,5 @@ let _component (set: IProps -> unit) =
     )
 
   ElmishTerminal.mkSimple init update view
-  |> ElmishTerminal.runComponent
+  |> ElmishTerminal.asComponent
 

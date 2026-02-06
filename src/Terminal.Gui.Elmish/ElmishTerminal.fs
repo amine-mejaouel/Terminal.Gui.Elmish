@@ -17,23 +17,6 @@ module ElmishTerminal =
   open System.Threading.Tasks
   open Elmish
   open Terminal.Gui.App
-  open Terminal.Gui.ViewBase
-
-  [<RequireQualifiedAccess>]
-  type internal RootView =
-    /// Application root view, there is one single instance of these in the application.
-    | AppRootView of Runnable
-    /// Elmish component root view, there can be multiple instances of these in the application.
-    | ComponentRootView of View
-
-  type internal InternalModel<'model> = {
-    mutable CurrentTreeState: IInternalTerminalElement option
-    mutable Application: IApplication
-    RootView: TaskCompletionSource<RootView>
-    Termination: TaskCompletionSource
-    /// Elmish model provided to the Program by the library caller.
-    ClientModel: 'model
-  }
 
   module OuterModel =
     let internal wrapInit (init: 'arg -> 'model * Cmd<'msg>) =
@@ -81,8 +64,6 @@ module ElmishTerminal =
 
     let internal wrapSubscribe (subscribe: 'model -> _) : InternalModel<'model> -> _ =
       fun outerModel -> subscribe outerModel.ClientModel
-
-  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = private ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
 
   let mutable unitTestMode = false
 
@@ -193,29 +174,5 @@ module ElmishTerminal =
     waitForStart.Task.GetAwaiter().GetResult()
     Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()
 
-  let runComponent (ElmishTerminalProgram program) : ITerminalElement =
-
-    let waitForView = TaskCompletionSource()
-    let mutable view: IInternalTerminalElement = Unchecked.defaultof<_>
-
-    let runComponent (model: InternalModel<_>) =
-      let start dispatch =
-        (task {
-          // On program startup, Wait for the Elmish loop to take care of creating the root view.
-          let! _ = model.RootView.Task
-          view <- model.CurrentTreeState.Value
-          waitForView.SetResult()
-        }).GetAwaiter().GetResult()
-
-        { new IDisposable with member _.Dispose() = () }
-
-      start
-
-    let subscribe model = [ [ "runComponent" ], runComponent model ]
-
-    program
-    |> Program.withSubscription subscribe
-    |> Program.run
-
-    waitForView.Task.GetAwaiter().GetResult()
-    new ElmishComponent_TerminalElement_Wrapper(view) :> ITerminalElement
+  let asComponent (ElmishTerminalProgram program: ElmishTerminalProgram<_, _, _, _>) : ITerminalElement =
+    new ElmishComponent_TerminalElement<_,_,_>(program) :> ITerminalElement

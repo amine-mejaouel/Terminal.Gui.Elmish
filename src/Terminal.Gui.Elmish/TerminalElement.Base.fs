@@ -85,6 +85,9 @@ type internal EventHandlerRegistrar() =
     this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
 
+type internal TreeNodeTerminalElement<'model, 'msg, 'view> =
+  | IInternalTerminalElement of IInternalTerminalElement
+  | ElmishComponent of ElmishComponent_TerminalElement<'model, 'msg, 'view>
 
 type internal TreeNode = {
   TerminalElement: IInternalTerminalElement
@@ -180,7 +183,12 @@ type internal TerminalElement(props: Props) =
   member this.InitializeTree(origin: Origin) : unit =
     let traverse (node: TreeNode) =
 
-      node.TerminalElement.InitializeView ()
+      match node.TerminalElement with
+      | :? TerminalElement as te ->
+        te.InitializeView ()
+      | :? IElmishComponent_TerminalElement as ce ->
+        ce.StartElmishLoop ()
+      | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 
       node.TerminalElement.Id <- { node.TerminalElement.Id with Origin = origin }
 
@@ -394,8 +402,7 @@ type internal TerminalElement(props: Props) =
       for key in this.SubElements_PropKeys do
         this.Props
         |> Props.tryFind key
-        |> Option.iter (fun subElement ->
-          subElement.Dispose())
+        |> Option.iter _.Dispose()
 
       for child in this.Children do
         child.Dispose()

@@ -11,9 +11,9 @@ type internal OrientationInterface =
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.tryRemoveEventHandler PKey.IOrientationInterface.OrientationChanged
+    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanged
 
-    terminalElement.tryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging
+    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging
 
   static member setProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
     // Properties
@@ -22,7 +22,7 @@ type internal OrientationInterface =
     |> Option.iter (fun v -> view.Orientation <- v)
 
     // Events
-    terminalElement.trySetEventHandler(PKey.IOrientationInterface.OrientationChanged, view.OrientationChanged)
+    terminalElement.TrySetEventHandler(PKey.IOrientationInterface.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.trySetEventHandler(PKey.IOrientationInterface.OrientationChanging, view.OrientationChanging)
+    terminalElement.TrySetEventHandler(PKey.IOrientationInterface.OrientationChanging, view.OrientationChanging)
 

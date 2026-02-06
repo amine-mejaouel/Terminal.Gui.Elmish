@@ -7,6 +7,85 @@ open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 
 
+/// <p>
+///   Repository for event handlers associated with property keys.
+///   It allows setting and removing handlers for events.
+/// </p>
+/// <p>
+///   Its main purpose is to ensure the proper removal of events, avoiding memory leaks or unintended behavior due to lingering event handlers.
+/// </p>
+type internal EventHandlerRegistrar() =
+
+  /// Stores the handlers for each property key.
+  let trackedHandlers = Dictionary<IPropKey, Delegate>()
+
+  /// Stores functions to be invoked to remove previously added handlers.
+  /// Which will call IEvent.RemoveHandler on the event associated with the property key.
+  let handlerRemovalActions = Dictionary<IPropKey, unit -> unit>()
+
+  member private this.TryFindHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey) =
+    match trackedHandlers.TryGetValue(pkey) with
+    | true, existingHandler ->
+      Some (existingHandler :?> 'THandler)
+    | false, _ ->
+      None
+
+  member private this.TryGetHandlerRemovalAction (pkey: IPropKey) =
+    match handlerRemovalActions.TryGetValue(pkey) with
+    | true, existingRemover ->
+      Some existingRemover
+    | false, _ ->
+      None
+
+  /// Registers a function to be invoked to remove previously added handlers associated with the specified property key.
+  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
+    handlerRemovalActions[pkey] <-
+      fun () ->
+        // This will only remove the handler from the event, not from the repositories
+        removeHandler handler
+        // Note: The actual removal from the repositories is done in `removeHandler` method
+
+  /// Removes the handler associated with the specified property key, if it exists.
+  member this.RemoveHandler (pkey: IPropKey) =
+    match this.TryGetHandlerRemovalAction pkey with
+    | Some removeHandler ->
+      removeHandler ()
+      handlerRemovalActions.Remove pkey |> ignore
+      trackedHandlers.Remove pkey |> ignore
+    | None ->
+      ()
+
+  member private this.SetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit) =
+    match this.TryFindHandler<'THandler> (pkey) with
+    | Some previouslySetHandler ->
+      removeHandler previouslySetHandler
+    | None ->
+      ()
+
+    trackedHandlers[pkey] <- handler
+    addHandler handler
+
+  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
+    let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
+    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+    let handler: EventHandler = EventHandler(fun sender args -> action ())
+    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+    let handler: EventHandler = EventHandler(fun sender args -> action args)
+    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+  member this.SetEventHandler (pkey: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
+    let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
+    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+
+
 type internal TreeNode = {
   TerminalElement: IInternalTerminalElement
   Origin: Origin
@@ -57,7 +136,7 @@ type internal TerminalElement(props: Props) =
 
   member val ViewSet = viewSetEvent.Publish
 
-  member val EventRegistry: PropsEventRegistry = PropsEventRegistry() with get, set
+  member val EventRegistrar: EventHandlerRegistrar = EventHandlerRegistrar() with get, set
 
   member val Props: Props = props with get, set
 
@@ -153,29 +232,29 @@ type internal TerminalElement(props: Props) =
           | _ -> failwith "Out of range subElement type"
     }
 
-  member this.trySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+  member this.TrySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
-    this.tryRemoveEventHandler k
-
-    this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
-
-  member this.trySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
-
-    this.tryRemoveEventHandler k
+    this.TryRemoveEventHandler k
 
     this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+    |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.trySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+  member this.TrySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
 
-    this.tryRemoveEventHandler k
+    this.TryRemoveEventHandler k
 
     this.Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistry.setEventHandler(k, event, action))
+    |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.tryRemoveEventHandler (k: IPropKey) =
-    this.EventRegistry.removeHandler k
+  member this.TrySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.TryRemoveEventHandler k
+
+    this.Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
+
+  member this.TryRemoveEventHandler (k: IPropKey) =
+    this.EventRegistrar.RemoveHandler k
 
   abstract SetProps: terminalElement: IInternalTerminalElement * props: Props -> unit
 
@@ -207,7 +286,7 @@ type internal TerminalElement(props: Props) =
     // TODO: this should be tested and documented to make sure that it continues to work well in the future.
 
     this.View <- prev.View
-    this.EventRegistry <- prev.EventRegistry
+    this.EventRegistrar <- prev.EventRegistrar
 
     let c = TerminalElement.compare prev.Props this.Props
 

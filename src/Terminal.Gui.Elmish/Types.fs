@@ -9,6 +9,7 @@ type ITerminalElement =
   interface
   end
 
+
 [<RequireQualifiedAccess>]
 type TPos =
   | X of ITerminalElement
@@ -23,6 +24,7 @@ type TPos =
   | Percent of percent: int
   | Func of func: (View -> int) * view: ITerminalElement
   | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
+
 
 [<AutoOpen>]
 module internal PropKey =
@@ -292,73 +294,6 @@ module internal PropKey =
         | MultiElementKey _ -> false
 
 
-type internal PropsEventRegistry() =
-
-  let eventHandlerRepository = Dictionary<IPropKey, Delegate>()
-  let removeHandlerRepository = Dictionary<IPropKey, unit -> unit>()
-
-  member private this.tryGetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey) =
-    match eventHandlerRepository.TryGetValue(pkey) with
-    | true, existingHandler ->
-      Some (existingHandler :?> 'THandler)
-    | false, _ ->
-      None
-
-  member private this.tryGetRemoveHandler (pkey: IPropKey) =
-    match removeHandlerRepository.TryGetValue(pkey) with
-    | true, existingRemover ->
-      Some existingRemover
-    | false, _ ->
-      None
-
-  member private this.registerHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
-    removeHandlerRepository[pkey] <-
-      fun () ->
-        // This will only remove the handler from the event, not from the repositories
-        removeHandler handler
-
-        // Note: The actual removal from the repositories is done in `removeHandler` method
-
-  member this.removeHandler (pkey: IPropKey) =
-    match this.tryGetRemoveHandler pkey with
-    | Some removeHandler ->
-      removeHandler ()
-      removeHandlerRepository.Remove pkey |> ignore
-      eventHandlerRepository.Remove pkey |> ignore
-    | None ->
-      ()
-
-  member private this.setHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeFromEvent: 'THandler -> unit, addToEvent: 'THandler -> unit) =
-    match this.tryGetHandler<'THandler> (pkey) with
-    | Some existingHandler ->
-      removeFromEvent existingHandler
-    | None ->
-      ()
-
-    eventHandlerRepository[pkey] <- handler
-    addToEvent handler
-
-  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
-    let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
-    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
-
-  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
-    let handler: EventHandler = EventHandler(fun sender args -> action ())
-    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
-
-  member this.setEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
-    let handler: EventHandler = EventHandler(fun sender args -> action args)
-    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
-
-  member this.setEventHandler (pkey: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
-    let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
-    this.setHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.registerHandlerRemoval(pkey, handler, event.RemoveHandler)
-
-
 /// Props object that is still under construction
 type internal Props(?initialProps) =
 
@@ -381,6 +316,7 @@ type internal Props(?initialProps) =
     match this.dict.TryGetValue key with
     | true, v -> v |> unbox<'a> |> Some
     | _, _ -> None
+
 
 module internal Props =
   let merge (props': Props) (props'': Props) =
@@ -450,6 +386,7 @@ module internal Props =
     |> Seq.map (fun x -> x :?> ISingleElementPropKey)
 
   let iter iteration (props: Props) = props.dict |> Seq.iter iteration
+
 
 [<AutoOpen>]
 module rec Element =
@@ -539,3 +476,4 @@ module rec Element =
       member this.Children = List<IInternalTerminalElement>()
       member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
       member this.ViewSet = terminalElement.ViewSet
+

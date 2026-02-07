@@ -181,8 +181,8 @@ module ElmishTerminal =
         terminalElement.View
 
     interface IElmishComponent_TerminalElement with
-      member this.StartElmishLoop(owner) =
-        mkSimpleComponent owner init update view
+      member this.StartElmishLoop(origin) =
+        mkSimpleComponent origin init update view
         |> runComponent
 
     interface IInternalTerminalElement with

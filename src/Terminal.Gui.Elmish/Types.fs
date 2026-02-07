@@ -394,6 +394,7 @@ module rec Element =
   /// Represents the relationship between a TerminalElement and its parent.
   type internal Origin =
     | Root
+    | ElmishComponent of Origin
     // TODO: add index of child element
     | Child of Parent: IInternalTerminalElement * Index: int
     | SubElement of Parent: IInternalTerminalElement * Index: int option * Property: SubElementPropKey<IInternalTerminalElement>
@@ -402,6 +403,7 @@ module rec Element =
       | Root -> None
       | Child (parent, _) -> Some parent
       | SubElement(parent, _, _) -> Some parent
+      | ElmishComponent origin -> origin.Parent
 
     override this.ToString() =
         let parentId =
@@ -414,14 +416,21 @@ module rec Element =
           | Root -> ""
           | Child _ -> "child"
           | SubElement(_, _, subElementPropKey) -> $"{subElementPropKey.key}"
+          | ElmishComponent _ -> $"elmishComponent"
 
         let indexStr =
-          match this with
-          | Root -> ""
-          | Child(_, index) -> $"[{index}]"
-          | SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+          let rec indexStr origin =
+            match origin with
+            | Root -> ""
+            | Child(_, index) -> $"[{index}]"
+            | SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+            | ElmishComponent origin -> indexStr origin
 
-        $"{parentId}|{propIdStr}{indexStr}"
+          indexStr this
+
+        match this with
+        | Root -> "root"
+        | _ -> $"{parentId}|{propIdStr}{indexStr}"
 
   type internal TerminalElementId =
     {

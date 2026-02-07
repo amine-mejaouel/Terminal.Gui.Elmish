@@ -188,7 +188,7 @@ type internal TerminalElement(props: Props) =
       | :? TerminalElement as te ->
         te.InitializeView ()
       | :? IElmishComponent_TerminalElement as ce ->
-        ce.StartElmishLoop origin
+        ce.StartElmishLoop (Origin.ElmishComponent origin)
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 
       node.TerminalElement.Id <- { node.TerminalElement.Id with Origin = origin }

@@ -28,7 +28,8 @@ module CodeGen =
     else if t.Name = "String" then
       "string"
     else
-      t.Name
+      // FullName is more reliable than Name as it includes namespace
+      t.FullName
 
   /// <summary>
   /// <p>Returns the generic type parameters of a generic type as a comma-separated string.</p>

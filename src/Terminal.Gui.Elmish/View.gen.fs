@@ -221,6 +221,18 @@ type View =
     new LinearRangeTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
+  static member LinearRange(set: LinearRangeProps -> unit) =
+    let viewProps = LinearRangeProps ()
+    set viewProps
+    new LinearRangeTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member LinearRange(children: ITerminalElement list) =
+    let viewProps = LinearRangeProps ()
+    viewProps.Children children
+    new LinearRangeTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member ListView(set: ListViewProps -> unit) =
     let viewProps = ListViewProps ()
     set viewProps
@@ -288,6 +300,18 @@ type View =
     new NumericUpDownTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
+  static member NumericUpDown(set: NumericUpDownProps -> unit) =
+    let viewProps = NumericUpDownProps ()
+    set viewProps
+    new NumericUpDownTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member NumericUpDown(children: ITerminalElement list) =
+    let viewProps = NumericUpDownProps ()
+    viewProps.Children children
+    new NumericUpDownTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member Padding(set: PaddingProps -> unit) =
     let viewProps = PaddingProps ()
     set viewProps
@@ -348,6 +372,78 @@ type View =
     new RunnableTerminalElement<'TResult>(viewProps.props)
     :> ITerminalElement
 
+  static member Dialog<'TResult>(set: DialogProps<'TResult> -> unit) =
+    let viewProps = DialogProps<'TResult> ()
+    set viewProps
+    new DialogTerminalElement<'TResult>(viewProps.props)
+    :> ITerminalElement
+
+  static member Dialog<'TResult>(children: ITerminalElement list) =
+    let viewProps = DialogProps<'TResult> ()
+    viewProps.Children children
+    new DialogTerminalElement<'TResult>(viewProps.props)
+    :> ITerminalElement
+
+  static member Dialog(set: DialogProps -> unit) =
+    let viewProps = DialogProps ()
+    set viewProps
+    new DialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member Dialog(children: ITerminalElement list) =
+    let viewProps = DialogProps ()
+    viewProps.Children children
+    new DialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View>(set: PromptProps<'TView, 'TResult> -> unit) =
+    let viewProps = PromptProps<'TView, 'TResult> ()
+    set viewProps
+    new PromptTerminalElement<'TView, 'TResult>(viewProps.props)
+    :> ITerminalElement
+
+  static member Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View>(children: ITerminalElement list) =
+    let viewProps = PromptProps<'TView, 'TResult> ()
+    viewProps.Children children
+    new PromptTerminalElement<'TView, 'TResult>(viewProps.props)
+    :> ITerminalElement
+
+  static member FileDialog(set: FileDialogProps -> unit) =
+    let viewProps = FileDialogProps ()
+    set viewProps
+    new FileDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member FileDialog(children: ITerminalElement list) =
+    let viewProps = FileDialogProps ()
+    viewProps.Children children
+    new FileDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member OpenDialog(set: OpenDialogProps -> unit) =
+    let viewProps = OpenDialogProps ()
+    set viewProps
+    new OpenDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member OpenDialog(children: ITerminalElement list) =
+    let viewProps = OpenDialogProps ()
+    viewProps.Children children
+    new OpenDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member SaveDialog(set: SaveDialogProps -> unit) =
+    let viewProps = SaveDialogProps ()
+    set viewProps
+    new SaveDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member SaveDialog(children: ITerminalElement list) =
+    let viewProps = SaveDialogProps ()
+    viewProps.Children children
+    new SaveDialogTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member ScrollBar(set: ScrollBarProps -> unit) =
     let viewProps = ScrollBarProps ()
     set viewProps
@@ -396,25 +492,25 @@ type View =
     new OptionSelectorTerminalElement(viewProps.props)
     :> ITerminalElement
 
-  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(set: FlagSelectorProps<'TFlagsEnum> -> unit) =
+  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType>(set: FlagSelectorProps<'TFlagsEnum> -> unit) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
     set viewProps
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(children: ITerminalElement list) =
+  static member FlagSelector<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType>(children: ITerminalElement list) =
     let viewProps = FlagSelectorProps<'TFlagsEnum> ()
     viewProps.Children children
     new FlagSelectorTerminalElement<'TFlagsEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(set: OptionSelectorProps<'TEnum> -> unit) =
+  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType>(set: OptionSelectorProps<'TEnum> -> unit) =
     let viewProps = OptionSelectorProps<'TEnum> ()
     set viewProps
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
     :> ITerminalElement
 
-  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(children: ITerminalElement list) =
+  static member OptionSelector<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType>(children: ITerminalElement list) =
     let viewProps = OptionSelectorProps<'TEnum> ()
     viewProps.Children children
     new OptionSelectorTerminalElement<'TEnum>(viewProps.props)
@@ -595,6 +691,18 @@ type View =
     new TreeViewTerminalElement<'T>(viewProps.props)
     :> ITerminalElement
 
+  static member TreeView(set: TreeViewProps -> unit) =
+    let viewProps = TreeViewProps ()
+    set viewProps
+    new TreeViewTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member TreeView(children: ITerminalElement list) =
+    let viewProps = TreeViewProps ()
+    viewProps.Children children
+    new TreeViewTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member Window(set: WindowProps -> unit) =
     let viewProps = WindowProps ()
     set viewProps
@@ -607,14 +715,26 @@ type View =
     new WindowTerminalElement(viewProps.props)
     :> ITerminalElement
 
+  static member Wizard(set: WizardProps -> unit) =
+    let viewProps = WizardProps ()
+    set viewProps
+    new WizardTerminalElement(viewProps.props)
+    :> ITerminalElement
+
+  static member Wizard(children: ITerminalElement list) =
+    let viewProps = WizardProps ()
+    viewProps.Children children
+    new WizardTerminalElement(viewProps.props)
+    :> ITerminalElement
+
   static member WizardStep(set: WizardStepProps -> unit) =
     let viewProps = WizardStepProps ()
     set viewProps
     new WizardStepTerminalElement(viewProps.props)
-    :> ITerminalElement
+    :> IWizardStepTerminalElement
 
   static member WizardStep(children: ITerminalElement list) =
     let viewProps = WizardStepProps ()
     viewProps.Children children
     new WizardStepTerminalElement(viewProps.props)
-    :> ITerminalElement
+    :> IWizardStepTerminalElement

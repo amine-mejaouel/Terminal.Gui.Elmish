@@ -11,3 +11,6 @@ type IPopoverMenuTerminalElement =
 
 type ITabTerminalElement =
   inherit ITerminalElement
+
+type IWizardStepTerminalElement =
+  inherit ITerminalElement

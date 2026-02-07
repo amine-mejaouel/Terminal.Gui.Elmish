@@ -3,6 +3,7 @@
 open System.Linq
 open NUnit.Framework
 open Terminal.Gui.Elmish
+open Terminal.Gui.Elmish.ElmishTerminal
 open Terminal.Gui.Views
 open Elmish
 
@@ -12,10 +13,9 @@ let render view =
 
   let view _ _ = view
 
-  let terminalElement =
-    ElmishTerminal.mkSimple init update view
-    |> ElmishTerminal.runComponent
-    :?> IInternalTerminalElement
+  let terminalElement = (ElmishTerminal.mkSimpleComponent init update view)
+  (terminalElement :?> IElmishComponent_TerminalElement).StartElmishLoop(Root)
+  let terminalElement = terminalElement :?> IInternalTerminalElement
 
   terminalElement.View
 

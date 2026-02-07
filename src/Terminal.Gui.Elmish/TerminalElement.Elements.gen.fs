@@ -1778,6 +1778,18 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
 
   interface ITerminalElement
 
+type internal LinearRangeTerminalElement(props: Props) =
+  inherit LinearRangeTerminalElement<System.Object>(props)
+
+  override _.Name = "LinearRange"
+
+  override _.NewView() = new LinearRange()
+
+  override _.SetAsChildOfParentView = true
+
+
+  interface ITerminalElement
+
 type internal ListViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -2086,6 +2098,18 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
 
   interface ITerminalElement
 
+type internal NumericUpDownTerminalElement(props: Props) =
+  inherit NumericUpDownTerminalElement<int>(props)
+
+  override _.Name = "NumericUpDown"
+
+  override _.NewView() = new NumericUpDown()
+
+  override _.SetAsChildOfParentView = true
+
+
+  interface ITerminalElement
+
 type internal PaddingTerminalElement(props: Props) =
   inherit AdornmentTerminalElement(props)
 
@@ -2366,6 +2390,270 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
     |> Props.tryFind PKey.Runnable'<'TResult>.Result
     |> Option.iter (fun _ ->
         view.Result <- Unchecked.defaultof<_>)
+
+
+  interface ITerminalElement
+
+type internal DialogTerminalElement<'TResult>(props: Props) =
+  inherit RunnableTerminalElement<'TResult>(props)
+
+  override _.Name = "Dialog`1"
+
+  override _.NewView() = new Dialog<'TResult>()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog<'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignment
+    |> Option.iter (fun v -> view.ButtonAlignment <- v)
+
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignmentModes
+    |> Option.iter (fun v -> view.ButtonAlignmentModes <- v)
+
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.Buttons
+    |> Option.iter (fun v -> view.Buttons <- v)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog<'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignment
+    |> Option.iter (fun _ ->
+        view.ButtonAlignment <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignmentModes
+    |> Option.iter (fun _ ->
+        view.ButtonAlignmentModes <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Dialog<'TResult>.Buttons
+    |> Option.iter (fun _ ->
+        view.Buttons <- Unchecked.defaultof<_>)
+
+
+  interface ITerminalElement
+
+type internal DialogTerminalElement(props: Props) =
+  inherit DialogTerminalElement<int>(props)
+
+  override _.Name = "Dialog"
+
+  override _.NewView() = new Dialog()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Dialog'.Result
+    |> Option.iter (fun v -> view.Result <- v)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Dialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Dialog'.Result
+    |> Option.iter (fun _ ->
+        view.Result <- Unchecked.defaultof<_>)
+
+
+  interface ITerminalElement
+
+type internal PromptTerminalElement<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View>(props: Props) =
+  inherit DialogTerminalElement<'TResult>(props)
+
+  override _.Name = "Prompt`2"
+
+  override _.NewView() = new Prompt<'TView, 'TResult>()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Prompt<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun v -> view.ResultExtractor <- v)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Prompt<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun _ ->
+        view.ResultExtractor <- Unchecked.defaultof<_>)
+
+
+  interface ITerminalElement
+
+type internal FileDialogTerminalElement(props: Props) =
+  inherit DialogTerminalElement(props)
+
+  override _.Name = "FileDialog"
+
+  override _.NewView() = new FileDialog()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FileDialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.FileDialog.AllowedTypes
+    |> Option.iter (fun v -> view.AllowedTypes <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.AllowsMultipleSelection
+    |> Option.iter (fun v -> view.AllowsMultipleSelection <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.FileOperationsHandler
+    |> Option.iter (fun v -> view.FileOperationsHandler <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.MustExist
+    |> Option.iter (fun v -> view.MustExist <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.OpenMode
+    |> Option.iter (fun v -> view.OpenMode <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.Path
+    |> Option.iter (fun v -> view.Path <- v)
+
+    props
+    |> Props.tryFind PKey.FileDialog.SearchMatcher
+    |> Option.iter (fun v -> view.SearchMatcher <- v)
+
+    // Events
+    terminalElement.TrySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> FileDialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.FileDialog.AllowedTypes
+    |> Option.iter (fun _ ->
+        view.AllowedTypes <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.FileDialog.AllowsMultipleSelection
+    |> Option.iter (fun _ ->
+        view.AllowsMultipleSelection <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.FileDialog.FileOperationsHandler
+    |> Option.iter (fun _ ->
+        view.FileOperationsHandler <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.FileDialog.MustExist
+    |> Option.iter (fun _ ->
+        view.MustExist <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.FileDialog.OpenMode
+    |> Option.iter (fun _ ->
+        view.OpenMode <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.FileDialog.Path
+    |> Option.iter (fun _ ->
+        view.Path <- "")
+
+    props
+    |> Props.tryFind PKey.FileDialog.SearchMatcher
+    |> Option.iter (fun _ ->
+        view.SearchMatcher <- Unchecked.defaultof<_>)
+
+    // Events
+    terminalElement.TryRemoveEventHandler PKey.FileDialog.FilesSelected
+
+  interface ITerminalElement
+
+type internal OpenDialogTerminalElement(props: Props) =
+  inherit FileDialogTerminalElement(props)
+
+  override _.Name = "OpenDialog"
+
+  override _.NewView() = new OpenDialog()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OpenDialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.OpenDialog.OpenMode
+    |> Option.iter (fun v -> view.OpenMode <- v)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> OpenDialog
+
+    // Properties
+    props
+    |> Props.tryFind PKey.OpenDialog.OpenMode
+    |> Option.iter (fun _ ->
+        view.OpenMode <- Unchecked.defaultof<_>)
+
+
+  interface ITerminalElement
+
+type internal SaveDialogTerminalElement(props: Props) =
+  inherit FileDialogTerminalElement(props)
+
+  override _.Name = "SaveDialog"
+
+  override _.NewView() = new SaveDialog()
+
+  override _.SetAsChildOfParentView = true
 
 
   interface ITerminalElement
@@ -2735,7 +3023,7 @@ type internal OptionSelectorTerminalElement(props: Props) =
 
   interface ITerminalElement
 
-type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> Enum and 'TFlagsEnum:> ValueType>(props: Props) =
+type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType>(props: Props) =
   inherit FlagSelectorTerminalElement(props)
 
   override _.Name = "FlagSelector`1"
@@ -2775,7 +3063,7 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
 
   interface ITerminalElement
 
-type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> Enum and 'TEnum:> ValueType>(props: Props) =
+type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType>(props: Props) =
   inherit OptionSelectorTerminalElement(props)
 
   override _.Name = "OptionSelector`1"
@@ -4121,6 +4409,18 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
 
   interface ITerminalElement
 
+type internal TreeViewTerminalElement(props: Props) =
+  inherit TreeViewTerminalElement<Terminal.Gui.Views.ITreeNode>(props)
+
+  override _.Name = "TreeView"
+
+  override _.NewView() = new TreeView()
+
+  override _.SetAsChildOfParentView = true
+
+
+  interface ITerminalElement
+
 type internal WindowTerminalElement(props: Props) =
   inherit RunnableTerminalElement(props)
 
@@ -4130,6 +4430,61 @@ type internal WindowTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
+
+  interface ITerminalElement
+
+type internal WizardTerminalElement(props: Props) =
+  inherit DialogTerminalElement(props)
+
+  override _.Name = "Wizard"
+
+  override _.NewView() = new Wizard()
+
+  override _.SetAsChildOfParentView = true
+
+  override this.SubElements_PropKeys =
+    [
+      SubElementPropKey.from PKey.Wizard.CurrentStep_element
+    ]
+    |> List.append base.SubElements_PropKeys
+
+  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Wizard
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Wizard.CurrentStep
+    |> Option.iter (fun v -> view.CurrentStep <- v)
+
+    // Events
+    terminalElement.TrySetEventHandler(PKey.Wizard.MovingBack, view.MovingBack)
+
+    terminalElement.TrySetEventHandler(PKey.Wizard.MovingNext, view.MovingNext)
+
+    terminalElement.TrySetEventHandler(PKey.Wizard.StepChanged, view.StepChanged)
+
+    terminalElement.TrySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
+
+  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let terminalElement = terminalElement :?> TerminalElement
+    let view = terminalElement.View :?> Wizard
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Wizard.CurrentStep
+    |> Option.iter (fun _ ->
+        view.CurrentStep <- Unchecked.defaultof<_>)
+
+    // Events
+    terminalElement.TryRemoveEventHandler PKey.Wizard.MovingBack
+    terminalElement.TryRemoveEventHandler PKey.Wizard.MovingNext
+    terminalElement.TryRemoveEventHandler PKey.Wizard.StepChanged
+    terminalElement.TryRemoveEventHandler PKey.Wizard.StepChanging
 
   interface ITerminalElement
 
@@ -4183,5 +4538,7 @@ type internal WizardStepTerminalElement(props: Props) =
     |> Option.iter (fun _ ->
         view.NextButtonText <- "")
 
+
+  interface IWizardStepTerminalElement
 
   interface ITerminalElement

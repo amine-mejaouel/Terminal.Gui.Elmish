@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open System.Collections.Specialized
 open Terminal.Gui.Elmish
+open Terminal.Gui.Elmish.ElmishTerminal
 open Terminal.Gui.ViewBase
 
 
@@ -187,7 +188,7 @@ type internal TerminalElement(props: Props) =
       | :? TerminalElement as te ->
         te.InitializeView ()
       | :? IElmishComponent_TerminalElement as ce ->
-        ce.StartElmishLoop ()
+        ce.StartElmishLoop origin
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 
       node.TerminalElement.Id <- { node.TerminalElement.Id with Origin = origin }

@@ -112,7 +112,8 @@ let gen () =
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
         yield $"  inherit TerminalElement(props)"
       else
-        yield $"  inherit {viewType.ParentViewType.Name}TerminalElement(props)"
+        let genericBlock = genericTypeParamsBlock viewType.ParentViewType
+        yield $"  inherit {getTypeNameWithoutArity viewType.ParentViewType}TerminalElement{genericBlock}(props)"
       yield ""
       yield $"  override _.Name = \"{viewType.Name}\""
       yield ""

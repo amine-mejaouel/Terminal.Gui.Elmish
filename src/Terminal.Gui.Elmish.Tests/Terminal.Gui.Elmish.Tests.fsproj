@@ -8,6 +8,9 @@
     <DefineConstants>$(DefineConstants);UNIT_TEST</DefineConstants>
     <OutputType>Library</OutputType>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="ElmishComponentTests.fs" />

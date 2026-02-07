@@ -13,8 +13,7 @@ let ``TerminalElement created by Elmish component is flagged as isElmishComponen
     let view _ _ = View.Button(fun _ -> ())
 
     let terminalElement =
-      ElmishTerminal.mkSimple init update view
-      |> ElmishTerminal.runComponent
+      ElmishTerminal.mkSimpleComponent init update view
       :?> IInternalTerminalElement
 
     Assert.That(terminalElement.IsElmishComponent, Is.True)

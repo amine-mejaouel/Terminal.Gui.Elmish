@@ -43,7 +43,12 @@ module Registry =
         | null -> true
         | baseType when baseType = typeof<Terminal.Gui.ViewBase.View> -> true
         | baseType ->
-            returnedTypes.Contains baseType
+            returnedTypes
+            |> Seq.exists (fun rt ->
+              if rt.IsGenericType && baseType.IsGenericType then
+                rt = baseType.GetGenericTypeDefinition()
+              else
+                rt = baseType)
 
       let returnedTypes = System.Collections.Generic.List<Type>()
       let pendingTypes = System.Collections.Generic.List<Type>()

@@ -166,11 +166,12 @@ type internal TerminalElement(props: Props) =
     PositionService.Current.SignalReuse this
     viewReusedByAnotherTE <- true
 
-  member this.InitializeView() =
+  member this.InitializeView(origin) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
     this.View <- this.NewView ()
+    id <- { id with Origin = origin }
 
     this.InitializeSubElements()
     |> Seq.iter this.Props.addNonTyped
@@ -186,7 +187,7 @@ type internal TerminalElement(props: Props) =
 
       match node.TerminalElement with
       | :? TerminalElement as te ->
-        te.InitializeView ()
+        te.InitializeView origin
       | :? IElmishComponent_TerminalElement as ce ->
         ce.StartElmishLoop (Origin.ElmishComponent origin)
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
@@ -413,7 +414,6 @@ type internal TerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IInternalTerminalElement with
-    member this.InitializeView() = this.InitializeView()
     member this.InitializeTree(origin) = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
     member this.Id with get() = id and set value = id <- value

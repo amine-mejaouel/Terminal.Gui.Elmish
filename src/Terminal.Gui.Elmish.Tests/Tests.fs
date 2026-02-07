@@ -52,7 +52,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     (menuBarElement.Props
      |> Props.find PKey.MenuBar.children)
       .Single()
-    :?> MenuBarTerminalElement
+    :?> MenuBarItemTerminalElement
 
   let popoverMenu =
     menuBarItemElement.Props

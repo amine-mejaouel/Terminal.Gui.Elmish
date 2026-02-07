@@ -2,11 +2,7 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open System.Threading.Tasks
-open Elmish
-open Terminal.Gui.App
 open Terminal.Gui.ViewBase
-open Terminal.Gui.Views
 
 
 type ITerminalElement =
@@ -454,94 +450,3 @@ module rec Element =
     abstract Children: List<IInternalTerminalElement>
     abstract IsElmishComponent: bool with get
     abstract ViewSet: IEvent<View>
-
-[<AutoOpen>]
-module Elmish =
-
-  [<RequireQualifiedAccess>]
-  type internal RootView =
-    /// Application root view, there is one single instance of these in the application.
-    | AppRootView of Runnable
-    /// Elmish component root view, there can be multiple instances of these in the application.
-    | ComponentRootView of View
-
-  type internal InternalModel<'model> = {
-    mutable CurrentTreeState: IInternalTerminalElement option
-    mutable Application: IApplication
-    RootView: TaskCompletionSource<RootView>
-    Termination: TaskCompletionSource
-    /// Elmish model provided to the Program by the library caller.
-    ClientModel: 'model
-  }
-
-  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
-
-  type internal IElmishComponent_TerminalElement =
-    abstract StartElmishLoop: unit -> unit
-    inherit ITerminalElement
-    inherit IInternalTerminalElement
-
-  /// <summary>
-  /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
-  /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
-  /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
-  /// </summary>
-  type internal ElmishComponent_TerminalElement<'model, 'msg, 'view>(program: Program<unit,InternalModel<'model>, 'msg, 'view>) =
-
-    let mutable terminalElement: IInternalTerminalElement = Unchecked.defaultof<_>
-
-    let runComponent program =
-
-      let waitForView = TaskCompletionSource()
-
-      let runComponent (model: InternalModel<_>) =
-        let start dispatch =
-          (task {
-            // On program startup, Wait for the Elmish loop to take care of creating the root view.
-            let! _ = model.RootView.Task
-            terminalElement <- model.CurrentTreeState.Value
-            waitForView.SetResult()
-          }).GetAwaiter().GetResult()
-
-          { new IDisposable with member _.Dispose() = () }
-
-        start
-
-      let subscribe model = [ [ "runComponent" ], runComponent model ]
-
-      program
-      |> Program.withSubscription subscribe
-      |> Program.run
-
-      waitForView.Task.GetAwaiter().GetResult()
-
-      ()
-
-    member this.TerminalElement =
-      if terminalElement = Unchecked.defaultof<_> then
-        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View."
-      else
-        terminalElement.View
-
-    interface IElmishComponent_TerminalElement with
-      member this.StartElmishLoop() = runComponent program
-
-    interface IInternalTerminalElement with
-      member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
-      member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
-      member this.Reuse prevElementData = terminalElement.Reuse prevElementData
-      member this.Id with get() = terminalElement.Id and set v = terminalElement.Id <- v
-      member this.View = terminalElement.View
-
-      member this.Name = terminalElement.Name
-
-      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
-      member this.SetAsChildOfParentView = terminalElement.SetAsChildOfParentView
-
-      member this.IsElmishComponent = true
-
-      member this.Dispose() = terminalElement.Dispose()
-
-      member this.Children = List<IInternalTerminalElement>()
-      member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
-      member this.ViewSet = terminalElement.ViewSet

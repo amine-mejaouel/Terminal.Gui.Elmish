@@ -1,5 +1,10 @@
 namespace Terminal.Gui.Elmish
 
+open System
+open System.Threading.Tasks
+open Elmish
+open Terminal.Gui.App
+open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type TerminalMsg<'a> =
@@ -10,22 +15,34 @@ type TerminalMsg<'a> =
 module TerminalMsg =
   let ofMsg msg = TerminalMsg.Msg msg
 
-[<RequireQualifiedAccess>]
 module ElmishTerminal =
 
-  open System
-  open System.Threading.Tasks
-  open Elmish
-  open Terminal.Gui.App
+  [<RequireQualifiedAccess>]
+  type internal RootView =
+    /// Application root view, there is one single instance of these in the application.
+    | AppRootView of Runnable
+    /// Elmish component root view, there can be multiple instances of these in the application.
+    | ComponentRootView of View
 
-  module OuterModel =
-    let internal wrapInit (init: 'arg -> 'model * Cmd<'msg>) =
+  type internal InternalModel<'model> = {
+    mutable CurrentTreeState: IInternalTerminalElement option
+    mutable Application: IApplication
+    Origin: Origin
+    RootView: TaskCompletionSource<RootView>
+    Termination: TaskCompletionSource
+    /// Elmish model provided to the Program by the library caller.
+    ClientModel: 'model
+  }
+
+  module internal OuterModel =
+    let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
         let internalModel = {
           Application = Application.Create()
           CurrentTreeState = None
+          Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
           ClientModel = innerModel
@@ -43,13 +60,14 @@ module ElmishTerminal =
     let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : InternalModel<'model> -> Dispatch<'msg> -> ITerminalElement =
       fun (model: InternalModel<'model>) (dispatch: Dispatch<'msg>) -> view model.ClientModel dispatch
 
-    let internal wrapSimpleInit (init: 'arg -> 'model) =
+    let internal wrapSimpleInit origin (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
         let internalModel = {
           Application = Application.Create()
           CurrentTreeState = None
+          Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
           ClientModel = innerModel
@@ -65,6 +83,13 @@ module ElmishTerminal =
     let internal wrapSubscribe (subscribe: 'model -> _) : InternalModel<'model> -> _ =
       fun outerModel -> subscribe outerModel.ClientModel
 
+  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
+
+  type internal IElmishComponent_TerminalElement =
+    abstract StartElmishLoop: Origin -> unit
+    inherit ITerminalElement
+    inherit IInternalTerminalElement
+
   let mutable unitTestMode = false
 
   let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
@@ -76,7 +101,7 @@ module ElmishTerminal =
         let startState =
           view model dispatch :?> IInternalTerminalElement
 
-        startState.InitializeTree Root
+        startState.InitializeTree model.Origin
 
         match startState.View with
         | null -> failwith "error state not initialized"
@@ -108,13 +133,88 @@ module ElmishTerminal =
 
     model.Termination.SetResult()
 
+  /// <summary>
+  /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
+  /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
+  /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
+  /// </summary>
+  type internal ElmishComponent_TerminalElement<'model, 'msg, 'view>(init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+
+    let mutable terminalElement: IInternalTerminalElement = Unchecked.defaultof<_>
+
+    let runComponent (ElmishTerminalProgram program) =
+
+      let waitForView = TaskCompletionSource()
+
+      let runComponent (model: InternalModel<_>) =
+        let start dispatch =
+          (task {
+            // On program startup, Wait for the Elmish loop to take care of creating the root view.
+            let! _ = model.RootView.Task
+            terminalElement <- model.CurrentTreeState.Value
+            waitForView.SetResult()
+          }).GetAwaiter().GetResult()
+
+          { new IDisposable with member _.Dispose() = () }
+
+        start
+
+      let subscribe model = [ [ "runComponent" ], runComponent model ]
+
+      program
+      |> Program.withSubscription subscribe
+      |> Program.run
+
+      waitForView.Task.GetAwaiter().GetResult()
+
+      ()
+
+    let mkSimpleComponent origin (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
+      Program.mkSimple (OuterModel.wrapSimpleInit origin init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
+      |> Program.withSetState (setState (OuterModel.wrapView view))
+      |> ElmishTerminalProgram
+
+    member this.TerminalElement =
+      if terminalElement = Unchecked.defaultof<_> then
+        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View."
+      else
+        terminalElement.View
+
+    interface IElmishComponent_TerminalElement with
+      member this.StartElmishLoop(owner) =
+        mkSimpleComponent owner init update view
+        |> runComponent
+
+    interface IInternalTerminalElement with
+      member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
+      member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
+      member this.Reuse prevElementData = terminalElement.Reuse prevElementData
+      member this.Id with get() = terminalElement.Id and set v = terminalElement.Id <- v
+      member this.View = terminalElement.View
+
+      member this.Name = terminalElement.Name
+
+      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
+      member this.SetAsChildOfParentView = terminalElement.SetAsChildOfParentView
+
+      member this.IsElmishComponent = true
+
+      member this.Dispose() = terminalElement.Dispose()
+
+      member this.Children = System.Collections.Generic.List<IInternalTerminalElement>()
+      member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
+      member this.ViewSet = terminalElement.ViewSet
+
+  let mkSimpleComponent (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+    new ElmishComponent_TerminalElement<_,_,_>(init, update, view) :> ITerminalElement
+
   let mkProgram (init: 'arg -> 'model * Cmd<'msg>) (update: 'msg -> 'model -> 'model * Cmd<'msg>) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
-    Program.mkProgram (OuterModel.wrapInit init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
+    Program.mkProgram (OuterModel.wrapInit Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
   let mkSimple (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
-    Program.mkSimple (OuterModel.wrapSimpleInit init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
+    Program.mkSimple (OuterModel.wrapSimpleInit Root init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
@@ -173,6 +273,3 @@ module ElmishTerminal =
 
     waitForStart.Task.GetAwaiter().GetResult()
     Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()
-
-  let asComponent (ElmishTerminalProgram program: ElmishTerminalProgram<_, _, _, _>) : ITerminalElement =
-    new ElmishComponent_TerminalElement<_,_,_>(program) :> ITerminalElement

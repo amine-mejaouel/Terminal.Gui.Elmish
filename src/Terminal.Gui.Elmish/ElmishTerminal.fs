@@ -186,7 +186,6 @@ module ElmishTerminal =
         |> runComponent
 
     interface IInternalTerminalElement with
-      member this.InitializeView() = () // Do nothing, initialization is handled by the Elmish component
       member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
       member this.Reuse prevElementData = terminalElement.Reuse prevElementData
       member this.Id with get() = terminalElement.Id and set v = terminalElement.Id <- v

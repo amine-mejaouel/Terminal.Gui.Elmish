@@ -448,7 +448,6 @@ module rec Element =
   and internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
-    abstract InitializeView: unit -> unit
     abstract InitializeTree: origin: Origin -> unit
     abstract Reuse: prev: IInternalTerminalElement -> unit
     abstract Id: TerminalElementId with get, set

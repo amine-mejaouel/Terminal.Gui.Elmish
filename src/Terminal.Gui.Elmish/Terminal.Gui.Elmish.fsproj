@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Interop.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="Differ.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="PKey.fs" />
@@ -56,7 +57,6 @@
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />
     <Compile Include="Views.fs" />
-    <Compile Include="TreeDiff.fs" />
     <Compile Include="ElmishTerminal.fs" />
   </ItemGroup>
   <ItemGroup>

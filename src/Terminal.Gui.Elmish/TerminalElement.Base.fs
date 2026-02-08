@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open System.Collections.Specialized
 open Terminal.Gui.Elmish
-open Terminal.Gui.Elmish.ElmishTerminal
 open Terminal.Gui.ViewBase
 
 
@@ -57,7 +56,7 @@ type internal EventHandlerRegistrar() =
       ()
 
   member private this.SetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit) =
-    match this.TryFindHandler<'THandler> (pkey) with
+    match this.TryFindHandler<'THandler> pkey with
     | Some previouslySetHandler ->
       removeHandler previouslySetHandler
     | None ->
@@ -88,7 +87,7 @@ type internal EventHandlerRegistrar() =
 
 type internal TreeNodeTerminalElement<'model, 'msg, 'view> =
   | IInternalTerminalElement of IInternalTerminalElement
-  | ElmishComponent of ElmishComponent_TerminalElement<'model, 'msg, 'view>
+  | ElmishComponent of ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>
 
 type internal TreeNode = {
   TerminalElement: IInternalTerminalElement
@@ -188,7 +187,7 @@ type internal TerminalElement(props: Props) =
       match node.TerminalElement with
       | :? TerminalElement as te ->
         te.InitializeView node.Origin
-      | :? IElmishComponent_TerminalElement as ce ->
+      | :? ElmishTerminal.IElmishComponentTE as ce ->
         ce.StartElmishLoop (Origin.ElmishComponent node.Origin)
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 

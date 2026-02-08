@@ -12,9 +12,11 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ElmishTester.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="ElmishComponentTests.fs" />
     <Compile Include="ElementsCompleteness.fs" />
+    <Compile Include="TerminalElementIdTests.fs" />
     <Compile Include="Main.fs" />
     <Content Include="paket.references" />
   </ItemGroup>

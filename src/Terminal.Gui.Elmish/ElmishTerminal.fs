@@ -124,7 +124,7 @@ module ElmishTerminal =
 
     ()
 
-  let private terminate model =
+  let internal terminate model =
     if not unitTestMode then
       match model.RootView.Task.Result with
       | RootView.AppRootView r ->

@@ -4,23 +4,10 @@ open System.Linq
 open NUnit.Framework
 open Terminal.Gui.Elmish
 open Terminal.Gui.Views
-open Elmish
-
-let render view =
-  let init _ = (), Cmd.none
-  let update _ _ = (), Cmd.none
-
-  let view _ _ = view
-
-  let terminalElement = (ElmishTerminal.mkSimpleComponent init update view)
-  (terminalElement :?> ElmishTerminal.IElmishComponentTE).StartElmishLoop(Root)
-  let terminalElement = terminalElement :?> IInternalTerminalElement
-
-  terminalElement.View
 
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =
-  let view =
+  let viewTE =
     View.Runnable [
       View.MenuBar (fun p m ->
         p.Children [
@@ -45,7 +32,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.Children.Single() :?> MenuBarTerminalElement
+    viewTE.Children.Single() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
@@ -62,7 +49,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     popoverMenu.Props
     |> Props.find PKey.PopoverMenu.Root_element
 
-  let view = view |> render
+  let view = (ElmishTester.render viewTE).View
 
   let menuBar =
     (view.SubViews |> Seq.head) :?> MenuBar
@@ -83,7 +70,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 
 [<Test>]
 let ``Using macros syntax: Menu should be correctly set`` () =
-  let view =
+  let viewTE =
     View.Runnable [
       View.MenuBar (fun p m ->
         m.MenuBarItem (fun p m ->
@@ -99,7 +86,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     :?> IInternalTerminalElement
 
   let menuBarElement =
-    view.Children.Single() :?> MenuBarTerminalElement
+    viewTE.Children.Single() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
@@ -117,7 +104,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     |> Props.find PKey.PopoverMenu.Root_element
 
 
-  let view = view |> render
+  let view = (ElmishTester.render viewTE).View
 
   let menuBar =
     (view.SubViews |> Seq.head) :?> MenuBar

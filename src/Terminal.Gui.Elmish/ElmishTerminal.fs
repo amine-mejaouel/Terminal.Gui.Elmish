@@ -15,6 +15,7 @@ type TerminalMsg<'a> =
 module TerminalMsg =
   let ofMsg msg = TerminalMsg.Msg msg
 
+[<RequireQualifiedAccess>]
 module ElmishTerminal =
 
   [<RequireQualifiedAccess>]
@@ -85,7 +86,8 @@ module ElmishTerminal =
 
   type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
 
-  type internal IElmishComponent_TerminalElement =
+  /// Elmish component TerminalElement interface.
+  type internal IElmishComponentTE =
     abstract StartElmishLoop: Origin -> unit
     inherit ITerminalElement
     inherit IInternalTerminalElement
@@ -138,7 +140,7 @@ module ElmishTerminal =
   /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
   /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
   /// </summary>
-  type internal ElmishComponent_TerminalElement<'model, 'msg, 'view>(init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+  type internal ElmishComponentTE<'model, 'msg, 'view>(init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
     let mutable terminalElement: IInternalTerminalElement = Unchecked.defaultof<_>
 
@@ -180,7 +182,7 @@ module ElmishTerminal =
       else
         terminalElement.View
 
-    interface IElmishComponent_TerminalElement with
+    interface IElmishComponentTE with
       member this.StartElmishLoop(origin) =
         mkSimpleComponent origin init update view
         |> runComponent
@@ -205,7 +207,7 @@ module ElmishTerminal =
       member this.ViewSet = terminalElement.ViewSet
 
   let mkSimpleComponent (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
-    new ElmishComponent_TerminalElement<_,_,_>(init, update, view) :> ITerminalElement
+    new ElmishComponentTE<_,_,_>(init, update, view) :> ITerminalElement
 
   let mkProgram (init: 'arg -> 'model * Cmd<'msg>) (update: 'msg -> 'model -> 'model * Cmd<'msg>) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
     Program.mkProgram (OuterModel.wrapInit Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)

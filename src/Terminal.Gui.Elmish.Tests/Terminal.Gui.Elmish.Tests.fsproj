@@ -17,7 +17,6 @@
     <Compile Include="ElmishComponentTests.fs" />
     <Compile Include="ElementsCompleteness.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
-    <Compile Include="Main.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

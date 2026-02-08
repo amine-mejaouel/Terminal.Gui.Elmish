@@ -92,8 +92,6 @@ module ElmishTerminal =
     inherit ITerminalElement
     inherit IInternalTerminalElement
 
-  let mutable unitTestMode = false
-
   let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
 
     let nextTreeState =
@@ -125,13 +123,12 @@ module ElmishTerminal =
     ()
 
   let internal terminate model =
-    if not unitTestMode then
-      match model.RootView.Task.Result with
-      | RootView.AppRootView r ->
-        r.Dispose()
-        model.Application.RequestStop()
-      | RootView.ComponentRootView _ ->
-        ()
+    match model.RootView.Task.Result with
+    | RootView.AppRootView r ->
+      r.Dispose()
+      model.Application.RequestStop()
+    | RootView.ComponentRootView _ ->
+      ()
 
     model.Termination.SetResult()
 
@@ -241,18 +238,17 @@ module ElmishTerminal =
         let rootView = model.RootView.Task.GetAwaiter().GetResult()
         match rootView with
         | RootView.AppRootView runnable ->
-          if not unitTestMode then
-            Task.Run(fun () ->
-              (
-                try
-                  model.Application <- application
-                  model.Application.Init() |> ignore
-                  model.Application.Run(runnable) |> ignore
-                  running.SetResult()
-                with ex -> running.SetException ex
-              )
-              , TaskCreationOptions.LongRunning
-            ) |> ignore
+          Task.Run(fun () ->
+            (
+              try
+                model.Application <- application
+                model.Application.Init() |> ignore
+                model.Application.Run(runnable) |> ignore
+                running.SetResult()
+              with ex -> running.SetException ex
+            )
+            , TaskCreationOptions.LongRunning
+          ) |> ignore
 
           waitForStart.SetResult()
           waitForTermination <- model.Termination

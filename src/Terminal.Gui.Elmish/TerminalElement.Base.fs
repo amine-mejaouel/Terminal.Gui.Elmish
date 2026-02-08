@@ -125,7 +125,6 @@ type internal TerminalElement(props: Props) =
 
   let mutable viewReusedByAnotherTE = false
   let mutable view = null
-  let mutable id = TerminalElementId.Null
 
   let viewSetEvent = Event<View>()
 
@@ -136,6 +135,8 @@ type internal TerminalElement(props: Props) =
         failwith $"View has already been set."
       view <- value
       viewSetEvent.Trigger value
+
+  member val Id: TerminalElementId = TerminalElementId.Null with get, set
 
   member val ViewSet = viewSetEvent.Publish
 
@@ -165,12 +166,11 @@ type internal TerminalElement(props: Props) =
     PositionService.Current.SignalReuse this
     viewReusedByAnotherTE <- true
 
-  member this.InitializeView(origin) =
+  member this.InitializeView() =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
     this.View <- this.NewView ()
-    id <- { id with Origin = origin }
 
     this.InitializeSubElements()
     |> Seq.iter this.Props.addNonTyped
@@ -186,12 +186,11 @@ type internal TerminalElement(props: Props) =
 
       match node.TerminalElement with
       | :? TerminalElement as te ->
-        te.InitializeView node.Origin
+        te.Id <- { te.Id with Origin = node.Origin}
+        te.InitializeView ()
       | :? ElmishTerminal.IElmishComponentTE as ce ->
         ce.StartElmishLoop (Origin.ElmishComponent node.Origin)
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
-
-      node.TerminalElement.Id <- { node.TerminalElement.Id with Origin = origin }
 
       #if DEBUG
       Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.Id}:{node.TerminalElement.Name}"
@@ -415,7 +414,8 @@ type internal TerminalElement(props: Props) =
   interface IInternalTerminalElement with
     member this.InitializeTree(origin) = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
-    member this.Id with get() = id and set value = id <- value
+    member this.Id = this.Id
+    member this.Id with set value = this.Id <- value
     member this.View = this.View
     member this.Name = this.Name
 

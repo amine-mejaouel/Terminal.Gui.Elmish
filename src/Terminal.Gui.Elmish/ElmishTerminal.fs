@@ -145,6 +145,7 @@ module ElmishTerminal =
 
       let waitForView = TaskCompletionSource()
 
+      // TODO: could be refactored into a ElmishTerminal.runTerminal
       let runComponent (model: InternalModel<_>) =
         let start dispatch =
           (task {

@@ -200,7 +200,7 @@ module ElmishTerminal =
 
       member this.Dispose() = terminalElement.Dispose()
 
-      member this.Children = System.Collections.Generic.List<IInternalTerminalElement>()
+      member this.Children = terminalElement.Children
       member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
       member this.ViewSet = terminalElement.ViewSet
 

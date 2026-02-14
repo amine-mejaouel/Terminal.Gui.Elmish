@@ -44,9 +44,9 @@ let ``Component ID test`` () =
   let button = children.[1]
 
   Assert.Multiple(fun () ->
-    Assert.That(view.Id.ToString(), Is.EqualTo("root"))
-    Assert.That(testComp.Id.ToString(), Is.EqualTo("root|child[0]:TestComponent"))
-    Assert.That(label.Id.ToString(), Is.EqualTo("root|child[0]:TestComponent|child[0]:Label"))
-    Assert.That(button.Id.ToString(), Is.EqualTo("root|child[0]:TestComponent|child[1]:Button"))
+    Assert.That(view.Id.ToString(), Is.EqualTo("root:Runnable"))
+    Assert.That(testComp.Id.ToString(), Is.EqualTo("root:Runnable|child[0]:TestComponent"))
+    Assert.That(label.Id.ToString(), Is.EqualTo("root:Runnable|child[0]:TestComponent|child[0]:Label"))
+    Assert.That(button.Id.ToString(), Is.EqualTo("root:Runnable|child[0]:TestComponent|child[1]:Button"))
   )
 

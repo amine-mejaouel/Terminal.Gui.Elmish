@@ -88,7 +88,7 @@ module ElmishTerminal =
 
   /// Elmish component TerminalElement interface.
   type internal IElmishComponentTE =
-    abstract StartElmishLoop: Origin -> unit
+    abstract StartElmishLoop : unit -> unit
     inherit ITerminalElement
     inherit IInternalTerminalElement
 
@@ -137,7 +137,7 @@ module ElmishTerminal =
   /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
   /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
   /// </summary>
-  type internal ElmishComponentTE<'model, 'msg, 'view>(init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+  type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
     let mutable terminalElement: IInternalTerminalElement = Unchecked.defaultof<_>
 
@@ -169,8 +169,11 @@ module ElmishTerminal =
 
       ()
 
-    let mkSimpleComponent origin (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
-      Program.mkSimple (OuterModel.wrapSimpleInit origin init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
+    let mkSimpleComponent terminalElement (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
+      Program.mkSimple
+        (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init)
+        (OuterModel.wrapSimpleUpdate update)
+        (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
 
@@ -180,40 +183,38 @@ module ElmishTerminal =
       else
         terminalElement.View
 
+    member val Origin = Unchecked.defaultof<_> with get, set
+
     interface IElmishComponentTE with
-      member this.StartElmishLoop(origin) =
-        mkSimpleComponent origin init update view
+      member this.StartElmishLoop() =
+        mkSimpleComponent this init update view
         |> runComponent
 
     interface IInternalTerminalElement with
       member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
       member this.Reuse prevElementData = terminalElement.Reuse prevElementData
-      member this.Id with get() = terminalElement.Id and set v = terminalElement.Id <- v
       member this.View = terminalElement.View
-
-      member this.Name = terminalElement.Name
-
+      member this.Name = name
       // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
       member this.SetAsChildOfParentView = terminalElement.SetAsChildOfParentView
-
       member this.IsElmishComponent = true
-
       member this.Dispose() = terminalElement.Dispose()
-
       member this.Children = terminalElement.Children
       member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
       member this.ViewSet = terminalElement.ViewSet
+      member this.Origin with get() = this.Origin and set v = this.Origin <- v
+      member this.GetPath() = this.Origin.GetPath(name)
 
-  let mkSimpleComponent (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
-    new ElmishComponentTE<_,_,_>(init, update, view) :> ITerminalElement
+  let mkSimpleComponent name (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+    new ElmishComponentTE<_,_,_>(name, init, update, view) :> ITerminalElement
 
   let mkProgram (init: 'arg -> 'model * Cmd<'msg>) (update: 'msg -> 'model -> 'model * Cmd<'msg>) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
-    Program.mkProgram (OuterModel.wrapInit Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
+    Program.mkProgram (OuterModel.wrapInit Origin.Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
   let mkSimple (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
-    Program.mkSimple (OuterModel.wrapSimpleInit Root init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
+    Program.mkSimple (OuterModel.wrapSimpleInit Origin.Root init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 

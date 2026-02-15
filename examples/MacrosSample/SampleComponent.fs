@@ -35,5 +35,5 @@ let _component (set: IProps -> unit) =
       p.Activating (fun _ -> dispatch ChangeText)
     )
 
-  ElmishTerminal.mkSimpleComponent init update view
+  ElmishTerminal.mkSimpleComponent "SampleComponent" init update view
 

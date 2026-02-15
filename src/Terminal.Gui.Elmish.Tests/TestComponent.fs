@@ -26,7 +26,7 @@ let _component (set: IProps -> unit) =
   let update msg model =
     match msg with
     | Increment -> { model with Counter = model.Counter + 1 }
-  
+
   let view model dispatch =
     View.Window (fun p ->
       p.Title (props.text_value |> Option.defaultValue "Default")
@@ -41,4 +41,4 @@ let _component (set: IProps -> unit) =
       ]
     )
 
-  ElmishTerminal.mkSimpleComponent init update view
+  ElmishTerminal.mkSimpleComponent "TestComponent" init update view

@@ -63,4 +63,4 @@ let _component (set: IProps -> unit) =
         third
       ])
 
-  ElmishTerminal.mkSimpleComponent init update view
+  ElmishTerminal.mkSimpleComponent "TreeDiffUpdateTesterComponent" init update view

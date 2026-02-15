@@ -117,7 +117,7 @@ type internal TerminalElement(props: Props) =
           curNode.TerminalElement.Children
           |> Seq.mapi (fun i e -> {
             TerminalElement = e
-            Origin = Child (curNode.TerminalElement, i)
+            Origin = Origin.Child (curNode.TerminalElement, i)
           })
           |> List.ofSeq
 
@@ -136,7 +136,7 @@ type internal TerminalElement(props: Props) =
       view <- value
       viewSetEvent.Trigger value
 
-  member val Id: TerminalElementId = TerminalElementId.Null with get, set
+  member val Origin: Origin = Origin.Root with get, set
 
   member val ViewSet = viewSetEvent.Publish
 
@@ -182,23 +182,26 @@ type internal TerminalElement(props: Props) =
   abstract Name: string
 
   member this.InitializeTree(origin: Origin) : unit =
+    this.Origin <- origin
+
     let traverse (node: TreeNode) =
 
       match node.TerminalElement with
       | :? TerminalElement as te ->
-        te.Id <- { te.Id with Origin = node.Origin}
+        te.Origin <- node.Origin
         te.InitializeView ()
       | :? ElmishTerminal.IElmishComponentTE as ce ->
-        ce.StartElmishLoop (Origin.ElmishComponent node.Origin)
+        ce.Origin <- node.Origin
+        ce.StartElmishLoop ()
       | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 
       #if DEBUG
-      Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.Id}:{node.TerminalElement.Name}"
+      Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
       #endif
 
       // Here, the "children" views are added to their parent
       if node.TerminalElement.SetAsChildOfParentView then
-        node.Origin.Parent
+        node.TerminalElement.Origin.Parent
         |> Option.map _.View
         |> Option.iter (fun v -> v.Add node.TerminalElement.View |> ignore)
 
@@ -222,14 +225,14 @@ type internal TerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? TerminalElement as subElement ->
-            subElement.InitializeTree (SubElement (this, None, x))
+            subElement.InitializeTree (Origin.SubElement (this, None, x))
 
             let viewKey = x.viewKey
 
             yield viewKey, subElement.View
           | :? List<IInternalTerminalElement> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree (SubElement (this, Some i, x)))
+            |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement (this, Some i, x)))
 
             let viewKey = x.viewKey
 
@@ -391,6 +394,7 @@ type internal TerminalElement(props: Props) =
       removedProps = removedProps
     |}
 
+
   member this.Dispose() =
     if (not viewReusedByAnotherTE) then
 
@@ -412,10 +416,10 @@ type internal TerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IInternalTerminalElement with
-    member this.InitializeTree(origin) = this.InitializeTree origin
+    member this.InitializeTree origin  = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
-    member this.Id = this.Id
-    member this.Id with set value = this.Id <- value
+    member this.GetPath() = this.Origin.GetPath(this.Name)
+    member this.Origin with get () = this.Origin and set v = this.Origin <- v
     member this.View = this.View
     member this.Name = this.Name
 

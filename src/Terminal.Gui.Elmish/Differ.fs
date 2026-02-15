@@ -34,7 +34,7 @@ module internal Differ =
 
         prevTree.Dispose()
 
-        newTree.InitializeTree prevTree.Id.Origin
+        newTree.InitializeTree prevTree.Origin
 
       | OnlyPropsChanged ->
 
@@ -94,7 +94,7 @@ module internal Differ =
                   prevTree.View.CanFocus <- true
 
                 let newElem =
-                  ne.InitializeTree prevTree.Id.Origin
+                  ne.InitializeTree prevTree.Origin
 
                 newElem
             )

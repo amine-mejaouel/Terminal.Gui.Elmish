@@ -391,66 +391,55 @@ module internal Props =
 [<AutoOpen>]
 module rec Element =
 
-  /// Represents the relationship between a TerminalElement and its parent.
   type internal Origin =
     | Root
-    | ElmishComponent of Origin
-    // TODO: add index of child element
+    | ElmishComponent of Parent: IInternalTerminalElement
     | Child of Parent: IInternalTerminalElement * Index: int
     | SubElement of Parent: IInternalTerminalElement * Index: int option * Property: SubElementPropKey<IInternalTerminalElement>
+
     member this.Parent =
       match this with
       | Root -> None
       | Child (parent, _) -> Some parent
       | SubElement(parent, _, _) -> Some parent
-      | ElmishComponent origin -> origin.Parent
+      | ElmishComponent parent -> Some parent
 
-    override this.ToString() =
-        let parentId =
-          match this.Parent with
-          | Some parent -> parent.Id.ToString()
-          | None -> "root"
+    member this.GetPath(name) =
+      let parentPath =
+        match this.Parent with
+        | Some parent -> parent.GetPath()
+        | None -> "root"
 
-        let propIdStr =
-          match this with
-          | Root -> ""
-          | Child _ -> "child"
-          | SubElement(_, _, subElementPropKey) -> $"{subElementPropKey.key}"
-          | ElmishComponent _ -> $"elmishComponent"
-
-        let indexStr =
-          let rec indexStr origin =
-            match origin with
-            | Root -> ""
-            | Child(_, index) -> $"[{index}]"
-            | SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
-            | ElmishComponent origin -> indexStr origin
-
-          indexStr this
-
+      let propIdStr =
         match this with
-        | Root -> "root"
-        | _ -> $"{parentId}|{propIdStr}{indexStr}"
+        | Origin.Root -> ""
+        | Origin.Child _
+        | Origin.ElmishComponent _ ->
+          "child"
+        | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey.key}"
 
-  type internal TerminalElementId =
-    {
-      ExplicitId: string option
-      Origin: Origin
-    }
+      let indexStr =
+        let rec indexStr origin =
+          match origin with
+          | Origin.Root -> ""
+          | Origin.ElmishComponent parent -> indexStr parent.Origin
+          | Origin.Child(_, index) -> $"[{index}]"
+          | Origin.SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
 
-    static member Null = { ExplicitId = None; Origin = Root }
+        indexStr this
 
-    override this.ToString() =
-      match this.ExplicitId with
-      | Some id -> id
-      | None -> this.Origin.ToString()
+      match this with
+      | Origin.Root -> $"root:{name}"
+      | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
+      | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
 
-  and internal IInternalTerminalElement =
+  type internal IInternalTerminalElement =
     inherit ITerminalElement
     inherit IDisposable
     abstract InitializeTree: origin: Origin -> unit
     abstract Reuse: prev: IInternalTerminalElement -> unit
-    abstract Id: TerminalElementId with get, set
+    abstract GetPath: unit -> string
+    abstract Origin: Origin with get, set
     abstract Props: Props with get
     abstract View: View with get
     abstract Name: string

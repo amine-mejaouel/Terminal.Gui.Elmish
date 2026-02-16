@@ -40,5 +40,5 @@ let ``ElmishComponent.Parent is set`` () =
   let elmishComponent = elmishComponent :?> IInternalTerminalElement
   let parent = parent :?> IInternalTerminalElement
 
-  Assert.That(elmishComponent.Origin.Parent, Is.Not.Null)
-  Assert.That(elmishComponent.Origin.Parent.Value.GetPath(), Is.EqualTo(parent.GetPath()))
+  Assert.That(elmishComponent.Origin.ParentTerminalElement, Is.Not.Null)
+  Assert.That(elmishComponent.Origin.ParentTerminalElement.Value.GetPath(), Is.EqualTo(parent.GetPath()))

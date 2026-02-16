@@ -201,8 +201,7 @@ type internal TerminalElement(props: Props) =
 
       // Here, the "children" views are added to their parent
       if node.TerminalElement.SetAsChildOfParentView then
-        node.TerminalElement.Origin.Parent
-        |> Option.map _.View
+        node.TerminalElement.Origin.ParentView
         |> Option.iter (fun v -> v.Add node.TerminalElement.View |> ignore)
 
     traverseTree

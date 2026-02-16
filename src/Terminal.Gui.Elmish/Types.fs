@@ -397,16 +397,23 @@ module rec Element =
     | Child of Parent: IInternalTerminalElement * Index: int
     | SubElement of Parent: IInternalTerminalElement * Index: int option * Property: SubElementPropKey<IInternalTerminalElement>
 
-    member this.Parent =
+    member this.ParentTerminalElement =
       match this with
       | Root -> None
       | Child (parent, _) -> Some parent
       | SubElement(parent, _, _) -> Some parent
       | ElmishComponent parent -> Some parent
 
+    member this.ParentView =
+      match this.ParentTerminalElement with
+      | Some parent when parent.IsElmishComponent ->
+        parent.Origin.ParentView
+      | Some parent -> Some parent.View
+      | None -> None
+
     member this.GetPath(name) =
       let parentPath =
-        match this.Parent with
+        match this.ParentTerminalElement with
         | Some parent -> parent.GetPath()
         | None -> "root"
 

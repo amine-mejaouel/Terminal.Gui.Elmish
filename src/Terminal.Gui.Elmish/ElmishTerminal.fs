@@ -26,7 +26,9 @@ module ElmishTerminal =
     | ComponentRootView of View
 
   type internal InternalModel<'model> = {
-    mutable CurrentTreeState: IInternalTerminalElement option
+    // TODO: CurrentTreeState & RootView should seem to be redundant.
+    // Check refactoring possibilities to remove one of them.
+    mutable CurrentTreeState: IViewTE option
     mutable Application: IApplication
     Origin: Origin
     RootView: TaskCompletionSource<RootView>
@@ -86,12 +88,6 @@ module ElmishTerminal =
 
   type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
 
-  /// Elmish component TerminalElement interface.
-  type internal IElmishComponentTE =
-    abstract StartElmishLoop : unit -> unit
-    inherit ITerminalElement
-    inherit IInternalTerminalElement
-
   let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
 
     let nextTreeState =
@@ -99,7 +95,7 @@ module ElmishTerminal =
       | None ->
 
         let startState =
-          view model dispatch :?> IInternalTerminalElement
+          view model dispatch :?> IViewTE
 
         startState.InitializeTree model.Origin
 
@@ -112,9 +108,12 @@ module ElmishTerminal =
 
       | Some currentState ->
         let nextTreeState =
-          view model dispatch :?> IInternalTerminalElement
+          view model dispatch :?> IViewTE
 
-        Differ.update currentState nextTreeState
+        Differ.update
+          (TerminalElement.ViewBackedTE currentState)
+          (TerminalElement.ViewBackedTE nextTreeState)
+
         currentState.Dispose()
         nextTreeState
 
@@ -139,7 +138,8 @@ module ElmishTerminal =
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
-    let mutable terminalElement: IInternalTerminalElement = Unchecked.defaultof<_>
+    let mutable viewTe: IViewTE = Unchecked.defaultof<_>
+    let viewSetEvent = Event<View>()
 
     let runComponent (ElmishTerminalProgram program) =
 
@@ -151,7 +151,9 @@ module ElmishTerminal =
           (task {
             // On program startup, Wait for the Elmish loop to take care of creating the root view.
             let! _ = model.RootView.Task
-            terminalElement <- model.CurrentTreeState.Value
+            viewTe <- model.CurrentTreeState.Value
+            if viewTe.View = null then failwith "View is null"
+            viewSetEvent.Trigger viewTe.View
             waitForView.SetResult()
           }).GetAwaiter().GetResult()
 
@@ -177,33 +179,33 @@ module ElmishTerminal =
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
 
-    member this.TerminalElement =
-      if terminalElement = Unchecked.defaultof<_> then
-        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View."
+    member this.Child =
+      if viewTe = Unchecked.defaultof<_> then
+        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
       else
-        terminalElement.View
+        viewTe
 
     member val Origin = Unchecked.defaultof<_> with get, set
+
+    [<CLIEvent>]
+    member this.OnViewSet = viewSetEvent.Publish
+
+    member this.Dispose() =
+      viewTe.Dispose()
 
     interface IElmishComponentTE with
       member this.StartElmishLoop() =
         mkSimpleComponent this init update view
         |> runComponent
+      member this.Child = this.Child
 
-    interface IInternalTerminalElement with
-      member this.InitializeTree(origin) = () // Do nothing, initialization is handled by the Elmish component
-      member this.Reuse prevElementData = terminalElement.Reuse prevElementData
-      member this.View = terminalElement.View
+    interface ITerminalElementBase with
+      member this.View = viewTe.View
       member this.Name = name
-      // Children are managed by the Elmish component itself. Hence they are hidden to the outside.
-      member this.SetAsChildOfParentView = terminalElement.SetAsChildOfParentView
-      member this.IsElmishComponent = true
-      member this.Dispose() = terminalElement.Dispose()
-      member this.Children = terminalElement.Children
-      member this.Props = failwith "ElmishComponent_TerminalElement_Wrapper does not expose Props"
-      member this.ViewSet = terminalElement.ViewSet
+      member this.OnViewSet = this.OnViewSet
       member this.Origin with get() = this.Origin and set v = this.Origin <- v
       member this.GetPath() = this.Origin.GetPath(name)
+      member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent name (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
     new ElmishComponentTE<_,_,_>(name, init, update, view) :> ITerminalElement

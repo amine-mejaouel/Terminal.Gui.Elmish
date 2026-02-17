@@ -26,7 +26,7 @@ type ViewProps() =
       PKey.View.children,
       List<_>(
         children
-        |> List.map (fun x -> x :?> IInternalTerminalElement)
+        |> List.map (fun x -> TerminalElement.from x)
       )
     )
   

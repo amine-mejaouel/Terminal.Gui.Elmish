@@ -15,8 +15,8 @@ let ``Simple ID test`` () =
   // Act
   use _ = ElmishTester.render view
 
-  let label = label :?> IInternalTerminalElement
-  let view = view :?> IInternalTerminalElement
+  let label = label :?> IViewTE
+  let view = view :?> IViewTE
 
   Assert.Multiple(fun () ->
     Assert.That(view.GetPath(), Is.EqualTo("root:Runnable"))
@@ -35,11 +35,11 @@ let ``Component ID test`` () =
   // Act
   use _ = ElmishTester.render view
 
-  let testComp = testComp :?> IInternalTerminalElement
-  let view = view :?> IInternalTerminalElement
+  let testComp = testComp :?> IElmishComponentTE
+  let view = view :?> IViewTE
 
   // Get the children from the component
-  let children = testComp.Children
+  let children = testComp.Child.Children
   let label = children.[0]
   let button = children.[1]
 

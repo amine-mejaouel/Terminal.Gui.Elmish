@@ -21,7 +21,7 @@ open Terminal.Gui.Views
 module internal PKey =
 
   type ViewPKeys() =
-    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple "children"
+    member val children: ISimplePropKey<List<TerminalElement>> = PropKey.Create.simple "children"
 
     // Properties
     member val Arrangement: ISimplePropKey<Terminal.Gui.ViewBase.ViewArrangement> = PropKey.Create.simple "View.Arrangement"

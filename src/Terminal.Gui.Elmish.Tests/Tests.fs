@@ -29,15 +29,16 @@ let ``Using properties syntax: Menu should be correctly set`` () =
         ]
       ) :> ITerminalElement
     ]
-    :?> IInternalTerminalElement
+    :?> IViewTE
 
   let menuBarElement =
-    viewTE.Children.Single() :?> MenuBarTerminalElement
+    viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
      |> Props.find PKey.MenuBar.children)
       .Single()
+      .GetViewBackedTE()
     :?> MenuBarItemTerminalElement
 
   let popoverMenu =
@@ -83,15 +84,16 @@ let ``Using macros syntax: Menu should be correctly set`` () =
         )
       ) :> ITerminalElement
     ]
-    :?> IInternalTerminalElement
+    :?> IViewTE
 
   let menuBarElement =
-    viewTE.Children.Single() :?> MenuBarTerminalElement
+    viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
     (menuBarElement.Props
      |> Props.find PKey.MenuBar.children)
       .Single()
+      .GetViewBackedTE()
     :?> MenuBarItemTerminalElement
 
   let popoverMenu =

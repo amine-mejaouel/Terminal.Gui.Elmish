@@ -393,22 +393,22 @@ module rec Element =
 
   type internal Origin =
     | Root
-    | ElmishComponent of Parent: IInternalTerminalElement
-    | Child of Parent: IInternalTerminalElement * Index: int
-    | SubElement of Parent: IInternalTerminalElement * Index: int option * Property: SubElementPropKey<IInternalTerminalElement>
+    | ElmishComponent of Parent: IElmishComponentTE
+    | Child of Parent: IViewTE * Index: int
+    | SubElement of Parent: IViewTE * Index: int option * Property: SubElementPropKey<IViewTE>
 
-    member this.ParentTerminalElement =
+    member this.ParentTerminalElement : TerminalElement option =
       match this with
       | Root -> None
-      | Child (parent, _) -> Some parent
-      | SubElement(parent, _, _) -> Some parent
-      | ElmishComponent parent -> Some parent
+      | Child (parent, _) -> Some (TerminalElement.ViewBackedTE parent)
+      | SubElement(parent, _, _) -> Some (TerminalElement.ViewBackedTE parent)
+      | ElmishComponent parent -> Some (TerminalElement.ElmishComponentTE parent)
 
     member this.ParentView =
       match this.ParentTerminalElement with
-      | Some parent when parent.IsElmishComponent ->
+      | Some (ElmishComponentTE parent) ->
         parent.Origin.ParentView
-      | Some parent -> Some parent.View
+      | Some (ViewBackedTE parent) -> Some parent.View
       | None -> None
 
     member this.GetPath(name) =
@@ -440,17 +440,57 @@ module rec Element =
       | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
       | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
 
-  type internal IInternalTerminalElement =
+  type internal ITerminalElementBase =
     inherit ITerminalElement
     inherit IDisposable
-    abstract InitializeTree: origin: Origin -> unit
-    abstract Reuse: prev: IInternalTerminalElement -> unit
     abstract GetPath: unit -> string
     abstract Origin: Origin with get, set
-    abstract Props: Props with get
-    abstract View: View with get
     abstract Name: string
+    abstract View: View with get
+    abstract OnViewSet: IEvent<View>
+
+  type internal IViewTE =
+    inherit ITerminalElementBase
+    abstract InitializeTree: origin: Origin -> unit
+    abstract Reuse: prev: IViewTE -> unit
+    abstract Props: Props with get
     abstract SetAsChildOfParentView: bool
-    abstract Children: List<IInternalTerminalElement>
-    abstract IsElmishComponent: bool with get
-    abstract ViewSet: IEvent<View>
+    abstract Children: List<TerminalElement>
+
+  type internal IElmishComponentTE =
+    abstract StartElmishLoop : unit -> unit
+    abstract Child: IViewTE with get
+    inherit ITerminalElementBase
+
+  type internal TerminalElement =
+    | ViewBackedTE of IViewTE
+    | ElmishComponentTE of IElmishComponentTE
+
+    static member from (te: ITerminalElement) =
+      match te with
+      | :? IViewTE as viewTE -> ViewBackedTE viewTE
+      | :? IElmishComponentTE as elmishComponentTE -> ElmishComponentTE elmishComponentTE
+      | _ -> failwith "Invalid terminal element"
+
+    member internal this.TerminalElementBase =
+      match this with
+      | ViewBackedTE viewTE -> viewTE :> ITerminalElementBase
+      | ElmishComponentTE elmishComponentTE -> elmishComponentTE :> ITerminalElementBase
+
+    member this.Dispose() = this.TerminalElementBase.Dispose()
+    member this.GetPath() = this.TerminalElementBase.GetPath()
+    member this.Name = this.TerminalElementBase.Name
+    member this.Origin = this.TerminalElementBase.Origin
+    member this.Origin with set value = this.TerminalElementBase.Origin <- value
+    member this.ViewSet = this.TerminalElementBase.OnViewSet
+    member this.View = this.TerminalElementBase.View
+
+    interface ITerminalElementBase with
+      member this.Dispose() = this.Dispose()
+      member this.GetPath() = this.GetPath()
+      member this.View = this.View
+      member this.OnViewSet = this.ViewSet
+      member this.Name = this.Name
+      member this.Origin = this.Origin
+      member this.Origin with set value = this.Origin <- value
+

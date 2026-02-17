@@ -85,17 +85,13 @@ type internal EventHandlerRegistrar() =
     this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
 
-type internal TreeNodeTerminalElement<'model, 'msg, 'view> =
-  | IInternalTerminalElement of IInternalTerminalElement
-  | ElmishComponent of ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>
-
 type internal TreeNode = {
-  TerminalElement: IInternalTerminalElement
+  TerminalElement: TerminalElement
   Origin: Origin
 }
 
 [<AbstractClass>]
-type internal TerminalElement(props: Props) =
+type internal ViewBackedTerminalElement(props: Props) =
 
   /// Go through the tree of TerminalElements and their `Children`, and call the given function on each node.
   let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
@@ -111,13 +107,13 @@ type internal TerminalElement(props: Props) =
       traverse curNode
 
       let childNodes =
-        match curNode.TerminalElement.IsElmishComponent with
-        | true -> []
-        | false ->
-          curNode.TerminalElement.Children
+        match curNode.TerminalElement with
+        | ElmishComponentTE _ -> []
+        | ViewBackedTE te ->
+          te.Children
           |> Seq.mapi (fun i e -> {
             TerminalElement = e
-            Origin = Origin.Child (curNode.TerminalElement, i)
+            Origin = Origin.Child (te, i)
           })
           |> List.ofSeq
 
@@ -145,16 +141,16 @@ type internal TerminalElement(props: Props) =
   member val Props: Props = props with get, set
 
   member this.Children
-    with get() : List<IInternalTerminalElement> =
+    with get() : List<TerminalElement> =
       props
       |> Props.tryFind PKey.View.children
-      |> Option.defaultValue (List<IInternalTerminalElement>())
+      |> Option.defaultValue (List<TerminalElement>())
     and set value =
       match props.tryFind PKey.View.children with
       | Some _ -> failwith "Children property has already been set."
       | None -> props.add(PKey.View.children, value)
 
-  abstract SubElements_PropKeys: SubElementPropKey<IInternalTerminalElement> list
+  abstract SubElements_PropKeys: SubElementPropKey<IViewTE> list
   default _.SubElements_PropKeys = []
 
   abstract NewView: unit -> View
@@ -177,7 +173,7 @@ type internal TerminalElement(props: Props) =
 
     this.SetProps (this, this.Props)
 
-  abstract Reuse: prev: IInternalTerminalElement -> unit
+  abstract Reuse: prev: IViewTE -> unit
 
   abstract Name: string
 
@@ -187,27 +183,29 @@ type internal TerminalElement(props: Props) =
     let traverse (node: TreeNode) =
 
       match node.TerminalElement with
-      | :? TerminalElement as te ->
+      | ViewBackedTE te ->
         te.Origin <- node.Origin
-        te.InitializeView ()
-      | :? ElmishTerminal.IElmishComponentTE as ce ->
+        (te :?> ViewBackedTerminalElement).InitializeView ()
+      | ElmishComponentTE ce ->
         ce.Origin <- node.Origin
         ce.StartElmishLoop ()
-      | internalTerminalElement -> failwith $"Unexpected TerminalElement type: {internalTerminalElement.GetType().FullName}"
 
       #if DEBUG
       Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
       #endif
 
       // Here, the "children" views are added to their parent
-      if node.TerminalElement.SetAsChildOfParentView then
-        node.TerminalElement.Origin.ParentView
-        |> Option.iter (fun v -> v.Add node.TerminalElement.View |> ignore)
+      match node.TerminalElement with
+      | ElmishComponentTE _ -> ()
+      | ViewBackedTE te ->
+        if te.SetAsChildOfParentView then
+          te.Origin.ParentView
+          |> Option.iter (fun v -> v.Add te.View |> ignore)
 
     traverseTree
       [
         {
-          TerminalElement = this
+          TerminalElement = TerminalElement.from this
           Origin = origin
         }
       ]
@@ -223,13 +221,13 @@ type internal TerminalElement(props: Props) =
 
         | Some value ->
           match value with
-          | :? TerminalElement as subElement ->
+          | :? ViewBackedTerminalElement as subElement ->
             subElement.InitializeTree (Origin.SubElement (this, None, x))
 
             let viewKey = x.viewKey
 
             yield viewKey, subElement.View
-          | :? List<IInternalTerminalElement> as elements ->
+          | :? List<IViewTE> as elements ->
             elements
             |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement (this, Some i, x)))
 
@@ -266,9 +264,9 @@ type internal TerminalElement(props: Props) =
   member this.TryRemoveEventHandler (k: IPropKey) =
     this.EventRegistrar.RemoveHandler k
 
-  abstract SetProps: terminalElement: IInternalTerminalElement * props: Props -> unit
+  abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
-  default this.SetProps (terminalElement: IInternalTerminalElement, props: Props) =
+  default this.SetProps (terminalElement: ViewBackedTerminalElement, props: Props) =
     // Custom Props
     props
     |> Props.tryFind PKey.View.X_delayedPos
@@ -280,7 +278,7 @@ type internal TerminalElement(props: Props) =
     |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.Y <- pos)))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
-  abstract RemoveProps: terminalElement: IInternalTerminalElement * props: Props -> unit
+  abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
   /// Reuses:
   /// // TODO: outdated documentation
@@ -288,7 +286,7 @@ type internal TerminalElement(props: Props) =
   /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
   override this.Reuse prev =
 
-    let prev = prev :?> TerminalElement
+    let prev = prev :?> ViewBackedTerminalElement
 
     prev.SignalReuse()
 
@@ -298,7 +296,7 @@ type internal TerminalElement(props: Props) =
     this.View <- prev.View
     this.EventRegistrar <- prev.EventRegistrar
 
-    let c = TerminalElement.compare prev.Props this.Props
+    let c = ViewBackedTerminalElement.compare prev.Props this.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
@@ -319,7 +317,7 @@ type internal TerminalElement(props: Props) =
     this.RemoveProps (this, removedProps)
     this.SetProps (this, c.changedProps)
 
-  member this.equivalentTo(other: TerminalElement) =
+  member this.equivalentTo(other: ViewBackedTerminalElement) =
     let mutable isEquivalent = true
 
     let mutable enumerator =
@@ -334,12 +332,12 @@ type internal TerminalElement(props: Props) =
         ()
       elif kv.Key.isSingleElementKey then
         let curElement =
-          kv.Value :?> TerminalElement
+          kv.Value :?> ViewBackedTerminalElement
 
         let otherElement =
           other.Props
           |> Props.tryFindByRawKey kv.Key
-          |> Option.map (fun (x: obj) -> x :?> TerminalElement)
+          |> Option.map (fun (x: obj) -> x :?> ViewBackedTerminalElement)
 
         match curElement, otherElement with
         | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
@@ -376,9 +374,9 @@ type internal TerminalElement(props: Props) =
           true
         | Some(v: obj) when kv.Key.isSingleElementKey ->
           let curElement =
-            kv.Value :?> TerminalElement
+            kv.Value :?> ViewBackedTerminalElement
 
-          let oldElement = v :?> TerminalElement
+          let oldElement = v :?> ViewBackedTerminalElement
           curElement.equivalentTo oldElement
         // TODO: comparison is not good here, it can fail for many C# types
         // TODO: Properties values should be comparable
@@ -414,7 +412,7 @@ type internal TerminalElement(props: Props) =
       // Finally, dispose the View itself
       this.View.Dispose()
 
-  interface IInternalTerminalElement with
+  interface IViewTE with
     member this.InitializeTree origin  = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
     member this.GetPath() = this.Origin.GetPath(this.Name)
@@ -427,11 +425,9 @@ type internal TerminalElement(props: Props) =
 
     member this.Children = this.Children
 
-    member this.IsElmishComponent = false
-
     member this.Props = this.Props
 
-    member this.ViewSet = this.ViewSet
+    member this.OnViewSet = this.ViewSet
 
     member this.Dispose() = this.Dispose()
 

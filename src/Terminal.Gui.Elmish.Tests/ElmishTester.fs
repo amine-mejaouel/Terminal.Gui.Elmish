@@ -55,18 +55,17 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program) =
 
   waitForStart.Task.GetAwaiter().GetResult()
 
-  { new IInternalTerminalElement with
+  { new IViewTE with
       member this.InitializeTree origin = failwith "todo"
       member this.GetPath() = failwith "todo"
       member this.Origin = failwith "todo"
       member this.Origin with set value = failwith "todo"
       member this.Reuse(prev) = failwith "todo"
-      member this.IsElmishComponent = failwith "todo"
       member this.Name = failwith "todo"
       member this.View = curTE.View
       member this.Props = failwith "todo"
       member this.SetAsChildOfParentView = failwith "todo"
-      member this.ViewSet = failwith "todo"
+      member this.OnViewSet = failwith "todo"
       member this.Children = failwith "todo"
 
       member this.Dispose () =

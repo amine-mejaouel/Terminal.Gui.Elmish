@@ -4,7 +4,7 @@ open Terminal.Gui.ViewBase
 
 // OrientationInterface - used by elements that implement Terminal.Gui.ViewBase.IOrientation
 type internal OrientationInterface =
-  static member removeProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
+  static member removeProps (terminalElement: ViewBackedTerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.IOrientationInterface.Orientation
@@ -15,7 +15,7 @@ type internal OrientationInterface =
 
     terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging
 
-  static member setProps (terminalElement: TerminalElement) (view: IOrientation) (props: Props) =
+  static member setProps (terminalElement: ViewBackedTerminalElement) (view: IOrientation) (props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.IOrientationInterface.Orientation

@@ -12,17 +12,17 @@ type MenuBarItemMacros internal (props: MenuBarItemProps) =
       PKey.Menu.children,
       System.Collections.Generic.List<_>(
         value
-        |> List.map (fun x -> x :?> IInternalTerminalElement)
+        |> List.map (fun x -> TerminalElement.from x)
       )
     )
 
 type MenuBarMacros internal (props: MenuBarProps) =
   member _.MenuBarItem(set: MenuBarItemProps -> MenuBarItemMacros -> unit) =
     let menus =
-      props.props.getOrInit PKey.MenuBar.children (fun () -> System.Collections.Generic.List<IInternalTerminalElement>())
+      props.props.getOrInit PKey.MenuBar.children (fun () -> System.Collections.Generic.List<TerminalElement>())
 
     let props = MenuBarItemProps ()
     let macros = MenuBarItemMacros (props)
     set props macros
 
-    menus.Add(new MenuBarItemTerminalElement(props.props))
+    menus.Add(TerminalElement.from (new MenuBarItemTerminalElement(props.props)))

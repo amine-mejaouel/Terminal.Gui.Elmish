@@ -7,7 +7,7 @@ open Terminal.Gui.Views
 
 
 type internal ViewTerminalElement(props: Props) =
-  inherit TerminalElement(props)
+  inherit ViewBackedTerminalElement(props)
 
   override _.Name = "View"
 
@@ -15,10 +15,9 @@ type internal ViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View
 
     // Properties
@@ -279,9 +278,8 @@ type internal ViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View
 
     // Properties
@@ -540,10 +538,9 @@ type internal AdornmentTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Adornment
 
     // Properties
@@ -570,10 +567,9 @@ type internal AdornmentTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.Adornment.ThicknessChanged, view.ThicknessChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Adornment
 
     // Properties
@@ -616,10 +612,9 @@ type internal AttributePickerTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> AttributePicker
 
     // Properties
@@ -636,10 +631,9 @@ type internal AttributePickerTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> AttributePicker
 
     // Properties
@@ -668,10 +662,9 @@ type internal BarTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Bar
 
     // Properties
@@ -688,10 +681,9 @@ type internal BarTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanging, view.OrientationChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Bar
 
     // Properties
@@ -720,10 +712,9 @@ type internal BorderTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Border
 
     // Properties
@@ -735,10 +726,9 @@ type internal BorderTerminalElement(props: Props) =
     |> Props.tryFind PKey.Border.Settings
     |> Option.iter (fun v -> view.Settings <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Border
 
     // Properties
@@ -764,10 +754,9 @@ type internal ButtonTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Button
 
     // Properties
@@ -791,10 +780,9 @@ type internal ButtonTerminalElement(props: Props) =
     |> Props.tryFind PKey.Button.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Button
 
     // Properties
@@ -835,10 +823,9 @@ type internal CharMapTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> CharMap
 
     // Properties
@@ -867,10 +854,9 @@ type internal CharMapTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> CharMap
 
     // Properties
@@ -914,10 +900,9 @@ type internal CheckBoxTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> CheckBox
 
     // Properties
@@ -946,10 +931,9 @@ type internal CheckBoxTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> CheckBox
 
     // Properties
@@ -993,10 +977,9 @@ type internal ColorPickerTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ColorPicker
 
     // Properties
@@ -1021,10 +1004,9 @@ type internal ColorPickerTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ColorPicker
 
     // Properties
@@ -1063,10 +1045,9 @@ type internal ColorPicker16TerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ColorPicker16
 
     // Properties
@@ -1095,10 +1076,9 @@ type internal ColorPicker16TerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ColorPicker16
 
     // Properties
@@ -1142,10 +1122,9 @@ type internal ComboBoxTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ComboBox
 
     // Properties
@@ -1182,10 +1161,9 @@ type internal ComboBoxTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ComboBox.SelectedItemChanged, view.SelectedItemChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ComboBox
 
     // Properties
@@ -1236,10 +1214,9 @@ type internal DatePickerTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> DatePicker
 
     // Properties
@@ -1260,10 +1237,9 @@ type internal DatePickerTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> DatePicker
 
     // Properties
@@ -1309,10 +1285,9 @@ type internal GraphViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> GraphView
 
     // Properties
@@ -1344,10 +1319,9 @@ type internal GraphViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.GraphView.ScrollOffset
     |> Option.iter (fun v -> view.ScrollOffset <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> GraphView
 
     // Properties
@@ -1398,10 +1372,9 @@ type internal HexViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> HexView
 
     // Properties
@@ -1430,10 +1403,9 @@ type internal HexViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.HexView.PositionChanged, view.PositionChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> HexView
 
     // Properties
@@ -1477,10 +1449,9 @@ type internal LabelTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Label
 
     // Properties
@@ -1492,10 +1463,9 @@ type internal LabelTerminalElement(props: Props) =
     |> Props.tryFind PKey.Label.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Label
 
     // Properties
@@ -1533,10 +1503,9 @@ type internal LineTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Line
 
     // Properties
@@ -1557,10 +1526,9 @@ type internal LineTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.Line.OrientationChanging, view.OrientationChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Line
 
     // Properties
@@ -1594,10 +1562,9 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> LinearRange<'T>
 
     // Properties
@@ -1686,10 +1653,9 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.LinearRange<'T>.UseMinimumSizeChanging, view.UseMinimumSizeChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> LinearRange<'T>
 
     // Properties
@@ -1799,10 +1765,9 @@ type internal ListViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ListView
 
     // Properties
@@ -1841,10 +1806,9 @@ type internal ListViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ListView.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ListView
 
     // Properties
@@ -1896,10 +1860,9 @@ type internal MarginTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Margin
 
     // Properties
@@ -1911,10 +1874,9 @@ type internal MarginTerminalElement(props: Props) =
     |> Props.tryFind PKey.Margin.ShadowStyle
     |> Option.iter (fun v -> view.ShadowStyle <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Margin
 
     // Properties
@@ -1947,10 +1909,9 @@ type internal MenuTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Menu
 
     // Properties
@@ -1965,10 +1926,9 @@ type internal MenuTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.Menu.SelectedMenuItemChanged, view.SelectedMenuItemChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Menu
 
     // Properties
@@ -1998,10 +1958,9 @@ type internal MenuBarTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuBar
 
     // Properties
@@ -2012,10 +1971,9 @@ type internal MenuBarTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuBar
 
     // Properties
@@ -2040,10 +1998,9 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> NumericUpDown<'T>
 
     // Properties
@@ -2068,10 +2025,9 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> NumericUpDown<'T>
 
     // Properties
@@ -2132,10 +2088,9 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> PopoverBaseImpl
 
     // Properties
@@ -2143,10 +2098,9 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
     |> Props.tryFind PKey.PopoverBaseImpl.Current
     |> Option.iter (fun v -> view.Current <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> PopoverBaseImpl
 
     // Properties
@@ -2173,10 +2127,9 @@ type internal PopoverMenuTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> PopoverMenu
 
     // Properties
@@ -2195,10 +2148,9 @@ type internal PopoverMenuTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.PopoverMenu.KeyChanged, view.KeyChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> PopoverMenu
 
     // Properties
@@ -2233,10 +2185,9 @@ type internal ProgressBarTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ProgressBar
 
     // Properties
@@ -2264,10 +2215,9 @@ type internal ProgressBarTerminalElement(props: Props) =
     |> Props.tryFind PKey.ProgressBar.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ProgressBar
 
     // Properties
@@ -2313,10 +2263,9 @@ type internal RunnableTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Runnable
 
     // Properties
@@ -2335,10 +2284,9 @@ type internal RunnableTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanging, view.IsRunningChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Runnable
 
     // Properties
@@ -2368,10 +2316,9 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Runnable<'TResult>
 
     // Properties
@@ -2379,10 +2326,9 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
     |> Props.tryFind PKey.Runnable'<'TResult>.Result
     |> Option.iter (fun v -> view.Result <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Runnable<'TResult>
 
     // Properties
@@ -2403,10 +2349,9 @@ type internal DialogTerminalElement<'TResult>(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Dialog<'TResult>
 
     // Properties
@@ -2422,10 +2367,9 @@ type internal DialogTerminalElement<'TResult>(props: Props) =
     |> Props.tryFind PKey.Dialog<'TResult>.Buttons
     |> Option.iter (fun v -> view.Buttons <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Dialog<'TResult>
 
     // Properties
@@ -2456,10 +2400,9 @@ type internal DialogTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Dialog
 
     // Properties
@@ -2467,10 +2410,9 @@ type internal DialogTerminalElement(props: Props) =
     |> Props.tryFind PKey.Dialog'.Result
     |> Option.iter (fun v -> view.Result <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Dialog
 
     // Properties
@@ -2491,10 +2433,9 @@ type internal PromptTerminalElement<'TView, 'TResult when 'TView: (new: unit -> 
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Prompt<'TView, 'TResult>
 
     // Properties
@@ -2502,10 +2443,9 @@ type internal PromptTerminalElement<'TView, 'TResult when 'TView: (new: unit -> 
     |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
     |> Option.iter (fun v -> view.ResultExtractor <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Prompt<'TView, 'TResult>
 
     // Properties
@@ -2526,10 +2466,9 @@ type internal FileDialogTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FileDialog
 
     // Properties
@@ -2564,10 +2503,9 @@ type internal FileDialogTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FileDialog
 
     // Properties
@@ -2620,10 +2558,9 @@ type internal OpenDialogTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OpenDialog
 
     // Properties
@@ -2631,10 +2568,9 @@ type internal OpenDialogTerminalElement(props: Props) =
     |> Props.tryFind PKey.OpenDialog.OpenMode
     |> Option.iter (fun v -> view.OpenMode <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OpenDialog
 
     // Properties
@@ -2667,10 +2603,9 @@ type internal ScrollBarTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ScrollBar
 
     // Properties
@@ -2713,10 +2648,9 @@ type internal ScrollBarTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ScrollBar
 
     // Properties
@@ -2770,10 +2704,9 @@ type internal ScrollSliderTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ScrollSlider
 
     // Properties
@@ -2808,10 +2741,9 @@ type internal ScrollSliderTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.ScrollSlider.Scrolled, view.Scrolled)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> ScrollSlider
 
     // Properties
@@ -2859,10 +2791,9 @@ type internal SelectorBaseTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> SelectorBase
 
     // Properties
@@ -2903,10 +2834,9 @@ type internal SelectorBaseTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> SelectorBase
 
     // Properties
@@ -2962,10 +2892,9 @@ type internal FlagSelectorTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FlagSelector
 
     // Properties
@@ -2973,10 +2902,9 @@ type internal FlagSelectorTerminalElement(props: Props) =
     |> Props.tryFind PKey.FlagSelector.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FlagSelector
 
     // Properties
@@ -2997,10 +2925,9 @@ type internal OptionSelectorTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OptionSelector
 
     // Properties
@@ -3008,10 +2935,9 @@ type internal OptionSelectorTerminalElement(props: Props) =
     |> Props.tryFind PKey.OptionSelector.Cursor
     |> Option.iter (fun v -> view.Cursor <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OptionSelector
 
     // Properties
@@ -3032,10 +2958,9 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FlagSelector<'TFlagsEnum>
 
     // Properties
@@ -3046,10 +2971,9 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
     // Events
     terminalElement.TrySetEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, view.ValueChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> FlagSelector<'TFlagsEnum>
 
     // Properties
@@ -3072,10 +2996,9 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OptionSelector<'TEnum>
 
     // Properties
@@ -3090,10 +3013,9 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
     // Events
     terminalElement.TrySetEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged, view.ValueChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> OptionSelector<'TEnum>
 
     // Properties
@@ -3127,10 +3049,9 @@ type internal ShortcutTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Shortcut
 
     // Properties
@@ -3179,10 +3100,9 @@ type internal ShortcutTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanging, view.OrientationChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Shortcut
 
     // Properties
@@ -3258,10 +3178,9 @@ type internal MenuItemTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuItem
 
     // Properties
@@ -3277,10 +3196,9 @@ type internal MenuItemTerminalElement(props: Props) =
     |> Props.tryFind PKey.MenuItem.TargetView
     |> Option.iter (fun v -> view.TargetView <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuItem
 
     // Properties
@@ -3320,10 +3238,9 @@ type internal MenuBarItemTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuBarItem
 
     // Properties
@@ -3342,10 +3259,9 @@ type internal MenuBarItemTerminalElement(props: Props) =
     // Events
     terminalElement.TrySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> MenuBarItem
 
     // Properties
@@ -3380,10 +3296,9 @@ type internal SpinnerViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> SpinnerView
 
     // Properties
@@ -3411,10 +3326,9 @@ type internal SpinnerViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.SpinnerView.Style
     |> Option.iter (fun v -> view.Style <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> SpinnerView
 
     // Properties
@@ -3478,10 +3392,9 @@ type internal TabTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Tab
 
     // Properties
@@ -3493,10 +3406,9 @@ type internal TabTerminalElement(props: Props) =
     |> Props.tryFind PKey.Tab.View
     |> Option.iter (fun v -> view.View <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Tab
 
     // Properties
@@ -3530,10 +3442,9 @@ type internal TabViewTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TabView
 
     // Properties
@@ -3558,10 +3469,9 @@ type internal TabViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TabView.TabClicked, view.TabClicked)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TabView
 
     // Properties
@@ -3600,10 +3510,9 @@ type internal TableViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TableView
 
     // Properties
@@ -3670,10 +3579,9 @@ type internal TableViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TableView.SelectedCellChanged, view.SelectedCellChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TableView
 
     // Properties
@@ -3763,10 +3671,9 @@ type internal TextFieldTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextField
 
     // Properties
@@ -3817,10 +3724,9 @@ type internal TextFieldTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TextField.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextField
 
     // Properties
@@ -3890,10 +3796,9 @@ type internal DateFieldTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> DateField
 
     // Properties
@@ -3914,10 +3819,9 @@ type internal DateFieldTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.DateField.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> DateField
 
     // Properties
@@ -3951,10 +3855,9 @@ type internal TextValidateFieldTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextValidateField
 
     // Properties
@@ -3966,10 +3869,9 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     |> Props.tryFind PKey.TextValidateField.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextValidateField
 
     // Properties
@@ -3995,10 +3897,9 @@ type internal TextViewTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextView
 
     // Properties
@@ -4091,10 +3992,9 @@ type internal TextViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TextView.UnwrappedCursorPosition, view.UnwrappedCursorPosition)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TextView
 
     // Properties
@@ -4212,10 +4112,9 @@ type internal TimeFieldTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TimeField
 
     // Properties
@@ -4236,10 +4135,9 @@ type internal TimeFieldTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TimeField.ValueChanging, view.ValueChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TimeField
 
     // Properties
@@ -4273,10 +4171,9 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TreeView<'T>
 
     // Properties
@@ -4335,10 +4232,9 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.TreeView<'T>.SelectionChanged, view.SelectionChanged)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> TreeView<'T>
 
     // Properties
@@ -4448,10 +4344,9 @@ type internal WizardTerminalElement(props: Props) =
     ]
     |> List.append base.SubElements_PropKeys
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Wizard
 
     // Properties
@@ -4468,10 +4363,9 @@ type internal WizardTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> Wizard
 
     // Properties
@@ -4497,10 +4391,9 @@ type internal WizardStepTerminalElement(props: Props) =
 
   override _.SetAsChildOfParentView = true
 
-  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> WizardStep
 
     // Properties
@@ -4516,10 +4409,9 @@ type internal WizardStepTerminalElement(props: Props) =
     |> Props.tryFind PKey.WizardStep.NextButtonText
     |> Option.iter (fun v -> view.NextButtonText <- v)
 
-  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) =
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let terminalElement = terminalElement :?> TerminalElement
     let view = terminalElement.View :?> WizardStep
 
     // Properties

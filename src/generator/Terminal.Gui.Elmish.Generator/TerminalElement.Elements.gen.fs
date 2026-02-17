@@ -5,7 +5,6 @@ open Terminal.Gui.Elmish.Generator
 
 let terminalElementAndViewDeclaration (viewType: Type) =
   seq {
-    yield "    let terminalElement = terminalElement :?> TerminalElement"
     if viewType <> typeof<Terminal.Gui.ViewBase.View> then
       yield $"    let view = terminalElement.View :?> {getTypeNameWithoutArity viewType}{genericTypeParamsBlock viewType}"
     else
@@ -29,7 +28,7 @@ let setPropsCode (view: ViewMetadata) =
     Seq.empty
   else
     seq {
-      yield $"  override _.SetProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
       yield $"    base.SetProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration view.Type
@@ -56,7 +55,7 @@ let removePropsCode (view: ViewMetadata) =
     Seq.empty
   else
     seq {
-      yield $"  override _.RemoveProps(terminalElement: IInternalTerminalElement, props: Props) ="
+      yield $"  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
       if not (view.Type = typeof<Terminal.Gui.ViewBase.View>) then
         yield $"    base.RemoveProps(terminalElement, props)"
       yield $""
@@ -110,7 +109,7 @@ let gen () =
         yield "[<AbstractClass>]"
       yield $"type internal {getTypeNameWithoutArity viewType}TerminalElement{genericBlock}(props: Props) ="
       if viewType = typeof<Terminal.Gui.ViewBase.View> then
-        yield $"  inherit TerminalElement(props)"
+        yield $"  inherit ViewBackedTerminalElement(props)"
       else
         let genericBlock = genericTypeParamsBlock viewType.ParentViewType
         yield $"  inherit {getTypeNameWithoutArity viewType.ParentViewType}TerminalElement{genericBlock}(props)"

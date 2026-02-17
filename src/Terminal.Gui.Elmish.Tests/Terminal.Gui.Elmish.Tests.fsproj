@@ -12,6 +12,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helpers.fs" />
     <Compile Include="ElmishTester.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="ElmishComponentTests.fs" />

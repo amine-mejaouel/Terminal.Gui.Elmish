@@ -14,7 +14,7 @@ let genPKeyClassDefinition (viewType: Type) =
       let parentName = getTypeNameWithoutArity parentViewType
       yield $"    inherit {parentName}PKeys{genericTypeParamsBlock parentViewType}()"
     else
-      yield $"    member val children: ISimplePropKey<List<IInternalTerminalElement>> = PropKey.Create.simple \"children\""
+      yield $"    member val children: ISimplePropKey<List<TerminalElement>> = PropKey.Create.simple \"children\""
 
     yield ""
 
@@ -36,7 +36,7 @@ let genPKeyClassDefinition (viewType: Type) =
         // TODO: isEnumerableOfViews does not seem to be used anywhere
         else if prop.IsEnumerableOfViews then
           yield $"    member val {prop.PKey}: IMultiViewPropKey<List<{prop.FSharpTypeName}>> = PropKey.Create.multiView \"{keyName}_views\""
-          yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IInternalTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
+          yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IViewTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
         else
           yield $"    member val {prop.PKey}: ISimplePropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 

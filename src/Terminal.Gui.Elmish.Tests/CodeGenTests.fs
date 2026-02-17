@@ -20,6 +20,7 @@ let ``Should include all elements in Elements module`` () =
     )
     |> Array.map (fun t -> t.Name)
 
+  // TODO: Should generate these components automatically
   let ignoredElements = [
     "Dialog`1"
     "LinearRange`1"

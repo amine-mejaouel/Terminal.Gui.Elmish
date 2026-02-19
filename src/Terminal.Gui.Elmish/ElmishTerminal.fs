@@ -29,6 +29,7 @@ module ElmishTerminal =
     // TODO: CurrentTreeState & RootView should seem to be redundant.
     // Check refactoring possibilities to remove one of them.
     mutable CurrentTreeState: IViewTE option
+    mutable NextTreeStateTcs: TaskCompletionSource<IViewTE>
     mutable Application: IApplication
     Origin: Origin
     RootView: TaskCompletionSource<RootView>
@@ -45,6 +46,7 @@ module ElmishTerminal =
         let internalModel = {
           Application = Application.Create()
           CurrentTreeState = None
+          NextTreeStateTcs = TaskCompletionSource<_>()
           Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
@@ -70,6 +72,7 @@ module ElmishTerminal =
         let internalModel = {
           Application = Application.Create()
           CurrentTreeState = None
+          NextTreeStateTcs = TaskCompletionSource<_>()
           Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
@@ -118,6 +121,8 @@ module ElmishTerminal =
         nextTreeState
 
     model.CurrentTreeState <- Some nextTreeState
+    model.NextTreeStateTcs.SetResult nextTreeState
+    model.NextTreeStateTcs <- TaskCompletionSource<_>()
 
     ()
 
@@ -215,7 +220,7 @@ module ElmishTerminal =
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
-  let mkSimple (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
+  let mkSimple (init: 'arg -> 'model) (update: TerminalMsg<'cmd> -> 'model -> 'model) (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
     Program.mkSimple (OuterModel.wrapSimpleInit Origin.Root init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram

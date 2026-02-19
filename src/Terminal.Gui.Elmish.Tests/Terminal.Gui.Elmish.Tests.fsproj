@@ -23,6 +23,7 @@
     <Compile Include="ElmishComponentTests.fs" />
     <Compile Include="CodeGenTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
+    <Compile Include="ElmishLoopTests.fs" />
     <Content Include="paket.references" />
     <Compile Include="PositionServiceTests.fs" />
   </ItemGroup>

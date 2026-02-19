@@ -6,7 +6,11 @@
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
     <DefineConstants>$(DefineConstants);UNIT_TEST</DefineConstants>
-    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <!-- Following PropertyGroup is NUnit MTP Support -->
+  <PropertyGroup>
+    <EnableNUnitRunner>true</EnableNUnitRunner>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>

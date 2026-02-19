@@ -1,8 +1,5 @@
 FSharp.Core
-
 group test
-    Microsoft.NET.Test.Sdk
-    coverlet.collector
+    Microsoft.Testing.Platform
     NUnit
-    NUnit.Analyzers
     NUnit3TestAdapter

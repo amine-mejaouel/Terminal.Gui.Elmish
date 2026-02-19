@@ -24,6 +24,7 @@
     <Compile Include="CodeGenTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
     <Content Include="paket.references" />
+    <Compile Include="PositionServiceTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Terminal.Gui.Elmish\Terminal.Gui.Elmish.fsproj">

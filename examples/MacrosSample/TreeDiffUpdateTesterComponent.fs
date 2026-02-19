@@ -26,7 +26,7 @@ let _component (set: IProps -> unit) =
   let props = Props()
   set props
 
-  let init () = { DisplayedView = Label }
+  let init () = { DisplayedView = Button }
   let update cmd model =
     match cmd with
     | ChangeView view ->

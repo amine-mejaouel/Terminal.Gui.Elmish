@@ -2,12 +2,21 @@ module Terminal.Gui.Elmish.Tests.ElmishTester
 
 open System
 open System.Threading
+open System.Threading.Channels
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Elmish
 
-let internal run (ElmishTerminal.ElmishTerminalProgram program) =
+
+[<Interface>]
+type internal TestableElmishProgram<'msg> =
+  abstract member ProcessMsg: TerminalMsg<'msg> -> Task
+  abstract member ViewTE: IViewTE
+  abstract member View: Terminal.Gui.ViewBase.View
+  inherit IDisposable
+
+let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication,'model,TerminalMsg<'msg>,'view>) =
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
@@ -15,7 +24,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program) =
 
   let application = Application.Create()
 
-  let runTerminal (model: ElmishTerminal.InternalModel<_>) =
+  let startProgram (model: ElmishTerminal.InternalModel<_>) =
     let start dispatch =
       let rootView = model.RootView.Task.GetAwaiter().GetResult()
       match rootView with
@@ -42,10 +51,29 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program) =
 
     start
 
+  let msgQueue = Channel.CreateUnbounded<TerminalMsg<_> * TaskCompletionSource<IViewTE>>()
+
+  let msgDispatcher (model: ElmishTerminal.InternalModel<_>) =
+    let start dispatch =
+      let cancellationToken = new CancellationTokenSource()
+      Task.Factory.StartNew((fun () ->
+        task {
+          while not cancellationToken.Token.IsCancellationRequested do
+            let! msg, tcs = msgQueue.Reader.ReadAsync()
+            let nextTreeStateTask = model.NextTreeStateTcs.Task
+            dispatch msg
+            let! nextTreeState = nextTreeStateTask
+            tcs.SetResult(nextTreeState)
+        }), TaskCreationOptions.LongRunning) |> ignore
+
+      { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }
+
+    start
 
   let subscribe model = [
+    [ "startProgram" ], startProgram model
     [ "triggerTermination" ], triggerTermination model
-    [ "runTerminal" ], runTerminal model
+    [ "msgDispatcher" ], msgDispatcher model
   ]
 
   program
@@ -55,19 +83,21 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program) =
 
   waitForStart.Task.GetAwaiter().GetResult()
 
-  { new IViewTE with
-      member this.InitializeTree origin = failwith "todo"
-      member this.GetPath() = failwith "todo"
-      member this.Origin = failwith "todo"
-      member this.Origin with set value = failwith "todo"
-      member this.Reuse(prev) = failwith "todo"
-      member this.Name = failwith "todo"
-      member this.View = curTE.View
-      member this.Props = failwith "todo"
-      member this.SetAsChildOfParentView = failwith "todo"
-      member this.OnViewSet = failwith "todo"
-      member this.Children = failwith "todo"
+  let processMsg (msg: TerminalMsg<'msg>) =
+    task {
+      let msgProcessedTcs = TaskCompletionSource<_>()
+      let item = (msg, msgProcessedTcs)
+      do! msgQueue.Writer.WriteAsync item
+      // msgProcessedTcs is signaled by the msgDispatcher subscription.
+      let! newTreeState = msgProcessedTcs.Task
+      curTE <- newTreeState
+    }
 
+  {
+    new TestableElmishProgram<'msg> with
+      member _.ProcessMsg msg = processMsg msg
+      member _.ViewTE = curTE
+      member _.View = curTE.View
       member this.Dispose () =
         triggerTerminationTcs.SetResult()
         curTE.Dispose()

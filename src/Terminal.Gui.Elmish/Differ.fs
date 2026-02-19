@@ -57,7 +57,7 @@ module internal Differ =
             |> List.sortBy (fun v -> v.Name)
 
           (sortedRootChildren, sortedNewChildren)
-          ||> List.iter2 (fun rt nt -> workStack.Push(TerminalElement.from rt, TerminalElement.from nt))
+          ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
 
           prevTree.Dispose()
 
@@ -91,7 +91,7 @@ module internal Differ =
               newElements
               |> List.iteri (fun idx ne ->
                 if (idx < rootElements.Length) then
-                  workStack.Push(TerminalElement.from rootElements[idx], TerminalElement.from ne)
+                  workStack.Push(rootElements[idx], ne)
                 else
                   // somehow when the window is empty and you add new elements to it, it complains about that the can focus is not set.
                   // don't know
@@ -100,7 +100,7 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewBackedTE ve -> ve.InitializeTree prevTree.Origin
+                  | ViewBackedTE ve -> ve.InitializeTree (Origin.Child (newTree, idx))
                   | _ -> ()
 
               )

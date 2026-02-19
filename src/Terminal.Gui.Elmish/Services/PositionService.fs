@@ -8,15 +8,15 @@ type internal PositionService() =
 
   static member val Current = PositionService() with get
 
-  // Key: (curElementData, relElementData) / Value: list of remove handlers
-  member val RemoveHandlerRepository = Dictionary<ITerminalElementBase * ITerminalElementBase, List<unit -> unit>>()
+  // Key: (curTe, relTe) / Value: list of remove handlers.
+  // -> A list because curTe and relTe can be related by multiple positions (e.g. X and Y)
+  member val CleanupHandlersByTePair = Dictionary<ITerminalElementBase * ITerminalElementBase, List<unit -> unit>>()
 
-  // Key: IElementData / Value: set of (curElementData, relElementData) to be used to lookup in RemoveHandlerRepository
-  member val IndexedRemoveHandler = Dictionary<ITerminalElementBase, HashSet<ITerminalElementBase *
-                                                                             ITerminalElementBase>>()
+  // Key: TE / Value: set of (curElementData, relElementData) to be used to lookup in RemoveHandlerRepository
+  member val TePairsByTe = Dictionary<ITerminalElementBase, HashSet<ITerminalElementBase * ITerminalElementBase>>()
 
   member private this.UpdateIndex(v0, v1) =
-    let indexRepo = this.IndexedRemoveHandler
+    let indexRepo = this.TePairsByTe
 
     let update k =
       match indexRepo.TryGetValue(k) with
@@ -31,7 +31,7 @@ type internal PositionService() =
     update v1
 
   member private this.SetRemoveHandler(key: ITerminalElementBase * ITerminalElementBase, removeHandler: unit -> unit) =
-    let repo = this.RemoveHandlerRepository
+    let repo = this.CleanupHandlersByTePair
 
     match repo.TryGetValue(key) with
     | true, handlers ->
@@ -41,20 +41,34 @@ type internal PositionService() =
 
     this.UpdateIndex(key)
 
-  member private this.RemoveHandlers(key: IViewTE) =
-    let indexRepo = this.IndexedRemoveHandler
-    let repo = this.RemoveHandlerRepository
+  member private this.RemoveHandlers(targetTe: IViewTE) =
+    let removeHandlers = this.TePairsByTe
+    let repo = this.CleanupHandlersByTePair
 
-    match indexRepo.TryGetValue(key) with
+    let executeRemoveHandler key =
+      match repo.TryGetValue(key) with
+      | true, handlers ->
+        for removeHandler in handlers do
+          removeHandler()
+        repo.Remove(key) |> ignore
+      | false, _ -> ()
+
+    let removeMirrorHandler curTe removeHandler =
+      match removeHandlers.TryGetValue (curTe) with
+      | true, set ->
+        set.Remove removeHandler |> ignore
+        if set.Count = 0 then
+          removeHandlers.Remove(curTe) |> ignore
+      | false, _ -> ()
+
+    match removeHandlers.TryGetValue(targetTe) with
     | true, set ->
-      for key in set do
-        match repo.TryGetValue(key) with
-        | true, handlers ->
-          for removeHandler in handlers do
-            removeHandler()
-          repo.Remove(key) |> ignore
-        | false, _ -> ()
-      indexRepo.Remove(key) |> ignore
+      for removeHandler in set do
+        executeRemoveHandler removeHandler
+        let te0, te1 = removeHandler
+        let otherTe = if te0 = targetTe then te1 else te0
+        removeMirrorHandler otherTe removeHandler
+      removeHandlers.Remove(targetTe) |> ignore
     | false, _ -> ()
 
   member private this.ApplyRelativePos(cur: ITerminalElementBase, rel: ITerminalElementBase, apply: View -> View -> unit) =

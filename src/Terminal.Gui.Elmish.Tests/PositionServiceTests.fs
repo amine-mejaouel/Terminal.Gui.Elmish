@@ -93,8 +93,8 @@ let ``ApplyPos - Absolute positions do not add entries to RemoveHandlerRepositor
     svc.ApplyPos(labelTE, TPos.Center,      fun view pos -> view.Y <- pos)
     svc.ApplyPos(labelTE, TPos.Percent 25,  fun view pos -> view.X <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.EqualTo 0)
-    Assert.That(svc.TePairsByTe.Count,    Is.EqualTo 0)
+    Assert.That(svc.Cleanups.Count, Is.EqualTo 0)
+    Assert.That(svc.TerminalElementPairs.Count,    Is.EqualTo 0)
 
 // ---------------------------------------------------------------------------
 // Relative positions
@@ -108,7 +108,7 @@ let ``ApplyPos - TPos.Bottom registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.X relative registers handlers in the repository`` () =
@@ -118,7 +118,7 @@ let ``ApplyPos - TPos.X relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.X firstTE, fun view pos -> view.X <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Y relative registers handlers in the repository`` () =
@@ -128,7 +128,7 @@ let ``ApplyPos - TPos.Y relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Y firstTE, fun view pos -> view.Y <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Top relative registers handlers in the repository`` () =
@@ -138,7 +138,7 @@ let ``ApplyPos - TPos.Top relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Top firstTE, fun view pos -> view.Y <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Left relative registers handlers in the repository`` () =
@@ -148,7 +148,7 @@ let ``ApplyPos - TPos.Left relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Left firstTE, fun view pos -> view.X <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Right relative registers handlers in the repository`` () =
@@ -158,7 +158,7 @@ let ``ApplyPos - TPos.Right relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Right firstTE, fun view pos -> view.X <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
@@ -169,7 +169,7 @@ let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
 
     svc.ApplyPos(secondTE, TPos.Func (func, firstTE), fun view pos -> view.X <- pos)
 
-    Assert.That(svc.CleanupHandlersByTePair.Count, Is.GreaterThanOrEqualTo 1)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 // ---------------------------------------------------------------------------
 // Index repository tracks both elements of a relative pair
@@ -184,10 +184,10 @@ let ``ApplyPos - Both elements are indexed after a relative position is register
     svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
 
     Assert.Multiple(fun () ->
-        Assert.That(svc.TePairsByTe.ContainsKey(secondTE :> ITerminalElementBase), Is.True,
-                                                                                   "secondTE should be indexed")
-        Assert.That(svc.TePairsByTe.ContainsKey(firstTE  :> ITerminalElementBase), Is.True,
-                                                                                   "firstTE should be indexed"))
+        Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True,
+                                                                                            "secondTE should be indexed")
+        Assert.That(svc.TerminalElementPairs.ContainsKey(firstTE  :> ITerminalElementBase), Is.True,
+                                                                                            "firstTE should be indexed"))
 
 // ---------------------------------------------------------------------------
 // SignalReuse clears handlers for the reused element
@@ -201,17 +201,16 @@ let ``SignalReuse - removes handler entries for the reused element`` () =
 
     svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
 
-    let countBefore = svc.CleanupHandlersByTePair.Count
+    let countBefore = svc.Cleanups.Count
     Assert.That(countBefore, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
 
     svc.SignalReuse secondTE
 
     Assert.Multiple(fun () ->
-        Assert.That(svc.TePairsByTe.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
-                                                                                   "Index entry for secondTE should be removed after SignalReuse")
+        Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
+                                                                                            "Index entry for secondTE should be removed after SignalReuse")
         let pairRemoved =
-            not (svc.CleanupHandlersByTePair.ContainsKey(
-                    (secondTE :> ITerminalElementBase, firstTE :> ITerminalElementBase)))
+            not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
         Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository"))
 
 [<Test>]
@@ -237,18 +236,17 @@ let ``SignalDispose - removes handler entries for the disposed element`` () =
     svc.SignalDispose secondTE
 
     Assert.Multiple(fun () ->
-        Assert.That(svc.TePairsByTe.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
-                                                                                   "Index entry for secondTE should be removed after SignalDispose")
+        Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
+                                                                                            "Index entry for secondTE should be removed after SignalDispose")
         let pairRemoved =
-            not (svc.CleanupHandlersByTePair.ContainsKey(
-                    (secondTE :> ITerminalElementBase, firstTE :> ITerminalElementBase)))
+            not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
         Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository")
 
-        Assert.That(svc.TePairsByTe.Count, Is.EqualTo 0,
-                                           "No other index entries should remain after SignalDispose")
+        Assert.That(svc.TerminalElementPairs.Count, Is.EqualTo 0,
+                                                    "No other index entries should remain after SignalDispose")
 
-        Assert.That(svc.CleanupHandlersByTePair.Count, Is.EqualTo 0,
-                                                       "No other handler entries should remain after SignalDispose")
+        Assert.That(svc.Cleanups.Count, Is.EqualTo 0,
+                                        "No other handler entries should remain after SignalDispose")
         )
 
 [<Test>]
@@ -272,9 +270,9 @@ let ``ApplyPos - multiple relative positions accumulate handlers for the same el
     svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
     svc.ApplyPos(secondTE, TPos.Right  firstTE, fun view pos -> view.X <- pos)
 
-    Assert.That(svc.TePairsByTe.ContainsKey(secondTE :> ITerminalElementBase), Is.True)
+    Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True)
 
-    let indexSet = svc.TePairsByTe[secondTE :> ITerminalElementBase]
+    let indexSet = svc.TerminalElementPairs[secondTE :> ITerminalElementBase]
     Assert.That(indexSet.Count, Is.EqualTo 1,
                 "Index should track both (secondTE,firstTE) pairs for both positions")
 
@@ -289,8 +287,8 @@ let ``SignalReuse - clears ALL handlers registered for element with multiple rel
 
     svc.SignalReuse secondTE
 
-    Assert.That(svc.TePairsByTe.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
-                                                                               "All index entries for secondTE should be cleared")
+    Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
+                                                                                        "All index entries for secondTE should be cleared")
 
 // ---------------------------------------------------------------------------
 // Repository stays clean after a full render+dispose cycle
@@ -308,7 +306,7 @@ let ``After SignalDispose on both elements no orphan entries remain`` () =
     svc.SignalDispose firstTE
 
     Assert.Multiple(fun () ->
-        Assert.That(svc.CleanupHandlersByTePair.Count, Is.EqualTo 0,
-                                                       "RemoveHandlerRepository should be empty")
-        Assert.That(svc.TePairsByTe.Count, Is.EqualTo 0,
-                                           "IndexedRemoveHandler should be empty"))
+        Assert.That(svc.Cleanups.Count, Is.EqualTo 0,
+                                        "RemoveHandlerRepository should be empty")
+        Assert.That(svc.TerminalElementPairs.Count, Is.EqualTo 0,
+                                                    "IndexedRemoveHandler should be empty"))

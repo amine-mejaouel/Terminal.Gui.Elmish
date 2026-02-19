@@ -4,77 +4,92 @@ open System
 open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
+/// Key for indexing the position relationships between two terminal elements.
+/// The order of the two elements doesn't matter, so (A, B) and (B, A) should be considered the same key.
+type internal TePairKey(first: ITerminalElementBase, second: ITerminalElementBase) =
+  member this.First = first
+  member this.Second = second
+  member this.GetOtherTe(te: ITerminalElementBase) =
+    if te = first then second
+    elif te = second then first
+    else failwith "Terminal element not part of this pair key."
+
+  override this.GetHashCode() =
+    // The order of the two elements doesn't matter for the key,
+    // so we can use XOR to combine their hash codes.
+    first.GetHashCode() ^^^ second.GetHashCode()
+
+  override this.Equals(obj) =
+    match obj with
+    | :? TePairKey as other ->
+        (this.First = other.First && this.Second = other.Second) ||
+        (this.First = other.Second && this.Second = other.First)
+    | _ -> false
+
 type internal PositionService() =
 
   static member val Current = PositionService() with get
 
-  // Key: (curTe, relTe) / Value: list of remove handlers.
-  // -> A list because curTe and relTe can be related by multiple positions (e.g. X and Y)
-  member val CleanupHandlersByTePair = Dictionary<ITerminalElementBase * ITerminalElementBase, List<unit -> unit>>()
+  /// Delegate to execute the cleanup of handlers for a pair of terminal elements.
+  member val Cleanups = Dictionary<TePairKey, List<unit -> unit>>()
 
-  // Key: TE / Value: set of (curElementData, relElementData) to be used to lookup in RemoveHandlerRepository
-  member val TePairsByTe = Dictionary<ITerminalElementBase, HashSet<ITerminalElementBase * ITerminalElementBase>>()
+  /// CleanupKeys by terminal element.
+  member val TerminalElementPairs = Dictionary<ITerminalElementBase, HashSet<TePairKey>>()
 
-  member private this.UpdateIndex(v0, v1) =
-    let indexRepo = this.TePairsByTe
+  member private this.UpdateIndex(tePairKey) =
 
-    let update k =
-      match indexRepo.TryGetValue(k) with
+    let updateIndex k =
+      match this.TerminalElementPairs.TryGetValue(k) with
       | true, set ->
-        set.Add (v0, v1) |> ignore
+        set.Add tePairKey |> ignore
       | false, _ ->
-        let set = HashSet<ITerminalElementBase * ITerminalElementBase>()
-        set.Add (v0, v1) |> ignore
-        indexRepo[k] <- set
+        let set = HashSet<TePairKey>()
+        set.Add tePairKey |> ignore
+        this.TerminalElementPairs[k] <- set
 
-    update v0
-    update v1
+    updateIndex tePairKey.First
+    updateIndex tePairKey.Second
 
-  member private this.SetRemoveHandler(key: ITerminalElementBase * ITerminalElementBase, removeHandler: unit -> unit) =
-    let repo = this.CleanupHandlersByTePair
+  member private this.RegisterCleanup(key: ITerminalElementBase * ITerminalElementBase, cleanup: unit -> unit) =
 
-    match repo.TryGetValue(key) with
+    let key = TePairKey(fst key, snd key)
+
+    match this.Cleanups.TryGetValue(key) with
     | true, handlers ->
-      handlers.Add removeHandler
+      handlers.Add cleanup
     | false, _ ->
-      repo.[key] <- List<_>([removeHandler])
+      this.Cleanups.[key] <- List<_>([ cleanup ])
 
     this.UpdateIndex(key)
 
-  member private this.RemoveHandlers(targetTe: IViewTE) =
-    let removeHandlers = this.TePairsByTe
-    let repo = this.CleanupHandlersByTePair
+  member private this.ExecuteCleanups(targetTe: IViewTE) =
+    match this.TerminalElementPairs.TryGetValue(targetTe) with
+    | true, tePairKeys ->
+      for tePairKey in tePairKeys do
+        match this.Cleanups.TryGetValue(tePairKey) with
+        | true, handlers ->
+          for handler in handlers do
+            handler()
+          this.Cleanups.Remove tePairKey |> ignore
 
-    let executeRemoveHandler key =
-      match repo.TryGetValue(key) with
-      | true, handlers ->
-        for removeHandler in handlers do
-          removeHandler()
-        repo.Remove(key) |> ignore
-      | false, _ -> ()
+          // Also remove the tePairKey from the TerminalElementPairs for the other terminal element in the pair
+          let otherTe = tePairKey.GetOtherTe targetTe
+          match this.TerminalElementPairs.TryGetValue otherTe with
+          | true, set ->
+            set.Remove tePairKey |> ignore
+            if set.Count = 0 then
+              this.TerminalElementPairs.Remove otherTe |> ignore
+          | _ -> ()
 
-    let removeMirrorHandler curTe removeHandler =
-      match removeHandlers.TryGetValue (curTe) with
-      | true, set ->
-        set.Remove removeHandler |> ignore
-        if set.Count = 0 then
-          removeHandlers.Remove(curTe) |> ignore
-      | false, _ -> ()
-
-    match removeHandlers.TryGetValue(targetTe) with
-    | true, set ->
-      for removeHandler in set do
-        executeRemoveHandler removeHandler
-        let te0, te1 = removeHandler
-        let otherTe = if te0 = targetTe then te1 else te0
-        removeMirrorHandler otherTe removeHandler
-      removeHandlers.Remove(targetTe) |> ignore
+        | false, _ -> ()
+      this.TerminalElementPairs.Remove targetTe |> ignore
     | false, _ -> ()
+
 
   member private this.ApplyRelativePos(cur: ITerminalElementBase, rel: ITerminalElementBase, apply: View -> View -> unit) =
     let handler = EventHandler<DrawEventArgs>(fun _ _ -> apply cur.View rel.View)
     rel.View.DrawComplete.AddHandler handler
-    this.SetRemoveHandler((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
+    this.RegisterCleanup((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
 
   member this.ApplyPos(curElementData: IViewTE, targetPos: TPos, apply: View -> Pos -> unit) =
 
@@ -82,8 +97,8 @@ type internal PositionService() =
       let differApplyRelativePos (relativeTerminalElement: ITerminalElementBase) (applyPos: View -> View -> unit) =
         let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos))
         relativeTerminalElement.OnViewSet.AddHandler handler
-        this.SetRemoveHandler((curElementData, relativeTerminalElement), fun () -> relativeTerminalElement.
-                                                                                     OnViewSet.RemoveHandler handler)
+        this.RegisterCleanup((curElementData, relativeTerminalElement), fun () -> relativeTerminalElement.
+                                                                                    OnViewSet.RemoveHandler handler)
 
       if (relativeTerminalElement.View = null) then
         differApplyRelativePos relativeTerminalElement applyPos
@@ -112,7 +127,7 @@ type internal PositionService() =
     | TPos.Align (alignment, modes, groupId) -> apply curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.SignalReuse(terminalElement: IViewTE) =
-    this.RemoveHandlers terminalElement
+    this.ExecuteCleanups terminalElement
 
   member this.SignalDispose(terminalElement: IViewTE) =
-    this.RemoveHandlers terminalElement
+    this.ExecuteCleanups terminalElement

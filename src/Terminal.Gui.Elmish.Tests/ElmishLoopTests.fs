@@ -46,11 +46,21 @@ let ``Unused Button instance should be collected after update`` () =
           let second =
             View.Label (fun p ->
               p.Text "I am a static label below the first element."
-              p.Y (TPos.Bottom first)
+              if model.DisplayedView = Button then
+                p.Y (TPos.Bottom first)
+              else
+                p.X (TPos.Right first)
+            )
+
+          let third =
+            View.Label (fun p ->
+              p.Text "I am a static label below the second element."
+              p.Y (TPos.Bottom second)
             )
 
           first
           second
+          third
         ])
 
     let program =
@@ -65,6 +75,12 @@ let ``Unused Button instance should be collected after update`` () =
     // Assert.That(success, Is.True, "Failed to start no GC region. Test cannot proceed.")
 
     do! program.ProcessMsg (ChangeView Label |> TerminalMsg.ofMsg)
+
+    let secondTe =
+      program.ViewTE.Children.Skip(1).First()
+
+    let thirdTe =
+      program.ViewTE.Children.Last()
 
     System.GC.Collect()
     System.GC.WaitForPendingFinalizers()

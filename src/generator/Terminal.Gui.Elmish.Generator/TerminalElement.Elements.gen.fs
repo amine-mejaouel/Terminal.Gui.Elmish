@@ -56,19 +56,22 @@ let removePropsCode (view: ViewMetadata) =
   else
     seq {
       yield $"  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
-      if not (view.Type = typeof<Terminal.Gui.ViewBase.View>) then
-        yield $"    base.RemoveProps(terminalElement, props)"
+      yield $"    base.RemoveProps(terminalElement, props)"
       yield $""
       yield! terminalElementAndViewDeclaration view.Type
       yield $""
       if view.Properties.Length > 0 then
         yield "    // Properties"
       for prop in view.Properties do
+
         let defaultValue =
           if prop.PropertyInfo.PropertyType = typeof<string> then
             "\"\""
+          else if prop.PKey = "X" || prop.PKey = "Y" then
+            "0"
           else
             "Unchecked.defaultof<_>"
+
         yield $"    props"
         yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun _ ->"

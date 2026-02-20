@@ -280,6 +280,9 @@ type internal ViewBackedTerminalElement(props: Props) =
   // TODO: Is the view needed as param ? is the props needed as param ?
   abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
+  default this.RemoveProps (terminalElement: ViewBackedTerminalElement, props: Props) =
+    ()
+
   /// Reuses:
   /// // TODO: outdated documentation
   /// - Previous `View`, while updating its properties to match the current TerminalElement properties.

@@ -279,6 +279,7 @@ type internal ViewTerminalElement(props: Props) =
     terminalElement.TrySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
 
     let view = terminalElement.View
 
@@ -456,12 +457,12 @@ type internal ViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.View.X
     |> Option.iter (fun _ ->
-        view.X <- Unchecked.defaultof<_>)
+        view.X <- 0)
 
     props
     |> Props.tryFind PKey.View.Y
     |> Option.iter (fun _ ->
-        view.Y <- Unchecked.defaultof<_>)
+        view.Y <- 0)
 
     // Events
     terminalElement.TryRemoveEventHandler PKey.View.Accepted

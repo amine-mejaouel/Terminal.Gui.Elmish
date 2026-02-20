@@ -16,6 +16,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="paket.references" />
     <Compile Include="Helpers\TerminalElementsExt.fs" />
     <Compile Include="Helpers\TestComponent.fs" />
     <Compile Include="Helpers\ElmishTester.fs" />
@@ -24,7 +25,6 @@
     <Compile Include="CodeGenTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
     <Compile Include="ElmishLoopTests.fs" />
-    <Content Include="paket.references" />
     <Compile Include="PositionServiceTests.fs" />
   </ItemGroup>
   <ItemGroup>

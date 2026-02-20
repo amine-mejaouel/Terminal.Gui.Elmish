@@ -45,6 +45,7 @@
     <EmbeddedResource Remove="Scripts\**" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="paket.references" />
     <Compile Include="Interop.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Differ.fs" />
@@ -72,7 +73,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference

@@ -25,18 +25,19 @@ module ElmishTerminal =
     /// Elmish component root view, there can be multiple instances of these in the application.
     | ComponentRootView of View
 
-  type internal InternalModel<'model> = {
-    // TODO: CurrentTreeState & RootView should seem to be redundant.
-    // Check refactoring possibilities to remove one of them.
-    mutable CurrentTreeState: IViewTE option
-    mutable NextTreeStateTcs: TaskCompletionSource<IViewTE>
-    mutable Application: IApplication
-    Origin: Origin
-    RootView: TaskCompletionSource<RootView>
-    Termination: TaskCompletionSource
-    /// Elmish model provided to the Program by the library caller.
-    ClientModel: 'model
-  }
+  type internal InternalModel<'model> =
+    {
+      // TODO: CurrentTreeState & RootView should seem to be redundant.
+      // Check refactoring possibilities to remove one of them.
+      mutable CurrentTe: IViewTE option
+      mutable NextTeTcs: TaskCompletionSource<IViewTE>
+      mutable Application: IApplication
+      Origin: Origin
+      RootView: TaskCompletionSource<RootView>
+      Termination: TaskCompletionSource
+      /// Elmish model provided to the Program by the library caller.
+      ClientModel: 'model
+    }
 
   module internal OuterModel =
     let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) =
@@ -45,8 +46,8 @@ module ElmishTerminal =
 
         let internalModel = {
           Application = Application.Create()
-          CurrentTreeState = None
-          NextTreeStateTcs = TaskCompletionSource<_>()
+          CurrentTe = None
+          NextTeTcs = TaskCompletionSource<_>()
           Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
@@ -71,8 +72,8 @@ module ElmishTerminal =
 
         let internalModel = {
           Application = Application.Create()
-          CurrentTreeState = None
-          NextTreeStateTcs = TaskCompletionSource<_>()
+          CurrentTe = None
+          NextTeTcs = TaskCompletionSource<_>()
           Origin = origin
           RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
@@ -93,36 +94,36 @@ module ElmishTerminal =
 
   let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
 
-    let nextTreeState =
-      match model.CurrentTreeState with
+    let nextTe =
+      match model.CurrentTe with
       | None ->
 
-        let startState =
+        let initialTe =
           view model dispatch :?> IViewTE
 
-        startState.InitializeTree model.Origin
+        initialTe.InitializeTree model.Origin
 
-        match startState.View with
+        match initialTe.View with
         | null -> failwith "error state not initialized"
         | :? Runnable as r -> model.RootView.SetResult(RootView.AppRootView r)
         | view -> model.RootView.SetResult(RootView.ComponentRootView view)
 
-        startState
+        initialTe
 
-      | Some currentState ->
-        let nextTreeState =
+      | Some currentTe ->
+        let nextTe =
           view model dispatch :?> IViewTE
 
         Differ.update
-          (TerminalElement.ViewBackedTE currentState)
-          (TerminalElement.ViewBackedTE nextTreeState)
+          (TerminalElement.ViewBackedTE currentTe)
+          (TerminalElement.ViewBackedTE nextTe)
 
-        currentState.Dispose()
-        nextTreeState
+        currentTe.Dispose()
+        nextTe
 
-    model.CurrentTreeState <- Some nextTreeState
-    model.NextTreeStateTcs.SetResult nextTreeState
-    model.NextTreeStateTcs <- TaskCompletionSource<_>()
+    model.CurrentTe <- Some nextTe
+    model.NextTeTcs.SetResult nextTe
+    model.NextTeTcs <- TaskCompletionSource<_>()
 
     ()
 

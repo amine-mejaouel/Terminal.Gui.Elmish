@@ -29,7 +29,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
       let rootView = model.RootView.Task.GetAwaiter().GetResult()
       match rootView with
       | ElmishTerminal.RootView.AppRootView _ ->
-        curTE <- model.CurrentTreeState.Value
+        curTE <- model.CurrentTe.Value
         waitForStart.SetResult()
       | _ ->
         failwith "`run` is meant to be used for with Runnable as root view."
@@ -53,17 +53,26 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   let msgQueue = Channel.CreateUnbounded<TerminalMsg<_> * TaskCompletionSource<IViewTE>>()
 
+  /// Msg dispatcher:
+  /// - listens to the msgQueue (which is written to by the ProcessMsg method)
+  /// - dispatches the msg to the Elmish program
+  /// - waits for the program to signal the NextTeTcs after processing the msg
+  /// - signals the msgQueue item TaskCompletionSource with the new IViewTE
+  ///
+  /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
+  /// Returning the new IViewTE to the caller;
+  /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
   let msgDispatcher (model: ElmishTerminal.InternalModel<_>) =
     let start dispatch =
       let cancellationToken = new CancellationTokenSource()
       Task.Factory.StartNew((fun () ->
         task {
           while not cancellationToken.Token.IsCancellationRequested do
-            let! msg, tcs = msgQueue.Reader.ReadAsync()
-            let nextTreeStateTask = model.NextTreeStateTcs.Task
+            let! msg, msgHook = msgQueue.Reader.ReadAsync()
+            let nextViewTeTask = model.NextTeTcs.Task // Capture the task before dispatching the msg
             dispatch msg
-            let! nextTreeState = nextTreeStateTask
-            tcs.SetResult(nextTreeState)
+            let! nextViewTe = nextViewTeTask
+            msgHook.SetResult(nextViewTe)
         }), TaskCreationOptions.LongRunning) |> ignore
 
       { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }

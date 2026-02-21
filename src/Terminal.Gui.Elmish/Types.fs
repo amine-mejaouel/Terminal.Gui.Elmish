@@ -446,11 +446,11 @@ module rec Element =
   type internal ITerminalElementBase =
     inherit ITerminalElement
     inherit IDisposable
-    abstract GetPath: unit -> string
     abstract Origin: Origin with get, set
     abstract Name: string
     abstract View: View with get
     abstract OnViewSet: IEvent<View>
+    abstract GetPath: unit -> string
 
   type internal IViewTE =
     inherit ITerminalElementBase
@@ -480,20 +480,20 @@ module rec Element =
       | ViewBackedTE viewTE -> viewTE :> ITerminalElementBase
       | ElmishComponentTE elmishComponentTE -> elmishComponentTE :> ITerminalElementBase
 
-    member this.Dispose() = this.TerminalElementBase.Dispose()
-    member this.GetPath() = this.TerminalElementBase.GetPath()
     member this.Name = this.TerminalElementBase.Name
     member this.Origin = this.TerminalElementBase.Origin
     member this.Origin with set value = this.TerminalElementBase.Origin <- value
     member this.ViewSet = this.TerminalElementBase.OnViewSet
     member this.View = this.TerminalElementBase.View
+    member this.GetPath() = this.TerminalElementBase.GetPath()
+    member this.Dispose() = this.TerminalElementBase.Dispose()
 
     interface ITerminalElementBase with
-      member this.Dispose() = this.Dispose()
-      member this.GetPath() = this.GetPath()
       member this.View = this.View
       member this.OnViewSet = this.ViewSet
       member this.Name = this.Name
       member this.Origin = this.Origin
       member this.Origin with set value = this.Origin <- value
+      member this.GetPath() = this.GetPath()
+      member this.Dispose() = this.Dispose()
 

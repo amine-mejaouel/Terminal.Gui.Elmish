@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="paket.references" />
+    <Compile Include="Task.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Differ.fs" />
     <Compile Include="ElmishTerminal.fs" />

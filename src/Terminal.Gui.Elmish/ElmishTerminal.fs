@@ -18,26 +18,32 @@ module TerminalMsg =
 [<RequireQualifiedAccess>]
 module ElmishTerminal =
 
-  [<RequireQualifiedAccess>]
-  type internal RootView =
-    /// Application root view, there is one single instance of these in the application.
-    | AppRootView of Runnable
-    /// Elmish component root view, there can be multiple instances of these in the application.
-    | ComponentRootView of View
-
+  /// <summary>
+  /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
+  /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
+  /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
+  /// </summary>
   type internal InternalModel<'model> =
     {
-      // TODO: CurrentTreeState & RootView should seem to be redundant.
-      // Check refactoring possibilities to remove one of them.
       mutable CurrentTe: IViewTE option
       mutable NextTeTcs: TaskCompletionSource<IViewTE>
+      InitialTeSet: TaskCompletionSource<IViewTE>
       mutable Application: IApplication
       Origin: Origin
-      RootView: TaskCompletionSource<RootView>
+      // TODO: Termination is not used in Elmish Components
       Termination: TaskCompletionSource
       /// Elmish model provided to the Program by the library caller.
       ClientModel: 'model
     }
+      member this.WaitForTerminalElementInitialization() =
+        this.InitialTeSet.Task
+
+      member this.WaitForNextTerminalElement() =
+        this.NextTeTcs.Task
+
+      member this.SetNextTerminalElement(te: IViewTE) =
+        this.NextTeTcs.SetResult te
+        this.NextTeTcs <- TaskCompletionSource<_>()
 
   module internal OuterModel =
     let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) =
@@ -48,8 +54,8 @@ module ElmishTerminal =
           Application = Application.Create()
           CurrentTe = None
           NextTeTcs = TaskCompletionSource<_>()
+          InitialTeSet = TaskCompletionSource<_>()
           Origin = origin
-          RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
           ClientModel = innerModel
         }
@@ -74,8 +80,8 @@ module ElmishTerminal =
           Application = Application.Create()
           CurrentTe = None
           NextTeTcs = TaskCompletionSource<_>()
+          InitialTeSet = TaskCompletionSource<_>()
           Origin = origin
-          RootView = TaskCompletionSource<RootView>()
           Termination = TaskCompletionSource()
           ClientModel = innerModel
         }
@@ -103,10 +109,7 @@ module ElmishTerminal =
 
         initialTe.InitializeTree model.Origin
 
-        match initialTe.View with
-        | null -> failwith "error state not initialized"
-        | :? Runnable as r -> model.RootView.SetResult(RootView.AppRootView r)
-        | view -> model.RootView.SetResult(RootView.ComponentRootView view)
+        model.InitialTeSet.SetResult(initialTe)
 
         initialTe
 
@@ -122,18 +125,16 @@ module ElmishTerminal =
         nextTe
 
     model.CurrentTe <- Some nextTe
-    model.NextTeTcs.SetResult nextTe
-    model.NextTeTcs <- TaskCompletionSource<_>()
+    model.SetNextTerminalElement nextTe
 
     ()
 
   let internal terminate model =
-    match model.RootView.Task.Result with
-    | RootView.AppRootView r ->
-      r.Dispose()
+
+    model.CurrentTe |> Option.iter _.Dispose()
+
+    if not model.Origin.IsElmishComponent then
       model.Application.RequestStop()
-    | RootView.ComponentRootView _ ->
-      ()
 
     model.Termination.SetResult()
 
@@ -144,24 +145,20 @@ module ElmishTerminal =
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
-    let mutable viewTe: IViewTE = Unchecked.defaultof<_>
+    let viewTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
     let viewSetEvent = Event<View>()
 
     let runComponent (ElmishTerminalProgram program) =
 
-      let waitForView = TaskCompletionSource()
-
       // TODO: could be refactored into a ElmishTerminal.runTerminal
       let runComponent (model: InternalModel<_>) =
         let start dispatch =
-          (task {
-            // On program startup, Wait for the Elmish loop to take care of creating the root view.
-            let! _ = model.RootView.Task
-            viewTe <- model.CurrentTreeState.Value
-            if viewTe.View = null then failwith "View is null"
-            viewSetEvent.Trigger viewTe.View
-            waitForView.SetResult()
-          }).GetAwaiter().GetResult()
+          task {
+            let! te = model.WaitForTerminalElementInitialization()
+
+            viewSetEvent.Trigger te.View
+            viewTeTcs.SetResult(te)
+          } |> Task.wait
 
           { new IDisposable with member _.Dispose() = () }
 
@@ -173,7 +170,7 @@ module ElmishTerminal =
       |> Program.withSubscription subscribe
       |> Program.run
 
-      waitForView.Task.GetAwaiter().GetResult()
+      viewTeTcs.Task |> Task.wait |> ignore
 
       ()
 
@@ -185,11 +182,23 @@ module ElmishTerminal =
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
 
-    member this.Child =
-      if viewTe = Unchecked.defaultof<_> then
-        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
+    member this.GetViewAsync() =
+      task {
+        let! viewTe = viewTeTcs.Task
+        return viewTe.View
+      }
+
+    member this.View =
+      if viewTeTcs.Task.IsCompleted then
+        viewTeTcs.Task.Result.View
       else
-        viewTe
+        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View property."
+
+    member this.Child =
+      if viewTeTcs.Task.IsCompleted then
+        viewTeTcs.Task.Result
+      else
+        failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
 
     member val Origin = Unchecked.defaultof<_> with get, set
 
@@ -197,7 +206,10 @@ module ElmishTerminal =
     member this.OnViewSet = viewSetEvent.Publish
 
     member this.Dispose() =
-      viewTe.Dispose()
+      task {
+        let! viewTe = viewTeTcs.Task
+        viewTe.Dispose()
+      } |> Task.wait
 
     interface IElmishComponentTE with
       member this.StartElmishLoop() =
@@ -206,7 +218,7 @@ module ElmishTerminal =
       member this.Child = this.Child
 
     interface ITerminalElementBase with
-      member this.View = viewTe.View
+      member this.View = this.View
       member this.Name = name
       member this.OnViewSet = this.OnViewSet
       member this.Origin with get() = this.Origin and set v = this.Origin <- v
@@ -245,27 +257,30 @@ module ElmishTerminal =
 
     let runTerminal (model: InternalModel<_>) =
       let start dispatch =
-        let rootView = model.RootView.Task.GetAwaiter().GetResult()
-        match rootView with
-        | RootView.AppRootView runnable ->
-          Task.Run(fun () ->
-            (
-              try
-                model.Application <- application
-                model.Application.Init() |> ignore
-                model.Application.Run(runnable) |> ignore
-                running.SetResult()
-              with ex -> running.SetException ex
-            )
-            , TaskCreationOptions.LongRunning
-          ) |> ignore
+        task {
+          let! te = model.WaitForTerminalElementInitialization()
 
-          waitForStart.SetResult()
-          waitForTermination <- model.Termination
-        | _ ->
-          failwith (
-            "`run` is meant to be used for Terminal Elmish loop. " +
-            "For Terminal components with separate Elmish loop, use `runComponent`.")
+          if te.Origin.IsElmishComponent then
+            failwith (
+              "`run` is meant to be used for Terminal Elmish loop. " +
+              "For Terminal components with separate Elmish loop, use `runComponent`.")
+          else
+            Task.Run(fun () ->
+              (
+                try
+                  model.Application <- application
+                  model.Application.Init() |> ignore
+                  model.Application.Run(model.CurrentTe.Value.View :?> Runnable) |> ignore
+                  running.SetResult()
+                with ex -> running.SetException ex
+              )
+              , TaskCreationOptions.LongRunning
+            ) |> ignore
+
+            waitForStart.SetResult()
+            waitForTermination <- model.Termination
+
+        } |> Task.wait
 
         { new IDisposable with member _.Dispose() = () }
 

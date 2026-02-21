@@ -214,7 +214,7 @@ module internal PropKey =
       member this.viewKey = this.viewKey
 
   /// Mainly used for positions that are relative to other views.
-  /// These positions take in a `ITerminalElement` as parameter.
+  /// These positions take in a `ITerminalElement` as a parameter.
   /// Evaluating such positions will be done on the `View.OnDrawComplete` event.
   [<CustomEquality; NoComparison>]
   type private DelayedPosKey =

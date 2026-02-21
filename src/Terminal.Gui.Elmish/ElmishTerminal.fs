@@ -28,7 +28,7 @@ module ElmishTerminal =
       mutable CurrentTe: IViewTE option
       mutable NextTeTcs: TaskCompletionSource<IViewTE>
       InitialTeSet: TaskCompletionSource<IViewTE>
-      mutable Application: IApplication
+      Application: IApplication
       Origin: Origin
       // TODO: Termination is not used in Elmish Components
       Termination: TaskCompletionSource

@@ -26,13 +26,15 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   let startProgram (model: ElmishTerminal.InternalModel<_>) =
     let start dispatch =
-      let rootView = model.RootView.Task.GetAwaiter().GetResult()
-      match rootView with
-      | ElmishTerminal.RootView.AppRootView _ ->
-        curTE <- model.CurrentTe.Value
-        waitForStart.SetResult()
-      | _ ->
-        failwith "`run` is meant to be used for with Runnable as root view."
+      task {
+        let! rootView = model.WaitForTerminalElementInitialization()
+        match rootView.View with
+        | :? Terminal.Gui.Views.Runnable as _ ->
+          curTE <- model.CurrentTe.Value
+          waitForStart.SetResult()
+        | _ ->
+          failwith "`run` is meant to be used for with Runnable as root view."
+      } |> Task.wait
 
       { new IDisposable with member _.Dispose() = () }
 

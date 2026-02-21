@@ -44,7 +44,7 @@ let ``ApplyPos - TPos.Absolute sets X immediately`` () =
     let tester, labelTE = renderLabel ()
     use _ = tester
     let svc = mkService ()
-    svc.ApplyPos(labelTE, TPos.Absolute 42, fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.Absolute 42)
     Assert.That(labelTE.View.X, Is.EqualTo(Pos.Absolute 42))
 
 [<Test>]
@@ -52,7 +52,7 @@ let ``ApplyPos - TPos.Center sets X immediately`` () =
     let tester, labelTE = renderLabel ()
     use _ = tester
     let svc = mkService ()
-    svc.ApplyPos(labelTE, TPos.Center, fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.Center)
     Assert.That(labelTE.View.X, Is.EqualTo(Pos.Center()))
 
 [<Test>]
@@ -60,7 +60,7 @@ let ``ApplyPos - TPos.Percent sets X immediately`` () =
     let tester, labelTE = renderLabel ()
     use _ = tester
     let svc = mkService ()
-    svc.ApplyPos(labelTE, TPos.Percent 50, fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.Percent 50)
     Assert.That(labelTE.View.X, Is.EqualTo(Pos.Percent 50))
 
 [<Test>]
@@ -68,7 +68,7 @@ let ``ApplyPos - TPos.AnchorEnd with Some offset sets X immediately`` () =
     let tester, labelTE = renderLabel ()
     use _ = tester
     let svc = mkService ()
-    svc.ApplyPos(labelTE, TPos.AnchorEnd (Some 5), fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.AnchorEnd (Some 5))
     Assert.That(labelTE.View.X, Is.EqualTo(Pos.AnchorEnd 5))
 
 [<Test>]
@@ -76,7 +76,7 @@ let ``ApplyPos - TPos.AnchorEnd with None uses offset 0`` () =
     let tester, labelTE = renderLabel ()
     use _ = tester
     let svc = mkService ()
-    svc.ApplyPos(labelTE, TPos.AnchorEnd None, fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.AnchorEnd None)
     Assert.That(labelTE.View.X, Is.EqualTo(Pos.AnchorEnd 0))
 
 // ---------------------------------------------------------------------------
@@ -89,9 +89,9 @@ let ``ApplyPos - Absolute positions do not add entries to RemoveHandlerRepositor
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(labelTE, TPos.Absolute 10, fun view pos -> view.X <- pos)
-    svc.ApplyPos(labelTE, TPos.Center,      fun view pos -> view.Y <- pos)
-    svc.ApplyPos(labelTE, TPos.Percent 25,  fun view pos -> view.X <- pos)
+    svc.ApplyPos(labelTE, X, TPos.Absolute 10)
+    svc.ApplyPos(labelTE, Y, TPos.Center)
+    svc.ApplyPos(labelTE, X, TPos.Percent 25)
 
     Assert.That(svc.Cleanups.Count, Is.EqualTo 0)
     Assert.That(svc.TerminalElementPairs.Count,    Is.EqualTo 0)
@@ -106,7 +106,7 @@ let ``ApplyPos - TPos.Bottom registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -116,7 +116,7 @@ let ``ApplyPos - TPos.X relative registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.X firstTE, fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, X, TPos.X firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -126,7 +126,7 @@ let ``ApplyPos - TPos.Y relative registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Y firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Y firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -136,7 +136,7 @@ let ``ApplyPos - TPos.Top relative registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Top firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Top firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -146,7 +146,7 @@ let ``ApplyPos - TPos.Left relative registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Left firstTE, fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, X, TPos.Left firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -156,7 +156,7 @@ let ``ApplyPos - TPos.Right relative registers handlers in the repository`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Right firstTE, fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, X, TPos.Right firstTE)
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -167,7 +167,7 @@ let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
     let svc = mkService ()
     let func = fun (v: View) -> v.Frame.X + 10
 
-    svc.ApplyPos(secondTE, TPos.Func (func, firstTE), fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, X, TPos.Func (func, firstTE))
 
     Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -181,7 +181,7 @@ let ``ApplyPos - Both elements are indexed after a relative position is register
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
     Assert.Multiple(fun () ->
         Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True,
@@ -199,7 +199,7 @@ let ``SignalReuse - removes handler entries for the reused element`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
     let countBefore = svc.Cleanups.Count
     Assert.That(countBefore, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
@@ -231,7 +231,7 @@ let ``SignalDispose - removes handler entries for the disposed element`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
     svc.SignalDispose secondTE
 
@@ -267,8 +267,8 @@ let ``ApplyPos - multiple relative positions accumulate handlers for the same el
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
-    svc.ApplyPos(secondTE, TPos.Right  firstTE, fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+    svc.ApplyPos(secondTE, X, TPos.Right  firstTE)
 
     Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True)
 
@@ -282,8 +282,8 @@ let ``SignalReuse - clears ALL handlers registered for element with multiple rel
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
-    svc.ApplyPos(secondTE, TPos.Right  firstTE, fun view pos -> view.X <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+    svc.ApplyPos(secondTE, X, TPos.Right  firstTE)
 
     svc.SignalReuse secondTE
 
@@ -300,7 +300,7 @@ let ``After SignalDispose on both elements no orphan entries remain`` () =
     use _ = tester
     let svc = mkService ()
 
-    svc.ApplyPos(secondTE, TPos.Bottom firstTE, fun view pos -> view.Y <- pos)
+    svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
     svc.SignalDispose secondTE
     svc.SignalDispose firstTE

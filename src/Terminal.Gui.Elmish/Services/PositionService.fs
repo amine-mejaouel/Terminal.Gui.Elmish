@@ -91,40 +91,55 @@ type internal PositionService() =
     rel.View.DrawComplete.AddHandler handler
     this.RegisterCleanup((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
 
-  member this.ApplyPos(curElementData: IViewTE, targetPos: TPos, apply: View -> Pos -> unit) =
+  member this.ApplyPos(curElementData: IViewTE, axis: PosAxis, targetPos: TPos) =
 
-    let onViewSetOnElementData (relativeTerminalElement: ITerminalElementBase) applyPos =
+    let onViewSetOnElementData (relativeTerminalElement: ITerminalElementBase) applyPos resetPos =
+
+      let registerCleanup cleanup =
+        this.RegisterCleanup((curElementData, relativeTerminalElement), cleanup)
+
       let differApplyRelativePos (relativeTerminalElement: ITerminalElementBase) (applyPos: View -> View -> unit) =
         let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos))
         relativeTerminalElement.OnViewSet.AddHandler handler
-        this.RegisterCleanup((curElementData, relativeTerminalElement), fun () -> relativeTerminalElement.
-                                                                                    OnViewSet.RemoveHandler handler)
+        registerCleanup (fun () -> relativeTerminalElement.OnViewSet.RemoveHandler handler)
 
       if (relativeTerminalElement.View = null) then
         differApplyRelativePos relativeTerminalElement applyPos
       else
         this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos)
 
+      registerCleanup (fun () -> resetPos curElementData.View)
+
+    let applyPos (thisView: View) pos =
+       match axis with
+       | PosAxis.X -> thisView.X <- pos
+       | PosAxis.Y -> thisView.Y <- pos
+
+    let resetPos (thisView: View) =
+      match axis with
+      | PosAxis.X -> thisView.X <- 0
+      | PosAxis.Y -> thisView.Y <- 0
+
     match targetPos with
     | TPos.X te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.X(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.X(otherView))) resetPos
     | TPos.Y te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Y(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Y(otherView))) resetPos
     | TPos.Top te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Top(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Top(otherView))) resetPos
     | TPos.Bottom te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Bottom(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Bottom(otherView))) resetPos
     | TPos.Left te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Left(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Left(otherView))) resetPos
     | TPos.Right te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Right(otherView)))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Right(otherView))) resetPos
     | TPos.Func (func, te) ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> apply thisView (Pos.Func(func, otherView)))
-    | TPos.Absolute position -> apply curElementData.View (Pos.Absolute(position))
-    | TPos.AnchorEnd offset -> apply curElementData.View (Pos.AnchorEnd(offset |> Option.defaultValue 0))
-    | TPos.Center -> apply curElementData.View (Pos.Center())
-    | TPos.Percent percent -> apply curElementData.View (Pos.Percent(percent))
-    | TPos.Align (alignment, modes, groupId) -> apply curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
+      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Func(func, otherView))) resetPos
+    | TPos.Absolute position -> applyPos curElementData.View (Pos.Absolute(position))
+    | TPos.AnchorEnd offset -> applyPos curElementData.View (Pos.AnchorEnd(offset |> Option.defaultValue 0))
+    | TPos.Center -> applyPos curElementData.View (Pos.Center())
+    | TPos.Percent percent -> applyPos curElementData.View (Pos.Percent(percent))
+    | TPos.Align (alignment, modes, groupId) -> applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.SignalReuse(terminalElement: IViewTE) =
     this.ExecuteCleanups terminalElement

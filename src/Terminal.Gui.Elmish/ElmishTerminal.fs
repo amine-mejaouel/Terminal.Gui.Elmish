@@ -253,8 +253,6 @@ module ElmishTerminal =
     let running = TaskCompletionSource()
     let mutable waitForTermination = null
 
-    let application = Application.Create()
-
     let runTerminal (model: InternalModel<_>) =
       let start dispatch =
         task {
@@ -268,7 +266,6 @@ module ElmishTerminal =
             Task.Run(fun () ->
               (
                 try
-                  model.Application <- application
                   model.Application.Init() |> ignore
                   model.Application.Run(model.CurrentTe.Value.View :?> Runnable) |> ignore
                   running.SetResult()
@@ -291,7 +288,7 @@ module ElmishTerminal =
     program
     |> Program.withSubscription subscribe
     |> Program.withTermination (fun msg -> msg = Terminate) terminate
-    |> Program.runWith application
+    |> Program.run
 
     waitForStart.Task.GetAwaiter().GetResult()
     Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()

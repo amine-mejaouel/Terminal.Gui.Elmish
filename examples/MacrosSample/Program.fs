@@ -1,7 +1,6 @@
 ﻿open System.Collections.Immutable
 open System.Collections.ObjectModel
 open Elmish
-open Terminal.Gui.App
 open Terminal.Gui.Configuration
 open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
@@ -10,18 +9,16 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type Model = {
-  Application: IApplication
   AvailableThemes: IImmutableList<string>
   SelectedThemeIndex: int
 }
 
 type Msg = ThemeIndexChanged of index: int
 
-let init application : Model * Cmd<TerminalMsg<Msg>> =
+let init () : Model * Cmd<TerminalMsg<Msg>> =
   let themes = ThemeManager.GetThemeNames()
 
   let model = {
-    Application = application
     AvailableThemes = themes
     SelectedThemeIndex = themes.IndexOf(ThemeManager.GetCurrentThemeName())
   }

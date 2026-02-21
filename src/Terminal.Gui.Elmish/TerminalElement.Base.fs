@@ -3,6 +3,7 @@ namespace Terminal.Gui.Elmish
 open System
 open System.Collections.Generic
 open System.Collections.Specialized
+open System.Threading
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 
@@ -121,6 +122,8 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   let mutable viewReusedByAnotherTE = false
   let mutable view = null
+
+  let mutable disposing = false
 
   let viewSetEvent = Event<View>()
 
@@ -395,12 +398,15 @@ type internal ViewBackedTerminalElement(props: Props) =
 
 
   member this.Dispose() =
-    if (not viewReusedByAnotherTE) then
+    if Interlocked.Exchange(&disposing, true) then
+      ()
+    elif (not viewReusedByAnotherTE) then
 
       // Remove any event subscriptions
       this.RemoveProps (this, this.Props)
 
-      this.View |> Interop.removeFromParent
+      this.Origin.ParentView |> Option.iter (fun v -> v.Remove this.View |> ignore)
+
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props

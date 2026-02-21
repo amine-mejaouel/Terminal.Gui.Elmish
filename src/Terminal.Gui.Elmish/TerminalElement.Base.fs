@@ -270,12 +270,11 @@ type internal ViewBackedTerminalElement(props: Props) =
     // Custom Props
     props
     |> Props.tryFind PKey.View.X_delayedPos
-    // TODO: too confusing here, too difficult to reason about, need to refactor
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.X <- pos)))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, X, tPos))
 
     props
     |> Props.tryFind PKey.View.Y_delayedPos
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, tPos, (fun view pos -> view.Y <- pos)))
+    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, Y, tPos))
 
   // TODO: Is the view needed as param ? is the props needed as param ?
   abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit

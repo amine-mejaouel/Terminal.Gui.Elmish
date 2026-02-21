@@ -25,6 +25,9 @@ type TPos =
   | Func of func: (View -> int) * view: ITerminalElement
   | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
 
+type PosAxis =
+  | X
+  | Y
 
 [<AutoOpen>]
 module internal PropKey =

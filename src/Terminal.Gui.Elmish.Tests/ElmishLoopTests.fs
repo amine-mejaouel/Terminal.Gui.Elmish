@@ -20,13 +20,10 @@ let ``Unused Button instance should be collected after update`` () =
   task {
     let init _ = { DisplayedView = Button }
 
-    let update (msg: TerminalMsg<Msg>) model =
+    let update (msg: Msg) model =
       match msg with
-      | Msg msg ->
-        match msg with
-        | ChangeView view ->
-          { model with DisplayedView = view }
-      | _ -> model
+      | ChangeView view ->
+        { model with DisplayedView = view }
 
     let view model dispatch : ITerminalElement =
       View.Runnable (fun (p: RunnableProps) ->
@@ -35,12 +32,12 @@ let ``Unused Button instance should be collected after update`` () =
             if model.DisplayedView = Button then
               View.Button (fun p ->
                 p.Text "Click to test changing the Terminal Element type!"
-                p.Activating (fun _ -> dispatch (ChangeView Label |> TerminalMsg.ofMsg))
+                p.Activating (fun _ -> dispatch (ChangeView Label))
               )
             else
               View.Label (fun p ->
                 p.Text "Click to test changing the Terminal Element type!"
-                p.Activating (fun _ -> dispatch (ChangeView Button |> TerminalMsg.ofMsg))
+                p.Activating (fun _ -> dispatch (ChangeView Button))
               )
 
           let second =

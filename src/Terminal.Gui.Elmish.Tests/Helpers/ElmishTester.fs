@@ -24,7 +24,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   let application = Application.Create()
 
-  let startProgram (model: ElmishTerminal.InternalModel<_>) =
+  let startProgram (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
         let! rootView = model.WaitForTerminalElementInitialization()
@@ -64,7 +64,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  let msgDispatcher (model: ElmishTerminal.InternalModel<_>) =
+  let msgDispatcher (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       let cancellationToken = new CancellationTokenSource()
       Task.Factory.StartNew((fun () ->

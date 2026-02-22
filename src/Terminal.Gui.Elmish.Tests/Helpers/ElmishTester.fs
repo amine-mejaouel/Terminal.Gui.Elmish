@@ -16,7 +16,7 @@ type internal TestableElmishProgram<'msg> =
   abstract member View: Terminal.Gui.ViewBase.View
   inherit IDisposable
 
-let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication,'model,TerminalMsg<'msg>,'view>) =
+let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication,'model,'msg,'view>) =
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
@@ -27,10 +27,10 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   let startProgram (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! rootView = model.WaitForTerminalElementInitialization()
+        let! rootView = model.WaitForTerminalElementInitializationAsync()
         match rootView.View with
         | :? Terminal.Gui.Views.Runnable as _ ->
-          curTE <- model.CurrentTe.Value
+          curTE <- model._CurrentTe.Value
           waitForStart.SetResult()
         | _ ->
           failwith "`run` is meant to be used for with Runnable as root view."
@@ -53,7 +53,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
     start
 
-  let msgQueue = Channel.CreateUnbounded<TerminalMsg<_> * TaskCompletionSource<IViewTE>>()
+  let msgQueue = Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
 
   /// Msg dispatcher:
   /// - listens to the msgQueue (which is written to by the ProcessMsg method)
@@ -64,14 +64,14 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  let msgDispatcher (model: ElmishTerminal.TerminalModel<_>) =
-    let start dispatch =
+  let msgDispatcher (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
+    let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
       let cancellationToken = new CancellationTokenSource()
       Task.Factory.StartNew((fun () ->
         task {
           while not cancellationToken.Token.IsCancellationRequested do
             let! msg, msgHook = msgQueue.Reader.ReadAsync()
-            let nextViewTeTask = model.NextTeTcs.Task // Capture the task before dispatching the msg
+            let nextViewTeTask = model.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
             dispatch msg
             let! nextViewTe = nextViewTeTask
             msgHook.SetResult(nextViewTe)
@@ -81,7 +81,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
     start
 
-  let subscribe model = [
+  let subscribe model : Sub<TerminalMsg<'msg>> = [
     [ "startProgram" ], startProgram model
     [ "triggerTermination" ], triggerTermination model
     [ "msgDispatcher" ], msgDispatcher model

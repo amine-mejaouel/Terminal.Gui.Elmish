@@ -30,7 +30,8 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
         let! rootView = model.WaitForTerminalElementInitializationAsync()
         match rootView.View with
         | :? Terminal.Gui.Views.Runnable as _ ->
-          curTE <- model._CurrentTe.Value
+          let! currentTE = model.GetCurrentTerminalElementAsync()
+          curTE <- currentTE
           waitForStart.SetResult()
         | _ ->
           failwith "`run` is meant to be used for with Runnable as root view."

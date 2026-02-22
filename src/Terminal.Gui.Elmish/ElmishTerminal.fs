@@ -24,52 +24,58 @@ module ElmishTerminal =
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
   type internal TerminalModel<'model>(application: IApplication, origin: Origin, clientModel: 'model) =
-      let mutable _currentTe: IViewTE option = None
-      let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
-      let initialTeSet: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
-      let termination: TaskCompletionSource = TaskCompletionSource()
+    let mutable _currentTe: IViewTE option =
+      None
 
-      member val ClientModel = clientModel with get, set
+    let mutable nextTeTcs: TaskCompletionSource<IViewTE> =
+      TaskCompletionSource<_>()
 
-      member this.Application = application
-      member this.Origin = origin
-      member this.InitialTeSet = initialTeSet
-      member this.Termination = termination
+    let initialTeSet: TaskCompletionSource<IViewTE> =
+      TaskCompletionSource<_>()
 
-      member this.WaitForTerminalElementInitializationAsync() =
-        initialTeSet.Task
+    let termination: TaskCompletionSource =
+      TaskCompletionSource()
 
-      member this.WaitForNextTerminalElementAsync() =
-        nextTeTcs.Task
+    member val ClientModel = clientModel with get, set
 
-      member this.GetCurrentTerminalElementAsync() : Task<IViewTE> =
-        task {
-          let waitForNextTeTask = this.WaitForNextTerminalElementAsync()
+    member this.Application = application
+    member this.Origin = origin
+    member this.InitialTeSet = initialTeSet
+    member this.Termination = termination
 
-          if _currentTe.IsSome then
-            return _currentTe.Value
-          else
-            return! waitForNextTeTask
-        }
+    member this.WaitForTerminalElementInitializationAsync() = initialTeSet.Task
 
-      member this.SetCurrentTe(te: IViewTE) =
+    member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
 
-        _currentTe <- Some te
+    member this.GetCurrentTerminalElementAsync() : Task<IViewTE> =
+      task {
+        let waitForNextTeTask =
+          this.WaitForNextTerminalElementAsync()
 
-        if initialTeSet.Task.IsCompletedSuccessfully |> not then
-          initialTeSet.SetResult te
+        if _currentTe.IsSome then
+          return _currentTe.Value
+        else
+          return! waitForNextTeTask
+      }
 
-        nextTeTcs.SetResult(te)
-        nextTeTcs <- TaskCompletionSource<_>()
+    member this.SetCurrentTe(te: IViewTE) =
 
-      interface IDisposable with
-        member this.Dispose() =
-          _currentTe |> Option.iter _.Dispose()
+      _currentTe <- Some te
 
-          if not origin.IsElmishComponent then
-            application.RequestStop()
+      if initialTeSet.Task.IsCompletedSuccessfully |> not then
+        initialTeSet.SetResult te
 
-          termination.SetResult()
+      nextTeTcs.SetResult(te)
+      nextTeTcs <- TaskCompletionSource<_>()
+
+    interface IDisposable with
+      member this.Dispose() =
+        _currentTe |> Option.iter _.Dispose()
+
+        if not origin.IsElmishComponent then
+          application.RequestStop()
+
+        termination.SetResult()
 
 
   module internal OuterModel =
@@ -77,15 +83,15 @@ module ElmishTerminal =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
-        let terminalModel = new TerminalModel<_>(Application.Create(), origin, innerModel)
+        let terminalModel =
+          new TerminalModel<_>(Application.Create(), origin, innerModel)
 
         terminalModel, cmd |> Cmd.map TerminalMsg.ofMsg
 
     let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : TerminalMsg<'msg> -> TerminalModel<'model> -> TerminalModel<'model> * Cmd<TerminalMsg<'msg>> =
       fun (msg: TerminalMsg<'msg>) (model: TerminalModel<'model>) ->
         match msg with
-        | Terminate ->
-          model, Cmd.none
+        | Terminate -> model, Cmd.none
         | Msg msg ->
           let innerModel, cmd =
             update msg model.ClientModel
@@ -94,24 +100,25 @@ module ElmishTerminal =
           model, Cmd.map TerminalMsg.ofMsg cmd
 
     let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
-      fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) ->
-        view model.ClientModel (TerminalMsg.ofMsg >> dispatch)
+      fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel (TerminalMsg.ofMsg >> dispatch)
 
     let internal wrapSimpleInit origin (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
-        let terminalModel = new TerminalModel<_>(Application.Create(), origin, innerModel)
+        let terminalModel =
+          new TerminalModel<_>(Application.Create(), origin, innerModel)
 
         terminalModel
 
     let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : TerminalMsg<'msg> -> TerminalModel<'model> -> TerminalModel<'model> =
       fun (msg: TerminalMsg<'msg>) (model: TerminalModel<'model>) ->
         match msg with
-        | Terminate ->
-          model
+        | Terminate -> model
         | Msg msg ->
-          let innerModel = update msg model.ClientModel
+          let innerModel =
+            update msg model.ClientModel
+
           model.ClientModel <- innerModel
           model
 
@@ -136,14 +143,11 @@ module ElmishTerminal =
             return initialTe
 
           else
-            let! (currentTe : IViewTE) = model.GetCurrentTerminalElementAsync()
+            let! (currentTe: IViewTE) = model.GetCurrentTerminalElementAsync()
 
-            let nextTe =
-              view model dispatch :?> IViewTE
+            let nextTe = view model dispatch :?> IViewTE
 
-            Differ.update
-              (TerminalElement.ViewBackedTE currentTe)
-              (TerminalElement.ViewBackedTE nextTe)
+            Differ.update (TerminalElement.ViewBackedTE currentTe) (TerminalElement.ViewBackedTE nextTe)
 
             currentTe.Dispose()
             return nextTe
@@ -153,10 +157,10 @@ module ElmishTerminal =
       model.SetCurrentTe nextTe
 
       ()
-    } |> Task.wait
+    }
+    |> Task.wait
 
-  let internal terminate (model: TerminalModel<_>) =
-     (model :> IDisposable).Dispose()
+  let internal terminate (model: TerminalModel<_>) = (model :> IDisposable).Dispose()
 
   /// <summary>
   /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
@@ -165,7 +169,9 @@ module ElmishTerminal =
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
-    let viewTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
+    let viewTeTcs: TaskCompletionSource<IViewTE> =
+      TaskCompletionSource<_>()
+
     let viewSetEvent = Event<View>()
 
     let runComponent (ElmishTerminalProgram program) =
@@ -178,13 +184,18 @@ module ElmishTerminal =
 
             viewSetEvent.Trigger te.View
             viewTeTcs.SetResult(te)
-          } |> Task.wait
+          }
+          |> Task.wait
 
-          { new IDisposable with member _.Dispose() = () }
+          { new IDisposable with
+              member _.Dispose() = ()
+          }
 
         start
 
-      let subscribe model = [ [ "runComponent" ], runComponent model ]
+      let subscribe model = [
+        [ "runComponent" ], runComponent model
+      ]
 
       program
       |> Program.withSubscription subscribe
@@ -195,10 +206,7 @@ module ElmishTerminal =
       ()
 
     let mkSimpleComponent terminalElement (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
-      Program.mkSimple
-        (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init)
-        (OuterModel.wrapSimpleUpdate update)
-        (OuterModel.wrapView view)
+      Program.mkSimple (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
 
@@ -229,24 +237,30 @@ module ElmishTerminal =
       task {
         let! viewTe = viewTeTcs.Task
         viewTe.Dispose()
-      } |> Task.wait
+      }
+      |> Task.wait
 
     interface IElmishComponentTE with
       member this.StartElmishLoop() =
         mkSimpleComponent this init update view
         |> runComponent
+
       member this.Child = this.Child
 
     interface ITerminalElementBase with
       member this.View = this.View
       member this.Name = name
       member this.OnViewSet = this.OnViewSet
-      member this.Origin with get() = this.Origin and set v = this.Origin <- v
+
+      member this.Origin
+        with get () = this.Origin
+        and set v = this.Origin <- v
+
       member this.GetPath() = this.Origin.GetPath(name)
       member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent name (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
-    new ElmishComponentTE<_,_,_>(name, init, update, view) :> ITerminalElement
+    new ElmishComponentTE<_, _, _>(name, init, update, view) :> ITerminalElement
 
   let mkProgram (init: 'arg -> 'model * Cmd<'msg>) (update: 'msg -> 'model -> 'model * Cmd<'msg>) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =
     Program.mkProgram (OuterModel.wrapInit Origin.Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
@@ -263,9 +277,7 @@ module ElmishTerminal =
     |> Program.withSubscription (OuterModel.wrapSubscribe subscribe)
     |> ElmishTerminalProgram
 
-  let withTermination predicate (ElmishTerminalProgram program) =
-    program
-    |> ElmishTerminalProgram
+  let withTermination predicate (ElmishTerminalProgram program) = program |> ElmishTerminalProgram
 
   let runTerminal (ElmishTerminalProgram program) =
 
@@ -280,26 +292,33 @@ module ElmishTerminal =
 
           if te.Origin.IsElmishComponent then
             failwith (
-              "`run` is meant to be used for Terminal Elmish loop. " +
-              "For Terminal components with separate Elmish loop, use `runComponent`.")
+              "`run` is meant to be used for Terminal Elmish loop. "
+              + "For Terminal components with separate Elmish loop, use `runComponent`."
+            )
           else
             Task.Run(fun () ->
-              (
-                try
-                  model.Application.Init() |> ignore
-                  model.Application.Run(te.View :?> Runnable) |> ignore
-                  running.SetResult()
-                with ex -> running.SetException ex
-              )
-              , TaskCreationOptions.LongRunning
-            ) |> ignore
+              (try
+                model.Application.Init() |> ignore
+
+                model.Application.Run(te.View :?> Runnable)
+                |> ignore
+
+                running.SetResult()
+               with ex ->
+                 running.SetException ex),
+              TaskCreationOptions.LongRunning
+            )
+            |> ignore
 
             waitForStart.SetResult()
             waitForTermination <- model.Termination
 
-        } |> Task.wait
+        }
+        |> Task.wait
 
-        { new IDisposable with member _.Dispose() = () }
+        { new IDisposable with
+            member _.Dispose() = ()
+        }
 
       start
 

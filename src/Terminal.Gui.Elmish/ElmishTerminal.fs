@@ -23,7 +23,7 @@ module ElmishTerminal =
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
-  type internal InternalModel<'model> =
+  type internal TerminalModel<'model> =
     {
       mutable CurrentTe: IViewTE option
       mutable NextTeTcs: TaskCompletionSource<IViewTE>
@@ -46,11 +46,11 @@ module ElmishTerminal =
         this.NextTeTcs <- TaskCompletionSource<_>()
 
   module internal OuterModel =
-    let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) : 'arg -> InternalModel<'model> * Cmd<TerminalMsg<'msg>> =
+    let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) : 'arg -> TerminalModel<'model> * Cmd<TerminalMsg<'msg>> =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
-        let internalModel = {
+        let terminalModel = {
           Application = Application.Create()
           CurrentTe = None
           NextTeTcs = TaskCompletionSource<_>()
@@ -60,10 +60,10 @@ module ElmishTerminal =
           ClientModel = innerModel
         }
 
-        internalModel, cmd |> Cmd.map TerminalMsg.ofMsg
+        terminalModel, cmd |> Cmd.map TerminalMsg.ofMsg
 
-    let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : TerminalMsg<'msg> -> InternalModel<'model> -> InternalModel<'model> * Cmd<TerminalMsg<'msg>> =
-      fun (msg: TerminalMsg<'msg>) (model: InternalModel<'model>) ->
+    let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : TerminalMsg<'msg> -> TerminalModel<'model> -> TerminalModel<'model> * Cmd<TerminalMsg<'msg>> =
+      fun (msg: TerminalMsg<'msg>) (model: TerminalModel<'model>) ->
         match msg with
         | Terminate ->
           model, Cmd.none
@@ -73,15 +73,15 @@ module ElmishTerminal =
 
           { model with ClientModel = innerModel }, Cmd.map TerminalMsg.ofMsg cmd
 
-    let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : InternalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
-      fun (model: InternalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) ->
+    let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
+      fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) ->
         view model.ClientModel (TerminalMsg.ofMsg >> dispatch)
 
     let internal wrapSimpleInit origin (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
-        let internalModel = {
+        let terminalModel = {
           Application = Application.Create()
           CurrentTe = None
           NextTeTcs = TaskCompletionSource<_>()
@@ -91,10 +91,10 @@ module ElmishTerminal =
           ClientModel = innerModel
         }
 
-        internalModel
+        terminalModel
 
-    let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : TerminalMsg<'msg> -> InternalModel<'model> -> InternalModel<'model> =
-      fun (msg: TerminalMsg<'msg>) (model: InternalModel<'model>) ->
+    let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : TerminalMsg<'msg> -> TerminalModel<'model> -> TerminalModel<'model> =
+      fun (msg: TerminalMsg<'msg>) (model: TerminalModel<'model>) ->
         match msg with
         | Terminate ->
           model
@@ -102,14 +102,14 @@ module ElmishTerminal =
           let innerModel = update msg model.ClientModel
           { model with ClientModel = innerModel }
 
-    let internal wrapSubscribe (subscribe: 'model -> Sub<'msg>) : InternalModel<'model> -> _ =
+    let internal wrapSubscribe (subscribe: 'model -> Sub<'msg>) : TerminalModel<'model> -> _ =
       fun outerModel ->
         subscribe outerModel.ClientModel
         |> Sub.map "WrapSubscribe" (TerminalMsg.ofMsg >> TerminalMsg.Msg)
 
-  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, TerminalMsg<'msg>, 'view>
+  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, TerminalModel<'model>, TerminalMsg<'msg>, 'view>
 
-  let private setState (view: InternalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
+  let private setState (view: TerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) (model: TerminalModel<'model>) dispatch =
 
     let nextTe =
       match model.CurrentTe with
@@ -162,7 +162,7 @@ module ElmishTerminal =
     let runComponent (ElmishTerminalProgram program) =
 
       // TODO: could be refactored into a ElmishTerminal.runTerminal
-      let runComponent (model: InternalModel<_>) =
+      let runComponent (model: TerminalModel<_>) =
         let start dispatch =
           task {
             let! te = model.WaitForTerminalElementInitialization()
@@ -264,7 +264,7 @@ module ElmishTerminal =
     let running = TaskCompletionSource()
     let mutable waitForTermination = null
 
-    let runTerminal (model: InternalModel<_>) =
+    let runTerminal (model: TerminalModel<_>) =
       let start dispatch =
         task {
           let! te = model.WaitForTerminalElementInitialization()

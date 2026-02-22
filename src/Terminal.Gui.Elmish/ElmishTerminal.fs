@@ -46,7 +46,7 @@ module ElmishTerminal =
         this.NextTeTcs <- TaskCompletionSource<_>()
 
   module internal OuterModel =
-    let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) =
+    let internal wrapInit origin (init: 'arg -> 'model * Cmd<'msg>) : 'arg -> InternalModel<'model> * Cmd<TerminalMsg<'msg>> =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
@@ -60,17 +60,22 @@ module ElmishTerminal =
           ClientModel = innerModel
         }
 
-        internalModel, cmd
+        internalModel, cmd |> Cmd.map TerminalMsg.ofMsg
 
-    let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : 'msg -> InternalModel<'model> -> InternalModel<'model> * Cmd<'msg> =
-      fun (msg: 'msg) (model: InternalModel<'model>) ->
-        let innerModel, cmd =
-          update msg model.ClientModel
+    let internal wrapUpdate (update: 'msg -> 'model -> 'model * Cmd<'msg>) : TerminalMsg<'msg> -> InternalModel<'model> -> InternalModel<'model> * Cmd<TerminalMsg<'msg>> =
+      fun (msg: TerminalMsg<'msg>) (model: InternalModel<'model>) ->
+        match msg with
+        | Terminate ->
+          model, Cmd.none
+        | Msg msg ->
+          let innerModel, cmd =
+            update msg model.ClientModel
 
-        { model with ClientModel = innerModel }, cmd
+          { model with ClientModel = innerModel }, Cmd.map TerminalMsg.ofMsg cmd
 
-    let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : InternalModel<'model> -> Dispatch<'msg> -> ITerminalElement =
-      fun (model: InternalModel<'model>) (dispatch: Dispatch<'msg>) -> view model.ClientModel dispatch
+    let internal wrapView (view: 'model -> Dispatch<'msg> -> ITerminalElement) : InternalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
+      fun (model: InternalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) ->
+        view model.ClientModel (TerminalMsg.ofMsg >> dispatch)
 
     let internal wrapSimpleInit origin (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
@@ -88,17 +93,23 @@ module ElmishTerminal =
 
         internalModel
 
-    let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : 'msg -> InternalModel<'model> -> InternalModel<'model> =
-      fun (msg: 'msg) (model: InternalModel<'model>) ->
-        let innerModel = update msg model.ClientModel
-        { model with ClientModel = innerModel }
+    let internal wrapSimpleUpdate (update: 'msg -> 'model -> 'model) : TerminalMsg<'msg> -> InternalModel<'model> -> InternalModel<'model> =
+      fun (msg: TerminalMsg<'msg>) (model: InternalModel<'model>) ->
+        match msg with
+        | Terminate ->
+          model
+        | Msg msg ->
+          let innerModel = update msg model.ClientModel
+          { model with ClientModel = innerModel }
 
-    let internal wrapSubscribe (subscribe: 'model -> _) : InternalModel<'model> -> _ =
-      fun outerModel -> subscribe outerModel.ClientModel
+    let internal wrapSubscribe (subscribe: 'model -> Sub<'msg>) : InternalModel<'model> -> _ =
+      fun outerModel ->
+        subscribe outerModel.ClientModel
+        |> Sub.map "WrapSubscribe" (TerminalMsg.ofMsg >> TerminalMsg.Msg)
 
-  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, 'msg, 'view>
+  type ElmishTerminalProgram<'arg, 'model, 'msg, 'view> = internal ElmishTerminalProgram of Program<'arg, InternalModel<'model>, TerminalMsg<'msg>, 'view>
 
-  let private setState (view: InternalModel<'model> -> Dispatch<'cmd> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
+  let private setState (view: InternalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) (model: InternalModel<'model>) dispatch =
 
     let nextTe =
       match model.CurrentTe with
@@ -233,12 +244,12 @@ module ElmishTerminal =
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
-  let mkSimple (init: 'arg -> 'model) (update: TerminalMsg<'cmd> -> 'model -> 'model) (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
+  let mkSimple (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
     Program.mkSimple (OuterModel.wrapSimpleInit Origin.Root init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
-  let withSubscription (subscribe: 'model -> Sub<_>) (ElmishTerminalProgram program) =
+  let withSubscription (subscribe: 'model -> Sub<'msg>) (ElmishTerminalProgram program) =
     program
     |> Program.withSubscription (OuterModel.wrapSubscribe subscribe)
     |> ElmishTerminalProgram

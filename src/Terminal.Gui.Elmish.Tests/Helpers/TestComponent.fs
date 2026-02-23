@@ -1,11 +1,11 @@
-module Terminal.Gui.Elmish.Tests.TestComponent
+module internal Terminal.Gui.Elmish.Tests.TestComponent
 
 open Terminal.Gui.Elmish
 
-type private Msg =
+type Msg =
   | Increment
 
-type private ComponentModel = { Counter: int }
+type ComponentModel = { Counter: int }
 
 type IProps =
   abstract member text: string -> unit
@@ -17,7 +17,7 @@ type private Props() =
   interface IProps with
     member this.text value = this.text value
 
-let _component (set: IProps -> unit) =
+let create (set: IProps -> unit) =
 
   let props = Props()
   set props
@@ -41,4 +41,4 @@ let _component (set: IProps -> unit) =
       ]
     )
 
-  ElmishTerminal.mkSimpleComponent "TestComponent" init update view
+  ElmishTester.mkTestableComponent "TestComponent" init update view

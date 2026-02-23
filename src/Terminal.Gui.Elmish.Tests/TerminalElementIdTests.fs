@@ -26,16 +26,16 @@ let ``Simple ID test`` () =
 [<Test>]
 let ``Component ID test`` () =
   // Arrange
-  let testComp = TestComponent._component (fun p -> p.text "Test Component")
+  let testComp = TestComponent.create (fun p -> p.text "Test Component")
   let view =
     View.Runnable [
-      testComp
+      testComp :> ITerminalElement
     ]
 
   // Act
   use _ = ElmishTester.render view
 
-  let testComp = testComp :?> IElmishComponentTE
+  let testComp = testComp :> IElmishComponentTE
   let view = view :?> IViewTE
 
   // Get the children from the component

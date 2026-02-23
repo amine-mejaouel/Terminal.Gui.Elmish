@@ -161,20 +161,32 @@ module ElmishTerminal =
 
   let internal terminate (model: TerminalModel<_>) = (model :> IDisposable).Dispose()
 
+  type internal Subscription<'model, 'msg> = { SubId: SubId; SubscriptionFunc: TerminalModel<'model> -> Subscribe<TerminalMsg<'msg>> }
+
   /// <summary>
   /// <para>Wrapper that elmish components should use to expose themselves as IInternalTerminalElement.</para>
   /// <para>As the Elmish component handles its own initialization and children management in his separate Elmish loop,
   /// this wrapper will hide these aspects to the outside world. Thus preventing double initialization or double children management.</para>
+  ///
+  /// <remarks>
+  /// <b>The root TE of the component should remain the same across renders, so it's advisable to have a top Runnable TE as the root of the component.</b>
+  /// </remarks>
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
-    let teTcs: TaskCompletionSource<IViewTE> =
+    let initialTeTcs: TaskCompletionSource<IViewTE> =
       TaskCompletionSource<_>()
 
     let viewSetEvent = Event<View>()
 
-    let runComponent (ElmishTerminalProgram program) =
+    let mkSimpleComponent terminalElement (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
+      Program.mkSimple (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
+      |> Program.withSetState (setState (OuterModel.wrapView view))
+      |> ElmishTerminalProgram
 
+    abstract Subscriptions : Subscription<'model, 'msg> list
+
+    default this.Subscriptions =
       // TODO: could be refactored into a ElmishTerminal.runTerminal
       let runComponent (model: TerminalModel<_>) =
         let start dispatch =
@@ -184,7 +196,7 @@ module ElmishTerminal =
             viewSetEvent.Trigger rootView
 
             let! currentTe = model.TerminalElementState.GetCurrentTEAsync()
-            teTcs.SetResult(currentTe)
+            initialTeTcs.SetResult(currentTe)
           }
           |> Task.wait
 
@@ -194,38 +206,40 @@ module ElmishTerminal =
 
         start
 
-      let subscribe model = [
-        [ "runComponent" ], runComponent model
+      [
+        { SubId = [ "runComponent" ]; SubscriptionFunc = runComponent }
       ]
+
+    member private this.RunComponent(ElmishTerminalProgram program) =
+
+      let subscribe model : Sub<TerminalMsg<'msg>> =
+
+        this.Subscriptions
+        |> List.map (fun sub -> sub.SubId, sub.SubscriptionFunc model)
 
       program
       |> Program.withSubscription subscribe
       |> Program.run
 
-      teTcs.Task |> Task.wait |> ignore
+      initialTeTcs.Task |> Task.wait |> ignore
 
       ()
 
-    let mkSimpleComponent terminalElement (init: 'arg -> 'model) (update: 'cmd -> 'model -> 'model) (view: 'model -> Dispatch<'cmd> -> ITerminalElement) =
-      Program.mkSimple (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
-      |> Program.withSetState (setState (OuterModel.wrapView view))
-      |> ElmishTerminalProgram
-
     member this.GetViewAsync() =
       task {
-        let! te = teTcs.Task
+        let! te = initialTeTcs.Task
         return te.View
       }
 
     member this.View =
-      if teTcs.Task.IsCompleted then
-        teTcs.Task.Result.View
+      if initialTeTcs.Task.IsCompleted then
+        initialTeTcs.Task.Result.View
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View property."
 
     member this.Child =
-      if teTcs.Task.IsCompleted then
-        teTcs.Task.Result
+      if initialTeTcs.Task.IsCompleted then
+        initialTeTcs.Task.Result
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
 
@@ -236,7 +250,7 @@ module ElmishTerminal =
 
     member this.Dispose() =
       task {
-        let! te = teTcs.Task
+        let! te = initialTeTcs.Task
         te.Dispose()
       }
       |> Task.wait
@@ -244,7 +258,7 @@ module ElmishTerminal =
     interface IElmishComponentTE with
       member this.StartElmishLoop() =
         mkSimpleComponent this init update view
-        |> runComponent
+        |> this.RunComponent
 
       member this.Child = this.Child
 

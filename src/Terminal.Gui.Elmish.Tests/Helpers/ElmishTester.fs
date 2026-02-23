@@ -124,10 +124,36 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
         curTE.Dispose()
   }
 
-let internal render view =
+let internal render view : TestableElmishProgram<'msg> =
   let init _ = (), Cmd.none
   let update _ _ = (), Cmd.none
   let view _ _ = view
 
   ElmishTerminal.mkSimple init update view
   |> run
+
+type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
+  inherit IElmishComponentTE
+  abstract member ProcessMsg: TerminalMsg<'msg> -> Task
+
+type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) =
+  inherit ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
+
+  let msgDispatcherSub = MsgDispatcherSubscription<'model, 'msg>()
+
+  override this.Subscriptions =
+    let baseSubs = base.Subscriptions
+
+    [
+      yield! baseSubs
+      yield { SubId = [ "msgDispatcher" ]; SubscriptionFunc = msgDispatcherSub.subscribe }
+    ]
+
+  member this.ProcessMsg (msg: TerminalMsg<'msg>) =
+    msgDispatcherSub.ProcessMsg msg
+
+  interface ITestableElmishComponentTE<'model, 'msg, 'view> with
+    member this.ProcessMsg msg = this.ProcessMsg msg
+
+let internal mkTestableComponent<'model, 'msg, 'view> name init update view =
+  new TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) :> ITestableElmishComponentTE<'model, 'msg, 'view>

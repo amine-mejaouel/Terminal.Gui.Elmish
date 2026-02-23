@@ -18,8 +18,8 @@
   <ItemGroup>
     <Content Include="paket.references" />
     <Compile Include="Helpers\TerminalElementsExt.fs" />
-    <Compile Include="Helpers\TestComponent.fs" />
     <Compile Include="Helpers\ElmishTester.fs" />
+    <Compile Include="Helpers\TestComponent.fs" />
     <Compile Include="MenuTests.fs" />
     <Compile Include="ElmishComponentTests.fs" />
     <Compile Include="CodeGenTests.fs" />

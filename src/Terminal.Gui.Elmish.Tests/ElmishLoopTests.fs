@@ -16,7 +16,7 @@ type Msg =
   | ChangeView of DisplayedView
 
 [<Test>]
-let ``Unused Button instance should be collected after update`` () =
+let ``Button instance, used as relative position, should be collected after it's no longer part of the view`` () =
   task {
     let init _ = { DisplayedView = Button }
 
@@ -49,15 +49,8 @@ let ``Unused Button instance should be collected after update`` () =
                 p.X (TPos.Right first)
             )
 
-          let third =
-            View.Label (fun p ->
-              p.Text "I am a static label below the second element."
-              p.Y (TPos.Bottom second)
-            )
-
           first
           second
-          third
         ])
 
     let program =
@@ -67,20 +60,11 @@ let ``Unused Button instance should be collected after update`` () =
     let buttonRef =
       System.WeakReference(program.ViewTE.Children.First().View)
 
-    // For Memory snapshot testing:
-    // let success = System.GC.TryStartNoGCRegion(1024L * 1024L)
-    // Assert.That(success, Is.True, "Failed to start no GC region. Test cannot proceed.")
-
     do! program.ProcessMsg (ChangeView Label |> TerminalMsg.ofMsg)
-
-    let secondTe =
-      program.ViewTE.Children.Skip(1).First()
-
-    let thirdTe =
-      program.ViewTE.Children.Last()
 
     System.GC.Collect()
     System.GC.WaitForPendingFinalizers()
+    System.GC.Collect()
 
     Assert.That(buttonRef.IsAlive, Is.False, "Button instance should have been collected after the update.")
   }

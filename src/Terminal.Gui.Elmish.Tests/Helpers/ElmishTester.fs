@@ -27,14 +27,10 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   let waitForProgramStartSub (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
-        match rootView with
-        | :? Terminal.Gui.Views.Runnable as _ ->
-          let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
-          curTE <- currentTE
-          waitForStart.SetResult()
-        | _ ->
-          failwith "`run` is meant to be used for with Runnable as root view."
+        let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
+        curTE <- currentTE
+
+        waitForStart.SetResult()
       } |> Task.wait
 
       { new IDisposable with member _.Dispose() = () }

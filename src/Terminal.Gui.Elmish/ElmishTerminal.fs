@@ -18,20 +18,46 @@ module TerminalMsg =
 [<RequireQualifiedAccess>]
 module ElmishTerminal =
 
+  type internal TerminalElementState() =
+    let mutable _currentTe: IViewTE option = None
+    let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
+    let rootViewTcs: TaskCompletionSource<View> = TaskCompletionSource<View>()
+
+    member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
+
+    member this.WaitTillRootViewIsSetAsync() = rootViewTcs.Task
+
+    member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
+
+    member this.GetCurrentTEAsync() : Task<IViewTE> =
+      task {
+        let waitForNextTeTask = this.WaitForNextTerminalElementAsync()
+
+        if _currentTe.IsSome then
+          return _currentTe.Value
+        else
+          return! waitForNextTeTask
+      }
+
+    member this.SetCurrentTE(te: IViewTE) =
+      _currentTe <- Some te
+
+      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
+        rootViewTcs.SetResult te.View
+
+      nextTeTcs.SetResult(te)
+      nextTeTcs <- TaskCompletionSource<_>()
+
+    member this.Dispose() =
+      _currentTe |> Option.iter _.Dispose()
+
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
   type internal TerminalModel<'model>(application: IApplication, origin: Origin, clientModel: 'model) =
-    let mutable _currentTe: IViewTE option =
-      None
-
-    let mutable nextTeTcs: TaskCompletionSource<IViewTE> =
-      TaskCompletionSource<_>()
-
-    let rootViewTcs: TaskCompletionSource<View> =
-      TaskCompletionSource<View>()
+    let terminalElementState = TerminalElementState()
 
     let termination: TaskCompletionSource =
       TaskCompletionSource()
@@ -42,36 +68,12 @@ module ElmishTerminal =
     member this.Origin = origin
     member this.Termination = termination
 
-    member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
-
-    member this.WaitForRootViewAsync() = rootViewTcs.Task
-
-    member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
-
-    member this.GetCurrentTerminalElementAsync() : Task<IViewTE> =
-      task {
-        let waitForNextTeTask =
-          this.WaitForNextTerminalElementAsync()
-
-        if _currentTe.IsSome then
-          return _currentTe.Value
-        else
-          return! waitForNextTeTask
-      }
-
-    member this.SetCurrentTe(te: IViewTE) =
-
-      _currentTe <- Some te
-
-      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
-        rootViewTcs.SetResult te.View
-
-      nextTeTcs.SetResult(te)
-      nextTeTcs <- TaskCompletionSource<_>()
+    member this.RootViewSet = terminalElementState.RootViewSet
+    member this.TerminalElementState = terminalElementState
 
     interface IDisposable with
       member this.Dispose() =
-        _currentTe |> Option.iter _.Dispose()
+        terminalElementState.Dispose()
 
         if not origin.IsElmishComponent then
           application.RequestStop()
@@ -144,7 +146,7 @@ module ElmishTerminal =
             return initialTe
 
           else
-            let! (currentTe: IViewTE) = model.GetCurrentTerminalElementAsync()
+            let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
 
             let nextTe = view model dispatch :?> IViewTE
 
@@ -155,7 +157,7 @@ module ElmishTerminal =
         }
 
       let! nextTe = nextTe
-      model.SetCurrentTe nextTe
+      model.TerminalElementState.SetCurrentTE nextTe
 
       ()
     }
@@ -181,11 +183,11 @@ module ElmishTerminal =
       let runComponent (model: TerminalModel<_>) =
         let start dispatch =
           task {
-            let! rootView = model.WaitForRootViewAsync()
+            let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
 
             viewSetEvent.Trigger rootView
 
-            let! currentTe = model.GetCurrentTerminalElementAsync()
+            let! currentTe = model.TerminalElementState.GetCurrentTEAsync()
             teTcs.SetResult(currentTe)
           }
           |> Task.wait
@@ -291,7 +293,7 @@ module ElmishTerminal =
     let runTerminal (model: TerminalModel<_>) =
       let start dispatch =
         task {
-          let! rootView = model.WaitForRootViewAsync()
+          let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
 
           if model.Origin.IsElmishComponent then
             failwith (

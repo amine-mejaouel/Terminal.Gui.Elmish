@@ -27,10 +27,10 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   let startProgram (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! rootView = model.WaitForRootViewAsync()
+        let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
         match rootView with
         | :? Terminal.Gui.Views.Runnable as _ ->
-          let! currentTE = model.GetCurrentTerminalElementAsync()
+          let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
           curTE <- currentTE
           waitForStart.SetResult()
         | _ ->
@@ -72,7 +72,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
         task {
           while not cancellationToken.Token.IsCancellationRequested do
             let! msg, msgHook = msgQueue.Reader.ReadAsync()
-            let nextViewTeTask = model.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
+            let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
             dispatch msg
             let! nextViewTe = nextViewTeTask
             msgHook.SetResult(nextViewTe)

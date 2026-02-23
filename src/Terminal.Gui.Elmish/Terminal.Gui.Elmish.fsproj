@@ -52,17 +52,13 @@
     <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
-    <Compile Include="PKey.fs" />
     <Compile Include="Services\PositionService.fs" />
     <Compile Include="TerminalElement.Base.fs" />
     <Compile Include="TerminalElement.Interfaces.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
-    <Compile Include="TerminalElement.Elements.fs" />
-    <Compile Include="Props.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />
-    <Compile Include="Views.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png">

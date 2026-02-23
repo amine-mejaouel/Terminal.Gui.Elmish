@@ -58,16 +58,12 @@ module ElmishTerminal =
   /// </summary>
   type internal TerminalModel<'model>(application: IApplication, origin: Origin, clientModel: 'model) =
     let terminalElementState = TerminalElementState()
-
-    let termination: TaskCompletionSource =
-      TaskCompletionSource()
+    let termination: TaskCompletionSource = TaskCompletionSource()
 
     member val ClientModel = clientModel with get, set
-
     member this.Application = application
     member this.Origin = origin
     member this.Termination = termination
-
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 

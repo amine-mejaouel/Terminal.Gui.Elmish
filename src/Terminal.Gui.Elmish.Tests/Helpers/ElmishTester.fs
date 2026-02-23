@@ -27,8 +27,8 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   let startProgram (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! rootView = model.WaitForTerminalElementInitializationAsync()
-        match rootView.View with
+        let! rootView = model.WaitForRootViewAsync()
+        match rootView with
         | :? Terminal.Gui.Views.Runnable as _ ->
           let! currentTE = model.GetCurrentTerminalElementAsync()
           curTE <- currentTE

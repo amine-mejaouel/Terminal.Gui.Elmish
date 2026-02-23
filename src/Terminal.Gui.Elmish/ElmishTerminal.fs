@@ -30,8 +30,8 @@ module ElmishTerminal =
     let mutable nextTeTcs: TaskCompletionSource<IViewTE> =
       TaskCompletionSource<_>()
 
-    let initialTeSet: TaskCompletionSource<IViewTE> =
-      TaskCompletionSource<_>()
+    let rootViewTcs: TaskCompletionSource<View> =
+      TaskCompletionSource<View>()
 
     let termination: TaskCompletionSource =
       TaskCompletionSource()
@@ -40,10 +40,11 @@ module ElmishTerminal =
 
     member this.Application = application
     member this.Origin = origin
-    member this.InitialTeSet = initialTeSet
     member this.Termination = termination
 
-    member this.WaitForTerminalElementInitializationAsync() = initialTeSet.Task
+    member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
+
+    member this.WaitForRootViewAsync() = rootViewTcs.Task
 
     member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
 
@@ -62,8 +63,8 @@ module ElmishTerminal =
 
       _currentTe <- Some te
 
-      if initialTeSet.Task.IsCompletedSuccessfully |> not then
-        initialTeSet.SetResult te
+      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
+        rootViewTcs.SetResult te.View
 
       nextTeTcs.SetResult(te)
       nextTeTcs <- TaskCompletionSource<_>()
@@ -133,7 +134,7 @@ module ElmishTerminal =
     task {
       let nextTe =
         task {
-          if not model.InitialTeSet.Task.IsCompleted then
+          if not model.RootViewSet then
 
             let initialTe =
               view model dispatch :?> IViewTE
@@ -169,7 +170,7 @@ module ElmishTerminal =
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>(name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
 
-    let viewTeTcs: TaskCompletionSource<IViewTE> =
+    let teTcs: TaskCompletionSource<IViewTE> =
       TaskCompletionSource<_>()
 
     let viewSetEvent = Event<View>()
@@ -180,10 +181,12 @@ module ElmishTerminal =
       let runComponent (model: TerminalModel<_>) =
         let start dispatch =
           task {
-            let! te = model.WaitForTerminalElementInitializationAsync()
+            let! rootView = model.WaitForRootViewAsync()
 
-            viewSetEvent.Trigger te.View
-            viewTeTcs.SetResult(te)
+            viewSetEvent.Trigger rootView
+
+            let! currentTe = model.GetCurrentTerminalElementAsync()
+            teTcs.SetResult(currentTe)
           }
           |> Task.wait
 
@@ -201,7 +204,7 @@ module ElmishTerminal =
       |> Program.withSubscription subscribe
       |> Program.run
 
-      viewTeTcs.Task |> Task.wait |> ignore
+      teTcs.Task |> Task.wait |> ignore
 
       ()
 
@@ -212,19 +215,19 @@ module ElmishTerminal =
 
     member this.GetViewAsync() =
       task {
-        let! viewTe = viewTeTcs.Task
-        return viewTe.View
+        let! te = teTcs.Task
+        return te.View
       }
 
     member this.View =
-      if viewTeTcs.Task.IsCompleted then
-        viewTeTcs.Task.Result.View
+      if teTcs.Task.IsCompleted then
+        teTcs.Task.Result.View
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View property."
 
     member this.Child =
-      if viewTeTcs.Task.IsCompleted then
-        viewTeTcs.Task.Result
+      if teTcs.Task.IsCompleted then
+        teTcs.Task.Result
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
 
@@ -235,8 +238,8 @@ module ElmishTerminal =
 
     member this.Dispose() =
       task {
-        let! viewTe = viewTeTcs.Task
-        viewTe.Dispose()
+        let! te = teTcs.Task
+        te.Dispose()
       }
       |> Task.wait
 
@@ -288,9 +291,9 @@ module ElmishTerminal =
     let runTerminal (model: TerminalModel<_>) =
       let start dispatch =
         task {
-          let! te = model.WaitForTerminalElementInitializationAsync()
+          let! rootView = model.WaitForRootViewAsync()
 
-          if te.Origin.IsElmishComponent then
+          if model.Origin.IsElmishComponent then
             failwith (
               "`run` is meant to be used for Terminal Elmish loop. "
               + "For Terminal components with separate Elmish loop, use `runComponent`."
@@ -300,7 +303,7 @@ module ElmishTerminal =
               (try
                 model.Application.Init() |> ignore
 
-                model.Application.Run(te.View :?> Runnable)
+                model.Application.Run(rootView :?> Runnable)
                 |> ignore
 
                 running.SetResult()

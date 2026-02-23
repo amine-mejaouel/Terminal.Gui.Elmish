@@ -16,7 +16,50 @@ type internal TestableElmishProgram<'msg> =
   abstract member View: Terminal.Gui.ViewBase.View
   inherit IDisposable
 
+type internal MsgDispatcherSubscription<'model, 'msg>() =
+
+  let msgQueue = Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
+
+  /// Msg dispatcher:
+  /// - listens to the msgQueue (which is written to by the ProcessMsg method)
+  /// - dispatches the msg to the Elmish program
+  /// - waits for the program to signal the NextTeTcs after processing the msg
+  /// - signals the msgQueue item TaskCompletionSource with the new IViewTE
+  ///
+  /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
+  /// Returning the new IViewTE to the caller;
+  /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
+  member this.subscribe (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
+    let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
+      let cancellationToken = new CancellationTokenSource()
+      Task.Factory.StartNew((fun () ->
+        task {
+          while not cancellationToken.Token.IsCancellationRequested do
+            let! msg, msgHook = msgQueue.Reader.ReadAsync()
+            let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
+            dispatch msg
+            let! nextViewTe = nextViewTeTask
+            msgHook.SetResult(nextViewTe)
+        }), TaskCreationOptions.LongRunning) |> ignore
+
+      { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }
+
+    start
+
+  /// Sends the message to the Elmish program and waits for it to be processed, returning the new IViewTE after processing.
+  member this.ProcessMsg (msg: TerminalMsg<'msg>) =
+    task {
+      let msgProcessedTcs = TaskCompletionSource<_>()
+      let item = (msg, msgProcessedTcs)
+      do! msgQueue.Writer.WriteAsync item
+      // msgProcessedTcs is signaled by the msgDispatcher subscription.
+      let! newTreeState = msgProcessedTcs.Task
+      return newTreeState
+    }
+
 let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication,'model,'msg,'view>) =
+
+  let msgDispatcherSub = MsgDispatcherSubscription()
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
@@ -50,38 +93,11 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
     start
 
-  let msgQueue = Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
-
-  /// Msg dispatcher:
-  /// - listens to the msgQueue (which is written to by the ProcessMsg method)
-  /// - dispatches the msg to the Elmish program
-  /// - waits for the program to signal the NextTeTcs after processing the msg
-  /// - signals the msgQueue item TaskCompletionSource with the new IViewTE
-  ///
-  /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
-  /// Returning the new IViewTE to the caller;
-  /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  let msgDispatcherSub (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
-    let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
-      let cancellationToken = new CancellationTokenSource()
-      Task.Factory.StartNew((fun () ->
-        task {
-          while not cancellationToken.Token.IsCancellationRequested do
-            let! msg, msgHook = msgQueue.Reader.ReadAsync()
-            let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
-            dispatch msg
-            let! nextViewTe = nextViewTeTask
-            msgHook.SetResult(nextViewTe)
-        }), TaskCreationOptions.LongRunning) |> ignore
-
-      { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }
-
-    start
 
   let subscribe model : Sub<TerminalMsg<'msg>> = [
     [ "startProgram" ], waitForProgramStartSub model
     [ "triggerTermination" ], triggerTerminationSub model
-    [ "msgDispatcher" ], msgDispatcherSub model
+    [ "msgDispatcher" ], msgDispatcherSub.subscribe model
   ]
 
   program
@@ -91,21 +107,18 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   waitForStart.Task.GetAwaiter().GetResult()
 
-  let processMsg (msg: TerminalMsg<'msg>) =
-    task {
-      let msgProcessedTcs = TaskCompletionSource<_>()
-      let item = (msg, msgProcessedTcs)
-      do! msgQueue.Writer.WriteAsync item
-      // msgProcessedTcs is signaled by the msgDispatcher subscription.
-      let! newTreeState = msgProcessedTcs.Task
-      curTE <- newTreeState
-    }
-
   {
     new TestableElmishProgram<'msg> with
-      member _.ProcessMsg msg = processMsg msg
+      member _.ProcessMsg msg =
+        task {
+          let! newTE = msgDispatcherSub.ProcessMsg msg
+          curTE <- newTE
+        }
+
       member _.ViewTE = curTE
+
       member _.View = curTE.View
+
       member this.Dispose () =
         triggerTerminationTcs.SetResult()
         curTE.Dispose()

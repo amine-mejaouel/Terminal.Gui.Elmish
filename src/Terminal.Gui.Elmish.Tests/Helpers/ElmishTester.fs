@@ -24,7 +24,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   let application = Application.Create()
 
-  let startProgram (model: ElmishTerminal.TerminalModel<_>) =
+  let waitForProgramStartSub (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
         let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
@@ -41,7 +41,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
     start
 
-  let triggerTermination model =
+  let triggerTerminationSub model =
     let start dispatch =
       let cancellationToken = new CancellationTokenSource()
       Task.Factory.StartNew((fun () ->
@@ -65,7 +65,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  let msgDispatcher (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
+  let msgDispatcherSub (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
     let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
       let cancellationToken = new CancellationTokenSource()
       Task.Factory.StartNew((fun () ->
@@ -83,9 +83,9 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
     start
 
   let subscribe model : Sub<TerminalMsg<'msg>> = [
-    [ "startProgram" ], startProgram model
-    [ "triggerTermination" ], triggerTermination model
-    [ "msgDispatcher" ], msgDispatcher model
+    [ "startProgram" ], waitForProgramStartSub model
+    [ "triggerTermination" ], triggerTerminationSub model
+    [ "msgDispatcher" ], msgDispatcherSub model
   ]
 
   program

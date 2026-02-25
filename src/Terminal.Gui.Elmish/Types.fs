@@ -298,12 +298,13 @@ module internal PropKey =
 
 
 /// Props object that is still under construction
-type internal Props(?initialProps) =
+type internal Props() =
 
-  member val dict = defaultArg initialProps (Dictionary<IPropKey, _>()) with get
+  member val dict = Dictionary<IPropKey, _>() with get
 
-  member this.add<'a>(k: IPropKey<'a>, v: 'a) = this.dict.Add(k, v :> obj)
   member this.addNonTyped<'a>(k: IPropKey, v: 'a) = this.dict.Add(k, v :> obj)
+
+  member this.add<'a>(k: IPropKey<'a>, v: 'a) = this.addNonTyped(k,v)
 
   member this.getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) : 'a =
     match this.dict.TryGetValue k with
@@ -322,17 +323,6 @@ type internal Props(?initialProps) =
 
 
 module internal Props =
-  let merge (props': Props) (props'': Props) =
-    let result = Dictionary()
-
-    let addToResult (source: Props) =
-      source.dict
-      |> Seq.iter (fun kv -> result.Add(kv.Key, kv.Value))
-
-    addToResult props'
-    addToResult props''
-
-    Props(result)
 
   /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
   /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>

@@ -157,14 +157,6 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.Width
     |> Option.iter (fun v -> view.Width <- v)
 
-    props
-    |> Props.tryFind PKey.View.X
-    |> Option.iter (fun v -> view.X <- v)
-
-    props
-    |> Props.tryFind PKey.View.Y
-    |> Option.iter (fun v -> view.Y <- v)
-
     // Events
     terminalElement.TrySetEventHandler(PKey.View.Accepted, view.Accepted)
 
@@ -453,16 +445,6 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.Width
     |> Option.iter (fun _ ->
         view.Width <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.X
-    |> Option.iter (fun _ ->
-        view.X <- 0)
-
-    props
-    |> Props.tryFind PKey.View.Y
-    |> Option.iter (fun _ ->
-        view.Y <- 0)
 
     // Events
     terminalElement.TryRemoveEventHandler PKey.View.Accepted

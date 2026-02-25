@@ -120,12 +120,13 @@ type internal ViewBackedTerminalElement(props: Props) =
 
       traverseTree (childNodes @ remainingNodes) traverse
 
-  let mutable viewReusedByAnotherTE = false
   let mutable view = null
 
   let mutable disposing = false
 
   let viewSetEvent = Event<View>()
+
+  member val ViewReusedByAnotherTE = false with get, set
 
   member this.View
     with get() = view
@@ -160,10 +161,6 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
-
-  member this.SignalReuse() =
-    PositionService.Current.SignalReuse this
-    viewReusedByAnotherTE <- true
 
   member this.InitializeView() =
 #if DEBUG
@@ -293,14 +290,18 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     let prev = prev :?> ViewBackedTerminalElement
 
-    prev.SignalReuse()
-
-    // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
-    // TODO: this should be tested and documented to make sure that it continues to work well in the future.
+    prev.ViewReusedByAnotherTE <- true
+    PositionService.Current.ExecuteCleanups prev
 
     this.View <- prev.View
     this.EventRegistrar <- prev.EventRegistrar
 
+    PositionService.Current.ApplyPos this
+
+    // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
+    // TODO: this should be tested and documented to make sure that it continues to work well in the future.
+
+    // TODO: Should refactor props to be clear that X and Y are treated separately
     let c = ViewBackedTerminalElement.compare prev.Props this.Props
 
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
@@ -400,7 +401,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.Dispose() =
     if Interlocked.Exchange(&disposing, true) then
       ()
-    elif (not viewReusedByAnotherTE) then
+    elif (not this.ViewReusedByAnotherTE) then
 
       // Remove any event subscriptions
       this.RemoveProps (this, this.Props)
@@ -416,7 +417,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       for child in this.Children do
         child.Dispose()
 
-      PositionService.Current.SignalDispose(this)
+      PositionService.Current.ExecuteCleanups(this)
       // Finally, dispose the View itself
       this.View.Dispose()
 

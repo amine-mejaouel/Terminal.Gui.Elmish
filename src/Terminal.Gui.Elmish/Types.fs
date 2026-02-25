@@ -444,16 +444,22 @@ module rec Element =
 
   type internal IViewTE =
     inherit ITerminalElementBase
-    abstract InitializeTree: origin: Origin -> unit
-    abstract Reuse: prev: IViewTE -> unit
+
     abstract Props: Props with get
     abstract SetAsChildOfParentView: bool
     abstract Children: List<TerminalElement>
 
+    abstract InitializeTree: origin: Origin -> unit
+    abstract Reuse: prev: IViewTE -> unit
+
+
   type internal IElmishComponentTE =
-    abstract StartElmishLoop : unit -> unit
-    abstract Child: IViewTE with get
     inherit ITerminalElementBase
+
+    abstract Child: IViewTE with get
+
+    abstract StartElmishLoop : unit -> unit
+    abstract Reuse: prev: IElmishComponentTE -> unit
 
   type internal TerminalElement =
     | ViewBackedTE of IViewTE

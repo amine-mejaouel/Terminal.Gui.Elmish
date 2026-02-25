@@ -30,10 +30,14 @@ module internal Differ =
     while workStack.Count > 0 do
       let prevTree, newTree = workStack.Pop()
       match prevTree, newTree with
-      | ElmishComponentTE _, ViewBackedTE prevTree ->
-        prevTree.Dispose()
-      | ViewBackedTE _, ElmishComponentTE _
-      | ElmishComponentTE _, ElmishComponentTE _ -> ()
+      | ElmishComponentTE _, ViewBackedTE _
+      | ViewBackedTE _, ElmishComponentTE _ ->
+        failwith "This should never happen, the tree structure should be the same between updates."
+
+      | ElmishComponentTE _, ElmishComponentTE _ ->
+        // TODO: Should be able to implement some reuse logic.
+        ()
+
       | ViewBackedTE prevTree, ViewBackedTE newTree ->
         match prevTree, newTree with
         | rt, nt when rt.Name <> nt.Name ->

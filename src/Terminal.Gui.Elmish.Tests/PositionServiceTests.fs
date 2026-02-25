@@ -204,7 +204,7 @@ let ``SignalReuse - removes handler entries for the reused element`` () =
     let countBefore = svc.Cleanups.Count
     Assert.That(countBefore, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
 
-    svc.SignalReuse secondTE
+    svc.ExecuteCleanups secondTE
 
     Assert.Multiple(fun () ->
         Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
@@ -219,7 +219,7 @@ let ``SignalReuse - calling on element without handlers is a no-op`` () =
     use _ = tester
     let svc = mkService ()
 
-    Assert.DoesNotThrow(fun () -> svc.SignalReuse labelTE)
+    Assert.DoesNotThrow(fun () -> svc.ExecuteCleanups labelTE)
 
 // ---------------------------------------------------------------------------
 // SignalDispose clears handlers for the disposed element
@@ -233,7 +233,7 @@ let ``SignalDispose - removes handler entries for the disposed element`` () =
 
     svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
-    svc.SignalDispose secondTE
+    svc.ExecuteCleanups secondTE
 
     Assert.Multiple(fun () ->
         Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
@@ -255,7 +255,7 @@ let ``SignalDispose - calling on element without handlers is a no-op`` () =
     use _ = tester
     let svc = mkService ()
 
-    Assert.DoesNotThrow(fun () -> svc.SignalDispose labelTE)
+    Assert.DoesNotThrow(fun () -> svc.ExecuteCleanups labelTE)
 
 // ---------------------------------------------------------------------------
 // Multiple relative positions on the same element
@@ -285,7 +285,7 @@ let ``SignalReuse - clears ALL handlers registered for element with multiple rel
     svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
     svc.ApplyPos(secondTE, X, TPos.Right  firstTE)
 
-    svc.SignalReuse secondTE
+    svc.ExecuteCleanups secondTE
 
     Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.False,
                                                                                         "All index entries for secondTE should be cleared")
@@ -302,8 +302,8 @@ let ``After SignalDispose on both elements no orphan entries remain`` () =
 
     svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
 
-    svc.SignalDispose secondTE
-    svc.SignalDispose firstTE
+    svc.ExecuteCleanups secondTE
+    svc.ExecuteCleanups firstTE
 
     Assert.Multiple(fun () ->
         Assert.That(svc.Cleanups.Count, Is.EqualTo 0,

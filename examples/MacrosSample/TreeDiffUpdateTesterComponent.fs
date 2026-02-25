@@ -1,15 +1,18 @@
 module TreeDiffUpdateTesterComponent
 
+open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
+open Terminal.Gui.Input
+open Terminal.Gui.ViewBase
 
-type DisplayedView =
-  | Label
-  | Button
+type DisplayedButton =
+  | Button2
+  | Button1
 
 type private Msg =
-  | ChangeView of DisplayedView
+  | ChangeDisplayedButton of DisplayedButton
 
-type private ComponentModel = { DisplayedView: DisplayedView; }
+type private ComponentModel = { DisplayedView: DisplayedButton; }
 
 type IProps =
   abstract member y: TPos -> unit
@@ -26,26 +29,40 @@ let _component (set: IProps -> unit) =
   let props = Props()
   set props
 
-  let init () = { DisplayedView = Button }
+  let init () = { DisplayedView = Button1 }
   let update cmd model =
     match cmd with
-    | ChangeView view ->
+    | ChangeDisplayedButton view ->
        { model with DisplayedView = view }
 
   let view model dispatch =
     View.Runnable (fun (p: RunnableProps) ->
       props.y_value |> Option.iter p.Y
+      p.BorderStyle LineStyle.Dashed
       p.Children [
         let first =
-          if model.DisplayedView = Button then
+          if model.DisplayedView = Button1 then
             View.Button (fun p ->
-              p.Text "Click to test changing the Terminal Element type!"
-              p.Activating (fun _ -> dispatch (ChangeView Label))
+              p.Text "Button 1: Click to test changing the Terminal Element !"
+              p.Activating (fun e ->
+                match e.Context.Binding with
+                | :? MouseBinding as mb when mb.MouseEvent.Flags.HasFlag MouseFlags.LeftButtonClicked ->
+                  dispatch (ChangeDisplayedButton Button2)
+                  e.Handled <- true
+                | _ -> ()
+              )
             )
           else
-            View.Label (fun p ->
-              p.Text "Click to test changing the Terminal Element type!"
-              p.Activating (fun _ -> dispatch (ChangeView Button))
+            View.Button (fun p ->
+              p.Text "Button 2: Click to test changing the Terminal Element !"
+              p.ShadowStyle ShadowStyle.Transparent
+              p.Activating (fun e ->
+                match e.Context.Binding with
+                | :? MouseBinding as mb when mb.MouseEvent.Flags.HasFlag MouseFlags.LeftButtonClicked ->
+                  dispatch (ChangeDisplayedButton Button1)
+                  e.Handled <- true
+                | _ -> ()
+              )
             )
 
         let second =

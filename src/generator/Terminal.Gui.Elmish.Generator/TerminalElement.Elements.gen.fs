@@ -36,7 +36,7 @@ let setPropsCode (view: ViewMetadata) =
 
       if view.Properties.Length > 0 then
         yield "    // Properties"
-      for prop in view.Properties do
+      for prop in view.Properties |> Seq.filter (fun p -> p.PKey <> "X" && p.PKey <> "Y") do
         yield $"    props"
         yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
         yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
@@ -62,13 +62,11 @@ let removePropsCode (view: ViewMetadata) =
       yield $""
       if view.Properties.Length > 0 then
         yield "    // Properties"
-      for prop in view.Properties do
+      for prop in view.Properties |> Seq.filter (fun p -> p.PKey <> "X" && p.PKey <> "Y") do
 
         let defaultValue =
           if prop.PropertyInfo.PropertyType = typeof<string> then
             "\"\""
-          else if prop.PKey = "X" || prop.PKey = "Y" then
-            "0"
           else
             "Unchecked.defaultof<_>"
 

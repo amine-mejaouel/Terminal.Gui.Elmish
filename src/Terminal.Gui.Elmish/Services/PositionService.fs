@@ -62,7 +62,7 @@ type internal PositionService() =
 
     this.UpdateIndex(key)
 
-  member private this.ExecuteCleanups(targetTe: IViewTE) =
+  member this.ExecuteCleanups(targetTe: IViewTE) =
     match this.TerminalElementPairs.TryGetValue(targetTe) with
     | true, tePairKeys ->
       for tePairKey in tePairKeys do
@@ -87,7 +87,7 @@ type internal PositionService() =
 
 
   member private this.ApplyRelativePos(cur: ITerminalElementBase, rel: ITerminalElementBase, apply: View -> View -> unit) =
-    let handler = EventHandler<DrawEventArgs>(fun _ _ -> apply cur.View rel.View)
+    let handler = EventHandler<_>(fun _ _ -> apply cur.View rel.View)
     rel.View.DrawComplete.AddHandler handler
     this.RegisterCleanup((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
 
@@ -117,8 +117,11 @@ type internal PositionService() =
 
     let resetPos (thisView: View) =
       match axis with
-      | PosAxis.X -> thisView.X <- 0
-      | PosAxis.Y -> thisView.Y <- 0
+      // Setting the position to the same absolute position may reduce
+      // the number of times the position needs to be recalculated and applied,
+      // which can help with performance when there are many relationships being applied at once.
+      | PosAxis.X -> thisView.X <- thisView.Frame.X
+      | PosAxis.Y -> thisView.Y <- thisView.Frame.Y
 
     match targetPos with
     | TPos.X te ->
@@ -141,8 +144,21 @@ type internal PositionService() =
     | TPos.Percent percent -> applyPos curElementData.View (Pos.Percent(percent))
     | TPos.Align (alignment, modes, groupId) -> applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
-  member this.SignalReuse(terminalElement: IViewTE) =
-    this.ExecuteCleanups terminalElement
+  member this.ApplyPos(viewTe: IViewTE) =
+    let xPos = viewTe.Props |> Props.tryFind PKey.View.X
+    let yPos = viewTe.Props |> Props.tryFind PKey.View.Y
+    let delayedXPos = viewTe.Props |> Props.tryFind PKey.View.X_delayedPos
+    let delayedYPos = viewTe.Props |> Props.tryFind PKey.View.Y_delayedPos
 
-  member this.SignalDispose(terminalElement: IViewTE) =
-    this.ExecuteCleanups terminalElement
+    match xPos, delayedXPos with
+    | Some _, Some _ -> failwith "Cannot set both X and X_delayedPos on the same view."
+    | Some xPos, None -> viewTe.View.X <- xPos
+    | None, Some delayedXPos -> PositionService.Current.ApplyPos(viewTe, X, delayedXPos)
+    | None, None -> viewTe.View.X <- 0
+
+    match yPos, delayedYPos with
+    | Some _, Some _ -> failwith "Cannot set both Y and Y_delayedPos on the same view."
+    | Some yPos, None -> viewTe.View.Y <- yPos
+    | None, Some delayedYPos -> PositionService.Current.ApplyPos(viewTe, Y, delayedYPos)
+    | None, None -> viewTe.View.Y <- 0
+

@@ -1,6 +1,9 @@
 # Auto detect text files
 * text=auto
 
+# GitHub Agentic Workflows
+.github/workflows/*.lock.yml linguist-generated=true merge=ours
+
 # Custom for Visual Studio
 *.cs diff=csharp text=auto eol=lf
 *.vb diff=csharp text=auto eol=lf

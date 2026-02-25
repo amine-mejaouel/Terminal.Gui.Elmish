@@ -171,6 +171,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.InitializeSubElements()
     |> Seq.iter this.Props.addNonTyped
 
+    PositionService.Current.ApplyPos this
     this.SetProps (this, this.Props)
 
   abstract Reuse: prev: IViewTE -> unit
@@ -267,16 +268,8 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
   default this.SetProps (terminalElement: ViewBackedTerminalElement, props: Props) =
-    // Custom Props
-    props
-    |> Props.tryFind PKey.View.X_delayedPos
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, X, tPos))
+    ()
 
-    props
-    |> Props.tryFind PKey.View.Y_delayedPos
-    |> Option.iter (fun tPos -> PositionService.Current.ApplyPos(terminalElement, Y, tPos))
-
-  // TODO: Is the view needed as param ? is the props needed as param ?
   abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
   default this.RemoveProps (terminalElement: ViewBackedTerminalElement, props: Props) =

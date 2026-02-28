@@ -280,7 +280,7 @@ module ElmishTerminal =
         with get () = this.Origin
         and set v = this.Origin <- v
 
-      member this.GetPath() = this.Origin.GetPath(name)
+      member this.GetPath() = this.Origin |> Origin.getPath name
       member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent name (init: unit -> 'model) (update: 'msg -> 'model -> 'model) (view: 'model -> Dispatch<'msg> -> ITerminalElement) =

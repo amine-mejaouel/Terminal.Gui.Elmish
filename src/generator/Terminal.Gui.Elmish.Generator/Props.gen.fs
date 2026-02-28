@@ -33,12 +33,19 @@ let viewSpecificMembers =
       )
     )
   """
+    yield "  // Positions"
+    yield "  member this.X (value: Pos) ="
+    yield "    this.props.X <- Some value"
+    yield ""
+    yield "  member this.Y (value: Pos) ="
+    yield "    this.props.Y <- Some value"
+    yield ""
     yield "  // Delayed Positions"
     yield "  member this.X (value: TPos) ="
-    yield "    this.props.add (PKey.View.X_delayedPos, value)"
+    yield "    this.props.XDelayed <- Some value"
     yield ""
     yield "  member this.Y (value: TPos) ="
-    yield "    this.props.add (PKey.View.Y_delayedPos, value)"
+    yield "    this.props.YDelayed <- Some value"
     yield ""
   }
 

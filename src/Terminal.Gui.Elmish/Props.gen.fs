@@ -30,12 +30,19 @@ type ViewProps() =
       )
     )
   
+  // Positions
+  member this.X (value: Pos) =
+    this.props.X <- Some value
+
+  member this.Y (value: Pos) =
+    this.props.Y <- Some value
+
   // Delayed Positions
   member this.X (value: TPos) =
-    this.props.add (PKey.View.X_delayedPos, value)
+    this.props.XDelayed <- Some value
 
   member this.Y (value: TPos) =
-    this.props.add (PKey.View.Y_delayedPos, value)
+    this.props.YDelayed <- Some value
 
   // Properties
   member this.Arrangement (value: Terminal.Gui.ViewBase.ViewArrangement) =
@@ -172,14 +179,6 @@ type ViewProps() =
 
   member this.Width (value: Terminal.Gui.ViewBase.Dim) =
     this.props.add (PKey.View.Width, value)
-
-
-  member this.X (value: Terminal.Gui.ViewBase.Pos) =
-    this.props.add (PKey.View.X, value)
-
-
-  member this.Y (value: Terminal.Gui.ViewBase.Pos) =
-    this.props.add (PKey.View.Y, value)
 
 
   // Events

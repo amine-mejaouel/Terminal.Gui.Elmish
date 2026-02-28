@@ -162,7 +162,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.View <- this.NewView ()
 
     this.InitializeSubElements()
-    |> Seq.iter this.Props.addNonTyped
+    |> Seq.iter (fun x -> this.Props |> Props.addNonTyped x)
 
     PositionService.Current.ApplyPos this
     this.SetProps (this, this.Props)
@@ -193,7 +193,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       | ElmishComponentTE _ -> ()
       | ViewBackedTE te ->
         if te.SetAsChildOfParentView then
-          te.Origin.ParentView
+          te.Origin |> Origin.parentView
           |> Option.iter (fun v -> v.Add te.View |> ignore)
 
     traverseTree
@@ -238,21 +238,21 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     this.TryRemoveEventHandler k
 
-    this.Props.tryFind k
+    this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
   member this.TrySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
 
     this.TryRemoveEventHandler k
 
-    this.Props.tryFind k
+    this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
   member this.TrySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
 
     this.TryRemoveEventHandler k
 
-    this.Props.tryFind k
+    this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
   member this.TryRemoveEventHandler (k: IPropKey) =
@@ -304,7 +304,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     // 2 - And we add them.
     view_Props_ToReinject
-    |> Props.iter (fun kv -> this.Props.addNonTyped (kv.Key, kv.Value))
+    |> Props.iter (fun kv -> this.Props |> Props.addNonTyped (kv.Key, kv.Value))
 
     this.RemoveProps (this, removedProps)
     this.SetProps (this, c.changedProps)
@@ -313,7 +313,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     let mutable isEquivalent = true
 
     let mutable enumerator =
-      this.Props.dict.GetEnumerator()
+      this.Props.Props.GetEnumerator()
 
     while isEquivalent && enumerator.MoveNext() do
       let kv = enumerator.Current
@@ -392,7 +392,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Remove any event subscriptions
       this.RemoveProps (this, this.Props)
 
-      this.Origin.ParentView |> Option.iter (fun v -> v.Remove this.View |> ignore)
+      this.Origin |> Origin.parentView |> Option.iter (fun v -> v.Remove this.View |> ignore)
 
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
@@ -410,7 +410,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   interface IViewTE with
     member this.InitializeTree origin  = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
-    member this.GetPath() = this.Origin.GetPath(this.Name)
+    member this.GetPath() = this.Origin |> Origin.getPath(this.Name)
     member this.Origin with get () = this.Origin and set v = this.Origin <- v
     member this.View = this.View
     member this.Name = this.Name

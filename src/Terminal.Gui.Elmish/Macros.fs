@@ -3,10 +3,10 @@ namespace Terminal.Gui.Elmish
 type MenuBarItemMacros internal (props: MenuBarItemProps) =
   member _.MenuItems(value: IMenuItemTerminalElement list) =
     let popoverMenu =
-      props.props.getOrInit PKey.MenuBarItem.PopoverMenu_element (fun () -> new PopoverMenuTerminalElement(Props())) :?> PopoverMenuTerminalElement
+      props.props |> Props.getOrInit PKey.MenuBarItem.PopoverMenu_element (fun () -> new PopoverMenuTerminalElement(Props())) :?> PopoverMenuTerminalElement
 
     let menu =
-      popoverMenu.Props.getOrInit PKey.PopoverMenu.Root_element (fun () -> new MenuTerminalElement(Props())) :?> MenuTerminalElement
+      popoverMenu.Props |> Props.getOrInit PKey.PopoverMenu.Root_element (fun () -> new MenuTerminalElement(Props())) :?> MenuTerminalElement
 
     value
     |> List.map TerminalElement.from

@@ -27,8 +27,8 @@ let ``ElmishComponent.Parent is set`` () =
   let elmishComponent = elmishComponent :?> ITerminalElementBase
   let parent = parent :?> ITerminalElementBase
 
-  Assert.That(elmishComponent.Origin.ParentTerminalElement, Is.Not.Null)
-  Assert.That(elmishComponent.Origin.ParentTerminalElement.Value.GetPath(), Is.EqualTo(parent.GetPath()))
+  Assert.That(elmishComponent.Origin |> Origin.parentTerminalElement, Is.Not.Null)
+  Assert.That((elmishComponent.Origin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(parent.GetPath()))
 
 [<Test>]
 let ``ElmishComponent.Origin should keep correct value between elmish loops`` () =
@@ -63,7 +63,7 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
         $"Component path should be consistent: expected %s{initialPath}, got %s{afterUpdatePath}")
 
       // Origin should point to the correct parent
-      Assert.That(afterUpdateOrigin.ParentTerminalElement.Value.GetPath(), Is.EqualTo(program.ViewTE.GetPath()),
+      Assert.That((afterUpdateOrigin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(program.ViewTE.GetPath()),
         "Origin.ParentTerminalElement should point to root")
     )
   }

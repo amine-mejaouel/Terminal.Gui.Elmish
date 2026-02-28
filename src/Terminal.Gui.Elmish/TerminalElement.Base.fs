@@ -145,14 +145,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   member val Props: Props = props with get, set
 
   member this.Children
-    with get() : List<TerminalElement> =
-      props
-      |> Props.tryFind PKey.View.children
-      |> Option.defaultValue (List<TerminalElement>())
-    and set value =
-      match props.tryFind PKey.View.children with
-      | Some _ -> failwith "Children property has already been set."
-      | None -> props.add(PKey.View.children, value)
+    with get() : List<TerminalElement> = props.Children
 
   abstract SubElements_PropKeys: SubElementPropKey<IViewTE> list
   default _.SubElements_PropKeys = []

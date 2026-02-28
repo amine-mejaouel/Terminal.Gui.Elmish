@@ -1,4 +1,4 @@
-namespace Terminal.Gui.Elmish
+namespace rec Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
@@ -265,7 +265,7 @@ module internal PropKey =
 
 /// Props object that is still under construction
 type internal Props() =
-  member val Children: List<ITerminalElement> = List<_>() with get, set
+  member val Children: List<TerminalElement> = List<_>() with get, set
   member val X: Pos option = None with get, set
   member val Y: Pos option = None with get, set
   member val XDelayed: TPos option = None with get, set
@@ -353,7 +353,7 @@ module internal Props =
 
 
 [<AutoOpen>]
-module rec Element =
+module Element =
 
   type internal Origin =
     | Root

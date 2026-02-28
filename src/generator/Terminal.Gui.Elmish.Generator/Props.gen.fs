@@ -3,19 +3,8 @@ module Terminal.Gui.Elmish.Generator.Props
 let opens = [
     "open System"
     "open System.Collections.Generic"
-    "open System.Text"
-    "open System.Drawing"
-    "open System.ComponentModel"
-    "open System.IO"
-    "open System.Collections.Specialized"
-    "open System.Globalization"
     "open Terminal.Gui.App"
-    "open Terminal.Gui.Drawing"
-    "open Terminal.Gui.Drivers"
     "open Terminal.Gui.Elmish"
-    "open Terminal.Gui.FileServices"
-    "open Terminal.Gui.Input"
-    "open Terminal.Gui.Text"
     "open Terminal.Gui.ViewBase"
     "open Terminal.Gui.Views"
   ]
@@ -25,13 +14,9 @@ let viewSpecificMembers =
     yield "  member val internal props = Props()"
     yield """
   member this.Children(children: ITerminalElement list) =
-    this.props.add (
-      PKey.View.children,
-      List<_>(
-        children
-        |> List.map (fun x -> TerminalElement.from x)
-      )
-    )
+    children
+    |> List.map (fun x -> TerminalElement.from x)
+    |> this.props.Children.AddRange
   """
     yield "  // Positions"
     yield "  member this.X (value: Pos) ="

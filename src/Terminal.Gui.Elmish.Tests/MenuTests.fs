@@ -35,8 +35,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
-    (menuBarElement.Props
-     |> Props.find PKey.MenuBar.children)
+    menuBarElement.Props.Children
       .Single()
       .GetViewBackedTE()
     :?> MenuBarItemTerminalElement
@@ -90,8 +89,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
 
   let menuBarItemElement =
-    (menuBarElement.Props
-     |> Props.find PKey.MenuBar.children)
+    menuBarElement.Props.Children
       .Single()
       .GetViewBackedTE()
     :?> MenuBarItemTerminalElement

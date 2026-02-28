@@ -2,19 +2,8 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open System.Text
-open System.Drawing
-open System.ComponentModel
-open System.IO
-open System.Collections.Specialized
-open System.Globalization
 open Terminal.Gui.App
-open Terminal.Gui.Drawing
-open Terminal.Gui.Drivers
 open Terminal.Gui.Elmish
-open Terminal.Gui.FileServices
-open Terminal.Gui.Input
-open Terminal.Gui.Text
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
@@ -22,13 +11,9 @@ type ViewProps() =
   member val internal props = Props()
 
   member this.Children(children: ITerminalElement list) =
-    this.props.add (
-      PKey.View.children,
-      List<_>(
-        children
-        |> List.map (fun x -> TerminalElement.from x)
-      )
-    )
+    children
+    |> List.map (fun x -> TerminalElement.from x)
+    |> this.props.Children.AddRange
   
   // Positions
   member this.X (value: Pos) =

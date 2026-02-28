@@ -58,9 +58,9 @@ module internal PKey =
     member val ViewportSettings: ISimplePropKey<Terminal.Gui.ViewBase.ViewportSettingsFlags> = PropKey.Create.simple "View.ViewportSettings"
     member val Visible: ISimplePropKey<bool> = PropKey.Create.simple "View.Visible"
     member val Width: ISimplePropKey<Terminal.Gui.ViewBase.Dim> = PropKey.Create.simple "View.Width"
-    member val X: ISimplePropKey<Pos> = PropKey.Create.simple "View.X"
+    member val X: IPosPropKey = PropKey.Create.pos "View.X_pos"
     member val X_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos "View.X_delayedPos"
-    member val Y: ISimplePropKey<Pos> = PropKey.Create.simple "View.Y"
+    member val Y: IPosPropKey = PropKey.Create.pos "View.Y_pos"
     member val Y_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos "View.Y_delayedPos"
 
     // Events

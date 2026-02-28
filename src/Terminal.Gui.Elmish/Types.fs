@@ -60,8 +60,14 @@ module internal PropKey =
     // TODO: same as ISingleElementPropKey, consider unifying
     abstract member viewKey: IPropKey
 
+  type IPosBasePropKey<'a> =
+    inherit IPropKey<'a>
+
+  type IPosPropKey =
+    inherit IPosBasePropKey<Pos>
+
   type IDelayedPosKey =
-    inherit IPropKey<TPos>
+    inherit IPosBasePropKey<TPos>
 
   type IEventPropKey<'a> =
     inherit IPropKey<'a>
@@ -213,6 +219,32 @@ module internal PropKey =
       member this.isSingleElementKey = false
       member this.viewKey = this.viewKey
 
+  [<CustomEquality; NoComparison>]
+  type private PosKey =
+    private
+    | Key of string
+    static member create(key: string) : IPosPropKey =
+      if not (key.EndsWith "_pos") then
+        failwith $"Invalid key: {key}"
+      else
+        Key key
+
+    member this.key =
+      let (Key key) = this
+      key
+
+    override this.GetHashCode() = this.key.GetHashCode()
+
+    override this.Equals(obj) =
+      match obj with
+      | :? IPropKey as x -> this.key.Equals(x.key)
+      | _ -> false
+
+    interface IPosPropKey with
+      member this.key = this.key
+      member this.isViewKey = false
+      member this.isSingleElementKey = false
+
   /// Mainly used for positions that are relative to other views.
   /// These positions take in a `ITerminalElement` as a parameter.
   /// Evaluating such positions will be done on the `View.OnDrawComplete` event.
@@ -251,6 +283,7 @@ module internal PropKey =
       static member simple key = SimplePropKey.create key
       static member event key = EventPropKey.create key
       static member view key = ViewPropKey.create key
+      static member pos key = PosKey.create key
       static member delayedPos key = DelayedPosKey.create key
 
   [<CustomEquality; NoComparison>]

@@ -145,19 +145,15 @@ type internal PositionService() =
     | TPos.Align (alignment, modes, groupId) -> applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.ApplyPos(viewTe: IViewTE) =
-    let xPos = viewTe.Props |> Props.tryFind PKey.View.X
-    let yPos = viewTe.Props |> Props.tryFind PKey.View.Y
-    let delayedXPos = viewTe.Props |> Props.tryFind PKey.View.X_delayedPos
-    let delayedYPos = viewTe.Props |> Props.tryFind PKey.View.Y_delayedPos
 
-    match xPos, delayedXPos with
-    | Some _, Some _ -> failwith "Cannot set both X and X_delayedPos on the same view."
+    match viewTe.Props.X, viewTe.Props.XDelayed with
+    | Some _, Some _ -> failwith "Cannot set both X and XDelayedPos on the same view."
     | Some xPos, None -> viewTe.View.X <- xPos
     | None, Some delayedXPos -> PositionService.Current.ApplyPos(viewTe, X, delayedXPos)
     | None, None -> viewTe.View.X <- 0
 
-    match yPos, delayedYPos with
-    | Some _, Some _ -> failwith "Cannot set both Y and Y_delayedPos on the same view."
+    match viewTe.Props.Y, viewTe.Props.YDelayed with
+    | Some _, Some _ -> failwith "Cannot set both Y and YDelayedPos on the same view."
     | Some yPos, None -> viewTe.View.Y <- yPos
     | None, Some delayedYPos -> PositionService.Current.ApplyPos(viewTe, Y, delayedYPos)
     | None, None -> viewTe.View.Y <- 0

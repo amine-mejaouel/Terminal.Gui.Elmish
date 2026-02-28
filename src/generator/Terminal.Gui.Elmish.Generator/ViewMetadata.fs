@@ -3,6 +3,7 @@ namespace Terminal.Gui.Elmish.Generator
 open System
 open System.Collections
 open System.Reflection
+open Terminal.Gui.ViewBase
 
 type PropertyMetadata =
   { PKey: string
@@ -31,6 +32,7 @@ type ViewMetadata =
   // TODO: Use this {} style to define the record type everywhere
   // because it allows adding members easily, in contrast to other styles that do not.
   { Type: Type
+    /// Properties that can be set via PropKeys (i.e. all read/write properties except X and Y)
     Properties: PropertyMetadata[]
     View_Typed_Properties: PropertyMetadata[]
     ViewsCollection_Typed_Properties: PropertyMetadata[]
@@ -104,9 +106,15 @@ module ViewMetadata =
       |> Array.map toPropertyMetadata
     let evts = events viewType |> Array.map toEventMetadata
 
+    // Exclude X and Y properties because they are handled separately in the PositionService.
+    let excludedProps = [|
+      nameof(Unchecked.defaultof<View>.X)
+      nameof(Unchecked.defaultof<View>.Y)
+    |]
+
     {
       Type = viewType
-      Properties = props |> Array.map toPropertyMetadata
+      Properties = props |> Array.map toPropertyMetadata |> Array.filter (fun p -> not (Array.contains p.PKey excludedProps))
       View_Typed_Properties = view_Typed_SubElementsProps
       ViewsCollection_Typed_Properties = viewsCollection_Typed_SubElementsProps
       Events = evts

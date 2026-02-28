@@ -2,19 +2,7 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open System.Collections.Specialized
-open System.Text
-open System.Drawing
-open System.ComponentModel
-open System.IO
-open System.Globalization
 open Terminal.Gui.App
-open Terminal.Gui.Drawing
-open Terminal.Gui.Drivers
-open Terminal.Gui.FileServices
-open Terminal.Gui.Input
-open Terminal.Gui.Text
-open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 [<RequireQualifiedAccess>]
@@ -58,10 +46,6 @@ module internal PKey =
     member val ViewportSettings: ISimplePropKey<Terminal.Gui.ViewBase.ViewportSettingsFlags> = PropKey.Create.simple "View.ViewportSettings"
     member val Visible: ISimplePropKey<bool> = PropKey.Create.simple "View.Visible"
     member val Width: ISimplePropKey<Terminal.Gui.ViewBase.Dim> = PropKey.Create.simple "View.Width"
-    member val X: IPosPropKey = PropKey.Create.pos "View.X_pos"
-    member val X_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos "View.X_delayedPos"
-    member val Y: IPosPropKey = PropKey.Create.pos "View.Y_pos"
-    member val Y_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos "View.Y_delayedPos"
 
     // Events
     member val Accepted: IEventPropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.Accepted_event"

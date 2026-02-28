@@ -27,7 +27,7 @@ let genPKeyClassDefinition (viewType: Type) =
 
         // Check if this is a delayed pos property
         if prop.PKey = "X" || prop.PKey = "Y" then
-          yield $"    member val {prop.PKey}: ISimplePropKey<Pos> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {prop.PKey}: IPosPropKey = PropKey.Create.pos \"{keyName}_pos\""
           yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
         else if prop.IsViewProperty then
           yield $"    member val {prop.PKey}: IViewPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""

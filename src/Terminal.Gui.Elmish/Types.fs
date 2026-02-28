@@ -361,23 +361,24 @@ module Element =
     | Child of Parent: IViewTE * Index: int
     | SubElement of Parent: IViewTE * Index: int option * Property: SubElementPropKey<IViewTE>
 
-    member this.ParentTerminalElement : TerminalElement option =
+  module internal Origin =
+    let parentTerminalElement this : TerminalElement option =
       match this with
       | Root -> None
       | Child (parent, _) -> Some (TerminalElement.ViewBackedTE parent)
       | SubElement(parent, _, _) -> Some (TerminalElement.ViewBackedTE parent)
       | ElmishComponent parent -> Some (TerminalElement.ElmishComponentTE parent)
 
-    member this.ParentView =
-      match this.ParentTerminalElement with
+    let parentView (this: Origin) =
+      match this |> parentTerminalElement with
       | Some (ElmishComponentTE parent) ->
-        parent.Origin.ParentView
+        parent.Origin |> Origin.parentView
       | Some (ViewBackedTE parent) -> Some parent.View
       | None -> None
 
-    member this.GetPath(name) =
+    let getPath name (this: Origin) =
       let parentPath =
-        match this.ParentTerminalElement with
+        match this |> parentTerminalElement with
         | Some parent -> parent.GetPath()
         | None -> "root"
 

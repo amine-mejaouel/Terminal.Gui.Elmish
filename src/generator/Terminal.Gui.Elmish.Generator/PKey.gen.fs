@@ -25,18 +25,18 @@ let genPKeyClassDefinition (viewType: Type) =
 
         // Check if this is a delayed pos property
         if prop.PKey = "X" || prop.PKey = "Y" then
-          yield $"    member val {prop.PKey}: IPosPropKey = PropKey.Create.pos \"{keyName}_pos\""
-          yield $"    member val {prop.PKey}_delayedPos: IDelayedPosKey = PropKey.Create.delayedPos \"{keyName}_delayedPos\""
+          yield $"    member val {prop.PKey}: TypedPropKey<Pos> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {prop.PKey}_delayedPos: TypedPropKey<TPos> = PropKey.Create.simple \"{keyName}_delayedPos\""
         else if prop.IsViewProperty then
-          yield $"    member val {prop.PKey}: IViewPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
+          yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
-          yield $"    member val {prop.PKey}_element: ISingleElementPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
+          yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
         // TODO: isEnumerableOfViews does not seem to be used anywhere
         else if prop.IsEnumerableOfViews then
-          yield $"    member val {prop.PKey}: IMultiViewPropKey<List<{prop.FSharpTypeName}>> = PropKey.Create.multiView \"{keyName}_views\""
-          yield $"    member val {prop.PKey}_elements: IMultiElementPropKey<System.Collections.Generic.List<IViewTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
+          yield $"    member val {prop.PKey}: TypedPropKey<List<{prop.FSharpTypeName}>> = PropKey.Create.view \"{keyName}_views\""
+          yield $"    member val {prop.PKey}_elements: TypedPropKey<System.Collections.Generic.List<IViewTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
         else
-          yield $"    member val {prop.PKey}: ISimplePropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 
     if view.Events.Length > 0 then
       if view.Properties.Length > 0 then yield ""
@@ -44,7 +44,7 @@ let genPKeyClassDefinition (viewType: Type) =
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
-        yield $"    member val {event.PKey}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
+        yield $"    member val {event.PKey}: TypedPropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
 
     yield ""
   }
@@ -76,14 +76,14 @@ let genInterfaceKeys (interfaceType: Type) =
       if i.Properties.Length > 0 then
         yield "    // Properties"
         for prop in i.Properties do
-          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: ISimplePropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: TypedPropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
           yield ""
 
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
           let handlerType = eventHandlerType event.EventInfo
-          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: IEventPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: TypedPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
           yield ""
     }
 

@@ -26,235 +26,109 @@ type TPos =
 [<AutoOpen>]
 module internal PropKey =
 
-  /// Inheritors should override both of `Equals` and `GetHashCode` efficiently because Props are held in a dictionary and accessed frequently
-  type IPropKey =
-    abstract member key: string
-    abstract member isViewKey: bool
-    abstract member isSingleElementKey: bool
-
-  type IPropKey<'a> =
-    inherit IPropKey
-
-  type ISimplePropKey<'a> =
-    inherit IPropKey<'a>
-
-  type IViewPropKey<'a> =
-    inherit IPropKey<'a>
-
-  type ISingleElementPropKey =
-    inherit IPropKey
-    abstract member viewKey: IPropKey
-
-  type ISingleElementPropKey<'a> =
-    inherit ISingleElementPropKey
-    inherit IPropKey<'a>
-
-  type IMultiElementPropKey<'a> =
-    inherit IPropKey<'a>
-    // TODO: same as ISingleElementPropKey, consider unifying
-    abstract member viewKey: IPropKey
-
-  type IEventPropKey<'a> =
-    inherit IPropKey<'a>
-
-  /// Represents a property in a Terminal.Gui View
-  [<CustomEquality; NoComparison>]
-  type private SimplePropKey<'a> =
-    private
-    | Key of string
-    static member create<'a>(key: string) : ISimplePropKey<'a> =
-      if
-        key.EndsWith "_element"
-        || key.EndsWith "_elements"
-        || key.EndsWith "_view"
-      then
-        failwith $"Invalid key: {key}"
-      else
-        Key key
-
-    static member map(value: SimplePropKey<'a>) : SimplePropKey<'b> = Key value.key
+  [<RequireQualifiedAccess; CustomEquality; NoComparison>]
+  type PropKey =
+    | Simple of key: string
+    | View of key: string
+    | Event of key: string
+    | SingleElement of key: string
+    | MultiElement of key: string
 
     member this.key =
-      let (Key key) = this
-      key
+      match this with
+      | PropKey.Simple k | PropKey.View k | PropKey.Event k
+      | PropKey.SingleElement k | PropKey.MultiElement k -> k
 
-    override this.GetHashCode() = this.key.GetHashCode()
+    member this.isViewKey =
+      match this with PropKey.View _ -> true | _ -> false
 
-    override this.Equals(obj) =
-      match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
-      | _ -> false
-
-    interface ISimplePropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-      member this.isSingleElementKey = false
-
-  [<CustomEquality; NoComparison>]
-  type private ViewPropKey<'a> =
-    private
-    | Key of string
-    static member create<'a>(key: string) : IViewPropKey<'a> =
-      if not (key.EndsWith "_view") then
-        failwith $"Invalid key: {key}"
-      else
-        Key key
-
-    static member map(value: ViewPropKey<'a>) : ViewPropKey<'b> = Key value.key
-
-    member this.key =
-      let (Key key) = this
-      key
-
-    override this.GetHashCode() = this.key.GetHashCode()
-
-    override this.Equals(obj) =
-      match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
-      | _ -> false
-
-    interface IViewPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = true
-      member this.isSingleElementKey = false
-
-  [<CustomEquality; NoComparison>]
-  type private EventPropKey<'a> =
-    private
-    | Key of string
-    static member create<'a>(key: string) : IEventPropKey<'a> =
-      if not (key.EndsWith "_event") then
-        failwith $"Invalid key: {key}"
-      else
-        Key key
-
-    member this.key =
-      let (Key key) = this
-      key
-
-    override this.GetHashCode() = this.key.GetHashCode()
-
-    override this.Equals(obj) =
-      match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
-      | _ -> false
-
-    interface IEventPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-      member this.isSingleElementKey = false
-
-  [<CustomEquality; NoComparison>]
-  type private SingleElementPropKey<'a> =
-    private
-    | Key of string
-    static member create<'a>(key: string) : ISingleElementPropKey<'a> =
-      if key.EndsWith "_element" then
-        Key key
-      else
-        failwith $"Invalid key: {key}"
-
-    member this.key =
-      let (Key key) = this
-      key
+    member this.isSingleElementKey =
+      match this with PropKey.SingleElement _ -> true | _ -> false
 
     member this.viewKey =
-      ViewPropKey.create (this.key.Replace("_element", "_view")) :> IPropKey
-
-    override this.GetHashCode() = this.key.GetHashCode()
+      match this with
+      | PropKey.SingleElement k -> PropKey.View (k.Replace("_element", "_view"))
+      | PropKey.MultiElement k -> PropKey.View (k.Replace("_elements", "_view"))
+      | _ -> failwith $"viewKey is only valid for SingleElement and MultiElement PropKeys, got: {this}"
 
     override this.Equals(obj) =
       match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
+      | :? PropKey as other -> this.key = other.key
       | _ -> false
 
-    interface ISingleElementPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-      member this.isSingleElementKey = true
-      member this.viewKey = this.viewKey
+    override this.GetHashCode() = this.key.GetHashCode()
 
   [<CustomEquality; NoComparison>]
-  type private MultiElementPropKey<'a> =
+  type TypedPropKey<'a> =
     private
-    | Key of string
-    static member create<'a>(key: string) : IMultiElementPropKey<'a> =
-      if key.EndsWith "_elements" then
-        Key key
-      else
-        failwith $"Invalid key: {key}"
-
-    member this.key =
-      let (Key key) = this
-      key
-
-    member this.viewKey =
-      ViewPropKey.create (this.key.Replace("_elements", "_view")) :> IPropKey
-
-    override this.GetHashCode() = this.key.GetHashCode()
-
+    | TypedKey of PropKey
+    member this.Untyped = let (TypedKey k) = this in k
+    member this.key = this.Untyped.key
     override this.Equals(obj) =
       match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
+      | :? TypedPropKey<'a> as other -> this.Untyped = other.Untyped
       | _ -> false
-
-    interface IMultiElementPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-      member this.isSingleElementKey = false
-      member this.viewKey = this.viewKey
+    override this.GetHashCode() = this.Untyped.GetHashCode()
 
   [<CustomEquality; NoComparison>]
   type internal SubElementPropKey<'a> =
-    | SingleElementKey of ISingleElementPropKey<'a>
-    | MultiElementKey of IMultiElementPropKey<'a>
+    | SingleElementKey of TypedPropKey<'a>
+    | MultiElementKey of TypedPropKey<'a>
 
-    member this.key =
+    member this.typed =
       match this with
-      | SingleElementKey key -> key.key
-      | MultiElementKey key -> key.key
+      | SingleElementKey k | MultiElementKey k -> k
+
+    member this.untyped = this.typed.Untyped
+    member this.key = this.untyped.key
 
     static member createSingleElementKey<'a>(key: string) : SubElementPropKey<'a> =
-      SingleElementKey(SingleElementPropKey.create key)
+      if key.EndsWith "_element" then
+        SingleElementKey (TypedKey (PropKey.SingleElement key))
+      else
+        failwith $"Invalid single-element key: {key}"
 
     static member createMultiElementKey<'a>(key: string) : SubElementPropKey<'a> =
-      MultiElementKey(MultiElementPropKey.create key)
+      if key.EndsWith "_elements" then
+        MultiElementKey (TypedKey (PropKey.MultiElement key))
+      else
+        failwith $"Invalid multi-element key: {key}"
 
-    static member from(singleElementKey: ISingleElementPropKey<'a>) : SubElementPropKey<'b> =
-      SubElementPropKey<'b>.createSingleElementKey (singleElementKey :> IPropKey<'a>).key
-
-    static member from(multiElementKey: IMultiElementPropKey<'a>) : SubElementPropKey<'b> =
-      SubElementPropKey<'b>.createMultiElementKey (multiElementKey :> IPropKey<'a>).key
+    static member from(key: TypedPropKey<'a>) : SubElementPropKey<'b> =
+      match key.Untyped with
+      | PropKey.SingleElement k -> SubElementPropKey<'b>.createSingleElementKey k
+      | PropKey.MultiElement k -> SubElementPropKey<'b>.createMultiElementKey k
+      | _ -> failwith $"SubElementPropKey.from: expected SingleElement or MultiElement, got {key.Untyped}"
 
     override this.GetHashCode() = this.key.GetHashCode()
 
     override this.Equals(obj) =
       match obj with
-      | :? IPropKey as x -> this.key.Equals(x.key)
+      | :? SubElementPropKey<'a> as x -> this.key = x.key
+      | :? PropKey as x -> this.key = x.key
       | _ -> false
 
-    member this.viewKey =
-      match this with
-      | SingleElementKey key -> key.viewKey
-      | MultiElementKey key -> key.viewKey
-
-    interface IPropKey<'a> with
-      member this.key = this.key
-      member this.isViewKey = false
-
-      member this.isSingleElementKey =
-        match this with
-        | SingleElementKey _ -> true
-        | MultiElementKey _ -> false
+    member this.viewKey = this.untyped.viewKey
 
   [<RequireQualifiedAccess>]
   module PropKey =
     type Create =
-      static member singleElement key = SingleElementPropKey.create key
-      static member multiElement key = MultiElementPropKey.create key
-      static member simple key = SimplePropKey.create key
-      static member event key = EventPropKey.create key
-      static member view key = ViewPropKey.create key
+      static member singleElement<'a>(key: string) : TypedPropKey<'a> =
+        if key.EndsWith "_element" then TypedKey (PropKey.SingleElement key)
+        else failwith $"Invalid key: {key}"
+      static member multiElement<'a>(key: string) : TypedPropKey<'a> =
+        if key.EndsWith "_elements" then TypedKey (PropKey.MultiElement key)
+        else failwith $"Invalid key: {key}"
+      static member simple<'a>(key: string) : TypedPropKey<'a> =
+        if key.EndsWith "_element" || key.EndsWith "_elements" || key.EndsWith "_view" then
+          failwith $"Invalid key: {key}"
+        else TypedKey (PropKey.Simple key)
+      static member event<'a>(key: string) : TypedPropKey<'a> =
+        if not (key.EndsWith "_event") then failwith $"Invalid key: {key}"
+        else TypedKey (PropKey.Event key)
+      static member view<'a>(key: string) : TypedPropKey<'a> =
+        if not (key.EndsWith "_view") then failwith $"Invalid key: {key}"
+        else TypedKey (PropKey.View key)
 
 /// Props object that is still under construction
 type internal Props() =
@@ -264,7 +138,7 @@ type internal Props() =
   member val XDelayed: TPos option = None with get, set
   member val YDelayed: TPos option = None with get, set
   /// Include all other properties that are not present as explicit members of Props.
-  member val Props = Dictionary<IPropKey, _>() with get
+  member val Props = Dictionary<PropKey, obj>() with get
 
 and internal ITerminalElementBase =
   inherit ITerminalElement
@@ -337,22 +211,22 @@ type PosAxis =
   | Y
 
 module internal Props =
-  let addNonTyped<'a>(k: IPropKey, v: 'a) (this: Props) = this.Props.Add(k, v :> obj)
+  let addNonTyped (k: PropKey) (v: obj) (this: Props) = this.Props.Add(k, v)
 
-  let add<'a>(k: IPropKey<'a>, v: 'a) (this: Props) = this |> addNonTyped(k,v)
+  let add<'a>(k: TypedPropKey<'a>, v: 'a) (this: Props) = this |> addNonTyped k.Untyped (v :> obj)
 
-  let getOrInit<'a> (k: IPropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
-    match this.Props.TryGetValue k with
+  let getOrInit<'a> (k: TypedPropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
+    match this.Props.TryGetValue k.Untyped with
     | true, value -> value |> unbox<'a>
     | false, _ ->
       let value = init ()
-      this.Props[k] <- value :> obj
+      this.Props[k.Untyped] <- value :> obj
       value
 
-  let remove (k: IPropKey) (this: Props) = this.Props.Remove k |> ignore
+  let remove (k: PropKey) (this: Props) = this.Props.Remove k |> ignore
 
-  let tryFind (key: IPropKey<'a>) (this: Props) =
-    match this.Props.TryGetValue key with
+  let tryFind (key: TypedPropKey<'a>) (this: Props) =
+    match this.Props.TryGetValue key.Untyped with
     | true, v -> v |> unbox<'a> |> Some
     | _, _ -> None
 
@@ -364,9 +238,9 @@ module internal Props =
 
     for kv in props.Props do
       if predicate kv then
-        first |> addNonTyped (kv.Key, kv.Value)
+        first |> addNonTyped kv.Key kv.Value
       else
-        second |> addNonTyped (kv.Key, kv.Value)
+        second |> addNonTyped kv.Key kv.Value
 
     first, second
 
@@ -375,11 +249,11 @@ module internal Props =
 
     for kv in props.Props do
       if predicate kv then
-        result |> addNonTyped (kv.Key, kv.Value)
+        result |> addNonTyped kv.Key kv.Value
 
     result
 
-  let tryFindByRawKey<'a> key (props: Props) =
+  let tryFindByRawKey<'a> (key: PropKey) (props: Props) =
     match props.Props.TryGetValue key with
     | true, v -> v |> unbox<'a> |> Some
     | _, _ -> None
@@ -389,21 +263,20 @@ module internal Props =
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  let tryFindWithDefault (key: ISimplePropKey<'a>) defaultValue props =
+  let tryFindWithDefault (key: TypedPropKey<'a>) defaultValue props =
     props
     |> tryFind key
     |> Option.defaultValue defaultValue
 
-  let rawKeyExists k (p: Props) = p.Props.ContainsKey k
+  let rawKeyExists (k: PropKey) (p: Props) = p.Props.ContainsKey k
 
-  let exists (k: IPropKey<'a>) (p: Props) = p.Props.ContainsKey k
+  let exists (k: TypedPropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
 
   let keys (props: Props) = props.Props.Keys |> Seq.map id
 
   let filterSingleElementKeys (props: Props) =
     props.Props.Keys
-    |> Seq.filter _.isSingleElementKey
-    |> Seq.map (fun x -> x :?> ISingleElementPropKey)
+    |> Seq.choose (function | PropKey.SingleElement _ as k -> Some k | _ -> None)
 
   let iter iteration (props: Props) = props.Props |> Seq.iter iteration
 

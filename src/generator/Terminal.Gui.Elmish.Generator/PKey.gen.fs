@@ -24,10 +24,7 @@ let genPKeyClassDefinition (viewType: Type) =
         let keyName = $"{className}.{prop.PKey}"
 
         // Check if this is a delayed pos property
-        if prop.PKey = "X" || prop.PKey = "Y" then
-          yield $"    member val {prop.PKey}: TypedPropKey<Pos> = PropKey.Create.simple \"{keyName}\""
-          yield $"    member val {prop.PKey}_delayedPos: TypedPropKey<TPos> = PropKey.Create.simple \"{keyName}_delayedPos\""
-        else if prop.IsViewProperty then
+        if prop.IsViewProperty then
           yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""

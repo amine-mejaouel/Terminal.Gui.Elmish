@@ -26,36 +26,35 @@ type TPos =
 [<AutoOpen>]
 module internal PropKey =
 
-  [<RequireQualifiedAccess; CustomEquality; NoComparison>]
-  type PropKey =
-    | Simple of key: string
-    | View of key: string
-    | Event of key: string
-    | SubElement of key: string
+  [<RequireQualifiedAccess>]
+  type PropKeyKind =
+    | Simple
+    | View
+    | Event
+    | SubElement
 
-    member this.key =
-      match this with
-      | PropKey.Simple k | PropKey.View k | PropKey.Event k
-      | PropKey.SubElement k -> k
+  [<CustomEquality; NoComparison>]
+  type PropKey =
+    { Kind: PropKeyKind; Key: string }
 
     member this.viewKey =
-      match this with
-      | PropKey.SubElement k -> PropKey.View (k.Replace("_element", "_view"))
+      match this.Kind with
+      | PropKeyKind.SubElement -> { Kind = PropKeyKind.View; Key = this.Key.Replace("_element", "_view") }
       | _ -> failwith $"viewKey is only valid for SubElement PropKeys, got: {this}"
 
     override this.Equals(obj) =
       match obj with
-      | :? PropKey as other -> this.key = other.key
+      | :? PropKey as other -> this.Key = other.Key
       | _ -> false
 
-    override this.GetHashCode() = this.key.GetHashCode()
+    override this.GetHashCode() = this.Key.GetHashCode()
 
   [<CustomEquality; NoComparison>]
   type PropKey<'a> =
     private
     | TypedKey of PropKey
     member this.Untyped = let (TypedKey k) = this in k
-    member this.key = this.Untyped.key
+    member this.key = this.Untyped.Key
     override this.Equals(obj) =
       match obj with
       | :? PropKey<'a> as other -> this.Untyped = other.Untyped
@@ -70,17 +69,17 @@ module internal PropKey =
       let (SubElementKey k) = this in k
 
     member this.untyped = this.typed.Untyped
-    member this.key = this.untyped.key
+    member this.key = this.untyped.Key
 
     static member createSubElementKey<'a>(key: string) : SubElementPropKey<'a> =
       if key.EndsWith "_element" then
-        SubElementKey (TypedKey (PropKey.SubElement key))
+        SubElementKey (TypedKey { Kind = PropKeyKind.SubElement; Key = key })
       else
         failwith $"Invalid single-element key: {key}"
 
     static member from(key: PropKey<'a>) : SubElementPropKey<'b> =
-      match key.Untyped with
-      | PropKey.SubElement k -> SubElementPropKey<'b>.createSubElementKey k
+      match key.Untyped.Kind with
+      | PropKeyKind.SubElement -> SubElementPropKey<'b>.createSubElementKey key.Untyped.Key
       | _ -> failwith $"SubElementPropKey.from: expected SubElement, got {key.Untyped}"
 
     override this.GetHashCode() = this.key.GetHashCode()
@@ -88,7 +87,7 @@ module internal PropKey =
     override this.Equals(obj) =
       match obj with
       | :? SubElementPropKey<'a> as x -> this.key = x.key
-      | :? PropKey as x -> this.key = x.key
+      | :? PropKey as x -> this.key = x.Key
       | _ -> false
 
     member this.viewKey = this.untyped.viewKey
@@ -97,18 +96,18 @@ module internal PropKey =
   module PropKey =
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
-        if key.EndsWith "_element" then TypedKey (PropKey.SubElement key)
+        if key.EndsWith "_element" then TypedKey { Kind = PropKeyKind.SubElement; Key = key }
         else failwith $"Invalid key: {key}"
       static member simple<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
-        else TypedKey (PropKey.Simple key)
+        else TypedKey { Kind = PropKeyKind.Simple; Key = key }
       static member event<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_event") then failwith $"Invalid key: {key}"
-        else TypedKey (PropKey.Event key)
+        else TypedKey { Kind = PropKeyKind.Event; Key = key }
       static member view<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_view") then failwith $"Invalid key: {key}"
-        else TypedKey (PropKey.View key)
+        else TypedKey { Kind = PropKeyKind.View; Key = key }
 
 /// Props object that is still under construction
 type internal Props() =
@@ -255,7 +254,7 @@ module internal Props =
 
   let filterSubElementKeys (props: Props) =
     props.Props.Keys
-    |> Seq.choose (function | PropKey.SubElement _ as k -> Some k | _ -> None)
+    |> Seq.choose (fun k -> if k.Kind = PropKeyKind.SubElement then Some k else None)
 
   let iter iteration (props: Props) = props.Props |> Seq.iter iteration
 

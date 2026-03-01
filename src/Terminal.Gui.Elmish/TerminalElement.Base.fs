@@ -321,11 +321,11 @@ type internal ViewBackedTerminalElement(props: Props) =
     while isEquivalent && enumerator.MoveNext() do
       let kv = enumerator.Current
 
-      if kv.Key.key = "children" then // TODO: for now children comparison is not yet implemented
+      if kv.Key.Key = "children" then // TODO: for now children comparison is not yet implemented
         ()
-      elif kv.Key.IsView then
+      elif kv.Key.Kind = PropKeyKind.View then
         ()
-      elif kv.Key.IsSubElement then
+      elif kv.Key.Kind = PropKeyKind.SubElement then
         let curElement =
           kv.Value :?> ViewBackedTerminalElement
 
@@ -365,9 +365,9 @@ type internal ViewBackedTerminalElement(props: Props) =
       curProps
       |> Props.partition (fun kv ->
         match remainingOldProps |> Props.tryFindByRawKey kv.Key with
-        | _ when kv.Key.key = "children" -> // Here we always consider the 'children' unchanged
+        | _ when kv.Key.Key = "children" -> // Here we always consider the 'children' unchanged
           true
-        | Some(v: obj) when kv.Key.IsSubElement ->
+        | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubElement ->
           let curElement =
             kv.Value :?> ViewBackedTerminalElement
 

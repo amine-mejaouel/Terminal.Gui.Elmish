@@ -110,7 +110,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       let childNodes =
         match curNode.TerminalElement with
         | ElmishComponentTE _ -> []
-        | ViewBackedTE te ->
+        | ViewTE te ->
           te.Children
           |> Seq.mapi (fun i e -> {
             TerminalElement = e
@@ -177,7 +177,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     let traverse (node: TreeNode) =
 
       match node.TerminalElement with
-      | ViewBackedTE te ->
+      | ViewTE te ->
         te.Origin <- node.Origin
         (te :?> ViewBackedTerminalElement).InitializeView ()
       | ElmishComponentTE ce ->
@@ -191,7 +191,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Here, the "children" views are added to their parent
       match node.TerminalElement with
       | ElmishComponentTE _ -> ()
-      | ViewBackedTE te ->
+      | ViewTE te ->
         if te.SetAsChildOfParentView then
           te.Origin |> Origin.parentView
           |> Option.iter (fun v -> v.Add te.View |> ignore)

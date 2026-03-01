@@ -162,18 +162,18 @@ and internal IElmishComponentTE =
   abstract Reuse: prev: IElmishComponentTE -> unit
 
 and internal TerminalElement =
-  | ViewBackedTE of IViewTE
+  | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 
   static member from (te: ITerminalElement) =
     match te with
-    | :? IViewTE as viewTE -> ViewBackedTE viewTE
+    | :? IViewTE as viewTE -> ViewTE viewTE
     | :? IElmishComponentTE as elmishComponentTE -> ElmishComponentTE elmishComponentTE
     | _ -> failwith "Invalid terminal element"
 
   member internal this.TerminalElementBase =
     match this with
-    | ViewBackedTE viewTE -> viewTE :> ITerminalElementBase
+    | ViewTE viewTE -> viewTE :> ITerminalElementBase
     | ElmishComponentTE elmishComponentTE -> elmishComponentTE :> ITerminalElementBase
 
   member this.Name = this.TerminalElementBase.Name
@@ -280,15 +280,15 @@ module Element =
     let parentTerminalElement this : TerminalElement option =
       match this with
       | Root -> None
-      | Child (parent, _) -> Some (TerminalElement.ViewBackedTE parent)
-      | SubElement(parent, _, _) -> Some (TerminalElement.ViewBackedTE parent)
+      | Child (parent, _) -> Some (TerminalElement.ViewTE parent)
+      | SubElement(parent, _, _) -> Some (TerminalElement.ViewTE parent)
       | ElmishComponent parent -> Some (TerminalElement.ElmishComponentTE parent)
 
     let rec parentView (this: Origin) =
       match this |> parentTerminalElement with
       | Some (ElmishComponentTE parent) ->
         parent.Origin |> parentView
-      | Some (ViewBackedTE parent) -> Some parent.View
+      | Some (ViewTE parent) -> Some parent.View
       | None -> None
 
     let getPath name (this: Origin) =

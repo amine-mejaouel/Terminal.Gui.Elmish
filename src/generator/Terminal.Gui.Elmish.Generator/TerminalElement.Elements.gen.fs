@@ -78,7 +78,7 @@ let removePropsCode (view: ViewMetadata) =
       if view.Events.Length > 0 then
         yield "    // Events"
       for event in view.Events do
-        yield $"    terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey}).Untyped"
+        yield $"    terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey})"
     }
 
 let setAsChildOfParentView (viewType: Type) =

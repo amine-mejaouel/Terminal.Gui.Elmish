@@ -25,11 +25,11 @@ let genPKeyClassDefinition (viewType: Type) =
 
         // Check if this is a delayed pos property
         if prop.IsViewProperty then
-          yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
+          yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
-          yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
+          yield $"    member val {prop.PKey}_element: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
         else
-          yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
+          yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 
     if view.Events.Length > 0 then
       if view.Properties.Length > 0 then yield ""
@@ -37,7 +37,7 @@ let genPKeyClassDefinition (viewType: Type) =
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
-        yield $"    member val {event.PKey}: TypedPropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
+        yield $"    member val {event.PKey}: PropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
 
     yield ""
   }
@@ -69,14 +69,14 @@ let genInterfaceKeys (interfaceType: Type) =
       if i.Properties.Length > 0 then
         yield "    // Properties"
         for prop in i.Properties do
-          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: TypedPropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
           yield ""
 
       if i.Events.Length > 0 then
         yield "    // Events"
         for event in i.Events do
           let handlerType = eventHandlerType event.EventInfo
-          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: TypedPropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
           yield ""
     }
 

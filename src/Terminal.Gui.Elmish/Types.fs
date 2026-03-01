@@ -193,7 +193,6 @@ and internal TerminalElement =
     member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
-
 and internal Origin =
   | Root
   | ElmishComponent of Parent: IElmishComponentTE
@@ -273,7 +272,6 @@ module internal Props =
     |> Seq.choose (function | PropKey.SingleElement _ as k -> Some k | _ -> None)
 
   let iter iteration (props: Props) = props.Props |> Seq.iter iteration
-
 
 [<AutoOpen>]
 module Element =

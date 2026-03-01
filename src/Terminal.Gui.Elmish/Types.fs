@@ -39,12 +39,6 @@ module internal PropKey =
       | PropKey.Simple k | PropKey.View k | PropKey.Event k
       | PropKey.SingleElement k | PropKey.MultiElement k -> k
 
-    member this.isViewKey =
-      match this with PropKey.View _ -> true | _ -> false
-
-    member this.isSingleElementKey =
-      match this with PropKey.SingleElement _ -> true | _ -> false
-
     member this.viewKey =
       match this with
       | PropKey.SingleElement k -> PropKey.View (k.Replace("_element", "_view"))

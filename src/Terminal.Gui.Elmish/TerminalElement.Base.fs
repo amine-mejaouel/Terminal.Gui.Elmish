@@ -320,9 +320,9 @@ type internal ViewBackedTerminalElement(props: Props) =
 
       if kv.Key.key = "children" then // TODO: for now children comparison is not yet implemented
         ()
-      elif kv.Key.isViewKey then
+      elif kv.Key.IsView then
         ()
-      elif kv.Key.isSingleElementKey then
+      elif kv.Key.IsSingleElement then
         let curElement =
           kv.Value :?> ViewBackedTerminalElement
 
@@ -364,7 +364,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         match remainingOldProps |> Props.tryFindByRawKey kv.Key with
         | _ when kv.Key.key = "children" -> // Here we always consider the 'children' unchanged
           true
-        | Some(v: obj) when kv.Key.isSingleElementKey ->
+        | Some(v: obj) when kv.Key.IsSingleElement ->
           let curElement =
             kv.Value :?> ViewBackedTerminalElement
 

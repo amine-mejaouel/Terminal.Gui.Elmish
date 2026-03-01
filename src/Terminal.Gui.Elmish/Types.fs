@@ -52,8 +52,8 @@ module internal PropKey =
   [<CustomEquality; NoComparison>]
   type PropKey<'a> =
     private
-    | TypedKey of PropKey
-    member this.Untyped = let (TypedKey k) = this in k
+    | PropKey of PropKey
+    member this.Untyped = let (PropKey k) = this in k
     member this.key = this.Untyped.Key
     override this.Equals(obj) =
       match obj with
@@ -73,7 +73,7 @@ module internal PropKey =
 
     static member createSubElementKey<'a>(key: string) : SubElementPropKey<'a> =
       if key.EndsWith "_element" then
-        SubElementKey (TypedKey { Kind = PropKeyKind.SubElement; Key = key })
+        SubElementKey (PropKey { Kind = PropKeyKind.SubElement; Key = key })
       else
         failwith $"Invalid single-element key: {key}"
 
@@ -96,18 +96,18 @@ module internal PropKey =
   module PropKey =
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
-        if key.EndsWith "_element" then TypedKey { Kind = PropKeyKind.SubElement; Key = key }
+        if key.EndsWith "_element" then PropKey { Kind = PropKeyKind.SubElement; Key = key }
         else failwith $"Invalid key: {key}"
       static member simple<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
-        else TypedKey { Kind = PropKeyKind.Simple; Key = key }
+        else PropKey { Kind = PropKeyKind.Simple; Key = key }
       static member event<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_event") then failwith $"Invalid key: {key}"
-        else TypedKey { Kind = PropKeyKind.Event; Key = key }
+        else PropKey { Kind = PropKeyKind.Event; Key = key }
       static member view<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_view") then failwith $"Invalid key: {key}"
-        else TypedKey { Kind = PropKeyKind.View; Key = key }
+        else PropKey { Kind = PropKeyKind.View; Key = key }
 
 /// Props object that is still under construction
 type internal Props() =

@@ -66,22 +66,22 @@ type internal EventHandlerRegistrar() =
     trackedHandlers[pkey] <- handler
     addHandler handler
 
-  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
+  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action args)
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: TypedPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
+  member this.SetEventHandler (pkey: PropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
     let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
@@ -234,28 +234,28 @@ type internal ViewBackedTerminalElement(props: Props) =
           | _ -> failwith "Out of range subElement type"
     }
 
-  member this.TrySetEventHandler<'TEventArgs> (k: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+  member this.TrySetEventHandler<'TEventArgs> (k: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
     this.TryRemoveEventHandler k.Untyped
 
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TrySetEventHandler (k: TypedPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+  member this.TrySetEventHandler (k: PropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
 
     this.TryRemoveEventHandler k.Untyped
 
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TrySetEventHandler (k: TypedPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+  member this.TrySetEventHandler (k: PropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
 
     this.TryRemoveEventHandler k.Untyped
 
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TryRemoveEventHandler (k: TypedPropKey<_>) =
+  member this.TryRemoveEventHandler (k: PropKey<_>) =
     this.EventRegistrar.RemoveHandler k.Untyped
 
   member private this.TryRemoveEventHandler (k: PropKey) =

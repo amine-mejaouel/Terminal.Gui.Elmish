@@ -51,20 +51,20 @@ module internal PropKey =
     override this.GetHashCode() = this.key.GetHashCode()
 
   [<CustomEquality; NoComparison>]
-  type TypedPropKey<'a> =
+  type PropKey<'a> =
     private
     | TypedKey of PropKey
     member this.Untyped = let (TypedKey k) = this in k
     member this.key = this.Untyped.key
     override this.Equals(obj) =
       match obj with
-      | :? TypedPropKey<'a> as other -> this.Untyped = other.Untyped
+      | :? PropKey<'a> as other -> this.Untyped = other.Untyped
       | _ -> false
     override this.GetHashCode() = this.Untyped.GetHashCode()
 
   [<CustomEquality; NoComparison>]
   type internal SubElementPropKey<'a> =
-    | SubElementKey of TypedPropKey<'a>
+    | SubElementKey of PropKey<'a>
 
     member this.typed =
       let (SubElementKey k) = this in k
@@ -78,7 +78,7 @@ module internal PropKey =
       else
         failwith $"Invalid single-element key: {key}"
 
-    static member from(key: TypedPropKey<'a>) : SubElementPropKey<'b> =
+    static member from(key: PropKey<'a>) : SubElementPropKey<'b> =
       match key.Untyped with
       | PropKey.SubElement k -> SubElementPropKey<'b>.createSubElementKey k
       | _ -> failwith $"SubElementPropKey.from: expected SubElement, got {key.Untyped}"
@@ -96,17 +96,17 @@ module internal PropKey =
   [<RequireQualifiedAccess>]
   module PropKey =
     type Create =
-      static member subElement<'a>(key: string) : TypedPropKey<'a> =
+      static member subElement<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" then TypedKey (PropKey.SubElement key)
         else failwith $"Invalid key: {key}"
-      static member simple<'a>(key: string) : TypedPropKey<'a> =
+      static member simple<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
         else TypedKey (PropKey.Simple key)
-      static member event<'a>(key: string) : TypedPropKey<'a> =
+      static member event<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_event") then failwith $"Invalid key: {key}"
         else TypedKey (PropKey.Event key)
-      static member view<'a>(key: string) : TypedPropKey<'a> =
+      static member view<'a>(key: string) : PropKey<'a> =
         if not (key.EndsWith "_view") then failwith $"Invalid key: {key}"
         else TypedKey (PropKey.View key)
 
@@ -192,9 +192,9 @@ type PosAxis =
 module internal Props =
   let addNonTyped (k: PropKey) (v: obj) (this: Props) = this.Props.Add(k, v)
 
-  let add<'a>(k: TypedPropKey<'a>, v: 'a) (this: Props) = this |> addNonTyped k.Untyped (v :> obj)
+  let add<'a>(k: PropKey<'a>, v: 'a) (this: Props) = this |> addNonTyped k.Untyped (v :> obj)
 
-  let getOrInit<'a> (k: TypedPropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
+  let getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
     match this.Props.TryGetValue k.Untyped with
     | true, value -> value |> unbox<'a>
     | false, _ ->
@@ -204,7 +204,7 @@ module internal Props =
 
   let remove (k: PropKey) (this: Props) = this.Props.Remove k |> ignore
 
-  let tryFind (key: TypedPropKey<'a>) (this: Props) =
+  let tryFind (key: PropKey<'a>) (this: Props) =
     match this.Props.TryGetValue key.Untyped with
     | true, v -> v |> unbox<'a> |> Some
     | _, _ -> None
@@ -242,14 +242,14 @@ module internal Props =
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  let tryFindWithDefault (key: TypedPropKey<'a>) defaultValue props =
+  let tryFindWithDefault (key: PropKey<'a>) defaultValue props =
     props
     |> tryFind key
     |> Option.defaultValue defaultValue
 
   let rawKeyExists (k: PropKey) (p: Props) = p.Props.ContainsKey k
 
-  let exists (k: TypedPropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
+  let exists (k: PropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
 
   let keys (props: Props) = props.Props.Keys |> Seq.map id
 

@@ -447,62 +447,62 @@ type internal ViewTerminalElement(props: Props) =
         view.Width <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.View.Accepted
-    terminalElement.TryRemoveEventHandler PKey.View.Accepting
-    terminalElement.TryRemoveEventHandler PKey.View.Activating
-    terminalElement.TryRemoveEventHandler PKey.View.AdvancingFocus
-    terminalElement.TryRemoveEventHandler PKey.View.BorderStyleChanged
-    terminalElement.TryRemoveEventHandler PKey.View.CanFocusChanged
-    terminalElement.TryRemoveEventHandler PKey.View.ClearedViewport
-    terminalElement.TryRemoveEventHandler PKey.View.ClearingViewport
-    terminalElement.TryRemoveEventHandler PKey.View.CommandNotBound
-    terminalElement.TryRemoveEventHandler PKey.View.ContentSizeChanged
-    terminalElement.TryRemoveEventHandler PKey.View.ContentSizeChanging
-    terminalElement.TryRemoveEventHandler PKey.View.Disposing
-    terminalElement.TryRemoveEventHandler PKey.View.DrawComplete
-    terminalElement.TryRemoveEventHandler PKey.View.DrawingContent
-    terminalElement.TryRemoveEventHandler PKey.View.DrawingSubViews
-    terminalElement.TryRemoveEventHandler PKey.View.DrawingText
-    terminalElement.TryRemoveEventHandler PKey.View.DrewText
-    terminalElement.TryRemoveEventHandler PKey.View.EnabledChanged
-    terminalElement.TryRemoveEventHandler PKey.View.FocusedChanged
-    terminalElement.TryRemoveEventHandler PKey.View.FrameChanged
-    terminalElement.TryRemoveEventHandler PKey.View.GettingAttributeForRole
-    terminalElement.TryRemoveEventHandler PKey.View.GettingScheme
-    terminalElement.TryRemoveEventHandler PKey.View.HandlingHotKey
-    terminalElement.TryRemoveEventHandler PKey.View.HasFocusChanged
-    terminalElement.TryRemoveEventHandler PKey.View.HasFocusChanging
-    terminalElement.TryRemoveEventHandler PKey.View.HeightChanged
-    terminalElement.TryRemoveEventHandler PKey.View.HeightChanging
-    terminalElement.TryRemoveEventHandler PKey.View.HotKeyChanged
-    terminalElement.TryRemoveEventHandler PKey.View.Initialized
-    terminalElement.TryRemoveEventHandler PKey.View.KeyDown
-    terminalElement.TryRemoveEventHandler PKey.View.KeyDownNotHandled
-    terminalElement.TryRemoveEventHandler PKey.View.MouseEnter
-    terminalElement.TryRemoveEventHandler PKey.View.MouseEvent
-    terminalElement.TryRemoveEventHandler PKey.View.MouseHoldRepeatChanged
-    terminalElement.TryRemoveEventHandler PKey.View.MouseHoldRepeatChanging
-    terminalElement.TryRemoveEventHandler PKey.View.MouseLeave
-    terminalElement.TryRemoveEventHandler PKey.View.MouseStateChanged
-    terminalElement.TryRemoveEventHandler PKey.View.Removed
-    terminalElement.TryRemoveEventHandler PKey.View.SchemeChanged
-    terminalElement.TryRemoveEventHandler PKey.View.SchemeChanging
-    terminalElement.TryRemoveEventHandler PKey.View.SchemeNameChanged
-    terminalElement.TryRemoveEventHandler PKey.View.SchemeNameChanging
-    terminalElement.TryRemoveEventHandler PKey.View.SubViewAdded
-    terminalElement.TryRemoveEventHandler PKey.View.SubViewLayout
-    terminalElement.TryRemoveEventHandler PKey.View.SubViewRemoved
-    terminalElement.TryRemoveEventHandler PKey.View.SubViewsLaidOut
-    terminalElement.TryRemoveEventHandler PKey.View.SuperViewChanged
-    terminalElement.TryRemoveEventHandler PKey.View.SuperViewChanging
-    terminalElement.TryRemoveEventHandler PKey.View.TextChanged
-    terminalElement.TryRemoveEventHandler PKey.View.TitleChanged
-    terminalElement.TryRemoveEventHandler PKey.View.TitleChanging
-    terminalElement.TryRemoveEventHandler PKey.View.ViewportChanged
-    terminalElement.TryRemoveEventHandler PKey.View.VisibleChanged
-    terminalElement.TryRemoveEventHandler PKey.View.VisibleChanging
-    terminalElement.TryRemoveEventHandler PKey.View.WidthChanged
-    terminalElement.TryRemoveEventHandler PKey.View.WidthChanging
+    terminalElement.TryRemoveEventHandler (PKey.View.Accepted).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.Accepting).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.Activating).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.AdvancingFocus).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.BorderStyleChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.CanFocusChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.ClearedViewport).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.ClearingViewport).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.CommandNotBound).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.ContentSizeChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.ContentSizeChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.Disposing).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.DrawComplete).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.DrawingContent).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.DrawingSubViews).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.DrawingText).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.DrewText).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.EnabledChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.FocusedChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.FrameChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.GettingAttributeForRole).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.GettingScheme).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HandlingHotKey).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HasFocusChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HasFocusChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HeightChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HeightChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.HotKeyChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.Initialized).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.KeyDown).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.KeyDownNotHandled).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseEnter).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseEvent).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseHoldRepeatChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseHoldRepeatChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseLeave).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.MouseStateChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.Removed).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SchemeChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SchemeChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SchemeNameChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SchemeNameChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SubViewAdded).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SubViewLayout).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SubViewRemoved).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SubViewsLaidOut).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SuperViewChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.SuperViewChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.TextChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.TitleChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.TitleChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.ViewportChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.VisibleChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.VisibleChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.WidthChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.View.WidthChanging).Untyped
 
   interface ITerminalElement
 
@@ -582,7 +582,7 @@ type internal AdornmentTerminalElement(props: Props) =
         view.Viewport <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Adornment.ThicknessChanged
+    terminalElement.TryRemoveEventHandler (PKey.Adornment.ThicknessChanged).Untyped
 
   interface ITerminalElement
 
@@ -631,8 +631,8 @@ type internal AttributePickerTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.AttributePicker.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.AttributePicker.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.AttributePicker.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.AttributePicker.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -681,8 +681,8 @@ type internal BarTerminalElement(props: Props) =
         view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Bar.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.Bar.OrientationChanging
+    terminalElement.TryRemoveEventHandler (PKey.Bar.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Bar.OrientationChanging).Untyped
 
   interface ITerminalElement
 
@@ -869,8 +869,8 @@ type internal CharMapTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.CharMap.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.CharMap.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.CharMap.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.CharMap.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -946,8 +946,8 @@ type internal CheckBoxTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.CheckBox.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.CheckBox.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.CheckBox.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.CheckBox.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -1014,8 +1014,8 @@ type internal ColorPickerTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ColorPicker.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.ColorPicker.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.ColorPicker.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ColorPicker.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -1091,8 +1091,8 @@ type internal ColorPicker16TerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ColorPicker16.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.ColorPicker16.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.ColorPicker16.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ColorPicker16.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -1181,10 +1181,10 @@ type internal ComboBoxTerminalElement(props: Props) =
         view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ComboBox.Collapsed
-    terminalElement.TryRemoveEventHandler PKey.ComboBox.Expanded
-    terminalElement.TryRemoveEventHandler PKey.ComboBox.OpenSelectedItem
-    terminalElement.TryRemoveEventHandler PKey.ComboBox.SelectedItemChanged
+    terminalElement.TryRemoveEventHandler (PKey.ComboBox.Collapsed).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ComboBox.Expanded).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ComboBox.OpenSelectedItem).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ComboBox.SelectedItemChanged).Untyped
 
   interface ITerminalElement
 
@@ -1242,8 +1242,8 @@ type internal DatePickerTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.DatePicker.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.DatePicker.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.DatePicker.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.DatePicker.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -1418,8 +1418,8 @@ type internal HexViewTerminalElement(props: Props) =
         view.Source <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.HexView.Edited
-    terminalElement.TryRemoveEventHandler PKey.HexView.PositionChanged
+    terminalElement.TryRemoveEventHandler (PKey.HexView.Edited).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.HexView.PositionChanged).Untyped
 
   interface ITerminalElement
 
@@ -1531,8 +1531,8 @@ type internal LineTerminalElement(props: Props) =
         view.Style <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Line.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.Line.OrientationChanging
+    terminalElement.TryRemoveEventHandler (PKey.Line.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Line.OrientationChanging).Untyped
 
   interface ITerminalElement
 
@@ -1708,22 +1708,22 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
         view.UseMinimumSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.LegendsOrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.LegendsOrientationChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.MinimumInnerSpacingChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.MinimumInnerSpacingChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.OptionFocused
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.OptionsChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.OrientationChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.ShowEndSpacingChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.ShowEndSpacingChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.ShowLegendsChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.ShowLegendsChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.TypeChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.TypeChanging
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.UseMinimumSizeChanged
-    terminalElement.TryRemoveEventHandler PKey.LinearRange<'T>.UseMinimumSizeChanging
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.LegendsOrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.LegendsOrientationChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.MinimumInnerSpacingChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.MinimumInnerSpacingChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OptionFocused).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OptionsChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OrientationChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowEndSpacingChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowEndSpacingChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowLegendsChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowLegendsChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.TypeChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.TypeChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.UseMinimumSizeChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.UseMinimumSizeChanging).Untyped
 
   interface ITerminalElement
 
@@ -1826,11 +1826,11 @@ type internal ListViewTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ListView.CollectionChanged
-    terminalElement.TryRemoveEventHandler PKey.ListView.RowRender
-    terminalElement.TryRemoveEventHandler PKey.ListView.SourceChanged
-    terminalElement.TryRemoveEventHandler PKey.ListView.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.ListView.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.ListView.CollectionChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ListView.RowRender).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ListView.SourceChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ListView.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ListView.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -1926,7 +1926,7 @@ type internal MenuTerminalElement(props: Props) =
         view.SuperMenuItem <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Menu.SelectedMenuItemChanged
+    terminalElement.TryRemoveEventHandler (PKey.Menu.SelectedMenuItemChanged).Untyped
 
   interface IMenuTerminalElement
 
@@ -1966,7 +1966,7 @@ type internal MenuBarTerminalElement(props: Props) =
         view.Key <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.MenuBar.KeyChanged
+    terminalElement.TryRemoveEventHandler (PKey.MenuBar.KeyChanged).Untyped
 
   interface IMenuTerminalElement
 
@@ -2030,10 +2030,10 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.NumericUpDown<'T>.FormatChanged
-    terminalElement.TryRemoveEventHandler PKey.NumericUpDown<'T>.IncrementChanged
-    terminalElement.TryRemoveEventHandler PKey.NumericUpDown<'T>.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.NumericUpDown<'T>.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.FormatChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.IncrementChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -2153,7 +2153,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
         view.Root <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.PopoverMenu.KeyChanged
+    terminalElement.TryRemoveEventHandler (PKey.PopoverMenu.KeyChanged).Untyped
 
   interface IPopoverMenuTerminalElement
 
@@ -2284,9 +2284,9 @@ type internal RunnableTerminalElement(props: Props) =
         view.StopRequested <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Runnable.IsModalChanged
-    terminalElement.TryRemoveEventHandler PKey.Runnable.IsRunningChanged
-    terminalElement.TryRemoveEventHandler PKey.Runnable.IsRunningChanging
+    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsModalChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsRunningChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsRunningChanging).Untyped
 
   interface ITerminalElement
 
@@ -2528,7 +2528,7 @@ type internal FileDialogTerminalElement(props: Props) =
         view.SearchMatcher <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.FileDialog.FilesSelected
+    terminalElement.TryRemoveEventHandler (PKey.FileDialog.FilesSelected).Untyped
 
   interface ITerminalElement
 
@@ -2668,13 +2668,13 @@ type internal ScrollBarTerminalElement(props: Props) =
         view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.OrientationChanging
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.ScrollableContentSizeChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.Scrolled
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.SliderPositionChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollBar.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.OrientationChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ScrollableContentSizeChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.Scrolled).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.SliderPositionChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -2756,11 +2756,11 @@ type internal ScrollSliderTerminalElement(props: Props) =
         view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.ScrollSlider.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollSlider.OrientationChanging
-    terminalElement.TryRemoveEventHandler PKey.ScrollSlider.PositionChanged
-    terminalElement.TryRemoveEventHandler PKey.ScrollSlider.PositionChanging
-    terminalElement.TryRemoveEventHandler PKey.ScrollSlider.Scrolled
+    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.OrientationChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.PositionChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.PositionChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.Scrolled).Untyped
 
   interface ITerminalElement
 
@@ -2859,10 +2859,10 @@ type internal SelectorBaseTerminalElement(props: Props) =
         view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.SelectorBase.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.SelectorBase.OrientationChanging
-    terminalElement.TryRemoveEventHandler PKey.SelectorBase.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.SelectorBase.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.OrientationChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -2966,7 +2966,7 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.FlagSelector'<'TFlagsEnum>.ValueChanged
+    terminalElement.TryRemoveEventHandler (PKey.FlagSelector'<'TFlagsEnum>.ValueChanged).Untyped
 
   interface ITerminalElement
 
@@ -3013,7 +3013,7 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
         view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.OptionSelector'<'TEnum>.ValueChanged
+    terminalElement.TryRemoveEventHandler (PKey.OptionSelector'<'TEnum>.ValueChanged).Untyped
 
   interface ITerminalElement
 
@@ -3140,8 +3140,8 @@ type internal ShortcutTerminalElement(props: Props) =
         view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Shortcut.OrientationChanged
-    terminalElement.TryRemoveEventHandler PKey.Shortcut.OrientationChanging
+    terminalElement.TryRemoveEventHandler (PKey.Shortcut.OrientationChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Shortcut.OrientationChanging).Untyped
 
   interface ITerminalElement
 
@@ -3264,7 +3264,7 @@ type internal MenuBarItemTerminalElement(props: Props) =
         view.SubMenu <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.MenuBarItem.PopoverMenuOpenChanged
+    terminalElement.TryRemoveEventHandler (PKey.MenuBarItem.PopoverMenuOpenChanged).Untyped
 
   interface IMenuItemTerminalElement
 
@@ -3479,8 +3479,8 @@ type internal TabViewTerminalElement(props: Props) =
         view.TabScrollOffset <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TabView.SelectedTabChanged
-    terminalElement.TryRemoveEventHandler PKey.TabView.TabClicked
+    terminalElement.TryRemoveEventHandler (PKey.TabView.SelectedTabChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TabView.TabClicked).Untyped
 
   interface ITerminalElement
 
@@ -3639,9 +3639,9 @@ type internal TableViewTerminalElement(props: Props) =
         view.Table <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TableView.CellActivated
-    terminalElement.TryRemoveEventHandler PKey.TableView.CellToggled
-    terminalElement.TryRemoveEventHandler PKey.TableView.SelectedCellChanged
+    terminalElement.TryRemoveEventHandler (PKey.TableView.CellActivated).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TableView.CellToggled).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TableView.SelectedCellChanged).Untyped
 
   interface ITerminalElement
 
@@ -3764,9 +3764,9 @@ type internal TextFieldTerminalElement(props: Props) =
         view.Value <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TextField.TextChanging
-    terminalElement.TryRemoveEventHandler PKey.TextField.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.TextField.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.TextField.TextChanging).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextField.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextField.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -3824,8 +3824,8 @@ type internal DateFieldTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.DateField.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.DateField.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.DateField.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.DateField.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -4077,12 +4077,12 @@ type internal TextViewTerminalElement(props: Props) =
         view.WordWrap <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TextView.ContentsChanged
-    terminalElement.TryRemoveEventHandler PKey.TextView.DrawNormalColor
-    terminalElement.TryRemoveEventHandler PKey.TextView.DrawReadOnlyColor
-    terminalElement.TryRemoveEventHandler PKey.TextView.DrawSelectionColor
-    terminalElement.TryRemoveEventHandler PKey.TextView.DrawUsedColor
-    terminalElement.TryRemoveEventHandler PKey.TextView.UnwrappedCursorPosition
+    terminalElement.TryRemoveEventHandler (PKey.TextView.ContentsChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawNormalColor).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawReadOnlyColor).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawSelectionColor).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawUsedColor).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TextView.UnwrappedCursorPosition).Untyped
 
   interface ITerminalElement
 
@@ -4140,8 +4140,8 @@ type internal TimeFieldTerminalElement(props: Props) =
         view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TimeField.ValueChanged
-    terminalElement.TryRemoveEventHandler PKey.TimeField.ValueChanging
+    terminalElement.TryRemoveEventHandler (PKey.TimeField.ValueChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TimeField.ValueChanging).Untyped
 
   interface ITerminalElement
 
@@ -4282,9 +4282,9 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
         view.TreeBuilder <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.TreeView<'T>.DrawLine
-    terminalElement.TryRemoveEventHandler PKey.TreeView<'T>.ObjectActivated
-    terminalElement.TryRemoveEventHandler PKey.TreeView<'T>.SelectionChanged
+    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.DrawLine).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.ObjectActivated).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.SelectionChanged).Untyped
 
   interface ITerminalElement
 
@@ -4358,10 +4358,10 @@ type internal WizardTerminalElement(props: Props) =
         view.CurrentStep <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.Wizard.MovingBack
-    terminalElement.TryRemoveEventHandler PKey.Wizard.MovingNext
-    terminalElement.TryRemoveEventHandler PKey.Wizard.StepChanged
-    terminalElement.TryRemoveEventHandler PKey.Wizard.StepChanging
+    terminalElement.TryRemoveEventHandler (PKey.Wizard.MovingBack).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Wizard.MovingNext).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Wizard.StepChanged).Untyped
+    terminalElement.TryRemoveEventHandler (PKey.Wizard.StepChanging).Untyped
 
   interface ITerminalElement
 

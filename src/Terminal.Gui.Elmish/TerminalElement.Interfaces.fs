@@ -11,9 +11,9 @@ type internal OrientationInterface =
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanged
+    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanged.Untyped
 
-    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging
+    terminalElement.TryRemoveEventHandler PKey.IOrientationInterface.OrientationChanging.Untyped
 
   static member setProps (terminalElement: ViewBackedTerminalElement) (view: IOrientation) (props: Props) =
     // Properties

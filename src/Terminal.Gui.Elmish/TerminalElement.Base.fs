@@ -18,20 +18,20 @@ open Terminal.Gui.ViewBase
 type internal EventHandlerRegistrar() =
 
   /// Stores the handlers for each property key.
-  let trackedHandlers = Dictionary<IPropKey, Delegate>()
+  let trackedHandlers = Dictionary<PropKey, Delegate>()
 
   /// Stores functions to be invoked to remove previously added handlers.
   /// Which will call IEvent.RemoveHandler on the event associated with the property key.
-  let handlerRemovalActions = Dictionary<IPropKey, unit -> unit>()
+  let handlerRemovalActions = Dictionary<PropKey, unit -> unit>()
 
-  member private this.TryFindHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey) =
+  member private this.TryFindHandler<'THandler when 'THandler :> Delegate> (pkey: PropKey) =
     match trackedHandlers.TryGetValue(pkey) with
     | true, existingHandler ->
       Some (existingHandler :?> 'THandler)
     | false, _ ->
       None
 
-  member private this.TryGetHandlerRemovalAction (pkey: IPropKey) =
+  member private this.TryGetHandlerRemovalAction (pkey: PropKey) =
     match handlerRemovalActions.TryGetValue(pkey) with
     | true, existingRemover ->
       Some existingRemover
@@ -39,7 +39,7 @@ type internal EventHandlerRegistrar() =
       None
 
   /// Registers a function to be invoked to remove previously added handlers associated with the specified property key.
-  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
+  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
     handlerRemovalActions[pkey] <-
       fun () ->
         // This will only remove the handler from the event, not from the repositories
@@ -47,7 +47,7 @@ type internal EventHandlerRegistrar() =
         // Note: The actual removal from the repositories is done in `removeHandler` method
 
   /// Removes the handler associated with the specified property key, if it exists.
-  member this.RemoveHandler (pkey: IPropKey) =
+  member this.RemoveHandler (pkey: PropKey) =
     match this.TryGetHandlerRemovalAction pkey with
     | Some removeHandler ->
       removeHandler ()
@@ -56,7 +56,7 @@ type internal EventHandlerRegistrar() =
     | None ->
       ()
 
-  member private this.SetHandler<'THandler when 'THandler :> Delegate> (pkey: IPropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit) =
+  member private this.SetHandler<'THandler when 'THandler :> Delegate> (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit) =
     match this.TryFindHandler<'THandler> pkey with
     | Some previouslySetHandler ->
       removeHandler previouslySetHandler
@@ -66,25 +66,25 @@ type internal EventHandlerRegistrar() =
     trackedHandlers[pkey] <- handler
     addHandler handler
 
-  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
+  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
     let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
-    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
-    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+  member this.SetEventHandler (pkey: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
     let handler: EventHandler = EventHandler(fun sender args -> action args)
-    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
+  member this.SetEventHandler (pkey: TypedPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
     let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
-    this.SetHandler(pkey, handler, event.RemoveHandler, event.AddHandler)
-    this.RegisterHandlerRemoval(pkey, handler, event.RemoveHandler)
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
 type internal TreeNode = {
   TerminalElement: TerminalElement
@@ -162,7 +162,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.View <- this.NewView ()
 
     this.InitializeSubElements()
-    |> Seq.iter (fun x -> this.Props |> Props.addNonTyped x)
+    |> Seq.iter (fun (k, v) -> this.Props |> Props.addNonTyped k v)
 
     PositionService.Current.ApplyPos this
     this.SetProps (this, this.Props)
@@ -206,10 +206,10 @@ type internal ViewBackedTerminalElement(props: Props) =
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.InitializeSubElements () : (IPropKey * obj) seq =
+  member this.InitializeSubElements () : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
-        match this.Props |> Props.tryFindByRawKey<obj> x with
+        match this.Props |> Props.tryFindByRawKey<obj> x.untyped with
 
         | None -> ()
 
@@ -234,28 +234,28 @@ type internal ViewBackedTerminalElement(props: Props) =
           | _ -> failwith "Out of range subElement type"
     }
 
-  member this.TrySetEventHandler<'TEventArgs> (k: IEventPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+  member this.TrySetEventHandler<'TEventArgs> (k: TypedPropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
 
-    this.TryRemoveEventHandler k
-
-    this.Props |> Props.tryFind k
-    |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
-
-  member this.TrySetEventHandler (k: IEventPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
-
-    this.TryRemoveEventHandler k
+    this.TryRemoveEventHandler k.Untyped
 
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TrySetEventHandler (k: IEventPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+  member this.TrySetEventHandler (k: TypedPropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
 
-    this.TryRemoveEventHandler k
+    this.TryRemoveEventHandler k.Untyped
 
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TryRemoveEventHandler (k: IPropKey) =
+  member this.TrySetEventHandler (k: TypedPropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+
+    this.TryRemoveEventHandler k.Untyped
+
+    this.Props |> Props.tryFind k
+    |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
+
+  member this.TryRemoveEventHandler (k: PropKey) =
     this.EventRegistrar.RemoveHandler k
 
   abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
@@ -304,7 +304,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     // 2 - And we add them.
     view_Props_ToReinject
-    |> Props.iter (fun kv -> this.Props |> Props.addNonTyped (kv.Key, kv.Value))
+    |> Props.iter (fun kv -> this.Props |> Props.addNonTyped kv.Key kv.Value)
 
     this.RemoveProps (this, removedProps)
     this.SetProps (this, c.changedProps)
@@ -397,7 +397,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props
-        |> Props.tryFind key
+        |> Props.tryFind key.typed
         |> Option.iter _.Dispose()
 
       for child in this.Children do

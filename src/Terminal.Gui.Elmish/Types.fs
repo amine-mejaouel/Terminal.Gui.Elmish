@@ -32,18 +32,16 @@ module internal PropKey =
     | View of key: string
     | Event of key: string
     | SingleElement of key: string
-    | MultiElement of key: string
 
     member this.key =
       match this with
       | PropKey.Simple k | PropKey.View k | PropKey.Event k
-      | PropKey.SingleElement k | PropKey.MultiElement k -> k
+      | PropKey.SingleElement k -> k
 
     member this.viewKey =
       match this with
       | PropKey.SingleElement k -> PropKey.View (k.Replace("_element", "_view"))
-      | PropKey.MultiElement k -> PropKey.View (k.Replace("_elements", "_view"))
-      | _ -> failwith $"viewKey is only valid for SingleElement and MultiElement PropKeys, got: {this}"
+      | _ -> failwith $"viewKey is only valid for SingleElement PropKeys, got: {this}"
 
     override this.Equals(obj) =
       match obj with
@@ -67,11 +65,9 @@ module internal PropKey =
   [<CustomEquality; NoComparison>]
   type internal SubElementPropKey<'a> =
     | SingleElementKey of TypedPropKey<'a>
-    | MultiElementKey of TypedPropKey<'a>
 
     member this.typed =
-      match this with
-      | SingleElementKey k | MultiElementKey k -> k
+      let (SingleElementKey k) = this in k
 
     member this.untyped = this.typed.Untyped
     member this.key = this.untyped.key
@@ -82,17 +78,10 @@ module internal PropKey =
       else
         failwith $"Invalid single-element key: {key}"
 
-    static member createMultiElementKey<'a>(key: string) : SubElementPropKey<'a> =
-      if key.EndsWith "_elements" then
-        MultiElementKey (TypedKey (PropKey.MultiElement key))
-      else
-        failwith $"Invalid multi-element key: {key}"
-
     static member from(key: TypedPropKey<'a>) : SubElementPropKey<'b> =
       match key.Untyped with
       | PropKey.SingleElement k -> SubElementPropKey<'b>.createSingleElementKey k
-      | PropKey.MultiElement k -> SubElementPropKey<'b>.createMultiElementKey k
-      | _ -> failwith $"SubElementPropKey.from: expected SingleElement or MultiElement, got {key.Untyped}"
+      | _ -> failwith $"SubElementPropKey.from: expected SingleElement, got {key.Untyped}"
 
     override this.GetHashCode() = this.key.GetHashCode()
 
@@ -110,11 +99,8 @@ module internal PropKey =
       static member singleElement<'a>(key: string) : TypedPropKey<'a> =
         if key.EndsWith "_element" then TypedKey (PropKey.SingleElement key)
         else failwith $"Invalid key: {key}"
-      static member multiElement<'a>(key: string) : TypedPropKey<'a> =
-        if key.EndsWith "_elements" then TypedKey (PropKey.MultiElement key)
-        else failwith $"Invalid key: {key}"
       static member simple<'a>(key: string) : TypedPropKey<'a> =
-        if key.EndsWith "_element" || key.EndsWith "_elements" || key.EndsWith "_view" then
+        if key.EndsWith "_element" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
         else TypedKey (PropKey.Simple key)
       static member event<'a>(key: string) : TypedPropKey<'a> =

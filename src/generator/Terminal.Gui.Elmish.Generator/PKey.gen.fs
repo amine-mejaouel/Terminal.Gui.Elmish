@@ -28,10 +28,6 @@ let genPKeyClassDefinition (viewType: Type) =
           yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
           yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
-        // TODO: isEnumerableOfViews does not seem to be used anywhere
-        else if prop.IsEnumerableOfViews then
-          yield $"    member val {prop.PKey}: TypedPropKey<List<{prop.FSharpTypeName}>> = PropKey.Create.view \"{keyName}_views\""
-          yield $"    member val {prop.PKey}_elements: TypedPropKey<System.Collections.Generic.List<IViewTerminalElement>> = PropKey.Create.multiElement \"{keyName}_elements\""
         else
           yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 

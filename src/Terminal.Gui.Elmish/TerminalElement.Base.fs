@@ -255,7 +255,10 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.Props |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TryRemoveEventHandler (k: PropKey) =
+  member this.TryRemoveEventHandler (k: TypedPropKey<_>) =
+    this.EventRegistrar.RemoveHandler k.Untyped
+
+  member private this.TryRemoveEventHandler (k: PropKey) =
     this.EventRegistrar.RemoveHandler k
 
   abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit

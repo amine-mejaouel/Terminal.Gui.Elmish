@@ -110,7 +110,7 @@ module internal PKey =
     // Properties
     member val Diagnostics: TypedPropKey<Terminal.Gui.ViewBase.ViewDiagnosticFlags> = PropKey.Create.simple "Adornment.Diagnostics"
     member val Parent: TypedPropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Adornment.Parent_view"
-    member val Parent_element: TypedPropKey<ITerminalElement> = PropKey.Create.singleElement "Adornment.Parent_element"
+    member val Parent_element: TypedPropKey<ITerminalElement> = PropKey.Create.subElement "Adornment.Parent_element"
     member val SuperViewRendersLineCanvas: TypedPropKey<bool> = PropKey.Create.simple "Adornment.SuperViewRendersLineCanvas"
     member val Thickness: TypedPropKey<Terminal.Gui.Drawing.Thickness> = PropKey.Create.simple "Adornment.Thickness"
     member val Viewport: TypedPropKey<System.Drawing.Rectangle> = PropKey.Create.simple "Adornment.Viewport"
@@ -364,9 +364,9 @@ module internal PKey =
 
     // Properties
     member val SelectedMenuItem: TypedPropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SelectedMenuItem_view"
-    member val SelectedMenuItem_element: TypedPropKey<IMenuItemTerminalElement> = PropKey.Create.singleElement "Menu.SelectedMenuItem_element"
+    member val SelectedMenuItem_element: TypedPropKey<IMenuItemTerminalElement> = PropKey.Create.subElement "Menu.SelectedMenuItem_element"
     member val SuperMenuItem: TypedPropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SuperMenuItem_view"
-    member val SuperMenuItem_element: TypedPropKey<IMenuItemTerminalElement> = PropKey.Create.singleElement "Menu.SuperMenuItem_element"
+    member val SuperMenuItem_element: TypedPropKey<IMenuItemTerminalElement> = PropKey.Create.subElement "Menu.SuperMenuItem_element"
 
     // Events
     member val SelectedMenuItemChanged: TypedPropKey<Terminal.Gui.Views.MenuItem -> unit> = PropKey.Create.event "Menu.SelectedMenuItemChanged_event"
@@ -415,7 +415,7 @@ module internal PKey =
     member val Key: TypedPropKey<Terminal.Gui.Input.Key> = PropKey.Create.simple "PopoverMenu.Key"
     member val MouseFlags: TypedPropKey<Terminal.Gui.Input.MouseFlags> = PropKey.Create.simple "PopoverMenu.MouseFlags"
     member val Root: TypedPropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "PopoverMenu.Root_view"
-    member val Root_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.singleElement "PopoverMenu.Root_element"
+    member val Root_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.subElement "PopoverMenu.Root_element"
 
     // Events
     member val KeyChanged: TypedPropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> = PropKey.Create.event "PopoverMenu.KeyChanged_event"
@@ -588,7 +588,7 @@ module internal PKey =
     member val AlignmentModes: TypedPropKey<Terminal.Gui.ViewBase.AlignmentModes> = PropKey.Create.simple "Shortcut.AlignmentModes"
     member val BindKeyToApplication: TypedPropKey<bool> = PropKey.Create.simple "Shortcut.BindKeyToApplication"
     member val CommandView: TypedPropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Shortcut.CommandView_view"
-    member val CommandView_element: TypedPropKey<ITerminalElement> = PropKey.Create.singleElement "Shortcut.CommandView_element"
+    member val CommandView_element: TypedPropKey<ITerminalElement> = PropKey.Create.subElement "Shortcut.CommandView_element"
     member val ForceFocusColors: TypedPropKey<bool> = PropKey.Create.simple "Shortcut.ForceFocusColors"
     member val HelpText: TypedPropKey<string> = PropKey.Create.simple "Shortcut.HelpText"
     member val Key: TypedPropKey<Terminal.Gui.Input.Key> = PropKey.Create.simple "Shortcut.Key"
@@ -606,19 +606,19 @@ module internal PKey =
     // Properties
     member val Command: TypedPropKey<Terminal.Gui.Input.Command> = PropKey.Create.simple "MenuItem.Command"
     member val SubMenu: TypedPropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "MenuItem.SubMenu_view"
-    member val SubMenu_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.singleElement "MenuItem.SubMenu_element"
+    member val SubMenu_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuItem.SubMenu_element"
     member val TargetView: TypedPropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "MenuItem.TargetView_view"
-    member val TargetView_element: TypedPropKey<ITerminalElement> = PropKey.Create.singleElement "MenuItem.TargetView_element"
+    member val TargetView_element: TypedPropKey<ITerminalElement> = PropKey.Create.subElement "MenuItem.TargetView_element"
 
   type MenuBarItemPKeys() =
     inherit MenuItemPKeys()
 
     // Properties
     member val PopoverMenu: TypedPropKey<Terminal.Gui.Views.PopoverMenu> = PropKey.Create.view "MenuBarItem.PopoverMenu_view"
-    member val PopoverMenu_element: TypedPropKey<IPopoverMenuTerminalElement> = PropKey.Create.singleElement "MenuBarItem.PopoverMenu_element"
+    member val PopoverMenu_element: TypedPropKey<IPopoverMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.PopoverMenu_element"
     member val PopoverMenuOpen: TypedPropKey<bool> = PropKey.Create.simple "MenuBarItem.PopoverMenuOpen"
     member val SubMenu: TypedPropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "MenuBarItem.SubMenu_view"
-    member val SubMenu_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.singleElement "MenuBarItem.SubMenu_element"
+    member val SubMenu_element: TypedPropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.SubMenu_element"
 
     // Events
     member val PopoverMenuOpenChanged: TypedPropKey<EventArgs<bool> -> unit> = PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
@@ -644,7 +644,7 @@ module internal PKey =
     // Properties
     member val DisplayText: TypedPropKey<string> = PropKey.Create.simple "Tab.DisplayText"
     member val View: TypedPropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Tab.View_view"
-    member val View_element: TypedPropKey<ITerminalElement> = PropKey.Create.singleElement "Tab.View_element"
+    member val View_element: TypedPropKey<ITerminalElement> = PropKey.Create.subElement "Tab.View_element"
 
   type TabViewPKeys() =
     inherit ViewPKeys()
@@ -652,7 +652,7 @@ module internal PKey =
     // Properties
     member val MaxTabTextWidth: TypedPropKey<System.UInt32> = PropKey.Create.simple "TabView.MaxTabTextWidth"
     member val SelectedTab: TypedPropKey<Terminal.Gui.Views.Tab> = PropKey.Create.view "TabView.SelectedTab_view"
-    member val SelectedTab_element: TypedPropKey<ITabTerminalElement> = PropKey.Create.singleElement "TabView.SelectedTab_element"
+    member val SelectedTab_element: TypedPropKey<ITabTerminalElement> = PropKey.Create.subElement "TabView.SelectedTab_element"
     member val Style: TypedPropKey<Terminal.Gui.Views.TabStyle> = PropKey.Create.simple "TabView.Style"
     member val TabScrollOffset: TypedPropKey<int> = PropKey.Create.simple "TabView.TabScrollOffset"
 
@@ -802,7 +802,7 @@ module internal PKey =
 
     // Properties
     member val CurrentStep: TypedPropKey<Terminal.Gui.Views.WizardStep> = PropKey.Create.view "Wizard.CurrentStep_view"
-    member val CurrentStep_element: TypedPropKey<IWizardStepTerminalElement> = PropKey.Create.singleElement "Wizard.CurrentStep_element"
+    member val CurrentStep_element: TypedPropKey<IWizardStepTerminalElement> = PropKey.Create.subElement "Wizard.CurrentStep_element"
 
     // Events
     member val MovingBack: TypedPropKey<System.ComponentModel.CancelEventArgs -> unit> = PropKey.Create.event "Wizard.MovingBack_event"

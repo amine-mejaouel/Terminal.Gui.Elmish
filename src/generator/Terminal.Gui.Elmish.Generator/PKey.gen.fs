@@ -27,7 +27,7 @@ let genPKeyClassDefinition (viewType: Type) =
         if prop.IsViewProperty then
           yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
           let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
-          yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.singleElement \"{keyName}_element\""
+          yield $"    member val {prop.PKey}_element: TypedPropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
         else
           yield $"    member val {prop.PKey}: TypedPropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 

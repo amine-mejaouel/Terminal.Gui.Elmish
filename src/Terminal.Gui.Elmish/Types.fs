@@ -31,17 +31,17 @@ module internal PropKey =
     | Simple of key: string
     | View of key: string
     | Event of key: string
-    | SingleElement of key: string
+    | SubElement of key: string
 
     member this.key =
       match this with
       | PropKey.Simple k | PropKey.View k | PropKey.Event k
-      | PropKey.SingleElement k -> k
+      | PropKey.SubElement k -> k
 
     member this.viewKey =
       match this with
-      | PropKey.SingleElement k -> PropKey.View (k.Replace("_element", "_view"))
-      | _ -> failwith $"viewKey is only valid for SingleElement PropKeys, got: {this}"
+      | PropKey.SubElement k -> PropKey.View (k.Replace("_element", "_view"))
+      | _ -> failwith $"viewKey is only valid for SubElement PropKeys, got: {this}"
 
     override this.Equals(obj) =
       match obj with
@@ -64,24 +64,24 @@ module internal PropKey =
 
   [<CustomEquality; NoComparison>]
   type internal SubElementPropKey<'a> =
-    | SingleElementKey of TypedPropKey<'a>
+    | SubElementKey of TypedPropKey<'a>
 
     member this.typed =
-      let (SingleElementKey k) = this in k
+      let (SubElementKey k) = this in k
 
     member this.untyped = this.typed.Untyped
     member this.key = this.untyped.key
 
-    static member createSingleElementKey<'a>(key: string) : SubElementPropKey<'a> =
+    static member createSubElementKey<'a>(key: string) : SubElementPropKey<'a> =
       if key.EndsWith "_element" then
-        SingleElementKey (TypedKey (PropKey.SingleElement key))
+        SubElementKey (TypedKey (PropKey.SubElement key))
       else
         failwith $"Invalid single-element key: {key}"
 
     static member from(key: TypedPropKey<'a>) : SubElementPropKey<'b> =
       match key.Untyped with
-      | PropKey.SingleElement k -> SubElementPropKey<'b>.createSingleElementKey k
-      | _ -> failwith $"SubElementPropKey.from: expected SingleElement, got {key.Untyped}"
+      | PropKey.SubElement k -> SubElementPropKey<'b>.createSubElementKey k
+      | _ -> failwith $"SubElementPropKey.from: expected SubElement, got {key.Untyped}"
 
     override this.GetHashCode() = this.key.GetHashCode()
 
@@ -96,8 +96,8 @@ module internal PropKey =
   [<RequireQualifiedAccess>]
   module PropKey =
     type Create =
-      static member singleElement<'a>(key: string) : TypedPropKey<'a> =
-        if key.EndsWith "_element" then TypedKey (PropKey.SingleElement key)
+      static member subElement<'a>(key: string) : TypedPropKey<'a> =
+        if key.EndsWith "_element" then TypedKey (PropKey.SubElement key)
         else failwith $"Invalid key: {key}"
       static member simple<'a>(key: string) : TypedPropKey<'a> =
         if key.EndsWith "_element" || key.EndsWith "_view" then
@@ -253,9 +253,9 @@ module internal Props =
 
   let keys (props: Props) = props.Props.Keys |> Seq.map id
 
-  let filterSingleElementKeys (props: Props) =
+  let filterSubElementKeys (props: Props) =
     props.Props.Keys
-    |> Seq.choose (function | PropKey.SingleElement _ as k -> Some k | _ -> None)
+    |> Seq.choose (function | PropKey.SubElement _ as k -> Some k | _ -> None)
 
   let iter iteration (props: Props) = props.Props |> Seq.iter iteration
 

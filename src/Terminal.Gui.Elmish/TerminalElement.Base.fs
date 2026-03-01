@@ -296,7 +296,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
       c.unchangedProps
-      |> Props.filterSingleElementKeys
+      |> Props.filterSubElementKeys
       |> Seq.map _.viewKey
       |> Seq.toArray
 
@@ -325,7 +325,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         ()
       elif kv.Key.IsView then
         ()
-      elif kv.Key.IsSingleElement then
+      elif kv.Key.IsSubElement then
         let curElement =
           kv.Value :?> ViewBackedTerminalElement
 
@@ -367,7 +367,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         match remainingOldProps |> Props.tryFindByRawKey kv.Key with
         | _ when kv.Key.key = "children" -> // Here we always consider the 'children' unchanged
           true
-        | Some(v: obj) when kv.Key.IsSingleElement ->
+        | Some(v: obj) when kv.Key.IsSubElement ->
           let curElement =
             kv.Value :?> ViewBackedTerminalElement
 

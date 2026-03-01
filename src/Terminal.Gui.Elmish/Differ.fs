@@ -4,9 +4,9 @@ module internal Differ =
 
   let sortedChildNames (ve: IViewTE) =
     ve.Children
-    |> Seq.map (fun e -> e.Name)
+    |> Seq.map _.Name
+    |> Seq.sort
     |> Seq.toList
-    |> List.sort
 
   let (|OnlyPropsChanged|_|) (ve1: IViewTE, ve2: IViewTE) =
 
@@ -30,15 +30,15 @@ module internal Differ =
     while workStack.Count > 0 do
       let prevTree, newTree = workStack.Pop()
       match prevTree, newTree with
-      | ElmishComponentTE _, ViewBackedTE _
-      | ViewBackedTE _, ElmishComponentTE _ ->
+      | ElmishComponentTE _, ViewTE _
+      | ViewTE _, ElmishComponentTE _ ->
         failwith "This should never happen, the tree structure should be the same between updates."
 
       | ElmishComponentTE _, ElmishComponentTE _ ->
         // TODO: Should be able to implement some reuse logic.
         ()
 
-      | ViewBackedTE prevTree, ViewBackedTE newTree ->
+      | ViewTE prevTree, ViewTE newTree ->
         match prevTree, newTree with
         | rt, nt when rt.Name <> nt.Name ->
 
@@ -52,13 +52,13 @@ module internal Differ =
 
           let sortedRootChildren =
             prevTree.Children
+            |> Seq.sortBy (fun v -> v.Name)
             |> Seq.toList
-            |> List.sortBy (fun v -> v.Name)
 
           let sortedNewChildren =
             newTree.Children
+            |> Seq.sortBy (fun v -> v.Name)
             |> Seq.toList
-            |> List.sortBy (fun v -> v.Name)
 
           (sortedRootChildren, sortedNewChildren)
           ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
@@ -104,7 +104,7 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewBackedTE ve -> ve.InitializeTree (Origin.Child (newTree, idx))
+                  | ViewTE ve -> ve.InitializeTree (Origin.Child (newTree, idx))
                   | _ -> ()
 
               )

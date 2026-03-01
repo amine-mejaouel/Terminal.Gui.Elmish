@@ -146,7 +146,7 @@ module ElmishTerminal =
 
             let nextTe = view model dispatch :?> IViewTE
 
-            Differ.update (TerminalElement.ViewBackedTE currentTe) (TerminalElement.ViewBackedTE nextTe)
+            Differ.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
 
             currentTe.Dispose()
             return nextTe

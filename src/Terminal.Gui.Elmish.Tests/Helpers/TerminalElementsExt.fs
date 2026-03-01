@@ -10,7 +10,7 @@ type internal TerminalElementExt() =
   [<Extension>]
   static member GetViewBackedTE(this : TerminalElement) =
       match this with
-        | ViewBackedTE viewTe -> viewTe
+        | ViewTE viewTe -> viewTe
         | ElmishComponentTE _ -> failwith "todo"
 
 

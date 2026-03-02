@@ -48,5 +48,8 @@ jobs:
       - name: Install .NET Tools
         run: dotnet tool restore
 
-      - name: Restore NuGet packages
-        run: dotnet restore Terminal.Gui.Elmish.sln
+      - name: Restore dotnet tools (includes Paket)
+        run: dotnet tool restore
+
+      - name: Restore packages via Paket
+        run: dotnet paket restore

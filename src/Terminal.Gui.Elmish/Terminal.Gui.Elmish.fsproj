@@ -70,17 +70,11 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference
-      Include="..\generator\Terminal.Gui.Elmish.Generator\Terminal.Gui.Elmish.Generator.fsproj"
-      ReferenceOutputAssembly="false"
-    />
-  </ItemGroup>
   <Target
     Name="Auto generate code"
     BeforeTargets="CoreCompile">
     <Message Text="Generating source files..." Importance="high" />
-    <Exec Command="dotnet run --project ../generator/Terminal.Gui.Elmish.Generator/Terminal.Gui.Elmish.Generator.fsproj" />
+    <Exec Command="dotnet run --project ../Terminal.Gui.Elmish.Generator/Terminal.Gui.Elmish.Generator.fsproj" />
   </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

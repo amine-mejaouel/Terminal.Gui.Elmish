@@ -45,9 +45,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PropertiesSample", "example
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Elmish.Console.Elements", "examples\Elmish.Console.Elements\Elmish.Console.Elements.fsproj", "{95E60376-4120-426A-9301-5E2DF87D48C7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "generator", "generator", "{E94EDF85-EADD-4485-867F-B6491EB337FD}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Terminal.Gui.Elmish.Generator", "src\generator\Terminal.Gui.Elmish.Generator\Terminal.Gui.Elmish.Generator.fsproj", "{0655047D-F32C-4DC5-AD24-FEAED70942F8}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Terminal.Gui.Elmish.Generator", "src\Terminal.Gui.Elmish.Generator\Terminal.Gui.Elmish.Generator.fsproj", "{0655047D-F32C-4DC5-AD24-FEAED70942F8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Terminal.Gui.Elmish.Tests", "src\Terminal.Gui.Elmish.Tests\Terminal.Gui.Elmish.Tests.fsproj", "{08275411-AA42-4579-B816-B93199C24F7A}"
 EndProject
@@ -62,6 +60,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5616D09A-D244-4126-B5DE-1420B210F9AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{583EA15A-41E6-4ACB-9FEA-CB0417B6DBE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{6A8D775C-2933-49CF-AAE5-4EE8A6B5589D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\copilot-setup-steps.yml = .github\workflows\copilot-setup-steps.yml
+		.github\workflows\todo-issues.lock.yml = .github\workflows\todo-issues.lock.yml
+		.github\workflows\todo-issues.md = .github\workflows\todo-issues.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{0E641F17-BB0C-468F-A196-F2EC2ACE5C37}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\initial-setup.yml = .github\actions\initial-setup.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,10 +111,12 @@ Global
 		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{A7AA94C1-0015-4042-94DB-081A3593A80C} = {F5C6D4D1-3B53-49B1-A802-97FC40A6EF31}
 		{95E60376-4120-426A-9301-5E2DF87D48C7} = {F5C6D4D1-3B53-49B1-A802-97FC40A6EF31}
-		{0655047D-F32C-4DC5-AD24-FEAED70942F8} = {E94EDF85-EADD-4485-867F-B6491EB337FD}
 		{E0E22EF6-37C8-4203-81B0-7398F899374C} = {F5C6D4D1-3B53-49B1-A802-97FC40A6EF31}
 		{98A8CB58-6E7E-4469-BC94-35871774911D} = {5616D09A-D244-4126-B5DE-1420B210F9AD}
 		{08275411-AA42-4579-B816-B93199C24F7A} = {583EA15A-41E6-4ACB-9FEA-CB0417B6DBE5}
+		{6A8D775C-2933-49CF-AAE5-4EE8A6B5589D} = {948761AA-68F5-433D-9019-E8CCD79A9910}
+		{0E641F17-BB0C-468F-A196-F2EC2ACE5C37} = {948761AA-68F5-433D-9019-E8CCD79A9910}
+		{0655047D-F32C-4DC5-AD24-FEAED70942F8} = {5616D09A-D244-4126-B5DE-1420B210F9AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC3C897C-7452-47F0-86EF-345D01CA45C1}

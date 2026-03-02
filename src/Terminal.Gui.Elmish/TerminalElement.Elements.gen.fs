@@ -517,7 +517,7 @@ type internal AdornmentTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.Adornment.Parent_element
+      PKey.Adornment.Parent_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -1887,8 +1887,8 @@ type internal MenuTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.Menu.SelectedMenuItem_element
-      SubElementPropKey.from PKey.Menu.SuperMenuItem_element
+      PKey.Menu.SelectedMenuItem_element.key
+      PKey.Menu.SuperMenuItem_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -2106,7 +2106,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.PopoverMenu.Root_element
+      PKey.PopoverMenu.Root_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3028,7 +3028,7 @@ type internal ShortcutTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.Shortcut.CommandView_element
+      PKey.Shortcut.CommandView_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3156,8 +3156,8 @@ type internal MenuItemTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.MenuItem.SubMenu_element
-      SubElementPropKey.from PKey.MenuItem.TargetView_element
+      PKey.MenuItem.SubMenu_element.key
+      PKey.MenuItem.TargetView_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3216,8 +3216,8 @@ type internal MenuBarItemTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.MenuBarItem.PopoverMenu_element
-      SubElementPropKey.from PKey.MenuBarItem.SubMenu_element
+      PKey.MenuBarItem.PopoverMenu_element.key
+      PKey.MenuBarItem.SubMenu_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3371,7 +3371,7 @@ type internal TabTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.Tab.View_element
+      PKey.Tab.View_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -3421,7 +3421,7 @@ type internal TabViewTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.TabView.SelectedTab_element
+      PKey.TabView.SelectedTab_element.key
     ]
     |> List.append base.SubElements_PropKeys
 
@@ -4323,7 +4323,7 @@ type internal WizardTerminalElement(props: Props) =
 
   override this.SubElements_PropKeys =
     [
-      SubElementPropKey.from PKey.Wizard.CurrentStep_element
+      PKey.Wizard.CurrentStep_element.key
     ]
     |> List.append base.SubElements_PropKeys
 

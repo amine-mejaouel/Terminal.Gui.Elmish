@@ -16,7 +16,7 @@ let subElementsPropKeys (view: ViewMetadata) =
     yield $"  override this.SubElements_PropKeys ="
     yield $"    ["
     for prop in view.View_Typed_Properties do
-      yield $"      SubElementPropKey.from {PKey.getAccessor view.Type}.{prop.PKey}_element"
+      yield $"      {PKey.getAccessor view.Type}.{prop.PKey}_element.key"
     yield $"    ]"
     yield $"    |> List.append base.SubElements_PropKeys"
   }

@@ -33,9 +33,11 @@ module internal PropKey =
     | Event
     | SubElement
 
+  type RawPropKey = string
+
   [<CustomEquality; NoComparison>]
   type PropKey =
-    { Kind: PropKeyKind; Key: string }
+    { Kind: PropKeyKind; Key: RawPropKey }
 
     member this.viewKey =
       match this.Kind with
@@ -61,39 +63,12 @@ module internal PropKey =
       | _ -> false
     override this.GetHashCode() = this.Untyped.GetHashCode()
 
-  [<CustomEquality; NoComparison>]
-  type internal SubElementPropKey<'a> =
-    | SubElementKey of PropKey<'a>
-
-    member this.typed =
-      let (SubElementKey k) = this in k
-
-    member this.untyped = this.typed.Untyped
-    member this.key = this.untyped.Key
-
-    static member createSubElementKey<'a>(key: string) : SubElementPropKey<'a> =
-      if key.EndsWith "_element" then
-        SubElementKey (PropKey { Kind = PropKeyKind.SubElement; Key = key })
-      else
-        failwith $"Invalid single-element key: {key}"
-
-    static member from(key: PropKey<'a>) : SubElementPropKey<'b> =
-      match key.Untyped.Kind with
-      | PropKeyKind.SubElement -> SubElementPropKey<'b>.createSubElementKey key.Untyped.Key
-      | _ -> failwith $"SubElementPropKey.from: expected SubElement, got {key.Untyped}"
-
-    override this.GetHashCode() = this.key.GetHashCode()
-
-    override this.Equals(obj) =
-      match obj with
-      | :? SubElementPropKey<'a> as x -> this.key = x.key
-      | :? PropKey as x -> this.key = x.Key
-      | _ -> false
-
-    member this.viewKey = this.untyped.viewKey
-
   [<RequireQualifiedAccess>]
   module PropKey =
+
+    let viewKeyOfSubElement (key: RawPropKey) : PropKey =
+      { Kind = PropKeyKind.View; Key = key.Replace("_element", "_view") }
+
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" then PropKey { Kind = PropKeyKind.SubElement; Key = key }
@@ -182,18 +157,18 @@ and internal Origin =
   | Root
   | ElmishComponent of Parent: IElmishComponentTE
   | Child of Parent: IViewTE * Index: int
-  | SubElement of Parent: IViewTE * Index: int option * Property: SubElementPropKey<IViewTE>
+  | SubElement of Parent: IViewTE * Index: int option * Property: RawPropKey
 
 type PosAxis =
   | X
   | Y
 
-module internal Props =
-  let addNonTyped (k: PropKey) (v: obj) (this: Props) = this.Props.Add(k, v)
+type Props with
+  static member addNonTyped (k: PropKey) (v: obj) (this: Props) = this.Props.Add(k, v)
 
-  let add<'a>(k: PropKey<'a>, v: 'a) (this: Props) = this |> addNonTyped k.Untyped (v :> obj)
+  static member add<'a>(k: PropKey<'a>, v: 'a) (this: Props) = this |> Props.addNonTyped k.Untyped (v :> obj)
 
-  let getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
+  static member getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
     match this.Props.TryGetValue k.Untyped with
     | true, value -> value |> unbox<'a>
     | false, _ ->
@@ -201,62 +176,69 @@ module internal Props =
       this.Props[k.Untyped] <- value :> obj
       value
 
-  let remove (k: PropKey) (this: Props) = this.Props.Remove k |> ignore
+  static member remove (k: PropKey) (this: Props) = this.Props.Remove k |> ignore
 
-  let tryFind (key: PropKey<'a>) (this: Props) =
-    match this.Props.TryGetValue key.Untyped with
-    | true, v -> v |> unbox<'a> |> Some
-    | _, _ -> None
+  static member tryFind (key: PropKey) =
+    fun (this: Props) ->
+      match this.Props.TryGetValue key with
+      | true, v -> Some v
+      | _, _ -> None
+
+  static member tryFind (key: PropKey<'a>) =
+    fun (this: Props) ->
+      match Props.tryFind key.Untyped this with
+      | Some v -> v |> unbox<'a> |> Some
+      | None -> None
+
+  static member tryFind (kind: PropKeyKind, key: RawPropKey) =
+    fun (this: Props) ->
+      let propKey = { Kind = kind; Key = key }
+      Props.tryFind propKey this
+
+  static member tryFind<'a> (kind: PropKeyKind, key: string) =
+    fun (this: Props) ->
+      Props.tryFind (kind, key) this
+      |> Option.map (fun v -> v |> unbox<'a>)
 
   /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
   /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
-  let partition predicate (props: Props) =
+  static member partition predicate (props: Props) =
     let first = Props()
     let second = Props()
 
     for kv in props.Props do
       if predicate kv then
-        first |> addNonTyped kv.Key kv.Value
+        first |> Props.addNonTyped kv.Key kv.Value
       else
-        second |> addNonTyped kv.Key kv.Value
+        second |> Props.addNonTyped kv.Key kv.Value
 
     first, second
 
-  let filter predicate (props: Props) =
+  static member filter predicate (props: Props) =
     let result = Props()
 
     for kv in props.Props do
       if predicate kv then
-        result |> addNonTyped kv.Key kv.Value
+        result |> Props.addNonTyped kv.Key kv.Value
 
     result
 
-  let tryFindByRawKey<'a> (key: PropKey) (props: Props) =
-    match props.Props.TryGetValue key with
-    | true, v -> v |> unbox<'a> |> Some
-    | _, _ -> None
-
-  let find key (props: Props) =
-    match tryFind key props with
+  static member find key (props: Props) =
+    match Props.tryFind key props with
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  let tryFindWithDefault (key: PropKey<'a>) defaultValue props =
-    props
-    |> tryFind key
-    |> Option.defaultValue defaultValue
+  static member rawKeyExists (k: PropKey) (p: Props) = p.Props.ContainsKey k
 
-  let rawKeyExists (k: PropKey) (p: Props) = p.Props.ContainsKey k
+  static member exists (k: PropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
 
-  let exists (k: PropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
+  static member keys (props: Props) = props.Props.Keys |> Seq.map id
 
-  let keys (props: Props) = props.Props.Keys |> Seq.map id
-
-  let filterSubElementKeys (props: Props) =
+  static member filterSubElementKeys (props: Props) =
     props.Props.Keys
     |> Seq.choose (fun k -> if k.Kind = PropKeyKind.SubElement then Some k else None)
 
-  let iter iteration (props: Props) = props.Props |> Seq.iter iteration
+  static member iter iteration (props: Props) = props.Props |> Seq.iter iteration
 
 [<AutoOpen>]
 module Element =
@@ -288,7 +270,7 @@ module Element =
         | Origin.Child _
         | Origin.ElmishComponent _ ->
           "child"
-        | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey.key}"
+        | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
 
       let indexStr =
         let rec indexStr origin =
@@ -304,6 +286,4 @@ module Element =
       | Origin.Root -> $"root:{name}"
       | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
       | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
-
-
 

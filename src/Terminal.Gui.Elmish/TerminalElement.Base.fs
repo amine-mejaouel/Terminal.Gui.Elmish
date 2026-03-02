@@ -162,7 +162,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.View <- this.NewView ()
 
     this.InitializeSubElements()
-    |> Seq.iter (fun (k, v) -> this.Props |> Props.addNonTyped k v)
+    |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
 
     PositionService.Current.ApplyPos this
     this.SetProps (this, this.Props)
@@ -307,7 +307,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     // 2 - And we add them.
     view_Props_ToReinject
-    |> Props.iter (fun kv -> this.Props |> Props.addNonTyped kv.Key kv.Value)
+    |> Props.iter (fun kv -> this.Props |> Props.add (kv.Key, kv.Value))
 
     this.RemoveProps (this, removedProps)
     this.SetProps (this, c.changedProps)
@@ -315,35 +315,32 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.equivalentTo(other: ViewBackedTerminalElement) =
     let mutable isEquivalent = true
 
-    let mutable enumerator =
-      this.Props.Props.GetEnumerator()
+    this.Props
+    |> Props.iter (fun kv ->
+      if isEquivalent then
+        if kv.Key.Key = "children" then // TODO: for now children comparison is not yet implemented
+          ()
+        elif kv.Key.Kind = PropKeyKind.View then
+          ()
+        elif kv.Key.Kind = PropKeyKind.SubElement then
+          let curElement =
+            kv.Value :?> ViewBackedTerminalElement
 
-    while isEquivalent && enumerator.MoveNext() do
-      let kv = enumerator.Current
+          let otherElement =
+            other.Props
+            |> Props.tryFind kv.Key
+            |> Option.map (fun (x: obj) -> x :?> ViewBackedTerminalElement)
 
-      if kv.Key.Key = "children" then // TODO: for now children comparison is not yet implemented
-        ()
-      elif kv.Key.Kind = PropKeyKind.View then
-        ()
-      elif kv.Key.Kind = PropKeyKind.SubElement then
-        let curElement =
-          kv.Value :?> ViewBackedTerminalElement
+          match curElement, otherElement with
+          | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
+          | _, _ -> isEquivalent <- false
+        else
+          let curElement = kv.Value
 
-        let otherElement =
-          other.Props
-          |> Props.tryFind kv.Key
-          |> Option.map (fun (x: obj) -> x :?> ViewBackedTerminalElement)
+          let otherElement =
+            other.Props |> Props.tryFind kv.Key
 
-        match curElement, otherElement with
-        | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
-        | _, _ -> isEquivalent <- false
-      else
-        let curElement = kv.Value
-
-        let otherElement =
-          other.Props |> Props.tryFind kv.Key
-
-        isEquivalent <- curElement = otherElement
+          isEquivalent <- curElement = otherElement)
 
     isEquivalent
 

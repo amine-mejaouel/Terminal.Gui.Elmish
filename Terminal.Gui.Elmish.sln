@@ -2,15 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
-	ProjectSection(SolutionItems) = preProject
-		paket.dependencies = paket.dependencies
-		paket.lock = paket.lock
-		global.json = global.json
-		Directory.Build.props = Directory.Build.props
-		Directory.Build.targets = Directory.Build.targets
-		.config\dotnet-tools.json = .config\dotnet-tools.json
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".misc", ".misc", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
 	ProjectSection(SolutionItems) = preProject
@@ -80,6 +72,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "initial-setup", "initial-se
 		.github\actions\initial-setup\action.yml = .github\actions\initial-setup\action.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hooks", "hooks", "{D8B74F07-0FB1-4975-9E2D-C012FAEFF0F5}"
+	ProjectSection(SolutionItems) = preProject
+		.githooks\pre-commit = .githooks\pre-commit
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F87DB780-7A33-4578-A201-8DB0D85C1359}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+		global.json = global.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +131,10 @@ Global
 		{0E641F17-BB0C-468F-A196-F2EC2ACE5C37} = {948761AA-68F5-433D-9019-E8CCD79A9910}
 		{0655047D-F32C-4DC5-AD24-FEAED70942F8} = {5616D09A-D244-4126-B5DE-1420B210F9AD}
 		{814403C8-841B-473C-A064-C9B391954A65} = {0E641F17-BB0C-468F-A196-F2EC2ACE5C37}
+		{F87DB780-7A33-4578-A201-8DB0D85C1359} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
+		{948761AA-68F5-433D-9019-E8CCD79A9910} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
+		{078A9C52-DDC1-46F4-9235-9E6C89C87AFD} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
+		{D8B74F07-0FB1-4975-9E2D-C012FAEFF0F5} = {078A9C52-DDC1-46F4-9235-9E6C89C87AFD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC3C897C-7452-47F0-86EF-345D01CA45C1}

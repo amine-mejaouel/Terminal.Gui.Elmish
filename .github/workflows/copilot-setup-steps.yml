@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Initial setup
+        uses: ./.github/actions/initial-setup
 
       # Authenticate the GitHub CLI so it can reach api.github.com.
       # This must happen in setup steps because the Copilot agent firewall
@@ -37,19 +40,3 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh auth status
 
-      # Set up the .NET SDK required by this F# project so the agent does
-      # not need to install it (or download packages) while the firewall is
-      # active.
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.x"
-
-      - name: Install .NET Tools
-        run: dotnet tool restore
-
-      - name: Restore dotnet tools (includes Paket)
-        run: dotnet tool restore
-
-      - name: Restore packages via Paket
-        run: dotnet paket restore

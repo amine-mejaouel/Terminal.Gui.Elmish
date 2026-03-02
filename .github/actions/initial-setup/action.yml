@@ -1,0 +1,23 @@
+name: "Initial Setup"
+description: "Checks out the repo, installs the .NET SDK, restores dotnet tools, and restores packages."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "10.x"
+
+    - name: Restore dotnet tools
+      shell: bash
+      run: dotnet tool restore
+
+    - name: Restore packages via Paket 
+      shell: bash
+      run: dotnet paket restore
+      
+    - name: Dotnet restore # needed to generate the obj/project.assets.json files.
+      shell: bash
+      run: dotnet restore
+

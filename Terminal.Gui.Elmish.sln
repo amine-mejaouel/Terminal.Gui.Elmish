@@ -2,10 +2,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
 	ProjectSection(SolutionItems) = preProject
 		paket.dependencies = paket.dependencies
 		paket.lock = paket.lock
+		global.json = global.json
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		.config\dotnet-tools.json = .config\dotnet-tools.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
@@ -70,8 +74,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{0E641F17-BB0C-468F-A196-F2EC2ACE5C37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "initial-setup", "initial-setup", "{814403C8-841B-473C-A064-C9B391954A65}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\initial-setup.yml = .github\actions\initial-setup.yml
+		.github\actions\initial-setup\action.yml = .github\actions\initial-setup\action.yml
 	EndProjectSection
 EndProject
 Global
@@ -117,6 +123,7 @@ Global
 		{6A8D775C-2933-49CF-AAE5-4EE8A6B5589D} = {948761AA-68F5-433D-9019-E8CCD79A9910}
 		{0E641F17-BB0C-468F-A196-F2EC2ACE5C37} = {948761AA-68F5-433D-9019-E8CCD79A9910}
 		{0655047D-F32C-4DC5-AD24-FEAED70942F8} = {5616D09A-D244-4126-B5DE-1420B210F9AD}
+		{814403C8-841B-473C-A064-C9B391954A65} = {0E641F17-BB0C-468F-A196-F2EC2ACE5C37}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC3C897C-7452-47F0-86EF-345D01CA45C1}

@@ -15,17 +15,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.x"
-
-      - name: Restore dotnet tools (includes Paket)
-        run: dotnet tool restore
-
-      - name: Restore packages via Paket
-        run: dotnet paket restore
+        
+      - name: Initial setup
+        uses: ./.github/actions/initial-setup
 
       - name: Build main library
         run: dotnet build src/Terminal.Gui.Elmish/Terminal.Gui.Elmish.fsproj --no-restore

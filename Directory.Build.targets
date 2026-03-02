@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Automatically configure Git to use the version-controlled hooks in .githooks/.
+    This runs once on the first build (or whenever the sentinel file is missing).
+    To skip hook installation, set the MSBuild property SkipGitHooksSetup=true.
+  -->
+  <Target Name="SetupGitHooks"
+          BeforeTargets="Build"
+          Condition="'$(SkipGitHooksSetup)' != 'true' And '$(CI)' == ''">
+    <PropertyGroup>
+      <_GitHooksDir>$(MSBuildThisFileDirectory).githooks</_GitHooksDir>
+    </PropertyGroup>
+    <Exec Command="git config core.hooksPath &quot;$(_GitHooksDir)&quot;"
+          WorkingDirectory="$(MSBuildThisFileDirectory)"
+          ContinueOnError="true"
+          StandardOutputImportance="low" />
+  </Target>
+</Project>

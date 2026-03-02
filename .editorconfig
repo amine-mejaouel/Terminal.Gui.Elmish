@@ -1,0 +1,10 @@
+root = true
+
+[*.fs]
+# Fantomas settings — enforce the { Field: Type } record-type style
+# that allows members to be added inside the type body.
+# See https://fsprojects.github.io/fantomas/docs/end-users/Configuration.html
+
+# Format a record on multiple lines when it exceeds this character width.
+fsharp_record_multiline_formatter = character_width
+fsharp_max_record_width = 40

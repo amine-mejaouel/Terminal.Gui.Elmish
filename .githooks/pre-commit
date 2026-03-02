@@ -15,7 +15,12 @@ fi
 echo "Fantomas: checking formatting of staged F# files…"
 
 # Ensure the dotnet tools are available.
-dotnet tool restore --no-interactive > /dev/null 2>&1
+# 'dotnet tool restore' requires internet access on first run to download Fantomas
+# from NuGet (https://api.nuget.org). Subsequent runs use the local tool cache.
+if ! dotnet fantomas --version > /dev/null 2>&1; then
+  echo "Fantomas not found locally — running 'dotnet tool restore' (requires internet access)…"
+  dotnet tool restore --no-interactive
+fi
 
 # Run Fantomas in check mode on each staged file.
 # shellcheck disable=SC2086

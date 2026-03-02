@@ -92,7 +92,7 @@ type internal Props() =
   member val XDelayed: TPos option = None with get, set
   member val YDelayed: TPos option = None with get, set
   /// Include all other properties that are not present as explicit members of Props.
-  member val Props = Dictionary<PropKey, obj>() with get
+  member val Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
 
 and internal ITerminalElementBase =
   inherit ITerminalElement
@@ -164,25 +164,49 @@ type PosAxis =
   | Y
 
 type Props with
-  static member addNonTyped (k: PropKey) (v: obj) (this: Props) = this.Props.Add(k, v)
+  static member private toEntries (props: Props) =
+    seq {
+      for kindKv in props.Props do
+        for keyKv in kindKv.Value do
+          KeyValuePair({ Kind = kindKv.Key; Key = keyKv.Key }, keyKv.Value)
+    }
 
-  static member add<'a>(k: PropKey<'a>, v: 'a) (this: Props) = this |> Props.addNonTyped k.Untyped (v :> obj)
+  static member add (k: PropKey, v: obj) =
+    fun (this: Props) ->
+      match this.Props.TryGetValue k.Kind with
+      | true, byKey -> byKey.Add(k.Key, v)
+      | false, _ ->
+        let byKey = Dictionary<RawPropKey, obj>()
+        byKey.Add(k.Key, v)
+        this.Props.Add(k.Kind, byKey)
+
+  static member add<'a>(k: PropKey<'a>, v: 'a) =
+    fun (this: Props) -> this |> Props.add (k.Untyped, v :> obj)
 
   static member getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
-    match this.Props.TryGetValue k.Untyped with
-    | true, value -> value |> unbox<'a>
-    | false, _ ->
+    match Props.tryFind k.Untyped this with
+    | Some value -> value |> unbox<'a>
+    | None ->
       let value = init ()
-      this.Props[k.Untyped] <- value :> obj
+      Props.add (k.Untyped, value :> obj) this
       value
 
-  static member remove (k: PropKey) (this: Props) = this.Props.Remove k |> ignore
+  static member remove (k: PropKey) (this: Props) =
+    match this.Props.TryGetValue k.Kind with
+    | true, byKey ->
+      byKey.Remove k.Key |> ignore
+      if byKey.Count = 0 then
+        this.Props.Remove k.Kind |> ignore
+    | false, _ -> ()
 
   static member tryFind (key: PropKey) =
     fun (this: Props) ->
-      match this.Props.TryGetValue key with
-      | true, v -> Some v
-      | _, _ -> None
+      match this.Props.TryGetValue key.Kind with
+      | true, byKey ->
+        match byKey.TryGetValue key.Key with
+        | true, v -> Some v
+        | _ -> None
+      | _ -> None
 
   static member tryFind (key: PropKey<'a>) =
     fun (this: Props) ->
@@ -206,39 +230,47 @@ type Props with
     let first = Props()
     let second = Props()
 
-    for kv in props.Props do
+    for kv in Props.toEntries props do
       if predicate kv then
-        first |> Props.addNonTyped kv.Key kv.Value
+        first |> Props.add (kv.Key, kv.Value)
       else
-        second |> Props.addNonTyped kv.Key kv.Value
+        second |> Props.add (kv.Key, kv.Value)
 
     first, second
 
   static member filter predicate (props: Props) =
     let result = Props()
 
-    for kv in props.Props do
+    for kv in Props.toEntries props do
       if predicate kv then
-        result |> Props.addNonTyped kv.Key kv.Value
+        result |> Props.add (kv.Key, kv.Value)
 
     result
 
-  static member find key (props: Props) =
+  static member find (key: PropKey<'a>) (props: Props) =
     match Props.tryFind key props with
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  static member rawKeyExists (k: PropKey) (p: Props) = p.Props.ContainsKey k
+  static member rawKeyExists (k: PropKey) (p: Props) =
+    match p.Props.TryGetValue k.Kind with
+    | true, byKey -> byKey.ContainsKey k.Key
+    | _ -> false
 
-  static member exists (k: PropKey<'a>) (p: Props) = p.Props.ContainsKey k.Untyped
+  static member exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  static member keys (props: Props) = props.Props.Keys |> Seq.map id
+  static member keys (props: Props) =
+    Props.toEntries props |> Seq.map _.Key
 
   static member filterSubElementKeys (props: Props) =
-    props.Props.Keys
-    |> Seq.choose (fun k -> if k.Kind = PropKeyKind.SubElement then Some k else None)
+    match props.Props.TryGetValue PropKeyKind.SubElement with
+    | true, byKey ->
+      byKey.Keys
+      |> Seq.map (fun key -> { Kind = PropKeyKind.SubElement; Key = key })
+    | _ -> Seq.empty
 
-  static member iter iteration (props: Props) = props.Props |> Seq.iter iteration
+  static member iter iteration (props: Props) =
+    Props.toEntries props |> Seq.iter iteration
 
 [<AutoOpen>]
 module Element =
@@ -286,4 +318,3 @@ module Element =
       | Origin.Root -> $"root:{name}"
       | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
       | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
-

@@ -45,5 +45,8 @@ jobs:
         with:
           dotnet-version: "10.x"
 
+      - name: Install .NET Tools
+        run: dotnet tool restore
+
       - name: Restore NuGet packages
         run: dotnet restore Terminal.Gui.Elmish.sln

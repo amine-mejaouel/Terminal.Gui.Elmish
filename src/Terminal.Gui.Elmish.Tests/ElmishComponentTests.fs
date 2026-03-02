@@ -16,10 +16,7 @@ let ``ElmishComponent.Parent is set`` () =
   let elmishComponent =
     ElmishTerminal.mkSimpleComponent "ElmishComponent" init update view
 
-  let parent =
-    View.Runnable [
-      elmishComponent
-    ]
+  let parent = View.Runnable [ elmishComponent ]
 
   // Act
   use _ = ElmishTester.render parent
@@ -37,12 +34,7 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
     // Arrange
     let testComponentTE = TestComponent.create (fun p -> p.text "Test")
 
-    let view =
-      View.Runnable (fun (p: RunnableProps) ->
-        p.Children [
-          testComponentTE
-        ]
-      )
+    let view = View.Runnable(fun (p: RunnableProps) -> p.Children [ testComponentTE ])
 
     use program = ElmishTester.render view
 
@@ -50,7 +42,7 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
     let initialPath = testComponentTE.GetPath()
 
     // Act - trigger a re-render by dispatching a message
-    let! _ = testComponentTE.ProcessMsg (TestComponent.Increment |> TerminalMsg.ofMsg)
+    let! _ = testComponentTE.ProcessMsg(TestComponent.Increment |> TerminalMsg.ofMsg)
 
     // Assert - Origin should be preserved
     let afterUpdateComponent = program.ViewTE.Children.First()
@@ -59,12 +51,16 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
 
     Assert.Multiple(fun () ->
       // Path should remain consistent
-      Assert.That(afterUpdatePath, Is.EqualTo(initialPath),
-        $"Component path should be consistent: expected %s{initialPath}, got %s{afterUpdatePath}")
+      Assert.That(
+        afterUpdatePath,
+        Is.EqualTo(initialPath),
+        $"Component path should be consistent: expected %s{initialPath}, got %s{afterUpdatePath}"
+      )
 
       // Origin should point to the correct parent
-      Assert.That((afterUpdateOrigin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(program.ViewTE.GetPath()),
-        "Origin.ParentTerminalElement should point to root")
-    )
+      Assert.That(
+        (afterUpdateOrigin |> Origin.parentTerminalElement).Value.GetPath(),
+        Is.EqualTo(program.ViewTE.GetPath()),
+        "Origin.ParentTerminalElement should point to root"
+      ))
   }
-

@@ -28,8 +28,7 @@ let incrementCmd () =
       | "+10" -> 10
       | "+5" -> 5
       | "+1" -> 1
-      | _ -> 0
-    )
+      | _ -> 0)
     ()
     Incremented
 
@@ -43,26 +42,22 @@ let decrementCmd () =
       | "-10" -> 10
       | "-5" -> 5
       | "-1" -> 1
-      | _ -> 0
-    )
+      | _ -> 0)
     ()
     Decremented
 
 let showWizardCmd =
   fun dispatch ->
-    let wizard =
-      new Wizard(Title = ($"Setup Wizard"))
+    let wizard = new Wizard(Title = ($"Setup Wizard"))
     // Add 1st step
-    let firstStep =
-      new WizardStep(Title = "End User License Agreement")
+    let firstStep = new WizardStep(Title = "End User License Agreement")
 
     wizard.AddStep(firstStep)
     firstStep.NextButtonText <- "Accept!"
     firstStep.HelpText <- "This is the End User License Agreement."
 
     // Add 2nd step
-    let secondStep =
-      new WizardStep(Title = "Second Step")
+    let secondStep = new WizardStep(Title = "Second Step")
 
     wizard.AddStep(secondStep)
     secondStep.HelpText <- "This is the help text for the Second Step."
@@ -85,7 +80,11 @@ let showWizardCmd =
 
         ev.Cancel <- true
       | true, num ->
-        MessageBox.Query("Wizard", $"Finished. The Number you entered is '{num}' and will be added to the counter!", "Ok")
+        MessageBox.Query(
+          "Wizard",
+          $"Finished. The Number you entered is '{num}' and will be added to the counter!",
+          "Ok"
+        )
         |> ignore
 
         dispatch (Incremented num)
@@ -94,7 +93,7 @@ let showWizardCmd =
 
     Dialogs.showWizard wizard
 
-  |> Cmd.ofSub
+    |> Cmd.ofSub
 
 
 let update (msg: Msg) (model: Model) =
@@ -102,58 +101,48 @@ let update (msg: Msg) (model: Model) =
   | Increment -> model, incrementCmd ()
   | Decrement -> model, decrementCmd ()
   | Incremented i ->
-    {
-      model with
-          Counter = model.Counter + i
-    },
+    { model with
+        Counter = model.Counter + i },
     Cmd.none
   | Decremented i ->
-    {
-      model with
-          Counter = model.Counter - i
-    },
+    { model with
+        Counter = model.Counter - i },
     Cmd.none
   | Reset -> { model with Counter = 0 }, Cmd.none
   | ShowWizard -> model, showWizardCmd
 
 
-let view (model: Model) (dispatch: Msg -> unit) = [
-  View.label [
-    prop.position.x.center
-    prop.position.y.absolute 1
-    prop.width.fill 1
-    prop.alignment.center
-    prop.color (Color.BrightYellow, Color.Green)
-    labelProps.text "Counter with Message Boxes!"
-  ]
+let view (model: Model) (dispatch: Msg -> unit) =
+  [ View.label
+      [ prop.position.x.center
+        prop.position.y.absolute 1
+        prop.width.fill 1
+        prop.alignment.center
+        prop.color (Color.BrightYellow, Color.Green)
+        labelProps.text "Counter with Message Boxes!" ]
 
-  View.button [
-    prop.position.x.center
-    prop.position.y.absolute 5
-    buttonProps.text "Up"
-    prop.accept (fun ev -> dispatch Increment)
-  ]
+    View.button
+      [ prop.position.x.center
+        prop.position.y.absolute 5
+        buttonProps.text "Up"
+        prop.accept (fun ev -> dispatch Increment) ]
 
-  View.label [
-    prop.position.x.center
-    prop.position.y.absolute 6
-    prop.alignment.center
-    prop.color (Color.Magenta, Color.BrightYellow)
-    labelProps.text $"The Count of 'Fancyness' is {model.Counter}"
-  ]
+    View.label
+      [ prop.position.x.center
+        prop.position.y.absolute 6
+        prop.alignment.center
+        prop.color (Color.Magenta, Color.BrightYellow)
+        labelProps.text $"The Count of 'Fancyness' is {model.Counter}" ]
 
 
-  View.button [
-    prop.position.x.center
-    prop.position.y.absolute 7
-    buttonProps.text "Down"
-    prop.accept (fun ev -> dispatch Decrement)
-  ]
+    View.button
+      [ prop.position.x.center
+        prop.position.y.absolute 7
+        buttonProps.text "Down"
+        prop.accept (fun ev -> dispatch Decrement) ]
 
-  View.button [
-    prop.position.x.center
-    prop.position.y.absolute 11
-    buttonProps.text "Show Wizard"
-    prop.accept (fun ev -> dispatch ShowWizard)
-  ]
-]
+    View.button
+      [ prop.position.x.center
+        prop.position.y.absolute 11
+        buttonProps.text "Show Wizard"
+        prop.accept (fun ev -> dispatch ShowWizard) ] ]

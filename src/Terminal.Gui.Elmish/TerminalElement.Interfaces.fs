@@ -25,4 +25,3 @@ type internal OrientationInterface =
     terminalElement.TrySetEventHandler(PKey.IOrientationInterface.OrientationChanged, view.OrientationChanged)
 
     terminalElement.TrySetEventHandler(PKey.IOrientationInterface.OrientationChanging, view.OrientationChanging)
-

@@ -35,6 +35,14 @@ module internal PropKey =
 
   type RawPropKey = string
 
+  type internal IRawPropKey =
+    abstract RawKey: RawPropKey
+
+  let private equalsByRawKey (rawKey: RawPropKey) (obj: obj) =
+    match obj with
+    | :? IRawPropKey as other -> rawKey = other.RawKey
+    | _ -> false
+
   [<CustomEquality; NoComparison>]
   type PropKey =
     { Kind: PropKeyKind; Key: RawPropKey }
@@ -44,12 +52,12 @@ module internal PropKey =
       | PropKeyKind.SubElement -> { Kind = PropKeyKind.View; Key = this.Key.Replace("_element", "_view") }
       | _ -> failwith $"viewKey is only valid for SubElement PropKeys, got: {this}"
 
-    override this.Equals(obj) =
-      match obj with
-      | :? PropKey as other -> this.Key = other.Key
-      | _ -> false
+    override this.Equals(obj) = equalsByRawKey this.Key obj
 
     override this.GetHashCode() = this.Key.GetHashCode()
+
+    interface IRawPropKey with
+      member this.RawKey = this.Key
 
   [<CustomEquality; NoComparison>]
   type PropKey<'a> =
@@ -57,11 +65,11 @@ module internal PropKey =
     | PropKey of PropKey
     member this.Untyped = let (PropKey k) = this in k
     member this.key = this.Untyped.Key
-    override this.Equals(obj) =
-      match obj with
-      | :? PropKey<'a> as other -> this.Untyped = other.Untyped
-      | _ -> false
+    override this.Equals(obj) = equalsByRawKey this.Untyped.Key obj
     override this.GetHashCode() = this.Untyped.GetHashCode()
+
+    interface IRawPropKey with
+      member this.RawKey = this.Untyped.Key
 
   [<RequireQualifiedAccess>]
   module PropKey =

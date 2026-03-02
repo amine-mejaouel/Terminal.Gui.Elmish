@@ -24,72 +24,86 @@ type internal EventHandlerRegistrar() =
   /// Which will call IEvent.RemoveHandler on the event associated with the property key.
   let handlerRemovalActions = Dictionary<PropKey, unit -> unit>()
 
-  member private this.TryFindHandler<'THandler when 'THandler :> Delegate> (pkey: PropKey) =
+  member private this.TryFindHandler<'THandler when 'THandler :> Delegate>(pkey: PropKey) =
     match trackedHandlers.TryGetValue(pkey) with
-    | true, existingHandler ->
-      Some (existingHandler :?> 'THandler)
-    | false, _ ->
-      None
+    | true, existingHandler -> Some(existingHandler :?> 'THandler)
+    | false, _ -> None
 
-  member private this.TryGetHandlerRemovalAction (pkey: PropKey) =
+  member private this.TryGetHandlerRemovalAction(pkey: PropKey) =
     match handlerRemovalActions.TryGetValue(pkey) with
-    | true, existingRemover ->
-      Some existingRemover
-    | false, _ ->
-      None
+    | true, existingRemover -> Some existingRemover
+    | false, _ -> None
 
   /// Registers a function to be invoked to remove previously added handlers associated with the specified property key.
-  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate> (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit) =
+  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate>
+    (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit)
+    =
     handlerRemovalActions[pkey] <-
       fun () ->
         // This will only remove the handler from the event, not from the repositories
         removeHandler handler
-        // Note: The actual removal from the repositories is done in `removeHandler` method
+  // Note: The actual removal from the repositories is done in `removeHandler` method
 
   /// Removes the handler associated with the specified property key, if it exists.
-  member this.RemoveHandler (pkey: PropKey) =
+  member this.RemoveHandler(pkey: PropKey) =
     match this.TryGetHandlerRemovalAction pkey with
     | Some removeHandler ->
       removeHandler ()
       handlerRemovalActions.Remove pkey |> ignore
       trackedHandlers.Remove pkey |> ignore
-    | None ->
-      ()
+    | None -> ()
 
-  member private this.SetHandler<'THandler when 'THandler :> Delegate> (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit) =
+  member private this.SetHandler<'THandler when 'THandler :> Delegate>
+    (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit)
+    =
     match this.TryFindHandler<'THandler> pkey with
-    | Some previouslySetHandler ->
-      removeHandler previouslySetHandler
-    | None ->
-      ()
+    | Some previouslySetHandler -> removeHandler previouslySetHandler
+    | None -> ()
 
     trackedHandlers[pkey] <- handler
     addHandler handler
 
-  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>, action: 'TEventArgs -> unit) =
-    let handler: EventHandler<'TEventArgs> = EventHandler<'TEventArgs>(fun sender args -> action args)
+  member this.SetEventHandler
+    (
+      pkey: PropKey<'TEventArgs -> unit>,
+      event: IEvent<EventHandler<'TEventArgs>, 'TEventArgs>,
+      action: 'TEventArgs -> unit
+    ) =
+    let handler: EventHandler<'TEventArgs> =
+      EventHandler<'TEventArgs>(fun sender args -> action args)
+
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: unit -> unit) =
+  member this.SetEventHandler
+    (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler, EventArgs>, action: unit -> unit)
+    =
     let handler: EventHandler = EventHandler(fun sender args -> action ())
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler,EventArgs>, action: EventArgs -> unit) =
+  member this.SetEventHandler
+    (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler, EventArgs>, action: EventArgs -> unit)
+    =
     let handler: EventHandler = EventHandler(fun sender args -> action args)
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-  member this.SetEventHandler (pkey: PropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>, action: NotifyCollectionChangedEventArgs -> unit) =
-    let handler: NotifyCollectionChangedEventHandler = NotifyCollectionChangedEventHandler(fun sender args -> action args)
+  member this.SetEventHandler
+    (
+      pkey: PropKey<NotifyCollectionChangedEventArgs -> unit>,
+      event: IEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>,
+      action: NotifyCollectionChangedEventArgs -> unit
+    ) =
+    let handler: NotifyCollectionChangedEventHandler =
+      NotifyCollectionChangedEventHandler(fun sender args -> action args)
+
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-type internal TreeNode = {
-  TerminalElement: TerminalElement
-  Origin: Origin
-}
+type internal TreeNode =
+  { TerminalElement: TerminalElement
+    Origin: Origin }
 
 [<AbstractClass>]
 type internal ViewBackedTerminalElement(props: Props) =
@@ -100,10 +114,9 @@ type internal ViewBackedTerminalElement(props: Props) =
     match nodes with
     | [] -> ()
     | cur :: remainingNodes ->
-      let curNode = {
-        TerminalElement = cur.TerminalElement
-        Origin = cur.Origin
-      }
+      let curNode =
+        { TerminalElement = cur.TerminalElement
+          Origin = cur.Origin }
 
       traverse curNode
 
@@ -112,10 +125,9 @@ type internal ViewBackedTerminalElement(props: Props) =
         | ElmishComponentTE _ -> []
         | ViewTE te ->
           te.Children
-          |> Seq.mapi (fun i e -> {
-            TerminalElement = e
-            Origin = Origin.Child (te, i)
-          })
+          |> Seq.mapi (fun i e ->
+            { TerminalElement = e
+              Origin = Origin.Child(te, i) })
           |> List.ofSeq
 
       traverseTree (childNodes @ remainingNodes) traverse
@@ -129,10 +141,11 @@ type internal ViewBackedTerminalElement(props: Props) =
   member val ViewReusedByAnotherTE = false with get, set
 
   member this.View
-    with get() = view
+    with get () = view
     and set value =
       if (view <> null) then
         failwith $"View has already been set."
+
       view <- value
       viewSetEvent.Trigger value
 
@@ -144,8 +157,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member val Props: Props = props with get, set
 
-  member this.Children
-    with get() : List<TerminalElement> = props.Children
+  member this.Children: List<TerminalElement> = props.Children
 
   abstract SubElements_PropKeys: RawPropKey list
   default _.SubElements_PropKeys = []
@@ -159,13 +171,13 @@ type internal ViewBackedTerminalElement(props: Props) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
-    this.View <- this.NewView ()
+    this.View <- this.NewView()
 
     this.InitializeSubElements()
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
 
     PositionService.Current.ApplyPos this
-    this.SetProps (this, this.Props)
+    this.SetProps(this, this.Props)
 
   abstract Reuse: prev: IViewTE -> unit
 
@@ -179,34 +191,29 @@ type internal ViewBackedTerminalElement(props: Props) =
       match node.TerminalElement with
       | ViewTE te ->
         te.Origin <- node.Origin
-        (te :?> ViewBackedTerminalElement).InitializeView ()
+        (te :?> ViewBackedTerminalElement).InitializeView()
       | ElmishComponentTE ce ->
         ce.Origin <- node.Origin
-        ce.StartElmishLoop ()
+        ce.StartElmishLoop()
 
-      #if DEBUG
+#if DEBUG
       Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
-      #endif
+#endif
 
       // Here, the "children" views are added to their parent
       match node.TerminalElement with
       | ElmishComponentTE _ -> ()
       | ViewTE te ->
         if te.SetAsChildOfParentView then
-          te.Origin |> Origin.parentView
-          |> Option.iter (fun v -> v.Add te.View |> ignore)
+          te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
 
     traverseTree
-      [
-        {
-          TerminalElement = TerminalElement.from this
-          Origin = origin
-        }
-      ]
+      [ { TerminalElement = TerminalElement.from this
+          Origin = origin } ]
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.InitializeSubElements () : (PropKey * obj) seq =
+  member this.InitializeSubElements() : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
         match this.Props |> Props.tryFind (PropKeyKind.SubElement, x) with
@@ -216,60 +223,65 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree (Origin.SubElement (this, None, x))
+            subElement.InitializeTree(Origin.SubElement(this, None, x))
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement (this, Some i, x)))
+            |> Seq.iteri (fun i e -> e.InitializeTree(Origin.SubElement(this, Some i, x)))
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
-            let views =
-              elements |> Seq.map _.View |> Seq.toList
+            let views = elements |> Seq.map _.View |> Seq.toList
 
             yield viewKey, views
           | _ -> failwith "Out of range subElement type"
     }
 
-  member this.TrySetEventHandler<'TEventArgs> (k: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>,'TEventArgs>) =
+  member this.TrySetEventHandler<'TEventArgs>
+    (k: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>, 'TEventArgs>)
+    =
 
     this.TryRemoveEventHandler k.Untyped
 
-    this.Props |> Props.tryFind k
+    this.Props
+    |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TrySetEventHandler (k: PropKey<EventArgs -> unit>, event: IEvent<EventHandler,EventArgs>) =
+  member this.TrySetEventHandler(k: PropKey<EventArgs -> unit>, event: IEvent<EventHandler, EventArgs>) =
 
     this.TryRemoveEventHandler k.Untyped
 
-    this.Props |> Props.tryFind k
+    this.Props
+    |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TrySetEventHandler (k: PropKey<NotifyCollectionChangedEventArgs -> unit>, event: IEvent<NotifyCollectionChangedEventHandler,NotifyCollectionChangedEventArgs>) =
+  member this.TrySetEventHandler
+    (
+      k: PropKey<NotifyCollectionChangedEventArgs -> unit>,
+      event: IEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
+    ) =
 
     this.TryRemoveEventHandler k.Untyped
 
-    this.Props |> Props.tryFind k
+    this.Props
+    |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TryRemoveEventHandler (k: PropKey<_>) =
+  member this.TryRemoveEventHandler(k: PropKey<_>) =
     this.EventRegistrar.RemoveHandler k.Untyped
 
-  member private this.TryRemoveEventHandler (k: PropKey) =
-    this.EventRegistrar.RemoveHandler k
+  member private this.TryRemoveEventHandler(k: PropKey) = this.EventRegistrar.RemoveHandler k
 
   abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
-  default this.SetProps (terminalElement: ViewBackedTerminalElement, props: Props) =
-    ()
+  default this.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
 
   abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
-  default this.RemoveProps (terminalElement: ViewBackedTerminalElement, props: Props) =
-    ()
+  default this.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
 
   /// Reuses:
   /// // TODO: outdated documentation
@@ -309,8 +321,8 @@ type internal ViewBackedTerminalElement(props: Props) =
     view_Props_ToReinject
     |> Props.iter (fun kv -> this.Props |> Props.add (kv.Key, kv.Value))
 
-    this.RemoveProps (this, removedProps)
-    this.SetProps (this, c.changedProps)
+    this.RemoveProps(this, removedProps)
+    this.SetProps(this, c.changedProps)
 
   member this.equivalentTo(other: ViewBackedTerminalElement) =
     let mutable isEquivalent = true
@@ -323,8 +335,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         elif kv.Key.Kind = PropKeyKind.View then
           ()
         elif kv.Key.Kind = PropKeyKind.SubElement then
-          let curElement =
-            kv.Value :?> ViewBackedTerminalElement
+          let curElement = kv.Value :?> ViewBackedTerminalElement
 
           let otherElement =
             other.Props
@@ -337,8 +348,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         else
           let curElement = kv.Value
 
-          let otherElement =
-            other.Props |> Props.tryFind kv.Key
+          let otherElement = other.Props |> Props.tryFind kv.Key
 
           isEquivalent <- curElement = otherElement)
 
@@ -347,16 +357,13 @@ type internal ViewBackedTerminalElement(props: Props) =
   static member compare
     (prevProps: Props)
     (curProps: Props)
-    : {|
-        changedProps: Props
-        unchangedProps: Props
-        removedProps: Props
-      |}
+    : {| changedProps: Props
+         unchangedProps: Props
+         removedProps: Props |}
     =
 
     let remainingOldProps, removedProps =
-      prevProps
-      |> Props.partition (fun kv -> curProps |> Props.rawKeyExists kv.Key)
+      prevProps |> Props.partition (fun kv -> curProps |> Props.rawKeyExists kv.Key)
 
     let unchangedProps, changedProps =
       curProps
@@ -365,8 +372,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         | _ when kv.Key.Key = "children" -> // Here we always consider the 'children' unchanged
           true
         | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubElement ->
-          let curElement =
-            kv.Value :?> ViewBackedTerminalElement
+          let curElement = kv.Value :?> ViewBackedTerminalElement
 
           let oldElement = v :?> ViewBackedTerminalElement
           curElement.equivalentTo oldElement
@@ -374,14 +380,11 @@ type internal ViewBackedTerminalElement(props: Props) =
         // TODO: Properties values should be comparable
         // TODO: should also be able to compare _element props
         | Some v' when kv.Value = v' -> true
-        | _ -> false
-      )
+        | _ -> false)
 
-    {|
-      changedProps = changedProps
-      unchangedProps = unchangedProps
-      removedProps = removedProps
-    |}
+    {| changedProps = changedProps
+       unchangedProps = unchangedProps
+       removedProps = removedProps |}
 
 
   member this.Dispose() =
@@ -390,14 +393,16 @@ type internal ViewBackedTerminalElement(props: Props) =
     elif (not this.ViewReusedByAnotherTE) then
 
       // Remove any event subscriptions
-      this.RemoveProps (this, this.Props)
+      this.RemoveProps(this, this.Props)
 
-      this.Origin |> Origin.parentView |> Option.iter (fun v -> v.Remove this.View |> ignore)
+      this.Origin
+      |> Origin.parentView
+      |> Option.iter (fun v -> v.Remove this.View |> ignore)
 
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props
-        |> Props.tryFind<IDisposable> (PropKeyKind.SubElement,  key)
+        |> Props.tryFind<IDisposable> (PropKeyKind.SubElement, key)
         |> Option.iter _.Dispose()
 
       for child in this.Children do
@@ -408,15 +413,20 @@ type internal ViewBackedTerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IViewTE with
-    member this.InitializeTree origin  = this.InitializeTree origin
+    member this.InitializeTree origin = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
-    member this.GetPath() = this.Origin |> Origin.getPath(this.Name)
-    member this.Origin with get () = this.Origin and set v = this.Origin <- v
+
+    member this.GetPath() =
+      this.Origin |> Origin.getPath (this.Name)
+
+    member this.Origin
+      with get () = this.Origin
+      and set v = this.Origin <- v
+
     member this.View = this.View
     member this.Name = this.Name
 
-    member this.SetAsChildOfParentView =
-      this.SetAsChildOfParentView
+    member this.SetAsChildOfParentView = this.SetAsChildOfParentView
 
     member this.Children = this.Children
 

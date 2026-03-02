@@ -5,6 +5,7 @@ let gen () =
   seq {
     yield "namespace Terminal.Gui.Elmish"
     yield ""
+
     for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces() do
       if i <> "ITerminalElement" then
         yield $"type {i} ="
@@ -12,4 +13,3 @@ let gen () =
         yield ""
   }
   |> CodeWriter.write "Types.gen.fs"
-

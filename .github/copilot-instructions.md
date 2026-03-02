@@ -5,15 +5,15 @@ Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Termin
 
 **Key technologies:**
 - Language: F#
-- Target Framework: .NET 8.0+ (main library targets `net8.0`, tests target `net9.0`)
+- Target Framework: .NET 10.0 (all projects target `net10.0`)
 - Package Manager: Paket (not NuGet directly)
-- Testing: NUnit
-- Key Dependencies: Elmish 5.0.2, Terminal.Gui 2.0.0-develop (prerelease)
+- Testing: NUnit (with Microsoft.Testing.Platform runner)
+- Key Dependencies: Elmish 5.0.2, Terminal.Gui 2.0.0-alpha.4170 (prerelease)
 
 ## Build Instructions
 
 ### Prerequisites
-- .NET SDK 8.0 or higher (the project uses `net8.0` and `net9.0` target frameworks)
+- .NET SDK 10.0 or higher (all projects target `net10.0`, as configured in `global.json`)
 - Paket tool for dependency management
 
 ### Step 1: Restore dotnet tools
@@ -58,22 +58,34 @@ dotnet test src/Terminal.Gui.Elmish.Tests/Terminal.Gui.Elmish.Tests.fsproj
 Terminal.Gui.Elmish/
 ├── src/
 │   ├── Terminal.Gui.Elmish/          # Main library
+│   │   ├── Task.fs                   # Async task helpers
 │   │   ├── Types.fs                  # Core types (ITerminalElement, Props, etc.)
-│   │   ├── Interop.fs                # Terminal.Gui interop
-│   │   ├── Elements.fs               # Element definitions
-│   │   ├── Props.fs                  # Property builders
-│   │   ├── Views.fs                  # View builders (View.topLevel, View.button, etc.)
-│   │   ├── TreeDiff.fs               # Diffing mechanism for updates
+│   │   ├── Differ.fs                 # Diffing mechanism for updates
 │   │   ├── ElmishTerminal.fs         # Program runner (mkProgram, runTerminal)
+│   │   ├── Types.gen.fs              # Generated types
+│   │   ├── PKey.gen.fs               # Generated property keys
+│   │   ├── Services/
+│   │   │   └── PositionService.fs    # Position/layout service
+│   │   ├── TerminalElement.Base.fs   # Base terminal element implementation
+│   │   ├── TerminalElement.Interfaces.fs # Element interfaces
+│   │   ├── TerminalElement.Elements.gen.fs # Generated element definitions
+│   │   ├── Props.gen.fs              # Generated property builders
+│   │   ├── Macros.fs                 # Macros API helpers
+│   │   ├── View.gen.fs               # Generated view builders
 │   │   └── Terminal.Gui.Elmish.fsproj
+│   ├── Terminal.Gui.Elmish.Base/     # Base abstractions (build output only)
+│   ├── Terminal.Gui.Elmish.Gen/      # Generated code output (build output only)
 │   ├── Terminal.Gui.Elmish.Tests/    # NUnit tests
-│   └── generator/                    # Code generator (optional)
+│   └── generator/
+│       └── Terminal.Gui.Elmish.Generator/  # Code generator (runs at build time)
 ├── examples/
-│   ├── Elmish.Console.Elements/      # Comprehensive example (net8.0)
-│   ├── PropertiesSample/             # Properties API example (net9.0)
-│   └── MacrosSample/                 # Macros API example (net9.0)
+│   ├── Elmish.Console.Elements/      # Comprehensive example
+│   ├── PropertiesSample/             # Properties API example
+│   └── MacrosSample/                 # Macros API example
 ├── docs/                             # MkDocs documentation
 ├── .paket/                           # Paket configuration
+├── global.json                       # .NET SDK version pinning
+├── Directory.Build.props             # Shared MSBuild properties
 ├── paket.dependencies               # Package dependencies
 ├── paket.lock                       # Locked versions
 └── Terminal.Gui.Elmish.sln          # Solution file
@@ -83,6 +95,8 @@ Terminal.Gui.Elmish/
 
 | File | Purpose |
 |------|---------|
+| `global.json` | .NET SDK version pinning and test runner configuration |
+| `Directory.Build.props` | Shared MSBuild properties across all projects |
 | `paket.dependencies` | Root package dependencies |
 | `paket.lock` | Locked package versions |
 | `*/paket.references` | Per-project package references |
@@ -92,8 +106,26 @@ Terminal.Gui.Elmish/
 ## Important F# Conventions
 
 1. **File order matters in F#**: Files must be listed in dependency order in `.fsproj` files
-2. **View DSL pattern**: Use `View.topLevel`, `View.button`, `View.label` etc.
+2. **View DSL pattern**: Use `View.Runnable`, `View.Button`, `View.Label` etc.
 3. **Two API styles**: Properties syntax and Macros syntax (see tests for examples)
+
+## Code Generation
+
+The main library uses a **build-time code generation** step. An MSBuild target (`BeforeTargets="CoreCompile"`) in `Terminal.Gui.Elmish.fsproj` runs the generator project:
+
+```bash
+dotnet run --project src/generator/Terminal.Gui.Elmish.Generator/Terminal.Gui.Elmish.Generator.fsproj
+```
+
+This produces the `*.gen.fs` files (`Types.gen.fs`, `PKey.gen.fs`, `TerminalElement.Elements.gen.fs`, `Props.gen.fs`, `View.gen.fs`). These generated files **should not be hand-edited**; modify the generator instead. The generation runs automatically as part of `dotnet build`.
+
+## Test Runner
+
+Tests use the **Microsoft.Testing.Platform** runner (NUnit's native integration), configured via:
+- `EnableNUnitRunner` property in `Terminal.Gui.Elmish.Tests.fsproj`
+- `"runner": "Microsoft.Testing.Platform"` in `global.json`
+
+The test project references `Microsoft.Testing.Platform`, `NUnit`, and `NUnit3TestAdapter` via its `paket.references` (in the `test` Paket group).
 
 ## Example Application Pattern
 ```fsharp
@@ -108,10 +140,10 @@ ElmishTerminal.mkProgram init update view
 ```
 
 ## CI/CD
-- Travis CI (`.travis.yml`) - Linux builds (configured with .NET 6.0.300, but current project requires .NET 8.0+)
-- AppVeyor (`appveyor.yml`) - Windows builds
+- Travis CI (`.travis.yml`) - Linux builds (configured with .NET 6.0.300, but current project requires .NET 10.0+)
+- AppVeyor (`appveyor.yml`) - Windows builds (configured for Visual Studio 2017, also outdated)
 
-**Note:** The Travis CI configuration uses an outdated .NET version. The current codebase requires .NET 8.0+ to build properly.
+**Note:** Both CI configurations are outdated. The current codebase requires .NET 10.0+ to build properly.
 
 ## Documentation
 Documentation uses MkDocs with Material theme:
@@ -126,7 +158,7 @@ cd docs && mkdocs serve
 Run `dotnet tool restore` before building.
 
 ### Target Framework Mismatch
-The main library uses `net8.0`. Tests and some examples use `net9.0`. Ensure compatible .NET SDK.
+All projects target `net10.0`. Ensure .NET SDK 10.0+ is installed (see `global.json`).
 
 ### Build Warnings
 The project uses prerelease Terminal.Gui. Warnings about prerelease packages are expected.

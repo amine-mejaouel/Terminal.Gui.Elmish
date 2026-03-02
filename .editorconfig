@@ -1,6 +1,9 @@
 root = true
 
 [*.fs]
+indent_style = space
+indent_size = 2
+
 # Fantomas settings — enforce the { Field: Type } record-type style
 # that allows members to be added inside the type body.
 # See https://fsprojects.github.io/fantomas/docs/end-users/Configuration.html

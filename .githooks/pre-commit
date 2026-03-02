@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Pre-commit hook: check that staged F# files are formatted with Fantomas.
+# To install, run: git config core.hooksPath .githooks
+# (This is done automatically when you build the project.)
+
+set -euo pipefail
+
+# Collect staged .fs files (added or modified, not deleted).
+staged_fs_files=$(git diff --cached --name-only --diff-filter=d | grep '\.fs$' || true)
+
+if [ -z "$staged_fs_files" ]; then
+  exit 0
+fi
+
+echo "Fantomas: checking formatting of staged F# files…"
+
+# Ensure the dotnet tools are available.
+# 'dotnet tool restore' requires internet access on first run to download Fantomas
+# from NuGet (https://api.nuget.org). Subsequent runs use the local tool cache.
+if ! dotnet fantomas --version > /dev/null 2>&1; then
+  echo "Fantomas not found locally — running 'dotnet tool restore' (requires internet access)…"
+  dotnet tool restore --no-interactive
+fi
+
+# Run Fantomas in check mode on each staged file.
+# shellcheck disable=SC2086
+if ! dotnet fantomas --check $staged_fs_files; then
+  echo ""
+  echo "Fantomas formatting check failed."
+  echo "Run 'dotnet fantomas <file>' to fix formatting, then re-stage the file(s)."
+  exit 1
+fi
+
+echo "Fantomas: all staged F# files are correctly formatted."

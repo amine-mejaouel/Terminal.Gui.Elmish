@@ -23,6 +23,7 @@
     <Compile Include="MenuTests.fs" />
     <Compile Include="ElmishComponentTests.fs" />
     <Compile Include="CodeGenTests.fs" />
+    <Compile Include="PropKeyTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
     <Compile Include="ElmishLoopTests.fs" />
     <Compile Include="PositionServiceTests.fs" />

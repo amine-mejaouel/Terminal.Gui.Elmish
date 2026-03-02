@@ -147,7 +147,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.Children
     with get() : List<TerminalElement> = props.Children
 
-  abstract SubElements_PropKeys: SubElementPropKey<IViewTE> list
+  abstract SubElements_PropKeys: RawPropKey list
   default _.SubElements_PropKeys = []
 
   abstract NewView: unit -> View
@@ -209,7 +209,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.InitializeSubElements () : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
-        match this.Props |> Props.tryFindByRawKey<obj> x.untyped with
+        match this.Props |> Props.tryFind (PropKeyKind.SubElement, x) with
 
         | None -> ()
 
@@ -218,14 +218,14 @@ type internal ViewBackedTerminalElement(props: Props) =
           | :? ViewBackedTerminalElement as subElement ->
             subElement.InitializeTree (Origin.SubElement (this, None, x))
 
-            let viewKey = x.viewKey
+            let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
             |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement (this, Some i, x)))
 
-            let viewKey = x.viewKey
+            let viewKey = PropKey.viewKeyOfSubElement x
 
             let views =
               elements |> Seq.map _.View |> Seq.toList
@@ -331,7 +331,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
         let otherElement =
           other.Props
-          |> Props.tryFindByRawKey kv.Key
+          |> Props.tryFind kv.Key
           |> Option.map (fun (x: obj) -> x :?> ViewBackedTerminalElement)
 
         match curElement, otherElement with
@@ -341,7 +341,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         let curElement = kv.Value
 
         let otherElement =
-          other.Props |> Props.tryFindByRawKey kv.Key
+          other.Props |> Props.tryFind kv.Key
 
         isEquivalent <- curElement = otherElement
 
@@ -364,7 +364,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     let unchangedProps, changedProps =
       curProps
       |> Props.partition (fun kv ->
-        match remainingOldProps |> Props.tryFindByRawKey kv.Key with
+        match remainingOldProps |> Props.tryFind kv.Key with
         | _ when kv.Key.Key = "children" -> // Here we always consider the 'children' unchanged
           true
         | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubElement ->
@@ -400,7 +400,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props
-        |> Props.tryFind key.typed
+        |> Props.tryFind<IDisposable> (PropKeyKind.SubElement,  key)
         |> Option.iter _.Dispose()
 
       for child in this.Children do
@@ -428,4 +428,3 @@ type internal ViewBackedTerminalElement(props: Props) =
     member this.OnViewSet = this.ViewSet
 
     member this.Dispose() = this.Dispose()
-

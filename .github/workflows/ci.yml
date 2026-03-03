@@ -27,3 +27,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test --project src/Terminal.Gui.Elmish.Tests/Terminal.Gui.Elmish.Tests.fsproj --no-build
+        
+      - name: Fantomas check
+        run: ./fantomas-check.sh

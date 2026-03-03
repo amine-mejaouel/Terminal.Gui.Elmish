@@ -26,8 +26,13 @@ module internal PKey =
     member val HotKeySpecifier: PropKey<System.Text.Rune> = PropKey.Create.simple "View.HotKeySpecifier"
     member val Id: PropKey<string> = PropKey.Create.simple "View.Id"
     member val IsInitialized: PropKey<bool> = PropKey.Create.simple "View.IsInitialized"
-    member val MouseHighlightStates: PropKey<Terminal.Gui.ViewBase.MouseState> = PropKey.Create.simple "View.MouseHighlightStates"
-    member val MouseHoldRepeat: PropKey<Nullable<Terminal.Gui.Input.MouseFlags>> = PropKey.Create.simple "View.MouseHoldRepeat"
+
+    member val MouseHighlightStates: PropKey<Terminal.Gui.ViewBase.MouseState> =
+      PropKey.Create.simple "View.MouseHighlightStates"
+
+    member val MouseHoldRepeat: PropKey<Nullable<Terminal.Gui.Input.MouseFlags>> =
+      PropKey.Create.simple "View.MouseHoldRepeat"
+
     member val MousePositionTracking: PropKey<bool> = PropKey.Create.simple "View.MousePositionTracking"
     member val PreserveTrailingSpaces: PropKey<bool> = PropKey.Create.simple "View.PreserveTrailingSpaces"
     member val SchemeName: PropKey<string> = PropKey.Create.simple "View.SchemeName"
@@ -40,75 +45,178 @@ module internal PKey =
     member val Title: PropKey<string> = PropKey.Create.simple "View.Title"
     member val UsedHotKeys: PropKey<HashSet<Terminal.Gui.Input.Key>> = PropKey.Create.simple "View.UsedHotKeys"
     member val ValidatePosDim: PropKey<bool> = PropKey.Create.simple "View.ValidatePosDim"
-    member val VerticalTextAlignment: PropKey<Terminal.Gui.ViewBase.Alignment> = PropKey.Create.simple "View.VerticalTextAlignment"
+
+    member val VerticalTextAlignment: PropKey<Terminal.Gui.ViewBase.Alignment> =
+      PropKey.Create.simple "View.VerticalTextAlignment"
+
     member val Viewport: PropKey<System.Drawing.Rectangle> = PropKey.Create.simple "View.Viewport"
-    member val ViewportSettings: PropKey<Terminal.Gui.ViewBase.ViewportSettingsFlags> = PropKey.Create.simple "View.ViewportSettings"
+
+    member val ViewportSettings: PropKey<Terminal.Gui.ViewBase.ViewportSettingsFlags> =
+      PropKey.Create.simple "View.ViewportSettings"
+
     member val Visible: PropKey<bool> = PropKey.Create.simple "View.Visible"
     member val Width: PropKey<Terminal.Gui.ViewBase.Dim> = PropKey.Create.simple "View.Width"
 
     // Events
-    member val Accepted: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.Accepted_event"
-    member val Accepting: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.Accepting_event"
-    member val Activating: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.Activating_event"
-    member val AdvancingFocus: PropKey<Terminal.Gui.ViewBase.AdvanceFocusEventArgs -> unit> = PropKey.Create.event "View.AdvancingFocus_event"
-    member val BorderStyleChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.BorderStyleChanged_event"
+    member val Accepted: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
+      PropKey.Create.event "View.Accepted_event"
+
+    member val Accepting: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
+      PropKey.Create.event "View.Accepting_event"
+
+    member val Activating: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
+      PropKey.Create.event "View.Activating_event"
+
+    member val AdvancingFocus: PropKey<Terminal.Gui.ViewBase.AdvanceFocusEventArgs -> unit> =
+      PropKey.Create.event "View.AdvancingFocus_event"
+
+    member val BorderStyleChanged: PropKey<System.EventArgs -> unit> =
+      PropKey.Create.event "View.BorderStyleChanged_event"
+
     member val CanFocusChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.CanFocusChanged_event"
-    member val ClearedViewport: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.ClearedViewport_event"
-    member val ClearingViewport: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.ClearingViewport_event"
-    member val CommandNotBound: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.CommandNotBound_event"
-    member val ContentSizeChanged: PropKey<ValueChangedEventArgs<Nullable<System.Drawing.Size>> -> unit> = PropKey.Create.event "View.ContentSizeChanged_event"
-    member val ContentSizeChanging: PropKey<ValueChangingEventArgs<Nullable<System.Drawing.Size>> -> unit> = PropKey.Create.event "View.ContentSizeChanging_event"
+
+    member val ClearedViewport: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.ClearedViewport_event"
+
+    member val ClearingViewport: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.ClearingViewport_event"
+
+    member val CommandNotBound: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
+      PropKey.Create.event "View.CommandNotBound_event"
+
+    member val ContentSizeChanged: PropKey<ValueChangedEventArgs<Nullable<System.Drawing.Size>> -> unit> =
+      PropKey.Create.event "View.ContentSizeChanged_event"
+
+    member val ContentSizeChanging: PropKey<ValueChangingEventArgs<Nullable<System.Drawing.Size>> -> unit> =
+      PropKey.Create.event "View.ContentSizeChanging_event"
+
     member val Disposing: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.Disposing_event"
-    member val DrawComplete: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.DrawComplete_event"
-    member val DrawingContent: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.DrawingContent_event"
-    member val DrawingSubViews: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.DrawingSubViews_event"
-    member val DrawingText: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.DrawingText_event"
+
+    member val DrawComplete: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.DrawComplete_event"
+
+    member val DrawingContent: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.DrawingContent_event"
+
+    member val DrawingSubViews: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.DrawingSubViews_event"
+
+    member val DrawingText: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.DrawingText_event"
+
     member val DrewText: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.DrewText_event"
     member val EnabledChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.EnabledChanged_event"
-    member val FocusedChanged: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> = PropKey.Create.event "View.FocusedChanged_event"
-    member val FrameChanged: PropKey<EventArgs<System.Drawing.Rectangle> -> unit> = PropKey.Create.event "View.FrameChanged_event"
-    member val GettingAttributeForRole: PropKey<Terminal.Gui.Drawing.VisualRoleEventArgs -> unit> = PropKey.Create.event "View.GettingAttributeForRole_event"
-    member val GettingScheme: PropKey<ResultEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> = PropKey.Create.event "View.GettingScheme_event"
-    member val HandlingHotKey: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> = PropKey.Create.event "View.HandlingHotKey_event"
-    member val HasFocusChanged: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> = PropKey.Create.event "View.HasFocusChanged_event"
-    member val HasFocusChanging: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> = PropKey.Create.event "View.HasFocusChanging_event"
-    member val HeightChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> = PropKey.Create.event "View.HeightChanged_event"
-    member val HeightChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> = PropKey.Create.event "View.HeightChanging_event"
-    member val HotKeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> = PropKey.Create.event "View.HotKeyChanged_event"
+
+    member val FocusedChanged: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> =
+      PropKey.Create.event "View.FocusedChanged_event"
+
+    member val FrameChanged: PropKey<EventArgs<System.Drawing.Rectangle> -> unit> =
+      PropKey.Create.event "View.FrameChanged_event"
+
+    member val GettingAttributeForRole: PropKey<Terminal.Gui.Drawing.VisualRoleEventArgs -> unit> =
+      PropKey.Create.event "View.GettingAttributeForRole_event"
+
+    member val GettingScheme: PropKey<ResultEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> =
+      PropKey.Create.event "View.GettingScheme_event"
+
+    member val HandlingHotKey: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
+      PropKey.Create.event "View.HandlingHotKey_event"
+
+    member val HasFocusChanged: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> =
+      PropKey.Create.event "View.HasFocusChanged_event"
+
+    member val HasFocusChanging: PropKey<Terminal.Gui.ViewBase.HasFocusEventArgs -> unit> =
+      PropKey.Create.event "View.HasFocusChanging_event"
+
+    member val HeightChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> =
+      PropKey.Create.event "View.HeightChanged_event"
+
+    member val HeightChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> =
+      PropKey.Create.event "View.HeightChanging_event"
+
+    member val HotKeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> =
+      PropKey.Create.event "View.HotKeyChanged_event"
+
     member val Initialized: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.Initialized_event"
     member val KeyDown: PropKey<Terminal.Gui.Input.Key -> unit> = PropKey.Create.event "View.KeyDown_event"
-    member val KeyDownNotHandled: PropKey<Terminal.Gui.Input.Key -> unit> = PropKey.Create.event "View.KeyDownNotHandled_event"
-    member val MouseEnter: PropKey<System.ComponentModel.CancelEventArgs -> unit> = PropKey.Create.event "View.MouseEnter_event"
+
+    member val KeyDownNotHandled: PropKey<Terminal.Gui.Input.Key -> unit> =
+      PropKey.Create.event "View.KeyDownNotHandled_event"
+
+    member val MouseEnter: PropKey<System.ComponentModel.CancelEventArgs -> unit> =
+      PropKey.Create.event "View.MouseEnter_event"
+
     member val MouseEvent: PropKey<Terminal.Gui.Input.Mouse -> unit> = PropKey.Create.event "View.MouseEvent_event"
-    member val MouseHoldRepeatChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Input.MouseFlags>> -> unit> = PropKey.Create.event "View.MouseHoldRepeatChanged_event"
-    member val MouseHoldRepeatChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Input.MouseFlags>> -> unit> = PropKey.Create.event "View.MouseHoldRepeatChanging_event"
+
+    member val MouseHoldRepeatChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Input.MouseFlags>> -> unit> =
+      PropKey.Create.event "View.MouseHoldRepeatChanged_event"
+
+    member val MouseHoldRepeatChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Input.MouseFlags>> -> unit> =
+      PropKey.Create.event "View.MouseHoldRepeatChanging_event"
+
     member val MouseLeave: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.MouseLeave_event"
-    member val MouseStateChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.MouseState> -> unit> = PropKey.Create.event "View.MouseStateChanged_event"
-    member val Removed: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> = PropKey.Create.event "View.Removed_event"
-    member val SchemeChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> = PropKey.Create.event "View.SchemeChanged_event"
-    member val SchemeChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> = PropKey.Create.event "View.SchemeChanging_event"
-    member val SchemeNameChanged: PropKey<ValueChangedEventArgs<string> -> unit> = PropKey.Create.event "View.SchemeNameChanged_event"
-    member val SchemeNameChanging: PropKey<ValueChangingEventArgs<string> -> unit> = PropKey.Create.event "View.SchemeNameChanging_event"
-    member val SubViewAdded: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> = PropKey.Create.event "View.SubViewAdded_event"
-    member val SubViewLayout: PropKey<Terminal.Gui.ViewBase.LayoutEventArgs -> unit> = PropKey.Create.event "View.SubViewLayout_event"
-    member val SubViewRemoved: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> = PropKey.Create.event "View.SubViewRemoved_event"
-    member val SubViewsLaidOut: PropKey<Terminal.Gui.ViewBase.LayoutEventArgs -> unit> = PropKey.Create.event "View.SubViewsLaidOut_event"
-    member val SuperViewChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.View> -> unit> = PropKey.Create.event "View.SuperViewChanged_event"
-    member val SuperViewChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.View> -> unit> = PropKey.Create.event "View.SuperViewChanging_event"
+
+    member val MouseStateChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.MouseState> -> unit> =
+      PropKey.Create.event "View.MouseStateChanged_event"
+
+    member val Removed: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> =
+      PropKey.Create.event "View.Removed_event"
+
+    member val SchemeChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> =
+      PropKey.Create.event "View.SchemeChanged_event"
+
+    member val SchemeChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.Scheme> -> unit> =
+      PropKey.Create.event "View.SchemeChanging_event"
+
+    member val SchemeNameChanged: PropKey<ValueChangedEventArgs<string> -> unit> =
+      PropKey.Create.event "View.SchemeNameChanged_event"
+
+    member val SchemeNameChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
+      PropKey.Create.event "View.SchemeNameChanging_event"
+
+    member val SubViewAdded: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> =
+      PropKey.Create.event "View.SubViewAdded_event"
+
+    member val SubViewLayout: PropKey<Terminal.Gui.ViewBase.LayoutEventArgs -> unit> =
+      PropKey.Create.event "View.SubViewLayout_event"
+
+    member val SubViewRemoved: PropKey<Terminal.Gui.ViewBase.SuperViewChangedEventArgs -> unit> =
+      PropKey.Create.event "View.SubViewRemoved_event"
+
+    member val SubViewsLaidOut: PropKey<Terminal.Gui.ViewBase.LayoutEventArgs -> unit> =
+      PropKey.Create.event "View.SubViewsLaidOut_event"
+
+    member val SuperViewChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.View> -> unit> =
+      PropKey.Create.event "View.SuperViewChanged_event"
+
+    member val SuperViewChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.View> -> unit> =
+      PropKey.Create.event "View.SuperViewChanging_event"
+
     member val TextChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.TextChanged_event"
     member val TitleChanged: PropKey<EventArgs<string> -> unit> = PropKey.Create.event "View.TitleChanged_event"
     member val TitleChanging: PropKey<CancelEventArgs<string> -> unit> = PropKey.Create.event "View.TitleChanging_event"
-    member val ViewportChanged: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> = PropKey.Create.event "View.ViewportChanged_event"
+
+    member val ViewportChanged: PropKey<Terminal.Gui.ViewBase.DrawEventArgs -> unit> =
+      PropKey.Create.event "View.ViewportChanged_event"
+
     member val VisibleChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.VisibleChanged_event"
-    member val VisibleChanging: PropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.event "View.VisibleChanging_event"
-    member val WidthChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> = PropKey.Create.event "View.WidthChanged_event"
-    member val WidthChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> = PropKey.Create.event "View.WidthChanging_event"
+
+    member val VisibleChanging: PropKey<CancelEventArgs<bool> -> unit> =
+      PropKey.Create.event "View.VisibleChanging_event"
+
+    member val WidthChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> =
+      PropKey.Create.event "View.WidthChanged_event"
+
+    member val WidthChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Dim> -> unit> =
+      PropKey.Create.event "View.WidthChanging_event"
 
   type AdornmentPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val Diagnostics: PropKey<Terminal.Gui.ViewBase.ViewDiagnosticFlags> = PropKey.Create.simple "Adornment.Diagnostics"
+    member val Diagnostics: PropKey<Terminal.Gui.ViewBase.ViewDiagnosticFlags> =
+      PropKey.Create.simple "Adornment.Diagnostics"
+
     member val Parent: PropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Adornment.Parent_view"
     member val Parent_element: PropKey<ITerminalElement> = PropKey.Create.subElement "Adornment.Parent_element"
     member val SuperViewRendersLineCanvas: PropKey<bool> = PropKey.Create.simple "Adornment.SuperViewRendersLineCanvas"
@@ -116,7 +224,8 @@ module internal PKey =
     member val Viewport: PropKey<System.Drawing.Rectangle> = PropKey.Create.simple "Adornment.Viewport"
 
     // Events
-    member val ThicknessChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "Adornment.ThicknessChanged_event"
+    member val ThicknessChanged: PropKey<System.EventArgs -> unit> =
+      PropKey.Create.event "Adornment.ThicknessChanged_event"
 
   type AttributePickerPKeys() =
     inherit ViewPKeys()
@@ -126,19 +235,27 @@ module internal PKey =
     member val Value: PropKey<Nullable<Terminal.Gui.Drawing.Attribute>> = PropKey.Create.simple "AttributePicker.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> = PropKey.Create.event "AttributePicker.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> = PropKey.Create.event "AttributePicker.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> =
+      PropKey.Create.event "AttributePicker.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> =
+      PropKey.Create.event "AttributePicker.ValueChanging_event"
 
   type BarPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val AlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> = PropKey.Create.simple "Bar.AlignmentModes"
+    member val AlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> =
+      PropKey.Create.simple "Bar.AlignmentModes"
+
     member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "Bar.Orientation"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Bar.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Bar.OrientationChanging_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Bar.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Bar.OrientationChanging_event"
 
   type BorderPKeys() =
     inherit AdornmentPKeys()
@@ -163,13 +280,19 @@ module internal PKey =
     // Properties
     member val SelectedCodePoint: PropKey<int> = PropKey.Create.simple "CharMap.SelectedCodePoint"
     member val ShowGlyphWidths: PropKey<bool> = PropKey.Create.simple "CharMap.ShowGlyphWidths"
-    member val ShowUnicodeCategory: PropKey<Nullable<System.Globalization.UnicodeCategory>> = PropKey.Create.simple "CharMap.ShowUnicodeCategory"
+
+    member val ShowUnicodeCategory: PropKey<Nullable<System.Globalization.UnicodeCategory>> =
+      PropKey.Create.simple "CharMap.ShowUnicodeCategory"
+
     member val StartCodePoint: PropKey<int> = PropKey.Create.simple "CharMap.StartCodePoint"
     member val Value: PropKey<System.Text.Rune> = PropKey.Create.simple "CharMap.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<System.Text.Rune> -> unit> = PropKey.Create.event "CharMap.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<System.Text.Rune> -> unit> = PropKey.Create.event "CharMap.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<System.Text.Rune> -> unit> =
+      PropKey.Create.event "CharMap.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<System.Text.Rune> -> unit> =
+      PropKey.Create.event "CharMap.ValueChanging_event"
 
   type CheckBoxPKeys() =
     inherit ViewPKeys()
@@ -182,8 +305,11 @@ module internal PKey =
     member val Value: PropKey<Terminal.Gui.Views.CheckState> = PropKey.Create.simple "CheckBox.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.CheckState> -> unit> = PropKey.Create.event "CheckBox.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.CheckState> -> unit> = PropKey.Create.event "CheckBox.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.CheckState> -> unit> =
+      PropKey.Create.event "CheckBox.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.CheckState> -> unit> =
+      PropKey.Create.event "CheckBox.ValueChanging_event"
 
   type ColorPickerPKeys() =
     inherit ViewPKeys()
@@ -195,8 +321,11 @@ module internal PKey =
     member val Value: PropKey<Nullable<Terminal.Gui.Drawing.Color>> = PropKey.Create.simple "ColorPicker.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> = PropKey.Create.event "ColorPicker.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> = PropKey.Create.event "ColorPicker.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> =
+      PropKey.Create.event "ColorPicker.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> =
+      PropKey.Create.event "ColorPicker.ValueChanging_event"
 
   type ColorPicker16PKeys() =
     inherit ViewPKeys()
@@ -205,12 +334,18 @@ module internal PKey =
     member val BoxHeight: PropKey<int> = PropKey.Create.simple "ColorPicker16.BoxHeight"
     member val BoxWidth: PropKey<int> = PropKey.Create.simple "ColorPicker16.BoxWidth"
     member val Caret: PropKey<System.Drawing.Point> = PropKey.Create.simple "ColorPicker16.Caret"
-    member val SelectedColor: PropKey<Terminal.Gui.Drawing.ColorName16> = PropKey.Create.simple "ColorPicker16.SelectedColor"
+
+    member val SelectedColor: PropKey<Terminal.Gui.Drawing.ColorName16> =
+      PropKey.Create.simple "ColorPicker16.SelectedColor"
+
     member val Value: PropKey<Terminal.Gui.Drawing.ColorName16> = PropKey.Create.simple "ColorPicker16.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> = PropKey.Create.event "ColorPicker16.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> = PropKey.Create.event "ColorPicker16.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> =
+      PropKey.Create.event "ColorPicker16.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> =
+      PropKey.Create.event "ColorPicker16.ValueChanging_event"
 
   type ComboBoxPKeys() =
     inherit ViewPKeys()
@@ -226,8 +361,12 @@ module internal PKey =
     // Events
     member val Collapsed: PropKey<System.EventArgs -> unit> = PropKey.Create.event "ComboBox.Collapsed_event"
     member val Expanded: PropKey<System.EventArgs -> unit> = PropKey.Create.event "ComboBox.Expanded_event"
-    member val OpenSelectedItem: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> = PropKey.Create.event "ComboBox.OpenSelectedItem_event"
-    member val SelectedItemChanged: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> = PropKey.Create.event "ComboBox.SelectedItemChanged_event"
+
+    member val OpenSelectedItem: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> =
+      PropKey.Create.event "ComboBox.OpenSelectedItem_event"
+
+    member val SelectedItemChanged: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> =
+      PropKey.Create.event "ComboBox.SelectedItemChanged_event"
 
   type DatePickerPKeys() =
     inherit ViewPKeys()
@@ -238,8 +377,11 @@ module internal PKey =
     member val Value: PropKey<System.DateTime> = PropKey.Create.simple "DatePicker.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<System.DateTime> -> unit> = PropKey.Create.event "DatePicker.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<System.DateTime> -> unit> = PropKey.Create.event "DatePicker.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<System.DateTime> -> unit> =
+      PropKey.Create.event "DatePicker.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<System.DateTime> -> unit> =
+      PropKey.Create.event "DatePicker.ValueChanging_event"
 
   type FrameViewPKeys() =
     inherit ViewPKeys()
@@ -252,7 +394,10 @@ module internal PKey =
     member val AxisX: PropKey<Terminal.Gui.Views.HorizontalAxis> = PropKey.Create.simple "GraphView.AxisX"
     member val AxisY: PropKey<Terminal.Gui.Views.VerticalAxis> = PropKey.Create.simple "GraphView.AxisY"
     member val CellSize: PropKey<System.Drawing.PointF> = PropKey.Create.simple "GraphView.CellSize"
-    member val GraphColor: PropKey<Nullable<Terminal.Gui.Drawing.Attribute>> = PropKey.Create.simple "GraphView.GraphColor"
+
+    member val GraphColor: PropKey<Nullable<Terminal.Gui.Drawing.Attribute>> =
+      PropKey.Create.simple "GraphView.GraphColor"
+
     member val MarginBottom: PropKey<System.UInt32> = PropKey.Create.simple "GraphView.MarginBottom"
     member val MarginLeft: PropKey<System.UInt32> = PropKey.Create.simple "GraphView.MarginLeft"
     member val ScrollOffset: PropKey<System.Drawing.PointF> = PropKey.Create.simple "GraphView.ScrollOffset"
@@ -268,8 +413,11 @@ module internal PKey =
     member val Source: PropKey<System.IO.Stream> = PropKey.Create.simple "HexView.Source"
 
     // Events
-    member val Edited: PropKey<Terminal.Gui.Views.HexViewEditEventArgs -> unit> = PropKey.Create.event "HexView.Edited_event"
-    member val PositionChanged: PropKey<Terminal.Gui.Views.HexViewEventArgs -> unit> = PropKey.Create.event "HexView.PositionChanged_event"
+    member val Edited: PropKey<Terminal.Gui.Views.HexViewEditEventArgs -> unit> =
+      PropKey.Create.event "HexView.Edited_event"
+
+    member val PositionChanged: PropKey<Terminal.Gui.Views.HexViewEventArgs -> unit> =
+      PropKey.Create.event "HexView.PositionChanged_event"
 
   type LabelPKeys() =
     inherit ViewPKeys()
@@ -291,8 +439,11 @@ module internal PKey =
     member val Style: PropKey<Terminal.Gui.Drawing.LineStyle> = PropKey.Create.simple "Line.Style"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Line.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Line.OrientationChanging_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Line.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Line.OrientationChanging_event"
 
   type LinearRangePKeys<'T>() =
     inherit ViewPKeys()
@@ -300,7 +451,10 @@ module internal PKey =
     // Properties
     member val AllowEmpty: PropKey<bool> = PropKey.Create.simple "LinearRange.AllowEmpty"
     member val FocusedOption: PropKey<int> = PropKey.Create.simple "LinearRange.FocusedOption"
-    member val LegendsOrientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "LinearRange.LegendsOrientation"
+
+    member val LegendsOrientation: PropKey<Terminal.Gui.ViewBase.Orientation> =
+      PropKey.Create.simple "LinearRange.LegendsOrientation"
+
     member val MinimumInnerSpacing: PropKey<int> = PropKey.Create.simple "LinearRange.MinimumInnerSpacing"
     member val Options: PropKey<List<LinearRangeOption<'T>>> = PropKey.Create.simple "LinearRange.Options"
     member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "LinearRange.Orientation"
@@ -313,22 +467,53 @@ module internal PKey =
     member val UseMinimumSize: PropKey<bool> = PropKey.Create.simple "LinearRange.UseMinimumSize"
 
     // Events
-    member val LegendsOrientationChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "LinearRange.LegendsOrientationChanged_event"
-    member val LegendsOrientationChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "LinearRange.LegendsOrientationChanging_event"
-    member val MinimumInnerSpacingChanged: PropKey<ValueChangedEventArgs<int> -> unit> = PropKey.Create.event "LinearRange.MinimumInnerSpacingChanged_event"
-    member val MinimumInnerSpacingChanging: PropKey<ValueChangingEventArgs<int> -> unit> = PropKey.Create.event "LinearRange.MinimumInnerSpacingChanging_event"
-    member val OptionFocused: PropKey<LinearRangeEventArgs<'T> -> unit> = PropKey.Create.event "LinearRange.OptionFocused_event"
-    member val OptionsChanged: PropKey<LinearRangeEventArgs<'T> -> unit> = PropKey.Create.event "LinearRange.OptionsChanged_event"
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "LinearRange.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "LinearRange.OrientationChanging_event"
-    member val ShowEndSpacingChanged: PropKey<ValueChangedEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.ShowEndSpacingChanged_event"
-    member val ShowEndSpacingChanging: PropKey<ValueChangingEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.ShowEndSpacingChanging_event"
-    member val ShowLegendsChanged: PropKey<ValueChangedEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.ShowLegendsChanged_event"
-    member val ShowLegendsChanging: PropKey<ValueChangingEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.ShowLegendsChanging_event"
-    member val TypeChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.LinearRangeType> -> unit> = PropKey.Create.event "LinearRange.TypeChanged_event"
-    member val TypeChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.LinearRangeType> -> unit> = PropKey.Create.event "LinearRange.TypeChanging_event"
-    member val UseMinimumSizeChanged: PropKey<ValueChangedEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.UseMinimumSizeChanged_event"
-    member val UseMinimumSizeChanging: PropKey<ValueChangingEventArgs<bool> -> unit> = PropKey.Create.event "LinearRange.UseMinimumSizeChanging_event"
+    member val LegendsOrientationChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "LinearRange.LegendsOrientationChanged_event"
+
+    member val LegendsOrientationChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "LinearRange.LegendsOrientationChanging_event"
+
+    member val MinimumInnerSpacingChanged: PropKey<ValueChangedEventArgs<int> -> unit> =
+      PropKey.Create.event "LinearRange.MinimumInnerSpacingChanged_event"
+
+    member val MinimumInnerSpacingChanging: PropKey<ValueChangingEventArgs<int> -> unit> =
+      PropKey.Create.event "LinearRange.MinimumInnerSpacingChanging_event"
+
+    member val OptionFocused: PropKey<LinearRangeEventArgs<'T> -> unit> =
+      PropKey.Create.event "LinearRange.OptionFocused_event"
+
+    member val OptionsChanged: PropKey<LinearRangeEventArgs<'T> -> unit> =
+      PropKey.Create.event "LinearRange.OptionsChanged_event"
+
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "LinearRange.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "LinearRange.OrientationChanging_event"
+
+    member val ShowEndSpacingChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.ShowEndSpacingChanged_event"
+
+    member val ShowEndSpacingChanging: PropKey<ValueChangingEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.ShowEndSpacingChanging_event"
+
+    member val ShowLegendsChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.ShowLegendsChanged_event"
+
+    member val ShowLegendsChanging: PropKey<ValueChangingEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.ShowLegendsChanging_event"
+
+    member val TypeChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.LinearRangeType> -> unit> =
+      PropKey.Create.event "LinearRange.TypeChanged_event"
+
+    member val TypeChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.LinearRangeType> -> unit> =
+      PropKey.Create.event "LinearRange.TypeChanging_event"
+
+    member val UseMinimumSizeChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.UseMinimumSizeChanged_event"
+
+    member val UseMinimumSizeChanging: PropKey<ValueChangingEventArgs<bool> -> unit> =
+      PropKey.Create.event "LinearRange.UseMinimumSizeChanging_event"
 
   type LinearRangePKeys() =
     inherit LinearRangePKeys<System.Object>()
@@ -346,11 +531,19 @@ module internal PKey =
     member val Value: PropKey<Nullable<int>> = PropKey.Create.simple "ListView.Value"
 
     // Events
-    member val CollectionChanged: PropKey<System.Collections.Specialized.NotifyCollectionChangedEventArgs -> unit> = PropKey.Create.event "ListView.CollectionChanged_event"
-    member val RowRender: PropKey<Terminal.Gui.Views.ListViewRowEventArgs -> unit> = PropKey.Create.event "ListView.RowRender_event"
+    member val CollectionChanged: PropKey<System.Collections.Specialized.NotifyCollectionChangedEventArgs -> unit> =
+      PropKey.Create.event "ListView.CollectionChanged_event"
+
+    member val RowRender: PropKey<Terminal.Gui.Views.ListViewRowEventArgs -> unit> =
+      PropKey.Create.event "ListView.RowRender_event"
+
     member val SourceChanged: PropKey<System.EventArgs -> unit> = PropKey.Create.event "ListView.SourceChanged_event"
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "ListView.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "ListView.ValueChanging_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> =
+      PropKey.Create.event "ListView.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> =
+      PropKey.Create.event "ListView.ValueChanging_event"
 
   type MarginPKeys() =
     inherit AdornmentPKeys()
@@ -364,12 +557,18 @@ module internal PKey =
 
     // Properties
     member val SelectedMenuItem: PropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SelectedMenuItem_view"
-    member val SelectedMenuItem_element: PropKey<IMenuItemTerminalElement> = PropKey.Create.subElement "Menu.SelectedMenuItem_element"
+
+    member val SelectedMenuItem_element: PropKey<IMenuItemTerminalElement> =
+      PropKey.Create.subElement "Menu.SelectedMenuItem_element"
+
     member val SuperMenuItem: PropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SuperMenuItem_view"
-    member val SuperMenuItem_element: PropKey<IMenuItemTerminalElement> = PropKey.Create.subElement "Menu.SuperMenuItem_element"
+
+    member val SuperMenuItem_element: PropKey<IMenuItemTerminalElement> =
+      PropKey.Create.subElement "Menu.SuperMenuItem_element"
 
     // Events
-    member val SelectedMenuItemChanged: PropKey<Terminal.Gui.Views.MenuItem -> unit> = PropKey.Create.event "Menu.SelectedMenuItemChanged_event"
+    member val SelectedMenuItemChanged: PropKey<Terminal.Gui.Views.MenuItem -> unit> =
+      PropKey.Create.event "Menu.SelectedMenuItemChanged_event"
 
   type MenuBarPKeys() =
     inherit MenuPKeys()
@@ -378,7 +577,8 @@ module internal PKey =
     member val Key: PropKey<Terminal.Gui.Input.Key> = PropKey.Create.simple "MenuBar.Key"
 
     // Events
-    member val KeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> = PropKey.Create.event "MenuBar.KeyChanged_event"
+    member val KeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> =
+      PropKey.Create.event "MenuBar.KeyChanged_event"
 
   type NumericUpDownPKeys<'T>() =
     inherit ViewPKeys()
@@ -389,10 +589,17 @@ module internal PKey =
     member val Value: PropKey<'T> = PropKey.Create.simple "NumericUpDown.Value"
 
     // Events
-    member val FormatChanged: PropKey<EventArgs<string> -> unit> = PropKey.Create.event "NumericUpDown.FormatChanged_event"
-    member val IncrementChanged: PropKey<EventArgs<'T> -> unit> = PropKey.Create.event "NumericUpDown.IncrementChanged_event"
-    member val ValueChanged: PropKey<ValueChangedEventArgs<'T> -> unit> = PropKey.Create.event "NumericUpDown.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<'T> -> unit> = PropKey.Create.event "NumericUpDown.ValueChanging_event"
+    member val FormatChanged: PropKey<EventArgs<string> -> unit> =
+      PropKey.Create.event "NumericUpDown.FormatChanged_event"
+
+    member val IncrementChanged: PropKey<EventArgs<'T> -> unit> =
+      PropKey.Create.event "NumericUpDown.IncrementChanged_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<'T> -> unit> =
+      PropKey.Create.event "NumericUpDown.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<'T> -> unit> =
+      PropKey.Create.event "NumericUpDown.ValueChanging_event"
 
   type NumericUpDownPKeys() =
     inherit NumericUpDownPKeys<int>()
@@ -418,7 +625,8 @@ module internal PKey =
     member val Root_element: PropKey<IMenuTerminalElement> = PropKey.Create.subElement "PopoverMenu.Root_element"
 
     // Events
-    member val KeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> = PropKey.Create.event "PopoverMenu.KeyChanged_event"
+    member val KeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> =
+      PropKey.Create.event "PopoverMenu.KeyChanged_event"
 
   type ProgressBarPKeys() =
     inherit ViewPKeys()
@@ -426,8 +634,13 @@ module internal PKey =
     // Properties
     member val BidirectionalMarquee: PropKey<bool> = PropKey.Create.simple "ProgressBar.BidirectionalMarquee"
     member val Fraction: PropKey<System.Single> = PropKey.Create.simple "ProgressBar.Fraction"
-    member val ProgressBarFormat: PropKey<Terminal.Gui.Views.ProgressBarFormat> = PropKey.Create.simple "ProgressBar.ProgressBarFormat"
-    member val ProgressBarStyle: PropKey<Terminal.Gui.Views.ProgressBarStyle> = PropKey.Create.simple "ProgressBar.ProgressBarStyle"
+
+    member val ProgressBarFormat: PropKey<Terminal.Gui.Views.ProgressBarFormat> =
+      PropKey.Create.simple "ProgressBar.ProgressBarFormat"
+
+    member val ProgressBarStyle: PropKey<Terminal.Gui.Views.ProgressBarStyle> =
+      PropKey.Create.simple "ProgressBar.ProgressBarStyle"
+
     member val SegmentCharacter: PropKey<System.Text.Rune> = PropKey.Create.simple "ProgressBar.SegmentCharacter"
     member val Text: PropKey<string> = PropKey.Create.simple "ProgressBar.Text"
 
@@ -440,8 +653,12 @@ module internal PKey =
 
     // Events
     member val IsModalChanged: PropKey<EventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsModalChanged_event"
-    member val IsRunningChanged: PropKey<EventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanged_event"
-    member val IsRunningChanging: PropKey<CancelEventArgs<bool> -> unit> = PropKey.Create.event "Runnable.IsRunningChanging_event"
+
+    member val IsRunningChanged: PropKey<EventArgs<bool> -> unit> =
+      PropKey.Create.event "Runnable.IsRunningChanged_event"
+
+    member val IsRunningChanging: PropKey<CancelEventArgs<bool> -> unit> =
+      PropKey.Create.event "Runnable.IsRunningChanging_event"
 
   type RunnablePKeys<'TResult>() =
     inherit RunnablePKeys()
@@ -453,8 +670,12 @@ module internal PKey =
     inherit RunnablePKeys<'TResult>()
 
     // Properties
-    member val ButtonAlignment: PropKey<Terminal.Gui.ViewBase.Alignment> = PropKey.Create.simple "Dialog.ButtonAlignment"
-    member val ButtonAlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> = PropKey.Create.simple "Dialog.ButtonAlignmentModes"
+    member val ButtonAlignment: PropKey<Terminal.Gui.ViewBase.Alignment> =
+      PropKey.Create.simple "Dialog.ButtonAlignment"
+
+    member val ButtonAlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> =
+      PropKey.Create.simple "Dialog.ButtonAlignmentModes"
+
     member val Buttons: PropKey<Terminal.Gui.Views.Button[]> = PropKey.Create.simple "Dialog.Buttons"
 
   type DialogPKeys() =
@@ -463,7 +684,7 @@ module internal PKey =
     // Properties
     member val Result: PropKey<Nullable<int>> = PropKey.Create.simple "Dialog.Result"
 
-  type PromptPKeys<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View>() =
+  type PromptPKeys<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>() =
     inherit DialogPKeys<'TResult>()
 
     // Properties
@@ -473,16 +694,24 @@ module internal PKey =
     inherit DialogPKeys()
 
     // Properties
-    member val AllowedTypes: PropKey<List<Terminal.Gui.Views.IAllowedType>> = PropKey.Create.simple "FileDialog.AllowedTypes"
+    member val AllowedTypes: PropKey<List<Terminal.Gui.Views.IAllowedType>> =
+      PropKey.Create.simple "FileDialog.AllowedTypes"
+
     member val AllowsMultipleSelection: PropKey<bool> = PropKey.Create.simple "FileDialog.AllowsMultipleSelection"
-    member val FileOperationsHandler: PropKey<Terminal.Gui.FileServices.IFileOperations> = PropKey.Create.simple "FileDialog.FileOperationsHandler"
+
+    member val FileOperationsHandler: PropKey<Terminal.Gui.FileServices.IFileOperations> =
+      PropKey.Create.simple "FileDialog.FileOperationsHandler"
+
     member val MustExist: PropKey<bool> = PropKey.Create.simple "FileDialog.MustExist"
     member val OpenMode: PropKey<Terminal.Gui.Views.OpenMode> = PropKey.Create.simple "FileDialog.OpenMode"
     member val Path: PropKey<string> = PropKey.Create.simple "FileDialog.Path"
-    member val SearchMatcher: PropKey<Terminal.Gui.FileServices.ISearchMatcher> = PropKey.Create.simple "FileDialog.SearchMatcher"
+
+    member val SearchMatcher: PropKey<Terminal.Gui.FileServices.ISearchMatcher> =
+      PropKey.Create.simple "FileDialog.SearchMatcher"
 
     // Events
-    member val FilesSelected: PropKey<Terminal.Gui.Views.FilesSelectedEventArgs -> unit> = PropKey.Create.event "FileDialog.FilesSelected_event"
+    member val FilesSelected: PropKey<Terminal.Gui.Views.FilesSelectedEventArgs -> unit> =
+      PropKey.Create.event "FileDialog.FilesSelected_event"
 
   type OpenDialogPKeys() =
     inherit FileDialogPKeys()
@@ -506,29 +735,51 @@ module internal PKey =
     member val VisibleContentSize: PropKey<int> = PropKey.Create.simple "ScrollBar.VisibleContentSize"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "ScrollBar.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "ScrollBar.OrientationChanging_event"
-    member val ScrollableContentSizeChanged: PropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.ScrollableContentSizeChanged_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "ScrollBar.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "ScrollBar.OrientationChanging_event"
+
+    member val ScrollableContentSizeChanged: PropKey<EventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollBar.ScrollableContentSizeChanged_event"
+
     member val Scrolled: PropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.Scrolled_event"
-    member val SliderPositionChanged: PropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.SliderPositionChanged_event"
-    member val ValueChanged: PropKey<ValueChangedEventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<int> -> unit> = PropKey.Create.event "ScrollBar.ValueChanging_event"
+
+    member val SliderPositionChanged: PropKey<EventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollBar.SliderPositionChanged_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollBar.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollBar.ValueChanging_event"
 
   type ScrollSliderPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "ScrollSlider.Orientation"
+    member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> =
+      PropKey.Create.simple "ScrollSlider.Orientation"
+
     member val Position: PropKey<int> = PropKey.Create.simple "ScrollSlider.Position"
     member val Size: PropKey<int> = PropKey.Create.simple "ScrollSlider.Size"
     member val SliderPadding: PropKey<int> = PropKey.Create.simple "ScrollSlider.SliderPadding"
     member val VisibleContentSize: PropKey<int> = PropKey.Create.simple "ScrollSlider.VisibleContentSize"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "ScrollSlider.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "ScrollSlider.OrientationChanging_event"
-    member val PositionChanged: PropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollSlider.PositionChanged_event"
-    member val PositionChanging: PropKey<CancelEventArgs<int> -> unit> = PropKey.Create.event "ScrollSlider.PositionChanging_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "ScrollSlider.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "ScrollSlider.OrientationChanging_event"
+
+    member val PositionChanged: PropKey<EventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollSlider.PositionChanged_event"
+
+    member val PositionChanging: PropKey<CancelEventArgs<int> -> unit> =
+      PropKey.Create.event "ScrollSlider.PositionChanging_event"
+
     member val Scrolled: PropKey<EventArgs<int> -> unit> = PropKey.Create.event "ScrollSlider.Scrolled_event"
 
   type SelectorBasePKeys() =
@@ -538,16 +789,26 @@ module internal PKey =
     member val DoubleClickAccepts: PropKey<bool> = PropKey.Create.simple "SelectorBase.DoubleClickAccepts"
     member val HorizontalSpace: PropKey<int> = PropKey.Create.simple "SelectorBase.HorizontalSpace"
     member val Labels: PropKey<IReadOnlyList<string>> = PropKey.Create.simple "SelectorBase.Labels"
-    member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "SelectorBase.Orientation"
+
+    member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> =
+      PropKey.Create.simple "SelectorBase.Orientation"
+
     member val Styles: PropKey<Terminal.Gui.Views.SelectorStyles> = PropKey.Create.simple "SelectorBase.Styles"
     member val Value: PropKey<Nullable<int>> = PropKey.Create.simple "SelectorBase.Value"
     member val Values: PropKey<IReadOnlyList<int>> = PropKey.Create.simple "SelectorBase.Values"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "SelectorBase.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "SelectorBase.OrientationChanging_event"
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "SelectorBase.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> = PropKey.Create.event "SelectorBase.ValueChanging_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "SelectorBase.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "SelectorBase.OrientationChanging_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> =
+      PropKey.Create.event "SelectorBase.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> =
+      PropKey.Create.event "SelectorBase.ValueChanging_event"
 
   type FlagSelectorPKeys() =
     inherit SelectorBasePKeys()
@@ -561,16 +822,22 @@ module internal PKey =
     // Properties
     member val Cursor: PropKey<int> = PropKey.Create.simple "OptionSelector.Cursor"
 
-  type FlagSelectorPKeys<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType>() =
+  type FlagSelectorPKeys<'TFlagsEnum
+    when 'TFlagsEnum: struct
+    and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)
+    and 'TFlagsEnum :> System.Enum
+    and 'TFlagsEnum :> System.ValueType>() =
     inherit FlagSelectorPKeys()
 
     // Properties
     member val Value: PropKey<Nullable<'TFlagsEnum>> = PropKey.Create.simple "FlagSelector.Value"
 
     // Events
-    member val ValueChanged: PropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> = PropKey.Create.event "FlagSelector.ValueChanged_event"
+    member val ValueChanged: PropKey<EventArgs<Nullable<'TFlagsEnum>> -> unit> =
+      PropKey.Create.event "FlagSelector.ValueChanged_event"
 
-  type OptionSelectorPKeys<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType>() =
+  type OptionSelectorPKeys<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>() =
     inherit OptionSelectorPKeys()
 
     // Properties
@@ -578,14 +845,18 @@ module internal PKey =
     member val Values: PropKey<IReadOnlyList<int>> = PropKey.Create.simple "OptionSelector.Values"
 
     // Events
-    member val ValueChanged: PropKey<EventArgs<Nullable<'TEnum>> -> unit> = PropKey.Create.event "OptionSelector.ValueChanged_event"
+    member val ValueChanged: PropKey<EventArgs<Nullable<'TEnum>> -> unit> =
+      PropKey.Create.event "OptionSelector.ValueChanged_event"
 
   type ShortcutPKeys() =
     inherit ViewPKeys()
 
     // Properties
     member val Action: PropKey<System.Action> = PropKey.Create.simple "Shortcut.Action"
-    member val AlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> = PropKey.Create.simple "Shortcut.AlignmentModes"
+
+    member val AlignmentModes: PropKey<Terminal.Gui.ViewBase.AlignmentModes> =
+      PropKey.Create.simple "Shortcut.AlignmentModes"
+
     member val BindKeyToApplication: PropKey<bool> = PropKey.Create.simple "Shortcut.BindKeyToApplication"
     member val CommandView: PropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Shortcut.CommandView_view"
     member val CommandView_element: PropKey<ITerminalElement> = PropKey.Create.subElement "Shortcut.CommandView_element"
@@ -597,8 +868,11 @@ module internal PKey =
     member val Text: PropKey<string> = PropKey.Create.simple "Shortcut.Text"
 
     // Events
-    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Shortcut.OrientationChanged_event"
-    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "Shortcut.OrientationChanging_event"
+    member val OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Shortcut.OrientationChanged_event"
+
+    member val OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "Shortcut.OrientationChanging_event"
 
   type MenuItemPKeys() =
     inherit ShortcutPKeys()
@@ -615,13 +889,17 @@ module internal PKey =
 
     // Properties
     member val PopoverMenu: PropKey<Terminal.Gui.Views.PopoverMenu> = PropKey.Create.view "MenuBarItem.PopoverMenu_view"
-    member val PopoverMenu_element: PropKey<IPopoverMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.PopoverMenu_element"
+
+    member val PopoverMenu_element: PropKey<IPopoverMenuTerminalElement> =
+      PropKey.Create.subElement "MenuBarItem.PopoverMenu_element"
+
     member val PopoverMenuOpen: PropKey<bool> = PropKey.Create.simple "MenuBarItem.PopoverMenuOpen"
     member val SubMenu: PropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "MenuBarItem.SubMenu_view"
     member val SubMenu_element: PropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.SubMenu_element"
 
     // Events
-    member val PopoverMenuOpenChanged: PropKey<EventArgs<bool> -> unit> = PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
+    member val PopoverMenuOpenChanged: PropKey<EventArgs<bool> -> unit> =
+      PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
 
   type SpinnerViewPKeys() =
     inherit ViewPKeys()
@@ -652,20 +930,30 @@ module internal PKey =
     // Properties
     member val MaxTabTextWidth: PropKey<System.UInt32> = PropKey.Create.simple "TabView.MaxTabTextWidth"
     member val SelectedTab: PropKey<Terminal.Gui.Views.Tab> = PropKey.Create.view "TabView.SelectedTab_view"
-    member val SelectedTab_element: PropKey<ITabTerminalElement> = PropKey.Create.subElement "TabView.SelectedTab_element"
+
+    member val SelectedTab_element: PropKey<ITabTerminalElement> =
+      PropKey.Create.subElement "TabView.SelectedTab_element"
+
     member val Style: PropKey<Terminal.Gui.Views.TabStyle> = PropKey.Create.simple "TabView.Style"
     member val TabScrollOffset: PropKey<int> = PropKey.Create.simple "TabView.TabScrollOffset"
 
     // Events
-    member val SelectedTabChanged: PropKey<Terminal.Gui.Views.TabChangedEventArgs -> unit> = PropKey.Create.event "TabView.SelectedTabChanged_event"
-    member val TabClicked: PropKey<Terminal.Gui.Views.TabMouseEventArgs -> unit> = PropKey.Create.event "TabView.TabClicked_event"
+    member val SelectedTabChanged: PropKey<Terminal.Gui.Views.TabChangedEventArgs -> unit> =
+      PropKey.Create.event "TabView.SelectedTabChanged_event"
+
+    member val TabClicked: PropKey<Terminal.Gui.Views.TabMouseEventArgs -> unit> =
+      PropKey.Create.event "TabView.TabClicked_event"
 
   type TableViewPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val CellActivationKey: PropKey<Terminal.Gui.Drivers.KeyCode> = PropKey.Create.simple "TableView.CellActivationKey"
-    member val CollectionNavigator: PropKey<Terminal.Gui.Views.ICollectionNavigator> = PropKey.Create.simple "TableView.CollectionNavigator"
+    member val CellActivationKey: PropKey<Terminal.Gui.Drivers.KeyCode> =
+      PropKey.Create.simple "TableView.CellActivationKey"
+
+    member val CollectionNavigator: PropKey<Terminal.Gui.Views.ICollectionNavigator> =
+      PropKey.Create.simple "TableView.CollectionNavigator"
+
     member val ColumnOffset: PropKey<int> = PropKey.Create.simple "TableView.ColumnOffset"
     member val FullRowSelect: PropKey<bool> = PropKey.Create.simple "TableView.FullRowSelect"
     member val MaxCellWidth: PropKey<int> = PropKey.Create.simple "TableView.MaxCellWidth"
@@ -680,9 +968,14 @@ module internal PKey =
     member val Table: PropKey<Terminal.Gui.Views.ITableSource> = PropKey.Create.simple "TableView.Table"
 
     // Events
-    member val CellActivated: PropKey<Terminal.Gui.Views.CellActivatedEventArgs -> unit> = PropKey.Create.event "TableView.CellActivated_event"
-    member val CellToggled: PropKey<Terminal.Gui.Views.CellToggledEventArgs -> unit> = PropKey.Create.event "TableView.CellToggled_event"
-    member val SelectedCellChanged: PropKey<Terminal.Gui.Views.SelectedCellChangedEventArgs -> unit> = PropKey.Create.event "TableView.SelectedCellChanged_event"
+    member val CellActivated: PropKey<Terminal.Gui.Views.CellActivatedEventArgs -> unit> =
+      PropKey.Create.event "TableView.CellActivated_event"
+
+    member val CellToggled: PropKey<Terminal.Gui.Views.CellToggledEventArgs -> unit> =
+      PropKey.Create.event "TableView.CellToggled_event"
+
+    member val SelectedCellChanged: PropKey<Terminal.Gui.Views.SelectedCellChangedEventArgs -> unit> =
+      PropKey.Create.event "TableView.SelectedCellChanged_event"
 
   type TextFieldPKeys() =
     inherit ViewPKeys()
@@ -692,7 +985,10 @@ module internal PKey =
     member val InsertionPoint: PropKey<int> = PropKey.Create.simple "TextField.InsertionPoint"
     member val ReadOnly: PropKey<bool> = PropKey.Create.simple "TextField.ReadOnly"
     member val Secret: PropKey<bool> = PropKey.Create.simple "TextField.Secret"
-    member val SelectWordOnlyOnDoubleClick: PropKey<bool> = PropKey.Create.simple "TextField.SelectWordOnlyOnDoubleClick"
+
+    member val SelectWordOnlyOnDoubleClick: PropKey<bool> =
+      PropKey.Create.simple "TextField.SelectWordOnlyOnDoubleClick"
+
     member val SelectedStart: PropKey<int> = PropKey.Create.simple "TextField.SelectedStart"
     member val Text: PropKey<string> = PropKey.Create.simple "TextField.Text"
     member val UseSameRuneTypeForWords: PropKey<bool> = PropKey.Create.simple "TextField.UseSameRuneTypeForWords"
@@ -700,9 +996,14 @@ module internal PKey =
     member val Value: PropKey<string> = PropKey.Create.simple "TextField.Value"
 
     // Events
-    member val TextChanging: PropKey<ResultEventArgs<string> -> unit> = PropKey.Create.event "TextField.TextChanging_event"
-    member val ValueChanged: PropKey<ValueChangedEventArgs<string> -> unit> = PropKey.Create.event "TextField.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<string> -> unit> = PropKey.Create.event "TextField.ValueChanging_event"
+    member val TextChanging: PropKey<ResultEventArgs<string> -> unit> =
+      PropKey.Create.event "TextField.TextChanging_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<string> -> unit> =
+      PropKey.Create.event "TextField.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
+      PropKey.Create.event "TextField.ValueChanging_event"
 
   type DateFieldPKeys() =
     inherit TextFieldPKeys()
@@ -713,14 +1014,19 @@ module internal PKey =
     member val Value: PropKey<Nullable<System.DateTime>> = PropKey.Create.simple "DateField.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<System.DateTime>> -> unit> = PropKey.Create.event "DateField.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<System.DateTime>> -> unit> = PropKey.Create.event "DateField.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<System.DateTime>> -> unit> =
+      PropKey.Create.event "DateField.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<System.DateTime>> -> unit> =
+      PropKey.Create.event "DateField.ValueChanging_event"
 
   type TextValidateFieldPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val Provider: PropKey<Terminal.Gui.Views.ITextValidateProvider> = PropKey.Create.simple "TextValidateField.Provider"
+    member val Provider: PropKey<Terminal.Gui.Views.ITextValidateProvider> =
+      PropKey.Create.simple "TextValidateField.Provider"
+
     member val Text: PropKey<string> = PropKey.Create.simple "TextValidateField.Text"
 
   type TextViewPKeys() =
@@ -748,12 +1054,23 @@ module internal PKey =
     member val WordWrap: PropKey<bool> = PropKey.Create.simple "TextView.WordWrap"
 
     // Events
-    member val ContentsChanged: PropKey<Terminal.Gui.Views.ContentsChangedEventArgs -> unit> = PropKey.Create.event "TextView.ContentsChanged_event"
-    member val DrawNormalColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> = PropKey.Create.event "TextView.DrawNormalColor_event"
-    member val DrawReadOnlyColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> = PropKey.Create.event "TextView.DrawReadOnlyColor_event"
-    member val DrawSelectionColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> = PropKey.Create.event "TextView.DrawSelectionColor_event"
-    member val DrawUsedColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> = PropKey.Create.event "TextView.DrawUsedColor_event"
-    member val UnwrappedCursorPosition: PropKey<System.Drawing.Point -> unit> = PropKey.Create.event "TextView.UnwrappedCursorPosition_event"
+    member val ContentsChanged: PropKey<Terminal.Gui.Views.ContentsChangedEventArgs -> unit> =
+      PropKey.Create.event "TextView.ContentsChanged_event"
+
+    member val DrawNormalColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> =
+      PropKey.Create.event "TextView.DrawNormalColor_event"
+
+    member val DrawReadOnlyColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> =
+      PropKey.Create.event "TextView.DrawReadOnlyColor_event"
+
+    member val DrawSelectionColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> =
+      PropKey.Create.event "TextView.DrawSelectionColor_event"
+
+    member val DrawUsedColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> =
+      PropKey.Create.event "TextView.DrawUsedColor_event"
+
+    member val UnwrappedCursorPosition: PropKey<System.Drawing.Point -> unit> =
+      PropKey.Create.event "TextView.UnwrappedCursorPosition_event"
 
   type TimeFieldPKeys() =
     inherit TextFieldPKeys()
@@ -764,8 +1081,11 @@ module internal PKey =
     member val Value: PropKey<System.TimeSpan> = PropKey.Create.simple "TimeField.Value"
 
     // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<System.TimeSpan> -> unit> = PropKey.Create.event "TimeField.ValueChanged_event"
-    member val ValueChanging: PropKey<ValueChangingEventArgs<System.TimeSpan> -> unit> = PropKey.Create.event "TimeField.ValueChanging_event"
+    member val ValueChanged: PropKey<ValueChangedEventArgs<System.TimeSpan> -> unit> =
+      PropKey.Create.event "TimeField.ValueChanged_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<System.TimeSpan> -> unit> =
+      PropKey.Create.event "TimeField.ValueChanging_event"
 
   type TreeViewPKeys<'T when 'T: not struct>() =
     inherit ViewPKeys()
@@ -773,11 +1093,19 @@ module internal PKey =
     // Properties
     member val AllowLetterBasedNavigation: PropKey<bool> = PropKey.Create.simple "TreeView.AllowLetterBasedNavigation"
     member val AspectGetter: PropKey<AspectGetterDelegate<'T>> = PropKey.Create.simple "TreeView.AspectGetter"
-    member val ColorGetter: PropKey<Func<'T, Terminal.Gui.Drawing.Scheme>> = PropKey.Create.simple "TreeView.ColorGetter"
+
+    member val ColorGetter: PropKey<Func<'T, Terminal.Gui.Drawing.Scheme>> =
+      PropKey.Create.simple "TreeView.ColorGetter"
+
     member val MaxDepth: PropKey<int> = PropKey.Create.simple "TreeView.MaxDepth"
     member val MultiSelect: PropKey<bool> = PropKey.Create.simple "TreeView.MultiSelect"
-    member val ObjectActivationButton: PropKey<Nullable<Terminal.Gui.Input.MouseFlags>> = PropKey.Create.simple "TreeView.ObjectActivationButton"
-    member val ObjectActivationKey: PropKey<Terminal.Gui.Drivers.KeyCode> = PropKey.Create.simple "TreeView.ObjectActivationKey"
+
+    member val ObjectActivationButton: PropKey<Nullable<Terminal.Gui.Input.MouseFlags>> =
+      PropKey.Create.simple "TreeView.ObjectActivationButton"
+
+    member val ObjectActivationKey: PropKey<Terminal.Gui.Drivers.KeyCode> =
+      PropKey.Create.simple "TreeView.ObjectActivationKey"
+
     member val ScrollOffsetHorizontal: PropKey<int> = PropKey.Create.simple "TreeView.ScrollOffsetHorizontal"
     member val ScrollOffsetVertical: PropKey<int> = PropKey.Create.simple "TreeView.ScrollOffsetVertical"
     member val SelectedObject: PropKey<'T> = PropKey.Create.simple "TreeView.SelectedObject"
@@ -786,8 +1114,12 @@ module internal PKey =
 
     // Events
     member val DrawLine: PropKey<DrawTreeViewLineEventArgs<'T> -> unit> = PropKey.Create.event "TreeView.DrawLine_event"
-    member val ObjectActivated: PropKey<ObjectActivatedEventArgs<'T> -> unit> = PropKey.Create.event "TreeView.ObjectActivated_event"
-    member val SelectionChanged: PropKey<SelectionChangedEventArgs<'T> -> unit> = PropKey.Create.event "TreeView.SelectionChanged_event"
+
+    member val ObjectActivated: PropKey<ObjectActivatedEventArgs<'T> -> unit> =
+      PropKey.Create.event "TreeView.ObjectActivated_event"
+
+    member val SelectionChanged: PropKey<SelectionChangedEventArgs<'T> -> unit> =
+      PropKey.Create.event "TreeView.SelectionChanged_event"
 
   type TreeViewPKeys() =
     inherit TreeViewPKeys<Terminal.Gui.Views.ITreeNode>()
@@ -802,13 +1134,22 @@ module internal PKey =
 
     // Properties
     member val CurrentStep: PropKey<Terminal.Gui.Views.WizardStep> = PropKey.Create.view "Wizard.CurrentStep_view"
-    member val CurrentStep_element: PropKey<IWizardStepTerminalElement> = PropKey.Create.subElement "Wizard.CurrentStep_element"
+
+    member val CurrentStep_element: PropKey<IWizardStepTerminalElement> =
+      PropKey.Create.subElement "Wizard.CurrentStep_element"
 
     // Events
-    member val MovingBack: PropKey<System.ComponentModel.CancelEventArgs -> unit> = PropKey.Create.event "Wizard.MovingBack_event"
-    member val MovingNext: PropKey<System.ComponentModel.CancelEventArgs -> unit> = PropKey.Create.event "Wizard.MovingNext_event"
-    member val StepChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.WizardStep> -> unit> = PropKey.Create.event "Wizard.StepChanged_event"
-    member val StepChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.WizardStep> -> unit> = PropKey.Create.event "Wizard.StepChanging_event"
+    member val MovingBack: PropKey<System.ComponentModel.CancelEventArgs -> unit> =
+      PropKey.Create.event "Wizard.MovingBack_event"
+
+    member val MovingNext: PropKey<System.ComponentModel.CancelEventArgs -> unit> =
+      PropKey.Create.event "Wizard.MovingNext_event"
+
+    member val StepChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.WizardStep> -> unit> =
+      PropKey.Create.event "Wizard.StepChanged_event"
+
+    member val StepChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.WizardStep> -> unit> =
+      PropKey.Create.event "Wizard.StepChanging_event"
 
   type WizardStepPKeys() =
     inherit ViewPKeys()
@@ -820,28 +1161,36 @@ module internal PKey =
 
   module internal IMouseHoldRepeaterInterface =
     // Properties
-    let Timeout: PropKey<Terminal.Gui.App.Timeout> = PropKey.Create.simple "IMouseHoldRepeaterInterface.Timeout"
+    let Timeout: PropKey<Terminal.Gui.App.Timeout> =
+      PropKey.Create.simple "IMouseHoldRepeaterInterface.Timeout"
 
     // Events
-    let MouseIsHeldDownTick: PropKey<CancelEventArgs<Terminal.Gui.Input.Mouse> -> unit> = PropKey.Create.event "IMouseHoldRepeaterInterface.MouseIsHeldDownTick_event"
+    let MouseIsHeldDownTick: PropKey<CancelEventArgs<Terminal.Gui.Input.Mouse> -> unit> =
+      PropKey.Create.event "IMouseHoldRepeaterInterface.MouseIsHeldDownTick_event"
 
   module internal IOrientationInterface =
     // Properties
-    let Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "IOrientationInterface.Orientation"
+    let Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> =
+      PropKey.Create.simple "IOrientationInterface.Orientation"
 
     // Events
-    let OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "IOrientationInterface.OrientationChanged_event"
+    let OrientationChanged: PropKey<EventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "IOrientationInterface.OrientationChanged_event"
 
-    let OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> = PropKey.Create.event "IOrientationInterface.OrientationChanging_event"
+    let OrientationChanging: PropKey<CancelEventArgs<Terminal.Gui.ViewBase.Orientation> -> unit> =
+      PropKey.Create.event "IOrientationInterface.OrientationChanging_event"
 
   module internal IValueInterface =
     // Properties
-    let Value<'TValue>: PropKey<'TValue> = PropKey.Create.simple "IValueInterface.Value"
+    let Value<'TValue> : PropKey<'TValue> =
+      PropKey.Create.simple "IValueInterface.Value"
 
     // Events
-    let ValueChanged<'TValue>: PropKey<ValueChangedEventArgs<'TValue> -> unit> = PropKey.Create.event "IValueInterface.ValueChanged_event"
+    let ValueChanged<'TValue> : PropKey<ValueChangedEventArgs<'TValue> -> unit> =
+      PropKey.Create.event "IValueInterface.ValueChanged_event"
 
-    let ValueChanging<'TValue>: PropKey<ValueChangingEventArgs<'TValue> -> unit> = PropKey.Create.event "IValueInterface.ValueChanging_event"
+    let ValueChanging<'TValue> : PropKey<ValueChangingEventArgs<'TValue> -> unit> =
+      PropKey.Create.event "IValueInterface.ValueChanging_event"
 
 
   let View = ViewPKeys()
@@ -878,7 +1227,10 @@ module internal PKey =
   let Runnable'<'TResult> = RunnablePKeys<'TResult>()
   let Dialog<'TResult> = DialogPKeys<'TResult>()
   let Dialog' = DialogPKeys()
-  let Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View> = PromptPKeys<'TView, 'TResult>()
+
+  let Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
+    PromptPKeys<'TView, 'TResult>()
+
   let FileDialog = FileDialogPKeys()
   let OpenDialog = OpenDialogPKeys()
   let SaveDialog = SaveDialogPKeys()
@@ -887,8 +1239,18 @@ module internal PKey =
   let SelectorBase = SelectorBasePKeys()
   let FlagSelector = FlagSelectorPKeys()
   let OptionSelector = OptionSelectorPKeys()
-  let FlagSelector'<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType> = FlagSelectorPKeys<'TFlagsEnum>()
-  let OptionSelector'<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType> = OptionSelectorPKeys<'TEnum>()
+
+  let FlagSelector'<'TFlagsEnum
+    when 'TFlagsEnum: struct
+    and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)
+    and 'TFlagsEnum :> System.Enum
+    and 'TFlagsEnum :> System.ValueType> =
+    FlagSelectorPKeys<'TFlagsEnum>()
+
+  let OptionSelector'<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
+    OptionSelectorPKeys<'TEnum>()
+
   let Shortcut = ShortcutPKeys()
   let MenuItem = MenuItemPKeys()
   let MenuBarItem = MenuBarItemPKeys()

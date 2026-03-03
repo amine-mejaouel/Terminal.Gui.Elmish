@@ -3,10 +3,7 @@
 module internal Differ =
 
   let sortedChildNames (ve: IViewTE) =
-    ve.Children
-    |> Seq.map _.Name
-    |> Seq.sort
-    |> Seq.toList
+    ve.Children |> Seq.map _.Name |> Seq.sort |> Seq.toList
 
   let (|OnlyPropsChanged|_|) (ve1: IViewTE, ve2: IViewTE) =
 
@@ -29,6 +26,7 @@ module internal Differ =
 
     while workStack.Count > 0 do
       let prevTree, newTree = workStack.Pop()
+
       match prevTree, newTree with
       | ElmishComponentTE _, ViewTE _
       | ViewTE _, ElmishComponentTE _ ->
@@ -51,14 +49,10 @@ module internal Differ =
           newTree.Reuse prevTree
 
           let sortedRootChildren =
-            prevTree.Children
-            |> Seq.sortBy (fun v -> v.Name)
-            |> Seq.toList
+            prevTree.Children |> Seq.sortBy (fun v -> v.Name) |> Seq.toList
 
           let sortedNewChildren =
-            newTree.Children
-            |> Seq.sortBy (fun v -> v.Name)
-            |> Seq.toList
+            newTree.Children |> Seq.sortBy (fun v -> v.Name) |> Seq.toList
 
           (sortedRootChildren, sortedNewChildren)
           ||> List.iter2 (fun rt nt -> workStack.Push(rt, nt))
@@ -82,14 +76,10 @@ module internal Differ =
           allTypes
           |> List.iter (fun et ->
             let rootElements =
-              prevTree.Children
-              |> Seq.filter (fun e -> e.Name = et)
-              |> Seq.toList
+              prevTree.Children |> Seq.filter (fun e -> e.Name = et) |> Seq.toList
 
             let newElements =
-              newTree.Children
-              |> Seq.filter (fun e -> e.Name = et)
-              |> Seq.toList
+              newTree.Children |> Seq.filter (fun e -> e.Name = et) |> Seq.toList
 
             if (newElements.Length > rootElements.Length) then
               newElements
@@ -104,7 +94,7 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewTE ve -> ve.InitializeTree (Origin.Child (newTree, idx))
+                  | ViewTE ve -> ve.InitializeTree(Origin.Child(newTree, idx))
                   | _ -> ()
 
               )
@@ -114,9 +104,7 @@ module internal Differ =
                 if (idx < newElements.Length) then
                   workStack.Push(re, newElements[idx])
                 else
-                  re.Dispose()
-              )
-          )
+                  re.Dispose()))
 
           prevTree.Dispose()
         | _ ->

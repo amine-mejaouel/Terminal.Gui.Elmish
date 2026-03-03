@@ -10,7 +10,10 @@ module CodeGen =
   /// <p>Example: For List&lt;T&gt;, the type name is "List`1", and this function returns "List".</p>
   /// </summary>
   let getTypeNameWithoutArity (t: Type) =
-    if t.Name.Contains("`") then t.Name.Substring(0, t.Name.IndexOf("`")) else t.Name
+    if t.Name.Contains("`") then
+      t.Name.Substring(0, t.Name.IndexOf("`"))
+    else
+      t.Name
 
   /// <summary>
   /// <p>Returns the F# type name written in F# syntax.</p>
@@ -43,8 +46,7 @@ module CodeGen =
   /// <p>Example: For Dictionary&lt;TKey, TValue&gt;, it returns <c>&lt;'TKey, 'TValue&gt;</c>. If the type is not generic, it returns an empty string.</p>
   /// </summary>
   and genericTypeParamsBlock (t: Type) =
-    genericTypeParams t
-    |> fun s -> if s = "" then "" else $"<{s}>"
+    genericTypeParams t |> fun s -> if s = "" then "" else $"<{s}>"
 
   /// <summary>
   /// <p>Returns the generic constraints of a generic type as an F# 'when' clause.</p>
@@ -54,26 +56,28 @@ module CodeGen =
     let constraints =
       t.GetGenericArguments()
       |> Array.choose (fun t ->
-          let constraints = ResizeArray<string>()
-          let attrs = t.GenericParameterAttributes
+        let constraints = ResizeArray<string>()
+        let attrs = t.GenericParameterAttributes
 
-          if attrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint) then
-            constraints.Add($"'{t.Name}: not struct")
-          if attrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint) then
-            constraints.Add($"'{t.Name}: struct")
-          if attrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) then
-            constraints.Add($"'{t.Name}: (new: unit -> '{t.Name})")
-          let baseTypes = t.GetGenericParameterConstraints()
-          for baseType in baseTypes do
-            constraints.Add($"'{t.Name}:> {getFSharpTypeName baseType}")
+        if attrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint) then
+          constraints.Add($"'{t.Name}: not struct")
 
-          if constraints.Count > 0 then
-            constraints
-            |> String.concat " and "
-            |> Some
-          else
-            None
-      )
+        if attrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint) then
+          constraints.Add($"'{t.Name}: struct")
+
+        if attrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) then
+          constraints.Add($"'{t.Name}: (new: unit -> '{t.Name})")
+
+        let baseTypes = t.GetGenericParameterConstraints()
+
+        for baseType in baseTypes do
+          constraints.Add($"'{t.Name}:> {getFSharpTypeName baseType}")
+
+        if constraints.Count > 0 then
+          constraints |> String.concat " and " |> Some
+        else
+          None)
+
     if constraints.Length > 0 then
       " when " + (constraints |> String.concat " and ")
     else
@@ -99,6 +103,7 @@ module CodeGen =
   let eventHandlerType (event: EventInfo) =
     let handlerType = event.EventHandlerType
     let genericArgs = handlerType.GetGenericArguments()
+
     if genericArgs.Length = 1 then
       $"{getFSharpTypeName genericArgs[0]} -> unit"
     else if genericArgs.Length = 0 then

@@ -9,6 +9,7 @@ open Terminal.Gui.ViewBase
 type internal TePairKey(first: ITerminalElementBase, second: ITerminalElementBase) =
   member this.First = first
   member this.Second = second
+
   member this.GetOtherTe(te: ITerminalElementBase) =
     if te = first then second
     elif te = second then first
@@ -22,8 +23,8 @@ type internal TePairKey(first: ITerminalElementBase, second: ITerminalElementBas
   override this.Equals(obj) =
     match obj with
     | :? TePairKey as other ->
-        (this.First = other.First && this.Second = other.Second) ||
-        (this.First = other.Second && this.Second = other.First)
+      (this.First = other.First && this.Second = other.Second)
+      || (this.First = other.Second && this.Second = other.First)
     | _ -> false
 
 type internal PositionService() =
@@ -40,8 +41,7 @@ type internal PositionService() =
 
     let updateIndex k =
       match this.TerminalElementPairs.TryGetValue(k) with
-      | true, set ->
-        set.Add tePairKey |> ignore
+      | true, set -> set.Add tePairKey |> ignore
       | false, _ ->
         let set = HashSet<TePairKey>()
         set.Add tePairKey |> ignore
@@ -55,10 +55,8 @@ type internal PositionService() =
     let key = TePairKey(fst key, snd key)
 
     match this.Cleanups.TryGetValue(key) with
-    | true, handlers ->
-      handlers.Add cleanup
-    | false, _ ->
-      this.Cleanups.[key] <- List<_>([ cleanup ])
+    | true, handlers -> handlers.Add cleanup
+    | false, _ -> this.Cleanups.[key] <- List<_>([ cleanup ])
 
     this.UpdateIndex(key)
 
@@ -69,24 +67,30 @@ type internal PositionService() =
         match this.Cleanups.TryGetValue(tePairKey) with
         | true, handlers ->
           for handler in handlers do
-            handler()
+            handler ()
+
           this.Cleanups.Remove tePairKey |> ignore
 
           // Also remove the tePairKey from the TerminalElementPairs for the other terminal element in the pair
           let otherTe = tePairKey.GetOtherTe targetTe
+
           match this.TerminalElementPairs.TryGetValue otherTe with
           | true, set ->
             set.Remove tePairKey |> ignore
+
             if set.Count = 0 then
               this.TerminalElementPairs.Remove otherTe |> ignore
           | _ -> ()
 
         | false, _ -> ()
+
       this.TerminalElementPairs.Remove targetTe |> ignore
     | false, _ -> ()
 
 
-  member private this.ApplyRelativePos(cur: ITerminalElementBase, rel: ITerminalElementBase, apply: View -> View -> unit) =
+  member private this.ApplyRelativePos
+    (cur: ITerminalElementBase, rel: ITerminalElementBase, apply: View -> View -> unit)
+    =
     let handler = EventHandler<_>(fun _ _ -> apply cur.View rel.View)
     rel.View.DrawComplete.AddHandler handler
     this.RegisterCleanup((cur, rel), fun () -> rel.View.DrawComplete.RemoveHandler handler)
@@ -99,21 +103,23 @@ type internal PositionService() =
         this.RegisterCleanup((curElementData, relativeTerminalElement), cleanup)
 
       let differApplyRelativePos (relativeTerminalElement: ITerminalElementBase) (applyPos: View -> View -> unit) =
-        let handler = Handler<View>(fun _ _ -> this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos))
+        let handler =
+          Handler<View>(fun _ _ -> this.ApplyRelativePos(curElementData, relativeTerminalElement, applyPos))
+
         relativeTerminalElement.OnViewSet.AddHandler handler
         registerCleanup (fun () -> relativeTerminalElement.OnViewSet.RemoveHandler handler)
 
       if (relativeTerminalElement.View = null) then
         differApplyRelativePos relativeTerminalElement applyPos
       else
-        this.ApplyRelativePos (curElementData, relativeTerminalElement, applyPos)
+        this.ApplyRelativePos(curElementData, relativeTerminalElement, applyPos)
 
       registerCleanup (fun () -> resetPos curElementData.View)
 
     let applyPos (thisView: View) pos =
-       match axis with
-       | PosAxis.X -> thisView.X <- pos
-       | PosAxis.Y -> thisView.Y <- pos
+      match axis with
+      | PosAxis.X -> thisView.X <- pos
+      | PosAxis.Y -> thisView.Y <- pos
 
     let resetPos (thisView: View) =
       match axis with
@@ -125,24 +131,46 @@ type internal PositionService() =
 
     match targetPos with
     | TPos.X te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.X(otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.X(otherView)))
+        resetPos
     | TPos.Y te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Y(otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Y(otherView)))
+        resetPos
     | TPos.Top te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Top(otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Top(otherView)))
+        resetPos
     | TPos.Bottom te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Bottom(otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Bottom(otherView)))
+        resetPos
     | TPos.Left te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Left(otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Left(otherView)))
+        resetPos
     | TPos.Right te ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Right(otherView))) resetPos
-    | TPos.Func (func, te) ->
-      onViewSetOnElementData (te :?> ITerminalElementBase) (fun thisView otherView -> applyPos thisView (Pos.Func(func, otherView))) resetPos
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Right(otherView)))
+        resetPos
+    | TPos.Func(func, te) ->
+      onViewSetOnElementData
+        (te :?> ITerminalElementBase)
+        (fun thisView otherView -> applyPos thisView (Pos.Func(func, otherView)))
+        resetPos
     | TPos.Absolute position -> applyPos curElementData.View (Pos.Absolute(position))
     | TPos.AnchorEnd offset -> applyPos curElementData.View (Pos.AnchorEnd(offset |> Option.defaultValue 0))
     | TPos.Center -> applyPos curElementData.View (Pos.Center())
     | TPos.Percent percent -> applyPos curElementData.View (Pos.Percent(percent))
-    | TPos.Align (alignment, modes, groupId) -> applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
+    | TPos.Align(alignment, modes, groupId) ->
+      applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.ApplyPos(viewTe: IViewTE) =
 
@@ -157,4 +185,3 @@ type internal PositionService() =
     | Some yPos, None -> viewTe.View.Y <- yPos
     | None, Some delayedYPos -> PositionService.Current.ApplyPos(viewTe, Y, delayedYPos)
     | None, None -> viewTe.View.Y <- 0
-

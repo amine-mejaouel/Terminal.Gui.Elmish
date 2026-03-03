@@ -15,20 +15,19 @@ module Registry =
       match ViewTypes.TypesNames.TryGetValue(viewType.FullName) with
       | true, pkey -> pkey
       | _ ->
-          let uniquePKey =
-            let pkeyCandidate =
-              viewType
-              |> getTypeNameWithoutArity
+        let uniquePKey =
+          let pkeyCandidate = viewType |> getTypeNameWithoutArity
 
-            let rec findUniquePKey candidate =
-              if ViewTypes.TypesNames.ContainsValue candidate then
-                findUniquePKey (candidate + "'")
-              else
-                candidate
-            findUniquePKey pkeyCandidate
+          let rec findUniquePKey candidate =
+            if ViewTypes.TypesNames.ContainsValue candidate then
+              findUniquePKey (candidate + "'")
+            else
+              candidate
 
-          ViewTypes.TypesNames.Add(viewType.FullName, uniquePKey)
-          uniquePKey
+          findUniquePKey pkeyCandidate
+
+        ViewTypes.TypesNames.Add(viewType.FullName, uniquePKey)
+        uniquePKey
 
     static member val private viewTypes =
       typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
@@ -43,15 +42,16 @@ module Registry =
         | null -> true
         | baseType when baseType = typeof<Terminal.Gui.ViewBase.View> -> true
         | baseType ->
-            returnedTypes
-            |> Seq.exists (fun rt ->
-              if rt.IsGenericType && baseType.IsGenericType then
-                rt = baseType.GetGenericTypeDefinition()
-              else
-                rt = baseType)
+          returnedTypes
+          |> Seq.exists (fun rt ->
+            if rt.IsGenericType && baseType.IsGenericType then
+              rt = baseType.GetGenericTypeDefinition()
+            else
+              rt = baseType)
 
       let returnedTypes = System.Collections.Generic.List<Type>()
       let pendingTypes = System.Collections.Generic.List<Type>()
+
       seq {
         yield typeof<Terminal.Gui.ViewBase.View>
 
@@ -63,11 +63,11 @@ module Registry =
             pendingTypes.Add viewType
 
           let mutable iterate = true
+
           while iterate do
             let readyTypes =
-              pendingTypes
-              |> Seq.filter (parentIsReturned returnedTypes)
-              |> Seq.toArray
+              pendingTypes |> Seq.filter (parentIsReturned returnedTypes) |> Seq.toArray
+
             if readyTypes.Length = 0 then
               iterate <- false
             else
@@ -75,7 +75,8 @@ module Registry =
                 pendingTypes.Remove readyType |> ignore
                 returnedTypes.Add readyType
                 yield readyType
-      } |> Seq.toList
+      }
+      |> Seq.toList
 
   type TEInterfaces =
     static let getTEInterfaceName propertyType =
@@ -100,18 +101,21 @@ module Registry =
     static member GetAllPreviouslyCreatedInterfaces(propertyType: Type) =
       seq {
         let mutable propertyType = propertyType
+
         while propertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> do
           if TEInterfaces.TEInterfaces.Contains(propertyType) then
             yield getTEInterfaceName propertyType
+
           propertyType <- propertyType.BaseType
       }
 
     static member GetAssignableInterface(propertyType: Type) =
       let mutable propertyType = propertyType
       let mutable result = None
+
       while result.IsNone && propertyType.IsAssignableTo typeof<Terminal.Gui.ViewBase.View> do
         if TEInterfaces.TEInterfaces.Contains(propertyType) then
-          result <- Some (getTEInterfaceName propertyType)
+          result <- Some(getTEInterfaceName propertyType)
         else
           propertyType <- propertyType.BaseType
 

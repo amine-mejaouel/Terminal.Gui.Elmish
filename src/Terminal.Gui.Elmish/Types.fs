@@ -4,9 +4,7 @@ open System
 open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
-type ITerminalElement =
-  interface
-  end
+type ITerminalElement = interface end
 
 [<RequireQualifiedAccess>]
 type TPos =
@@ -45,11 +43,14 @@ module internal PropKey =
 
   [<CustomEquality; NoComparison>]
   type PropKey =
-    { Kind: PropKeyKind; Key: RawPropKey }
+    { Kind: PropKeyKind
+      Key: RawPropKey }
 
     member this.viewKey =
       match this.Kind with
-      | PropKeyKind.SubElement -> { Kind = PropKeyKind.View; Key = this.Key.Replace("_element", "_view") }
+      | PropKeyKind.SubElement ->
+        { Kind = PropKeyKind.View
+          Key = this.Key.Replace("_element", "_view") }
       | _ -> failwith $"viewKey is only valid for SubElement PropKeys, got: {this}"
 
     override this.Equals(obj) = equalsByRawKey this.Key obj
@@ -63,6 +64,7 @@ module internal PropKey =
   type PropKey<'a> =
     private
     | PropKey of PropKey
+
     member this.Untyped = let (PropKey k) = this in k
     member this.key = this.Untyped.Key
     override this.Equals(obj) = equalsByRawKey this.Untyped.Key obj
@@ -75,22 +77,35 @@ module internal PropKey =
   module PropKey =
 
     let viewKeyOfSubElement (key: RawPropKey) : PropKey =
-      { Kind = PropKeyKind.View; Key = key.Replace("_element", "_view") }
+      { Kind = PropKeyKind.View
+        Key = key.Replace("_element", "_view") }
 
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
-        if key.EndsWith "_element" then PropKey { Kind = PropKeyKind.SubElement; Key = key }
-        else failwith $"Invalid key: {key}"
+        if key.EndsWith "_element" then
+          PropKey
+            { Kind = PropKeyKind.SubElement
+              Key = key }
+        else
+          failwith $"Invalid key: {key}"
+
       static member simple<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
-        else PropKey { Kind = PropKeyKind.Simple; Key = key }
+        else
+          PropKey { Kind = PropKeyKind.Simple; Key = key }
+
       static member event<'a>(key: string) : PropKey<'a> =
-        if not (key.EndsWith "_event") then failwith $"Invalid key: {key}"
-        else PropKey { Kind = PropKeyKind.Event; Key = key }
+        if not (key.EndsWith "_event") then
+          failwith $"Invalid key: {key}"
+        else
+          PropKey { Kind = PropKeyKind.Event; Key = key }
+
       static member view<'a>(key: string) : PropKey<'a> =
-        if not (key.EndsWith "_view") then failwith $"Invalid key: {key}"
-        else PropKey { Kind = PropKeyKind.View; Key = key }
+        if not (key.EndsWith "_view") then
+          failwith $"Invalid key: {key}"
+        else
+          PropKey { Kind = PropKeyKind.View; Key = key }
 
 /// Props object that is still under construction
 type internal Props() =
@@ -126,14 +141,14 @@ and internal IElmishComponentTE =
 
   abstract Child: IViewTE with get
 
-  abstract StartElmishLoop : unit -> unit
+  abstract StartElmishLoop: unit -> unit
   abstract Reuse: prev: IElmishComponentTE -> unit
 
 and internal TerminalElement =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 
-  static member from (te: ITerminalElement) =
+  static member from(te: ITerminalElement) =
     match te with
     | :? IViewTE as viewTE -> ViewTE viewTE
     | :? IElmishComponentTE as elmishComponentTE -> ElmishComponentTE elmishComponentTE
@@ -146,7 +161,10 @@ and internal TerminalElement =
 
   member this.Name = this.TerminalElementBase.Name
   member this.Origin = this.TerminalElementBase.Origin
-  member this.Origin with set value = this.TerminalElementBase.Origin <- value
+
+  member this.Origin
+    with set value = this.TerminalElementBase.Origin <- value
+
   member this.ViewSet = this.TerminalElementBase.OnViewSet
   member this.View = this.TerminalElementBase.View
   member this.GetPath() = this.TerminalElementBase.GetPath()
@@ -157,7 +175,10 @@ and internal TerminalElement =
     member this.OnViewSet = this.ViewSet
     member this.Name = this.Name
     member this.Origin = this.Origin
-    member this.Origin with set value = this.Origin <- value
+
+    member this.Origin
+      with set value = this.Origin <- value
+
     member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
@@ -172,14 +193,14 @@ type PosAxis =
   | Y
 
 type Props with
-  static member private toEntries (props: Props) =
+  static member private toEntries(props: Props) =
     seq {
       for kindKv in props.Props do
         for keyKv in kindKv.Value do
           KeyValuePair({ Kind = kindKv.Key; Key = keyKv.Key }, keyKv.Value)
     }
 
-  static member add (k: PropKey, v: obj) =
+  static member add(k: PropKey, v: obj) =
     fun (this: Props) ->
       match this.Props.TryGetValue k.Kind with
       | true, byKey -> byKey.Add(k.Key, v)
@@ -203,11 +224,12 @@ type Props with
     match this.Props.TryGetValue k.Kind with
     | true, byKey ->
       byKey.Remove k.Key |> ignore
+
       if byKey.Count = 0 then
         this.Props.Remove k.Kind |> ignore
     | false, _ -> ()
 
-  static member tryFind (key: PropKey) =
+  static member tryFind(key: PropKey) =
     fun (this: Props) ->
       match this.Props.TryGetValue key.Kind with
       | true, byKey ->
@@ -216,21 +238,19 @@ type Props with
         | _ -> None
       | _ -> None
 
-  static member tryFind (key: PropKey<'a>) =
+  static member tryFind(key: PropKey<'a>) =
     fun (this: Props) ->
       match Props.tryFind key.Untyped this with
       | Some v -> v |> unbox<'a> |> Some
       | None -> None
 
-  static member tryFind (kind: PropKeyKind, key: RawPropKey) =
+  static member tryFind(kind: PropKeyKind, key: RawPropKey) =
     fun (this: Props) ->
       let propKey = { Kind = kind; Key = key }
       Props.tryFind propKey this
 
-  static member tryFind<'a> (kind: PropKeyKind, key: string) =
-    fun (this: Props) ->
-      Props.tryFind (kind, key) this
-      |> Option.map (fun v -> v |> unbox<'a>)
+  static member tryFind<'a>(kind: PropKeyKind, key: string) =
+    fun (this: Props) -> Props.tryFind (kind, key) this |> Option.map (fun v -> v |> unbox<'a>)
 
   /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
   /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
@@ -267,14 +287,15 @@ type Props with
 
   static member exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  static member keys (props: Props) =
-    Props.toEntries props |> Seq.map _.Key
+  static member keys(props: Props) = Props.toEntries props |> Seq.map _.Key
 
-  static member filterSubElementKeys (props: Props) =
+  static member filterSubElementKeys(props: Props) =
     match props.Props.TryGetValue PropKeyKind.SubElement with
     | true, byKey ->
       byKey.Keys
-      |> Seq.map (fun key -> { Kind = PropKeyKind.SubElement; Key = key })
+      |> Seq.map (fun key ->
+        { Kind = PropKeyKind.SubElement
+          Key = key })
     | _ -> Seq.empty
 
   static member iter iteration (props: Props) =
@@ -287,15 +308,14 @@ module Element =
     let parentTerminalElement this : TerminalElement option =
       match this with
       | Root -> None
-      | Child (parent, _) -> Some (TerminalElement.ViewTE parent)
-      | SubElement(parent, _, _) -> Some (TerminalElement.ViewTE parent)
-      | ElmishComponent parent -> Some (TerminalElement.ElmishComponentTE parent)
+      | Child(parent, _) -> Some(TerminalElement.ViewTE parent)
+      | SubElement(parent, _, _) -> Some(TerminalElement.ViewTE parent)
+      | ElmishComponent parent -> Some(TerminalElement.ElmishComponentTE parent)
 
     let rec parentView (this: Origin) =
       match this |> parentTerminalElement with
-      | Some (ElmishComponentTE parent) ->
-        parent.Origin |> parentView
-      | Some (ViewTE parent) -> Some parent.View
+      | Some(ElmishComponentTE parent) -> parent.Origin |> parentView
+      | Some(ViewTE parent) -> Some parent.View
       | None -> None
 
     let getPath name (this: Origin) =
@@ -308,8 +328,7 @@ module Element =
         match this with
         | Origin.Root -> ""
         | Origin.Child _
-        | Origin.ElmishComponent _ ->
-          "child"
+        | Origin.ElmishComponent _ -> "child"
         | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
 
       let indexStr =

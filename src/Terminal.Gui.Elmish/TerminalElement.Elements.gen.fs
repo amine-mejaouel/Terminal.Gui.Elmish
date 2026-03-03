@@ -45,17 +45,13 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.Cursor
     |> Option.iter (fun v -> view.Cursor <- v)
 
-    props
-    |> Props.tryFind PKey.View.Data
-    |> Option.iter (fun v -> view.Data <- v)
+    props |> Props.tryFind PKey.View.Data |> Option.iter (fun v -> view.Data <- v)
 
     props
     |> Props.tryFind PKey.View.Enabled
     |> Option.iter (fun v -> view.Enabled <- v)
 
-    props
-    |> Props.tryFind PKey.View.Frame
-    |> Option.iter (fun v -> view.Frame <- v)
+    props |> Props.tryFind PKey.View.Frame |> Option.iter (fun v -> view.Frame <- v)
 
     props
     |> Props.tryFind PKey.View.HasFocus
@@ -73,9 +69,7 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.HotKeySpecifier
     |> Option.iter (fun v -> view.HotKeySpecifier <- v)
 
-    props
-    |> Props.tryFind PKey.View.Id
-    |> Option.iter (fun v -> view.Id <- v)
+    props |> Props.tryFind PKey.View.Id |> Option.iter (fun v -> view.Id <- v)
 
     props
     |> Props.tryFind PKey.View.IsInitialized
@@ -113,9 +107,7 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.TabStop
     |> Option.iter (fun v -> view.TabStop <- v)
 
-    props
-    |> Props.tryFind PKey.View.Text
-    |> Option.iter (fun v -> view.Text <- v)
+    props |> Props.tryFind PKey.View.Text |> Option.iter (fun v -> view.Text <- v)
 
     props
     |> Props.tryFind PKey.View.TextAlignment
@@ -125,9 +117,7 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.TextDirection
     |> Option.iter (fun v -> view.TextDirection <- v)
 
-    props
-    |> Props.tryFind PKey.View.Title
-    |> Option.iter (fun v -> view.Title <- v)
+    props |> Props.tryFind PKey.View.Title |> Option.iter (fun v -> view.Title <- v)
 
     props
     |> Props.tryFind PKey.View.UsedHotKeys
@@ -153,9 +143,7 @@ type internal ViewTerminalElement(props: Props) =
     |> Props.tryFind PKey.View.Visible
     |> Option.iter (fun v -> view.Visible <- v)
 
-    props
-    |> Props.tryFind PKey.View.Width
-    |> Option.iter (fun v -> view.Width <- v)
+    props |> Props.tryFind PKey.View.Width |> Option.iter (fun v -> view.Width <- v)
 
     // Events
     terminalElement.TrySetEventHandler(PKey.View.Accepted, view.Accepted)
@@ -278,231 +266,193 @@ type internal ViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.View.Arrangement
-    |> Option.iter (fun _ ->
-        view.Arrangement <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Arrangement <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.AssignHotKeys
-    |> Option.iter (fun _ ->
-        view.AssignHotKeys <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AssignHotKeys <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.BorderStyle
-    |> Option.iter (fun _ ->
-        view.BorderStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BorderStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.CanFocus
-    |> Option.iter (fun _ ->
-        view.CanFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CanFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.ContentSizeTracksViewport
-    |> Option.iter (fun _ ->
-        view.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Cursor
-    |> Option.iter (fun _ ->
-        view.Cursor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Cursor <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Data
-    |> Option.iter (fun _ ->
-        view.Data <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Data <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Enabled
-    |> Option.iter (fun _ ->
-        view.Enabled <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Enabled <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Frame
-    |> Option.iter (fun _ ->
-        view.Frame <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Frame <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.HasFocus
-    |> Option.iter (fun _ ->
-        view.HasFocus <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HasFocus <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Height
-    |> Option.iter (fun _ ->
-        view.Height <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Height <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.HotKey
-    |> Option.iter (fun _ ->
-        view.HotKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.HotKeySpecifier
-    |> Option.iter (fun _ ->
-        view.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.View.Id
-    |> Option.iter (fun _ ->
-        view.Id <- "")
+    props |> Props.tryFind PKey.View.Id |> Option.iter (fun _ -> view.Id <- "")
 
     props
     |> Props.tryFind PKey.View.IsInitialized
-    |> Option.iter (fun _ ->
-        view.IsInitialized <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsInitialized <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.MouseHighlightStates
-    |> Option.iter (fun _ ->
-        view.MouseHighlightStates <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MouseHighlightStates <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.MouseHoldRepeat
-    |> Option.iter (fun _ ->
-        view.MouseHoldRepeat <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MouseHoldRepeat <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.MousePositionTracking
-    |> Option.iter (fun _ ->
-        view.MousePositionTracking <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MousePositionTracking <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.PreserveTrailingSpaces
-    |> Option.iter (fun _ ->
-        view.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.SchemeName
-    |> Option.iter (fun _ ->
-        view.SchemeName <- "")
+    |> Option.iter (fun _ -> view.SchemeName <- "")
 
     props
     |> Props.tryFind PKey.View.ShadowStyle
-    |> Option.iter (fun _ ->
-        view.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.SuperViewRendersLineCanvas
-    |> Option.iter (fun _ ->
-        view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.TabStop
-    |> Option.iter (fun _ ->
-        view.TabStop <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TabStop <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.View.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    props |> Props.tryFind PKey.View.Text |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.View.TextAlignment
-    |> Option.iter (fun _ ->
-        view.TextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.TextDirection
-    |> Option.iter (fun _ ->
-        view.TextDirection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TextDirection <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Title
-    |> Option.iter (fun _ ->
-        view.Title <- "")
+    |> Option.iter (fun _ -> view.Title <- "")
 
     props
     |> Props.tryFind PKey.View.UsedHotKeys
-    |> Option.iter (fun _ ->
-        view.UsedHotKeys <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.UsedHotKeys <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.ValidatePosDim
-    |> Option.iter (fun _ ->
-        view.ValidatePosDim <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ValidatePosDim <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.VerticalTextAlignment
-    |> Option.iter (fun _ ->
-        view.VerticalTextAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.VerticalTextAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Viewport
-    |> Option.iter (fun _ ->
-        view.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.ViewportSettings
-    |> Option.iter (fun _ ->
-        view.ViewportSettings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ViewportSettings <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Visible
-    |> Option.iter (fun _ ->
-        view.Visible <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Visible <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Width
-    |> Option.iter (fun _ ->
-        view.Width <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Width <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.View.Accepted)
-    terminalElement.TryRemoveEventHandler (PKey.View.Accepting)
-    terminalElement.TryRemoveEventHandler (PKey.View.Activating)
-    terminalElement.TryRemoveEventHandler (PKey.View.AdvancingFocus)
-    terminalElement.TryRemoveEventHandler (PKey.View.BorderStyleChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.CanFocusChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.ClearedViewport)
-    terminalElement.TryRemoveEventHandler (PKey.View.ClearingViewport)
-    terminalElement.TryRemoveEventHandler (PKey.View.CommandNotBound)
-    terminalElement.TryRemoveEventHandler (PKey.View.ContentSizeChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.ContentSizeChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.Disposing)
-    terminalElement.TryRemoveEventHandler (PKey.View.DrawComplete)
-    terminalElement.TryRemoveEventHandler (PKey.View.DrawingContent)
-    terminalElement.TryRemoveEventHandler (PKey.View.DrawingSubViews)
-    terminalElement.TryRemoveEventHandler (PKey.View.DrawingText)
-    terminalElement.TryRemoveEventHandler (PKey.View.DrewText)
-    terminalElement.TryRemoveEventHandler (PKey.View.EnabledChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.FocusedChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.FrameChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.GettingAttributeForRole)
-    terminalElement.TryRemoveEventHandler (PKey.View.GettingScheme)
-    terminalElement.TryRemoveEventHandler (PKey.View.HandlingHotKey)
-    terminalElement.TryRemoveEventHandler (PKey.View.HasFocusChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.HasFocusChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.HeightChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.HeightChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.HotKeyChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.Initialized)
-    terminalElement.TryRemoveEventHandler (PKey.View.KeyDown)
-    terminalElement.TryRemoveEventHandler (PKey.View.KeyDownNotHandled)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseEnter)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseEvent)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseHoldRepeatChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseHoldRepeatChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseLeave)
-    terminalElement.TryRemoveEventHandler (PKey.View.MouseStateChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.Removed)
-    terminalElement.TryRemoveEventHandler (PKey.View.SchemeChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.SchemeChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.SchemeNameChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.SchemeNameChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.SubViewAdded)
-    terminalElement.TryRemoveEventHandler (PKey.View.SubViewLayout)
-    terminalElement.TryRemoveEventHandler (PKey.View.SubViewRemoved)
-    terminalElement.TryRemoveEventHandler (PKey.View.SubViewsLaidOut)
-    terminalElement.TryRemoveEventHandler (PKey.View.SuperViewChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.SuperViewChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.TextChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.TitleChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.TitleChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.ViewportChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.VisibleChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.VisibleChanging)
-    terminalElement.TryRemoveEventHandler (PKey.View.WidthChanged)
-    terminalElement.TryRemoveEventHandler (PKey.View.WidthChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
+    terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
+    terminalElement.TryRemoveEventHandler(PKey.View.Activating)
+    terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
+    terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
+    terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
+    terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
+    terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
+    terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
+    terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
+    terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
+    terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
+    terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
+    terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
+    terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
+    terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
+    terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
+    terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
+    terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
+    terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.Removed)
+    terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
+    terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
+    terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
+    terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
+    terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
+    terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
+    terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
 
   interface ITerminalElement
 
@@ -516,10 +466,7 @@ type internal AdornmentTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.Adornment.Parent_element.key
-    ]
-    |> List.append base.SubElements_PropKeys
+    [ PKey.Adornment.Parent_element.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -558,31 +505,26 @@ type internal AdornmentTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Adornment.Diagnostics
-    |> Option.iter (fun _ ->
-        view.Diagnostics <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Diagnostics <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Adornment.Parent
-    |> Option.iter (fun _ ->
-        view.Parent <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Parent <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Adornment.SuperViewRendersLineCanvas
-    |> Option.iter (fun _ ->
-        view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Adornment.Thickness
-    |> Option.iter (fun _ ->
-        view.Thickness <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Thickness <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Adornment.Viewport
-    |> Option.iter (fun _ ->
-        view.Viewport <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Adornment.ThicknessChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Adornment.ThicknessChanged)
 
   interface ITerminalElement
 
@@ -622,17 +564,15 @@ type internal AttributePickerTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.AttributePicker.SampleText
-    |> Option.iter (fun _ ->
-        view.SampleText <- "")
+    |> Option.iter (fun _ -> view.SampleText <- "")
 
     props
     |> Props.tryFind PKey.AttributePicker.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.AttributePicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.AttributePicker.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
 
   interface ITerminalElement
 
@@ -672,17 +612,15 @@ type internal BarTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Bar.AlignmentModes
-    |> Option.iter (fun _ ->
-        view.AlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AlignmentModes <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Bar.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Bar.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Bar.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
 
   interface ITerminalElement
 
@@ -717,13 +655,11 @@ type internal BorderTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Border.LineStyle
-    |> Option.iter (fun _ ->
-        view.LineStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.LineStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Border.Settings
-    |> Option.iter (fun _ ->
-        view.Settings <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Settings <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -759,9 +695,7 @@ type internal ButtonTerminalElement(props: Props) =
     |> Props.tryFind PKey.Button.NoPadding
     |> Option.iter (fun v -> view.NoPadding <- v)
 
-    props
-    |> Props.tryFind PKey.Button.Text
-    |> Option.iter (fun v -> view.Text <- v)
+    props |> Props.tryFind PKey.Button.Text |> Option.iter (fun v -> view.Text <- v)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
@@ -771,28 +705,23 @@ type internal ButtonTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Button.HotKeySpecifier
-    |> Option.iter (fun _ ->
-        view.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Button.IsDefault
-    |> Option.iter (fun _ ->
-        view.IsDefault <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsDefault <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Button.NoDecorations
-    |> Option.iter (fun _ ->
-        view.NoDecorations <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.NoDecorations <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Button.NoPadding
-    |> Option.iter (fun _ ->
-        view.NoPadding <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.NoPadding <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Button.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
 
   interface ITerminalElement
@@ -845,32 +774,27 @@ type internal CharMapTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.CharMap.SelectedCodePoint
-    |> Option.iter (fun _ ->
-        view.SelectedCodePoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedCodePoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CharMap.ShowGlyphWidths
-    |> Option.iter (fun _ ->
-        view.ShowGlyphWidths <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShowGlyphWidths <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CharMap.ShowUnicodeCategory
-    |> Option.iter (fun _ ->
-        view.ShowUnicodeCategory <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShowUnicodeCategory <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CharMap.StartCodePoint
-    |> Option.iter (fun _ ->
-        view.StartCodePoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.StartCodePoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CharMap.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.CharMap.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.CharMap.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
 
   interface ITerminalElement
 
@@ -922,32 +846,27 @@ type internal CheckBoxTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.CheckBox.AllowCheckStateNone
-    |> Option.iter (fun _ ->
-        view.AllowCheckStateNone <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AllowCheckStateNone <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CheckBox.HotKeySpecifier
-    |> Option.iter (fun _ ->
-        view.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CheckBox.RadioStyle
-    |> Option.iter (fun _ ->
-        view.RadioStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.RadioStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.CheckBox.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.CheckBox.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.CheckBox.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.CheckBox.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
 
   interface ITerminalElement
 
@@ -995,27 +914,23 @@ type internal ColorPickerTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ColorPicker.SelectedColor
-    |> Option.iter (fun _ ->
-        view.SelectedColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedColor <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.ColorPicker.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ColorPicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ColorPicker.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
 
   interface ITerminalElement
 
@@ -1067,32 +982,27 @@ type internal ColorPicker16TerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ColorPicker16.BoxHeight
-    |> Option.iter (fun _ ->
-        view.BoxHeight <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BoxHeight <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker16.BoxWidth
-    |> Option.iter (fun _ ->
-        view.BoxWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BoxWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker16.Caret
-    |> Option.iter (fun _ ->
-        view.Caret <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Caret <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker16.SelectedColor
-    |> Option.iter (fun _ ->
-        view.SelectedColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedColor <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ColorPicker16.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ColorPicker16.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ColorPicker16.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
 
   interface ITerminalElement
 
@@ -1152,39 +1062,33 @@ type internal ComboBoxTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ComboBox.HideDropdownListOnClick
-    |> Option.iter (fun _ ->
-        view.HideDropdownListOnClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HideDropdownListOnClick <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ComboBox.ReadOnly
-    |> Option.iter (fun _ ->
-        view.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ComboBox.SearchText
-    |> Option.iter (fun _ ->
-        view.SearchText <- "")
+    |> Option.iter (fun _ -> view.SearchText <- "")
 
     props
     |> Props.tryFind PKey.ComboBox.SelectedItem
-    |> Option.iter (fun _ ->
-        view.SelectedItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ComboBox.Source
-    |> Option.iter (fun _ ->
-        view.Source <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ComboBox.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ComboBox.Collapsed)
-    terminalElement.TryRemoveEventHandler (PKey.ComboBox.Expanded)
-    terminalElement.TryRemoveEventHandler (PKey.ComboBox.OpenSelectedItem)
-    terminalElement.TryRemoveEventHandler (PKey.ComboBox.SelectedItemChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ComboBox.Collapsed)
+    terminalElement.TryRemoveEventHandler(PKey.ComboBox.Expanded)
+    terminalElement.TryRemoveEventHandler(PKey.ComboBox.OpenSelectedItem)
+    terminalElement.TryRemoveEventHandler(PKey.ComboBox.SelectedItemChanged)
 
   interface ITerminalElement
 
@@ -1228,22 +1132,19 @@ type internal DatePickerTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.DatePicker.Culture
-    |> Option.iter (fun _ ->
-        view.Culture <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Culture <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.DatePicker.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.DatePicker.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.DatePicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.DatePicker.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
 
   interface ITerminalElement
 
@@ -1310,38 +1211,31 @@ type internal GraphViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.GraphView.AxisX
-    |> Option.iter (fun _ ->
-        view.AxisX <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AxisX <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.AxisY
-    |> Option.iter (fun _ ->
-        view.AxisY <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AxisY <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.CellSize
-    |> Option.iter (fun _ ->
-        view.CellSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CellSize <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.GraphColor
-    |> Option.iter (fun _ ->
-        view.GraphColor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.GraphColor <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.MarginBottom
-    |> Option.iter (fun _ ->
-        view.MarginBottom <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MarginBottom <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.MarginLeft
-    |> Option.iter (fun _ ->
-        view.MarginLeft <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MarginLeft <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.GraphView.ScrollOffset
-    |> Option.iter (fun _ ->
-        view.ScrollOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ScrollOffset <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -1394,32 +1288,27 @@ type internal HexViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.HexView.Address
-    |> Option.iter (fun _ ->
-        view.Address <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Address <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.HexView.AddressWidth
-    |> Option.iter (fun _ ->
-        view.AddressWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AddressWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.HexView.BytesPerLine
-    |> Option.iter (fun _ ->
-        view.BytesPerLine <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BytesPerLine <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.HexView.ReadOnly
-    |> Option.iter (fun _ ->
-        view.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.HexView.Source
-    |> Option.iter (fun _ ->
-        view.Source <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.HexView.Edited)
-    terminalElement.TryRemoveEventHandler (PKey.HexView.PositionChanged)
+    terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
+    terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
 
   interface ITerminalElement
 
@@ -1442,9 +1331,7 @@ type internal LabelTerminalElement(props: Props) =
     |> Props.tryFind PKey.Label.HotKeySpecifier
     |> Option.iter (fun v -> view.HotKeySpecifier <- v)
 
-    props
-    |> Props.tryFind PKey.Label.Text
-    |> Option.iter (fun v -> view.Text <- v)
+    props |> Props.tryFind PKey.Label.Text |> Option.iter (fun v -> view.Text <- v)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
@@ -1454,13 +1341,9 @@ type internal LabelTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Label.HotKeySpecifier
-    |> Option.iter (fun _ ->
-        view.HotKeySpecifier <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.Label.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    props |> Props.tryFind PKey.Label.Text |> Option.iter (fun _ -> view.Text <- "")
 
 
   interface ITerminalElement
@@ -1500,9 +1383,7 @@ type internal LineTerminalElement(props: Props) =
     |> Props.tryFind PKey.Line.Orientation
     |> Option.iter (fun v -> view.Orientation <- v)
 
-    props
-    |> Props.tryFind PKey.Line.Style
-    |> Option.iter (fun v -> view.Style <- v)
+    props |> Props.tryFind PKey.Line.Style |> Option.iter (fun v -> view.Style <- v)
 
     // Events
     terminalElement.TrySetEventHandler(PKey.Line.OrientationChanged, view.OrientationChanged)
@@ -1517,22 +1398,19 @@ type internal LineTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Line.Length
-    |> Option.iter (fun _ ->
-        view.Length <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Length <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Line.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Line.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Line.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Line.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
 
   interface ITerminalElement
 
@@ -1610,7 +1488,10 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.LinearRange<'T>.MinimumInnerSpacingChanged, view.MinimumInnerSpacingChanged)
 
-    terminalElement.TrySetEventHandler(PKey.LinearRange<'T>.MinimumInnerSpacingChanging, view.MinimumInnerSpacingChanging)
+    terminalElement.TrySetEventHandler(
+      PKey.LinearRange<'T>.MinimumInnerSpacingChanging,
+      view.MinimumInnerSpacingChanging
+    )
 
     terminalElement.TrySetEventHandler(PKey.LinearRange<'T>.OptionFocused, view.OptionFocused)
 
@@ -1644,86 +1525,73 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.LinearRange<'T>.AllowEmpty
-    |> Option.iter (fun _ ->
-        view.AllowEmpty <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AllowEmpty <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.FocusedOption
-    |> Option.iter (fun _ ->
-        view.FocusedOption <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.FocusedOption <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.LegendsOrientation
-    |> Option.iter (fun _ ->
-        view.LegendsOrientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.LegendsOrientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.MinimumInnerSpacing
-    |> Option.iter (fun _ ->
-        view.MinimumInnerSpacing <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MinimumInnerSpacing <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Options
-    |> Option.iter (fun _ ->
-        view.Options <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Options <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
-    |> Option.iter (fun _ ->
-        view.RangeAllowSingle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.RangeAllowSingle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.ShowEndSpacing
-    |> Option.iter (fun _ ->
-        view.ShowEndSpacing <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShowEndSpacing <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.ShowLegends
-    |> Option.iter (fun _ ->
-        view.ShowLegends <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShowLegends <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.Type
-    |> Option.iter (fun _ ->
-        view.Type <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Type <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.LinearRange<'T>.UseMinimumSize
-    |> Option.iter (fun _ ->
-        view.UseMinimumSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.UseMinimumSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.LegendsOrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.LegendsOrientationChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.MinimumInnerSpacingChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.MinimumInnerSpacingChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OptionFocused)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OptionsChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.OrientationChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowEndSpacingChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowEndSpacingChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowLegendsChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.ShowLegendsChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.TypeChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.TypeChanging)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.UseMinimumSizeChanged)
-    terminalElement.TryRemoveEventHandler (PKey.LinearRange<'T>.UseMinimumSizeChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.LegendsOrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.LegendsOrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.MinimumInnerSpacingChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.MinimumInnerSpacingChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.OptionFocused)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.OptionsChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.ShowEndSpacingChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.ShowEndSpacingChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.ShowLegendsChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.ShowLegendsChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.TypeChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.TypeChanging)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.UseMinimumSizeChanged)
+    terminalElement.TryRemoveEventHandler(PKey.LinearRange<'T>.UseMinimumSizeChanging)
 
   interface ITerminalElement
 
@@ -1797,40 +1665,34 @@ type internal ListViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ListView.MarkMultiple
-    |> Option.iter (fun _ ->
-        view.MarkMultiple <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MarkMultiple <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.SelectedItem
-    |> Option.iter (fun _ ->
-        view.SelectedItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.ShowMarks
-    |> Option.iter (fun _ ->
-        view.ShowMarks <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShowMarks <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.Source
-    |> Option.iter (fun _ ->
-        view.Source <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.TopItem
-    |> Option.iter (fun _ ->
-        view.TopItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TopItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ListView.CollectionChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ListView.RowRender)
-    terminalElement.TryRemoveEventHandler (PKey.ListView.SourceChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ListView.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ListView.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
+    terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
 
   interface ITerminalElement
 
@@ -1865,13 +1727,11 @@ type internal MarginTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Margin.ShadowSize
-    |> Option.iter (fun _ ->
-        view.ShadowSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShadowSize <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Margin.ShadowStyle
-    |> Option.iter (fun _ ->
-        view.ShadowStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -1886,10 +1746,7 @@ type internal MenuTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
-    [
-      PKey.Menu.SelectedMenuItem_element.key
-      PKey.Menu.SuperMenuItem_element.key
-    ]
+    [ PKey.Menu.SelectedMenuItem_element.key; PKey.Menu.SuperMenuItem_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1917,16 +1774,14 @@ type internal MenuTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Menu.SelectedMenuItem
-    |> Option.iter (fun _ ->
-        view.SelectedMenuItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedMenuItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Menu.SuperMenuItem
-    |> Option.iter (fun _ ->
-        view.SuperMenuItem <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SuperMenuItem <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Menu.SelectedMenuItemChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
 
   interface IMenuTerminalElement
 
@@ -1947,9 +1802,7 @@ type internal MenuBarTerminalElement(props: Props) =
     let view = terminalElement.View :?> MenuBar
 
     // Properties
-    props
-    |> Props.tryFind PKey.MenuBar.Key
-    |> Option.iter (fun v -> view.Key <- v)
+    props |> Props.tryFind PKey.MenuBar.Key |> Option.iter (fun v -> view.Key <- v)
 
     // Events
     terminalElement.TrySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
@@ -1962,11 +1815,10 @@ type internal MenuBarTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.MenuBar.Key
-    |> Option.iter (fun _ ->
-        view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.MenuBar.KeyChanged)
+    terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
 
   interface IMenuTerminalElement
 
@@ -2016,24 +1868,21 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.NumericUpDown<'T>.Format
-    |> Option.iter (fun _ ->
-        view.Format <- "")
+    |> Option.iter (fun _ -> view.Format <- "")
 
     props
     |> Props.tryFind PKey.NumericUpDown<'T>.Increment
-    |> Option.iter (fun _ ->
-        view.Increment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Increment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.NumericUpDown<'T>.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.FormatChanged)
-    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.IncrementChanged)
-    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.NumericUpDown<'T>.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
+    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
+    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
 
   interface ITerminalElement
 
@@ -2067,7 +1916,8 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
 
   override _.Name = "PopoverBaseImpl"
 
-  override _.NewView() = failwith "Cannot instantiate abstract view type PopoverBaseImpl"
+  override _.NewView() =
+    failwith "Cannot instantiate abstract view type PopoverBaseImpl"
 
   override _.SetAsChildOfParentView = true
 
@@ -2089,8 +1939,7 @@ type internal PopoverBaseImplTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.PopoverBaseImpl.Current
-    |> Option.iter (fun _ ->
-        view.Current <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Current <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2105,10 +1954,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.PopoverMenu.Root_element.key
-    ]
-    |> List.append base.SubElements_PropKeys
+    [ PKey.PopoverMenu.Root_element.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -2139,21 +1985,18 @@ type internal PopoverMenuTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.PopoverMenu.Key
-    |> Option.iter (fun _ ->
-        view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.PopoverMenu.MouseFlags
-    |> Option.iter (fun _ ->
-        view.MouseFlags <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MouseFlags <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.PopoverMenu.Root
-    |> Option.iter (fun _ ->
-        view.Root <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Root <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.PopoverMenu.KeyChanged)
+    terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
 
   interface IPopoverMenuTerminalElement
 
@@ -2206,33 +2049,27 @@ type internal ProgressBarTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ProgressBar.BidirectionalMarquee
-    |> Option.iter (fun _ ->
-        view.BidirectionalMarquee <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BidirectionalMarquee <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ProgressBar.Fraction
-    |> Option.iter (fun _ ->
-        view.Fraction <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Fraction <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ProgressBar.ProgressBarFormat
-    |> Option.iter (fun _ ->
-        view.ProgressBarFormat <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ProgressBarFormat <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ProgressBar.ProgressBarStyle
-    |> Option.iter (fun _ ->
-        view.ProgressBarStyle <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ProgressBarStyle <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ProgressBar.SegmentCharacter
-    |> Option.iter (fun _ ->
-        view.SegmentCharacter <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SegmentCharacter <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ProgressBar.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
 
   interface ITerminalElement
@@ -2275,18 +2112,16 @@ type internal RunnableTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Runnable.Result
-    |> Option.iter (fun _ ->
-        view.Result <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Runnable.StopRequested
-    |> Option.iter (fun _ ->
-        view.StopRequested <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.StopRequested <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsModalChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsRunningChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Runnable.IsRunningChanging)
+    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
 
   interface ITerminalElement
 
@@ -2317,8 +2152,7 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Runnable'<'TResult>.Result
-    |> Option.iter (fun _ ->
-        view.Result <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2358,18 +2192,15 @@ type internal DialogTerminalElement<'TResult>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignment
-    |> Option.iter (fun _ ->
-        view.ButtonAlignment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ButtonAlignment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignmentModes
-    |> Option.iter (fun _ ->
-        view.ButtonAlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ButtonAlignmentModes <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Dialog<'TResult>.Buttons
-    |> Option.iter (fun _ ->
-        view.Buttons <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Buttons <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2401,13 +2232,13 @@ type internal DialogTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Dialog'.Result
-    |> Option.iter (fun _ ->
-        view.Result <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
 
-type internal PromptTerminalElement<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView:> Terminal.Gui.ViewBase.View>(props: Props) =
+type internal PromptTerminalElement<'TView, 'TResult
+  when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
   inherit DialogTerminalElement<'TResult>(props)
 
   override _.Name = "Prompt`2"
@@ -2434,8 +2265,7 @@ type internal PromptTerminalElement<'TView, 'TResult when 'TView: (new: unit -> 
     // Properties
     props
     |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun _ ->
-        view.ResultExtractor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2494,41 +2324,34 @@ type internal FileDialogTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.FileDialog.AllowedTypes
-    |> Option.iter (fun _ ->
-        view.AllowedTypes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AllowedTypes <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.FileDialog.AllowsMultipleSelection
-    |> Option.iter (fun _ ->
-        view.AllowsMultipleSelection <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AllowsMultipleSelection <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.FileDialog.FileOperationsHandler
-    |> Option.iter (fun _ ->
-        view.FileOperationsHandler <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.FileOperationsHandler <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.FileDialog.MustExist
-    |> Option.iter (fun _ ->
-        view.MustExist <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MustExist <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.FileDialog.OpenMode
-    |> Option.iter (fun _ ->
-        view.OpenMode <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.OpenMode <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.FileDialog.Path
-    |> Option.iter (fun _ ->
-        view.Path <- "")
+    |> Option.iter (fun _ -> view.Path <- "")
 
     props
     |> Props.tryFind PKey.FileDialog.SearchMatcher
-    |> Option.iter (fun _ ->
-        view.SearchMatcher <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SearchMatcher <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.FileDialog.FilesSelected)
+    terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
 
   interface ITerminalElement
 
@@ -2559,8 +2382,7 @@ type internal OpenDialogTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.OpenDialog.OpenMode
-    |> Option.iter (fun _ ->
-        view.OpenMode <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.OpenMode <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2639,42 +2461,36 @@ type internal ScrollBarTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ScrollBar.AutoShow
-    |> Option.iter (fun _ ->
-        view.AutoShow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AutoShow <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollBar.Increment
-    |> Option.iter (fun _ ->
-        view.Increment <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Increment <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollBar.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollBar.ScrollableContentSize
-    |> Option.iter (fun _ ->
-        view.ScrollableContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ScrollableContentSize <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollBar.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollBar.VisibleContentSize
-    |> Option.iter (fun _ ->
-        view.VisibleContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.OrientationChanging)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ScrollableContentSizeChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.Scrolled)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.SliderPositionChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollBar.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
 
   interface ITerminalElement
 
@@ -2732,35 +2548,30 @@ type internal ScrollSliderTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.ScrollSlider.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollSlider.Position
-    |> Option.iter (fun _ ->
-        view.Position <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Position <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollSlider.Size
-    |> Option.iter (fun _ ->
-        view.Size <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Size <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollSlider.SliderPadding
-    |> Option.iter (fun _ ->
-        view.SliderPadding <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SliderPadding <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ScrollSlider.VisibleContentSize
-    |> Option.iter (fun _ ->
-        view.VisibleContentSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.OrientationChanging)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.PositionChanged)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.PositionChanging)
-    terminalElement.TryRemoveEventHandler (PKey.ScrollSlider.Scrolled)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
+    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
 
   interface ITerminalElement
 
@@ -2770,7 +2581,8 @@ type internal SelectorBaseTerminalElement(props: Props) =
 
   override _.Name = "SelectorBase"
 
-  override _.NewView() = failwith "Cannot instantiate abstract view type SelectorBase"
+  override _.NewView() =
+    failwith "Cannot instantiate abstract view type SelectorBase"
 
   override _.SetAsChildOfParentView = true
 
@@ -2825,44 +2637,37 @@ type internal SelectorBaseTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.SelectorBase.DoubleClickAccepts
-    |> Option.iter (fun _ ->
-        view.DoubleClickAccepts <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.DoubleClickAccepts <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.HorizontalSpace
-    |> Option.iter (fun _ ->
-        view.HorizontalSpace <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HorizontalSpace <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.Labels
-    |> Option.iter (fun _ ->
-        view.Labels <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Labels <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.Styles
-    |> Option.iter (fun _ ->
-        view.Styles <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Styles <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SelectorBase.Values
-    |> Option.iter (fun _ ->
-        view.Values <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.OrientationChanging)
-    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.SelectorBase.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
 
   interface ITerminalElement
 
@@ -2893,8 +2698,7 @@ type internal FlagSelectorTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.FlagSelector.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -2926,13 +2730,16 @@ type internal OptionSelectorTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.OptionSelector.Cursor
-    |> Option.iter (fun _ ->
-        view.Cursor <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Cursor <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
 
-type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct and 'TFlagsEnum: (new: unit -> 'TFlagsEnum) and 'TFlagsEnum:> System.Enum and 'TFlagsEnum:> System.ValueType>(props: Props) =
+type internal FlagSelectorTerminalElement<'TFlagsEnum
+  when 'TFlagsEnum: struct
+  and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)
+  and 'TFlagsEnum :> System.Enum
+  and 'TFlagsEnum :> System.ValueType>(props: Props) =
   inherit FlagSelectorTerminalElement(props)
 
   override _.Name = "FlagSelector`1"
@@ -2962,15 +2769,16 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum when 'TFlagsEnum: struct a
     // Properties
     props
     |> Props.tryFind PKey.FlagSelector'<'TFlagsEnum>.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
 
   interface ITerminalElement
 
-type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum:> System.Enum and 'TEnum:> System.ValueType>(props: Props) =
+type internal OptionSelectorTerminalElement<'TEnum
+  when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+  (props: Props) =
   inherit OptionSelectorTerminalElement(props)
 
   override _.Name = "OptionSelector`1"
@@ -3004,16 +2812,14 @@ type internal OptionSelectorTerminalElement<'TEnum when 'TEnum: struct and 'TEnu
     // Properties
     props
     |> Props.tryFind PKey.OptionSelector'<'TEnum>.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.OptionSelector'<'TEnum>.Values
-    |> Option.iter (fun _ ->
-        view.Values <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.OptionSelector'<'TEnum>.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
 
   interface ITerminalElement
 
@@ -3027,9 +2833,7 @@ type internal ShortcutTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.Shortcut.CommandView_element.key
-    ]
+    [ PKey.Shortcut.CommandView_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3062,9 +2866,7 @@ type internal ShortcutTerminalElement(props: Props) =
     |> Props.tryFind PKey.Shortcut.HelpText
     |> Option.iter (fun v -> view.HelpText <- v)
 
-    props
-    |> Props.tryFind PKey.Shortcut.Key
-    |> Option.iter (fun v -> view.Key <- v)
+    props |> Props.tryFind PKey.Shortcut.Key |> Option.iter (fun v -> view.Key <- v)
 
     props
     |> Props.tryFind PKey.Shortcut.MinimumKeyTextSize
@@ -3091,57 +2893,47 @@ type internal ShortcutTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Shortcut.Action
-    |> Option.iter (fun _ ->
-        view.Action <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Action <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.AlignmentModes
-    |> Option.iter (fun _ ->
-        view.AlignmentModes <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AlignmentModes <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.BindKeyToApplication
-    |> Option.iter (fun _ ->
-        view.BindKeyToApplication <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.BindKeyToApplication <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.CommandView
-    |> Option.iter (fun _ ->
-        view.CommandView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CommandView <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.ForceFocusColors
-    |> Option.iter (fun _ ->
-        view.ForceFocusColors <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ForceFocusColors <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.HelpText
-    |> Option.iter (fun _ ->
-        view.HelpText <- "")
+    |> Option.iter (fun _ -> view.HelpText <- "")
 
     props
     |> Props.tryFind PKey.Shortcut.Key
-    |> Option.iter (fun _ ->
-        view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.MinimumKeyTextSize
-    |> Option.iter (fun _ ->
-        view.MinimumKeyTextSize <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MinimumKeyTextSize <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.Orientation
-    |> Option.iter (fun _ ->
-        view.Orientation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Shortcut.OrientationChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Shortcut.OrientationChanging)
+    terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
 
   interface ITerminalElement
 
@@ -3155,10 +2947,7 @@ type internal MenuItemTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.MenuItem.SubMenu_element.key
-      PKey.MenuItem.TargetView_element.key
-    ]
+    [ PKey.MenuItem.SubMenu_element.key; PKey.MenuItem.TargetView_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3187,18 +2976,15 @@ type internal MenuItemTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.MenuItem.Command
-    |> Option.iter (fun _ ->
-        view.Command <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Command <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.MenuItem.SubMenu
-    |> Option.iter (fun _ ->
-        view.SubMenu <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SubMenu <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.MenuItem.TargetView
-    |> Option.iter (fun _ ->
-        view.TargetView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TargetView <- Unchecked.defaultof<_>)
 
 
   interface IMenuItemTerminalElement
@@ -3215,10 +3001,8 @@ type internal MenuBarItemTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.MenuBarItem.PopoverMenu_element.key
-      PKey.MenuBarItem.SubMenu_element.key
-    ]
+    [ PKey.MenuBarItem.PopoverMenu_element.key
+      PKey.MenuBarItem.SubMenu_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3250,21 +3034,18 @@ type internal MenuBarItemTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.MenuBarItem.PopoverMenu
-    |> Option.iter (fun _ ->
-        view.PopoverMenu <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.PopoverMenu <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.MenuBarItem.PopoverMenuOpen
-    |> Option.iter (fun _ ->
-        view.PopoverMenuOpen <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.PopoverMenuOpen <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.MenuBarItem.SubMenu
-    |> Option.iter (fun _ ->
-        view.SubMenu <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SubMenu <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.MenuBarItem.PopoverMenuOpenChanged)
+    terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
 
   interface IMenuItemTerminalElement
 
@@ -3317,33 +3098,27 @@ type internal SpinnerViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.SpinnerView.AutoSpin
-    |> Option.iter (fun _ ->
-        view.AutoSpin <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AutoSpin <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SpinnerView.Sequence
-    |> Option.iter (fun _ ->
-        view.Sequence <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Sequence <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SpinnerView.SpinBounce
-    |> Option.iter (fun _ ->
-        view.SpinBounce <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SpinBounce <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SpinnerView.SpinDelay
-    |> Option.iter (fun _ ->
-        view.SpinDelay <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SpinDelay <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SpinnerView.SpinReverse
-    |> Option.iter (fun _ ->
-        view.SpinReverse <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SpinReverse <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.SpinnerView.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
 
   interface ITerminalElement
@@ -3370,10 +3145,7 @@ type internal TabTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.Tab.View_element.key
-    ]
-    |> List.append base.SubElements_PropKeys
+    [ PKey.Tab.View_element.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -3385,9 +3157,7 @@ type internal TabTerminalElement(props: Props) =
     |> Props.tryFind PKey.Tab.DisplayText
     |> Option.iter (fun v -> view.DisplayText <- v)
 
-    props
-    |> Props.tryFind PKey.Tab.View
-    |> Option.iter (fun v -> view.View <- v)
+    props |> Props.tryFind PKey.Tab.View |> Option.iter (fun v -> view.View <- v)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
@@ -3397,13 +3167,11 @@ type internal TabTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Tab.DisplayText
-    |> Option.iter (fun _ ->
-        view.DisplayText <- "")
+    |> Option.iter (fun _ -> view.DisplayText <- "")
 
     props
     |> Props.tryFind PKey.Tab.View
-    |> Option.iter (fun _ ->
-        view.View <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.View <- Unchecked.defaultof<_>)
 
 
   interface ITabTerminalElement
@@ -3420,9 +3188,7 @@ type internal TabViewTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.TabView.SelectedTab_element.key
-    ]
+    [ PKey.TabView.SelectedTab_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3460,27 +3226,23 @@ type internal TabViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TabView.MaxTabTextWidth
-    |> Option.iter (fun _ ->
-        view.MaxTabTextWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MaxTabTextWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TabView.SelectedTab
-    |> Option.iter (fun _ ->
-        view.SelectedTab <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedTab <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TabView.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TabView.TabScrollOffset
-    |> Option.iter (fun _ ->
-        view.TabScrollOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TabScrollOffset <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TabView.SelectedTabChanged)
-    terminalElement.TryRemoveEventHandler (PKey.TabView.TabClicked)
+    terminalElement.TryRemoveEventHandler(PKey.TabView.SelectedTabChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TabView.TabClicked)
 
   interface ITerminalElement
 
@@ -3570,78 +3332,64 @@ type internal TableViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TableView.CellActivationKey
-    |> Option.iter (fun _ ->
-        view.CellActivationKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CellActivationKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.CollectionNavigator
-    |> Option.iter (fun _ ->
-        view.CollectionNavigator <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CollectionNavigator <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.ColumnOffset
-    |> Option.iter (fun _ ->
-        view.ColumnOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ColumnOffset <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.FullRowSelect
-    |> Option.iter (fun _ ->
-        view.FullRowSelect <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.FullRowSelect <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.MaxCellWidth
-    |> Option.iter (fun _ ->
-        view.MaxCellWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MaxCellWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.MinCellWidth
-    |> Option.iter (fun _ ->
-        view.MinCellWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MinCellWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.MultiSelect
-    |> Option.iter (fun _ ->
-        view.MultiSelect <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MultiSelect <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.NullSymbol
-    |> Option.iter (fun _ ->
-        view.NullSymbol <- "")
+    |> Option.iter (fun _ -> view.NullSymbol <- "")
 
     props
     |> Props.tryFind PKey.TableView.RowOffset
-    |> Option.iter (fun _ ->
-        view.RowOffset <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.RowOffset <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.SelectedColumn
-    |> Option.iter (fun _ ->
-        view.SelectedColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedColumn <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.SelectedRow
-    |> Option.iter (fun _ ->
-        view.SelectedRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedRow <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.SeparatorSymbol
-    |> Option.iter (fun _ ->
-        view.SeparatorSymbol <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SeparatorSymbol <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TableView.Table
-    |> Option.iter (fun _ ->
-        view.Table <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Table <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TableView.CellActivated)
-    terminalElement.TryRemoveEventHandler (PKey.TableView.CellToggled)
-    terminalElement.TryRemoveEventHandler (PKey.TableView.SelectedCellChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TableView.CellActivated)
+    terminalElement.TryRemoveEventHandler(PKey.TableView.CellToggled)
+    terminalElement.TryRemoveEventHandler(PKey.TableView.SelectedCellChanged)
 
   interface ITerminalElement
 
@@ -3715,58 +3463,48 @@ type internal TextFieldTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TextField.Autocomplete
-    |> Option.iter (fun _ ->
-        view.Autocomplete <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Autocomplete <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.InsertionPoint
-    |> Option.iter (fun _ ->
-        view.InsertionPoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.ReadOnly
-    |> Option.iter (fun _ ->
-        view.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.Secret
-    |> Option.iter (fun _ ->
-        view.Secret <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Secret <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.SelectWordOnlyOnDoubleClick
-    |> Option.iter (fun _ ->
-        view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.SelectedStart
-    |> Option.iter (fun _ ->
-        view.SelectedStart <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedStart <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.TextField.UseSameRuneTypeForWords
-    |> Option.iter (fun _ ->
-        view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.Used
-    |> Option.iter (fun _ ->
-        view.Used <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Used <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextField.Value
-    |> Option.iter (fun _ ->
-        view.Value <- "")
+    |> Option.iter (fun _ -> view.Value <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TextField.TextChanging)
-    terminalElement.TryRemoveEventHandler (PKey.TextField.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.TextField.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
+    terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
 
   interface ITerminalElement
 
@@ -3810,22 +3548,19 @@ type internal DateFieldTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.DateField.Culture
-    |> Option.iter (fun _ ->
-        view.Culture <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Culture <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.DateField.InsertionPoint
-    |> Option.iter (fun _ ->
-        view.InsertionPoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.DateField.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.DateField.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.DateField.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.DateField.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.DateField.ValueChanging)
 
   interface ITerminalElement
 
@@ -3860,13 +3595,11 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TextValidateField.Provider
-    |> Option.iter (fun _ ->
-        view.Provider <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Provider <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextValidateField.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
 
   interface ITerminalElement
@@ -3983,106 +3716,87 @@ type internal TextViewTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TextView.EnterKeyAddsLine
-    |> Option.iter (fun _ ->
-        view.EnterKeyAddsLine <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.EnterKeyAddsLine <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.InheritsPreviousAttribute
-    |> Option.iter (fun _ ->
-        view.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.InsertionPoint
-    |> Option.iter (fun _ ->
-        view.InsertionPoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.IsDirty
-    |> Option.iter (fun _ ->
-        view.IsDirty <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsDirty <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.IsSelecting
-    |> Option.iter (fun _ ->
-        view.IsSelecting <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsSelecting <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.LeftColumn
-    |> Option.iter (fun _ ->
-        view.LeftColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.LeftColumn <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.Multiline
-    |> Option.iter (fun _ ->
-        view.Multiline <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Multiline <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.ReadOnly
-    |> Option.iter (fun _ ->
-        view.ReadOnly <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.ScrollBars
-    |> Option.iter (fun _ ->
-        view.ScrollBars <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ScrollBars <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.SelectWordOnlyOnDoubleClick
-    |> Option.iter (fun _ ->
-        view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.SelectionStartColumn
-    |> Option.iter (fun _ ->
-        view.SelectionStartColumn <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectionStartColumn <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.SelectionStartRow
-    |> Option.iter (fun _ ->
-        view.SelectionStartRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectionStartRow <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.TabKeyAddsTab
-    |> Option.iter (fun _ ->
-        view.TabKeyAddsTab <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TabKeyAddsTab <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.TabWidth
-    |> Option.iter (fun _ ->
-        view.TabWidth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TabWidth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.Text
-    |> Option.iter (fun _ ->
-        view.Text <- "")
+    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.TextView.TopRow
-    |> Option.iter (fun _ ->
-        view.TopRow <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TopRow <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.UseSameRuneTypeForWords
-    |> Option.iter (fun _ ->
-        view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.Used
-    |> Option.iter (fun _ ->
-        view.Used <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Used <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TextView.WordWrap
-    |> Option.iter (fun _ ->
-        view.WordWrap <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.WordWrap <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TextView.ContentsChanged)
-    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawNormalColor)
-    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawReadOnlyColor)
-    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawSelectionColor)
-    terminalElement.TryRemoveEventHandler (PKey.TextView.DrawUsedColor)
-    terminalElement.TryRemoveEventHandler (PKey.TextView.UnwrappedCursorPosition)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
+    terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPosition)
 
   interface ITerminalElement
 
@@ -4126,22 +3840,19 @@ type internal TimeFieldTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TimeField.InsertionPoint
-    |> Option.iter (fun _ ->
-        view.InsertionPoint <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TimeField.IsShortFormat
-    |> Option.iter (fun _ ->
-        view.IsShortFormat <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.IsShortFormat <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TimeField.Value
-    |> Option.iter (fun _ ->
-        view.Value <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TimeField.ValueChanged)
-    terminalElement.TryRemoveEventHandler (PKey.TimeField.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.TimeField.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TimeField.ValueChanging)
 
   interface ITerminalElement
 
@@ -4223,68 +3934,56 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.TreeView<'T>.AllowLetterBasedNavigation
-    |> Option.iter (fun _ ->
-        view.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.AspectGetter
-    |> Option.iter (fun _ ->
-        view.AspectGetter <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.AspectGetter <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ColorGetter
-    |> Option.iter (fun _ ->
-        view.ColorGetter <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ColorGetter <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.MaxDepth
-    |> Option.iter (fun _ ->
-        view.MaxDepth <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MaxDepth <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.MultiSelect
-    |> Option.iter (fun _ ->
-        view.MultiSelect <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.MultiSelect <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ObjectActivationButton
-    |> Option.iter (fun _ ->
-        view.ObjectActivationButton <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ObjectActivationButton <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ObjectActivationKey
-    |> Option.iter (fun _ ->
-        view.ObjectActivationKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ObjectActivationKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetHorizontal
-    |> Option.iter (fun _ ->
-        view.ScrollOffsetHorizontal <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ScrollOffsetHorizontal <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetVertical
-    |> Option.iter (fun _ ->
-        view.ScrollOffsetVertical <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.ScrollOffsetVertical <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.SelectedObject
-    |> Option.iter (fun _ ->
-        view.SelectedObject <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.SelectedObject <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.Style
-    |> Option.iter (fun _ ->
-        view.Style <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.TreeBuilder
-    |> Option.iter (fun _ ->
-        view.TreeBuilder <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TreeBuilder <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.DrawLine)
-    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.ObjectActivated)
-    terminalElement.TryRemoveEventHandler (PKey.TreeView<'T>.SelectionChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
+    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.ObjectActivated)
+    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
 
   interface ITerminalElement
 
@@ -4322,10 +4021,7 @@ type internal WizardTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [
-      PKey.Wizard.CurrentStep_element.key
-    ]
-    |> List.append base.SubElements_PropKeys
+    [ PKey.Wizard.CurrentStep_element.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -4354,14 +4050,13 @@ type internal WizardTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.Wizard.CurrentStep
-    |> Option.iter (fun _ ->
-        view.CurrentStep <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CurrentStep <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler (PKey.Wizard.MovingBack)
-    terminalElement.TryRemoveEventHandler (PKey.Wizard.MovingNext)
-    terminalElement.TryRemoveEventHandler (PKey.Wizard.StepChanged)
-    terminalElement.TryRemoveEventHandler (PKey.Wizard.StepChanging)
+    terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
+    terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
+    terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
 
   interface ITerminalElement
 
@@ -4400,18 +4095,15 @@ type internal WizardStepTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.WizardStep.BackButtonText
-    |> Option.iter (fun _ ->
-        view.BackButtonText <- "")
+    |> Option.iter (fun _ -> view.BackButtonText <- "")
 
     props
     |> Props.tryFind PKey.WizardStep.HelpText
-    |> Option.iter (fun _ ->
-        view.HelpText <- "")
+    |> Option.iter (fun _ -> view.HelpText <- "")
 
     props
     |> Props.tryFind PKey.WizardStep.NextButtonText
-    |> Option.iter (fun _ ->
-        view.NextButtonText <- "")
+    |> Option.iter (fun _ -> view.NextButtonText <- "")
 
 
   interface IWizardStepTerminalElement

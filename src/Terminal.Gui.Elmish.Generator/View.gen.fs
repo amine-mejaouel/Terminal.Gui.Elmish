@@ -12,8 +12,7 @@ let genMethods (viewType: Type) =
 
   // Check if this is a special case with macros
   let hasMacros =
-    [ typeof<Terminal.Gui.Views.MenuBar>
-      typeof<Terminal.Gui.Views.MenuBarItem> ]
+    [ typeof<Terminal.Gui.Views.MenuBar>; typeof<Terminal.Gui.Views.MenuBarItem> ]
     |> List.contains viewType
 
   let returnInterface = Registry.TEInterfaces.GetAssignableInterface viewType
@@ -46,10 +45,7 @@ let genMethods (viewType: Type) =
     yield ""
   }
 
-let opens = [
-    "open System"
-    "open Terminal.Gui.Elmish"
-  ]
+let opens = [ "open System"; "open Terminal.Gui.Elmish" ]
 
 let gen () =
   let viewTypesToGen =

@@ -8,12 +8,9 @@ type DisplayedView =
   | Label
   | Button
 
-type Model = {
-  DisplayedView: DisplayedView
-}
+type Model = { DisplayedView: DisplayedView }
 
-type Msg =
-  | ChangeView of DisplayedView
+type Msg = ChangeView of DisplayedView
 
 [<Test>]
 let ``Button instance, used as relative position, should be collected after it's no longer part of the view`` () =
@@ -22,45 +19,38 @@ let ``Button instance, used as relative position, should be collected after it's
 
     let update (msg: Msg) model =
       match msg with
-      | ChangeView view ->
-        { model with DisplayedView = view }
+      | ChangeView view -> { model with DisplayedView = view }
 
     let view model dispatch : ITerminalElement =
-      View.Runnable (fun (p: RunnableProps) ->
-        p.Children [
-          let first =
-            if model.DisplayedView = Button then
-              View.Button (fun p ->
-                p.Text "Click to test changing the Terminal Element type!"
-                p.Activating (fun _ -> dispatch (ChangeView Label))
-              )
-            else
-              View.Label (fun p ->
-                p.Text "Click to test changing the Terminal Element type!"
-                p.Activating (fun _ -> dispatch (ChangeView Button))
-              )
-
-          let second =
-            View.Label (fun p ->
-              p.Text "I am a static label below the first element."
+      View.Runnable(fun (p: RunnableProps) ->
+        p.Children
+          [ let first =
               if model.DisplayedView = Button then
-                p.Y (TPos.Bottom first)
+                View.Button(fun p ->
+                  p.Text "Click to test changing the Terminal Element type!"
+                  p.Activating(fun _ -> dispatch (ChangeView Label)))
               else
-                p.X (TPos.Right first)
-            )
+                View.Label(fun p ->
+                  p.Text "Click to test changing the Terminal Element type!"
+                  p.Activating(fun _ -> dispatch (ChangeView Button)))
 
-          first
-          second
-        ])
+            let second =
+              View.Label(fun p ->
+                p.Text "I am a static label below the first element."
 
-    let program =
-      ElmishTerminal.mkSimple init update view
-      |> ElmishTester.run
+                if model.DisplayedView = Button then
+                  p.Y(TPos.Bottom first)
+                else
+                  p.X(TPos.Right first))
 
-    let buttonRef =
-      System.WeakReference(program.ViewTE.Children.First().View)
+            first
+            second ])
 
-    do! program.ProcessMsg (ChangeView Label |> TerminalMsg.ofMsg)
+    let program = ElmishTerminal.mkSimple init update view |> ElmishTester.run
+
+    let buttonRef = System.WeakReference(program.ViewTE.Children.First().View)
+
+    do! program.ProcessMsg(ChangeView Label |> TerminalMsg.ofMsg)
 
     System.GC.Collect()
     System.GC.WaitForPendingFinalizers()
@@ -68,4 +58,3 @@ let ``Button instance, used as relative position, should be collected after it's
 
     Assert.That(buttonRef.IsAlive, Is.False, "Button instance should have been collected after the update.")
   }
-

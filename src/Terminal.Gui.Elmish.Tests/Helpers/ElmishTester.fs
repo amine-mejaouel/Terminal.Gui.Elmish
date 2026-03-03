@@ -18,7 +18,8 @@ type internal TestableElmishProgram<'msg> =
 
 type internal MsgDispatcherSubscription<'model, 'msg>() =
 
-  let msgQueue = Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
+  let msgQueue =
+    Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
 
   /// Msg dispatcher:
   /// - listens to the msgQueue (which is written to by the ProcessMsg method)
@@ -29,25 +30,31 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  member this.subscribe (model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
+  member this.subscribe(model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
     let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
       let cancellationToken = new CancellationTokenSource()
-      Task.Factory.StartNew((fun () ->
-        task {
-          while not cancellationToken.Token.IsCancellationRequested do
-            let! msg, msgHook = msgQueue.Reader.ReadAsync()
-            let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
-            dispatch msg
-            let! nextViewTe = nextViewTeTask
-            msgHook.SetResult(nextViewTe)
-        }), TaskCreationOptions.LongRunning) |> ignore
 
-      { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }
+      Task.Factory.StartNew(
+        (fun () ->
+          task {
+            while not cancellationToken.Token.IsCancellationRequested do
+              let! msg, msgHook = msgQueue.Reader.ReadAsync()
+              let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
+              dispatch msg
+              let! nextViewTe = nextViewTeTask
+              msgHook.SetResult(nextViewTe)
+          }),
+        TaskCreationOptions.LongRunning
+      )
+      |> ignore
+
+      { new IDisposable with
+          member _.Dispose() = cancellationToken.Cancel() }
 
     start
 
   /// Sends the message to the Elmish program and waits for it to be processed, returning the new IViewTE after processing.
-  member this.ProcessMsg (msg: TerminalMsg<'msg>) =
+  member this.ProcessMsg(msg: TerminalMsg<'msg>) =
     task {
       let msgProcessedTcs = TaskCompletionSource<_>()
       let item = (msg, msgProcessedTcs)
@@ -57,7 +64,9 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
       return newTreeState
     }
 
-let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication,'model,'msg,'view>) =
+let internal run
+  (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication, 'model, 'msg, 'view>)
+  =
 
   let msgDispatcherSub = MsgDispatcherSubscription()
 
@@ -74,31 +83,38 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
         curTE <- currentTE
 
         waitForStart.SetResult()
-      } |> Task.wait
+      }
+      |> Task.wait
 
-      { new IDisposable with member _.Dispose() = () }
+      { new IDisposable with
+          member _.Dispose() = () }
 
     start
 
   let triggerTerminationSub model =
     let start dispatch =
       let cancellationToken = new CancellationTokenSource()
-      Task.Factory.StartNew((fun () ->
-        task {
-          do! triggerTerminationTcs.Task.WaitAsync(cancellationToken.Token)
-          dispatch Terminate
-        }), TaskCreationOptions.LongRunning) |> ignore
 
-      { new IDisposable with member _.Dispose() = cancellationToken.Cancel() }
+      Task.Factory.StartNew(
+        (fun () ->
+          task {
+            do! triggerTerminationTcs.Task.WaitAsync(cancellationToken.Token)
+            dispatch Terminate
+          }),
+        TaskCreationOptions.LongRunning
+      )
+      |> ignore
+
+      { new IDisposable with
+          member _.Dispose() = cancellationToken.Cancel() }
 
     start
 
 
-  let subscribe model : Sub<TerminalMsg<'msg>> = [
-    [ "startProgram" ], waitForProgramStartSub model
-    [ "triggerTermination" ], triggerTerminationSub model
-    [ "msgDispatcher" ], msgDispatcherSub.subscribe model
-  ]
+  let subscribe model : Sub<TerminalMsg<'msg>> =
+    [ [ "startProgram" ], waitForProgramStartSub model
+      [ "triggerTermination" ], triggerTerminationSub model
+      [ "msgDispatcher" ], msgDispatcherSub.subscribe model ]
 
   program
   |> Program.withSubscription subscribe
@@ -107,8 +123,7 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
   waitForStart.Task.GetAwaiter().GetResult()
 
-  {
-    new TestableElmishProgram<'msg> with
+  { new TestableElmishProgram<'msg> with
       member _.ProcessMsg msg =
         task {
           let! newTE = msgDispatcherSub.ProcessMsg msg
@@ -119,18 +134,16 @@ let internal run (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.E
 
       member _.View = curTE.View
 
-      member this.Dispose () =
+      member this.Dispose() =
         triggerTerminationTcs.SetResult()
-        curTE.Dispose()
-  }
+        curTE.Dispose() }
 
 let internal render view : TestableElmishProgram<'msg> =
   let init _ = (), Cmd.none
   let update _ _ = (), Cmd.none
   let view _ _ = view
 
-  ElmishTerminal.mkSimple init update view
-  |> run
+  ElmishTerminal.mkSimple init update view |> run
 
 type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
   inherit IElmishComponentTE
@@ -144,16 +157,16 @@ type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update,
   override this.Subscriptions =
     let baseSubs = base.Subscriptions
 
-    [
-      yield! baseSubs
-      yield { SubId = [ "msgDispatcher" ]; SubscriptionFunc = msgDispatcherSub.subscribe }
-    ]
+    [ yield! baseSubs
+      yield
+        { SubId = [ "msgDispatcher" ]
+          SubscriptionFunc = msgDispatcherSub.subscribe } ]
 
-  member this.ProcessMsg (msg: TerminalMsg<'msg>) =
-    msgDispatcherSub.ProcessMsg msg
+  member this.ProcessMsg(msg: TerminalMsg<'msg>) = msgDispatcherSub.ProcessMsg msg
 
   interface ITestableElmishComponentTE<'model, 'msg, 'view> with
     member this.ProcessMsg msg = this.ProcessMsg msg
 
 let internal mkTestableComponent<'model, 'msg, 'view> name init update view =
-  new TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) :> ITestableElmishComponentTE<'model, 'msg, 'view>
+  new TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
+  :> ITestableElmishComponentTE<'model, 'msg, 'view>

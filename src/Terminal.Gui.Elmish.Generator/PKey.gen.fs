@@ -20,20 +20,28 @@ let genPKeyClassDefinition (viewType: Type) =
 
     if view.Properties.Length > 0 then
       yield "    // Properties"
+
       for prop in view.Properties do
         let keyName = $"{className}.{prop.PKey}"
 
         // Check if this is a delayed pos property
         if prop.IsViewProperty then
           yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
-          let interfaceName = Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
-          yield $"    member val {prop.PKey}_element: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
+
+          let interfaceName =
+            Registry.TEInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
+
+          yield
+            $"    member val {prop.PKey}_element: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
         else
           yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 
     if view.Events.Length > 0 then
-      if view.Properties.Length > 0 then yield ""
+      if view.Properties.Length > 0 then
+        yield ""
+
       yield "    // Events"
+
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
@@ -46,7 +54,9 @@ let genPKeysAccessors () =
   seq {
     for viewType in Registry.ViewTypes.orderedByInheritance do
       let viewName = Registry.ViewTypes.GetUniqueTypeName viewType
-      yield $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
+
+      yield
+        $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
   }
 
 let getAccessor (viewType: Type) =
@@ -68,24 +78,30 @@ let genInterfaceKeys (interfaceType: Type) =
 
       if i.Properties.Length > 0 then
         yield "    // Properties"
+
         for prop in i.Properties do
-          yield $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+          yield
+            $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+
           yield ""
 
       if i.Events.Length > 0 then
         yield "    // Events"
+
         for event in i.Events do
           let handlerType = eventHandlerType event.EventInfo
-          yield $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+
+          yield
+            $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+
           yield ""
     }
 
-let opens = [
-    "open System"
+let opens =
+  [ "open System"
     "open System.Collections.Generic"
     "open Terminal.Gui.App"
-    "open Terminal.Gui.Views"
-  ]
+    "open Terminal.Gui.Views" ]
 
 let gen () =
 
@@ -93,11 +109,11 @@ let gen () =
   let interfaces =
     typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
     |> Array.filter (fun t ->
-      t.IsInterface &&
-      t.Namespace = "Terminal.Gui.ViewBase" &&
-      t.Name.StartsWith("I") &&
-      t.Name <> "IApplication" &&
-      t.Name <> "IDesignTimeProperties")
+      t.IsInterface
+      && t.Namespace = "Terminal.Gui.ViewBase"
+      && t.Name.StartsWith("I")
+      && t.Name <> "IApplication"
+      && t.Name <> "IDesignTimeProperties")
     |> Array.sortBy (fun t -> t.Name)
 
   seq {
@@ -114,6 +130,7 @@ let gen () =
 
     for interfaceType in interfaces do
       yield! genInterfaceKeys interfaceType
+
     yield ""
 
     yield! genPKeysAccessors ()

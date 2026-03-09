@@ -271,6 +271,20 @@ type View =
     viewProps.Children children
     new PaddingTerminalElement(viewProps.props) :> ITerminalElement
 
+  static member Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (set: PopoverProps<'TView, 'TResult> -> unit)
+    =
+    let viewProps = PopoverProps<'TView, 'TResult>()
+    set viewProps
+    new PopoverTerminalElement<'TView, 'TResult>(viewProps.props) :> ITerminalElement
+
+  static member Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (children: ITerminalElement list)
+    =
+    let viewProps = PopoverProps<'TView, 'TResult>()
+    viewProps.Children children
+    new PopoverTerminalElement<'TView, 'TResult>(viewProps.props) :> ITerminalElement
+
   static member PopoverMenu(set: PopoverMenuProps -> unit) =
     let viewProps = PopoverMenuProps()
     set viewProps

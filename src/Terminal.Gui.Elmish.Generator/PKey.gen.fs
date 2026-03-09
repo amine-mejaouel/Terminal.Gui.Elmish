@@ -64,31 +64,35 @@ let getAccessor (viewType: Type) =
   $"PKey.{viewName}{genericTypeParamsBlock viewType}"
 
 // TODO: code generated here is not currently used anywhere
-let genInterfaceKeys (interfaceType: Type) =
-  let i = ViewMetadata.create interfaceType
+let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
 
-  // Skip interfaces with no properties or events
-  if i.HasNoEventsOrProperties then
+  let allProps =
+    interfaceTypes
+    |> Array.collect (fun t -> (ViewMetadata.create t).Properties |> Array.map (fun p -> p, t))
+
+  let allEvents =
+    interfaceTypes
+    |> Array.collect (fun t -> (ViewMetadata.create t).Events |> Array.map (fun e -> e, t))
+
+  if allProps.Length = 0 && allEvents.Length = 0 then
     Seq.empty
   else
     seq {
-      let moduleName = $"{(getTypeNameWithoutArity interfaceType)}Interface"
-
       yield $"  module internal {moduleName} ="
 
-      if i.Properties.Length > 0 then
+      if not (allProps.Length = 0) then
         yield "    // Properties"
 
-        for prop in i.Properties do
+        for prop, interfaceType in allProps do
           yield
             $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
 
           yield ""
 
-      if i.Events.Length > 0 then
+      if not (allEvents.Length = 0) then
         yield "    // Events"
 
-        for event in i.Events do
+        for event, interfaceType in allEvents do
           let handlerType = eventHandlerType event.EventInfo
 
           yield
@@ -128,8 +132,13 @@ let gen () =
     for viewType in Registry.ViewTypes.orderedByInheritance do
       yield! genPKeyClassDefinition viewType
 
-    for interfaceType in interfaces do
-      yield! genInterfaceKeys interfaceType
+    // Group interfaces by name without arity, so that we can generate shared keys for generic/non generic interfaces
+    let interfaceGroups =
+      interfaces |> Array.groupBy getTypeNameWithoutArity |> Array.sortBy fst
+
+    for nameWithoutArity, group in interfaceGroups do
+      let moduleName = $"{nameWithoutArity}Interface"
+      yield! genInterfaceGroupKeys moduleName group
 
     yield ""
 

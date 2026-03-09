@@ -9,6 +9,9 @@ type IMenuTerminalElement =
 type IPopoverMenuTerminalElement =
   inherit ITerminalElement
 
+type ITViewTerminalElement =
+  inherit ITerminalElement
+
 type ITabTerminalElement =
   inherit ITerminalElement
 

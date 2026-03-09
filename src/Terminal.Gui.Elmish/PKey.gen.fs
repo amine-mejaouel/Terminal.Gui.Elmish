@@ -15,9 +15,20 @@ module internal PKey =
     member val AssignHotKeys: PropKey<bool> = PropKey.Create.simple "View.AssignHotKeys"
     member val BorderStyle: PropKey<Terminal.Gui.Drawing.LineStyle> = PropKey.Create.simple "View.BorderStyle"
     member val CanFocus: PropKey<bool> = PropKey.Create.simple "View.CanFocus"
+
+    member val CommandsToBubbleUp: PropKey<IReadOnlyList<Terminal.Gui.Input.Command>> =
+      PropKey.Create.simple "View.CommandsToBubbleUp"
+
     member val ContentSizeTracksViewport: PropKey<bool> = PropKey.Create.simple "View.ContentSizeTracksViewport"
     member val Cursor: PropKey<Terminal.Gui.Drivers.Cursor> = PropKey.Create.simple "View.Cursor"
     member val Data: PropKey<System.Object> = PropKey.Create.simple "View.Data"
+
+    member val DefaultAcceptView: PropKey<Terminal.Gui.ViewBase.View> =
+      PropKey.Create.view "View.DefaultAcceptView_view"
+
+    member val DefaultAcceptView_element: PropKey<ITerminalElement> =
+      PropKey.Create.subElement "View.DefaultAcceptView_element"
+
     member val Enabled: PropKey<bool> = PropKey.Create.simple "View.Enabled"
     member val Frame: PropKey<System.Drawing.Rectangle> = PropKey.Create.simple "View.Frame"
     member val HasFocus: PropKey<bool> = PropKey.Create.simple "View.HasFocus"
@@ -63,6 +74,9 @@ module internal PKey =
 
     member val Accepting: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
       PropKey.Create.event "View.Accepting_event"
+
+    member val Activated: PropKey<EventArgs<Terminal.Gui.Input.ICommandContext> -> unit> =
+      PropKey.Create.event "View.Activated_event"
 
     member val Activating: PropKey<Terminal.Gui.Input.CommandEventArgs -> unit> =
       PropKey.Create.event "View.Activating_event"
@@ -136,6 +150,9 @@ module internal PKey =
 
     member val HotKeyChanged: PropKey<Terminal.Gui.Input.KeyChangedEventArgs -> unit> =
       PropKey.Create.event "View.HotKeyChanged_event"
+
+    member val HotKeyCommand: PropKey<EventArgs<Terminal.Gui.Input.ICommandContext> -> unit> =
+      PropKey.Create.event "View.HotKeyCommand_event"
 
     member val Initialized: PropKey<System.EventArgs -> unit> = PropKey.Create.event "View.Initialized_event"
     member val KeyDown: PropKey<Terminal.Gui.Input.Key -> unit> = PropKey.Create.event "View.KeyDown_event"
@@ -238,6 +255,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> =
       PropKey.Create.event "AttributePicker.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "AttributePicker.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit> =
       PropKey.Create.event "AttributePicker.ValueChanging_event"
 
@@ -291,6 +311,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<System.Text.Rune> -> unit> =
       PropKey.Create.event "CharMap.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "CharMap.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<System.Text.Rune> -> unit> =
       PropKey.Create.event "CharMap.ValueChanging_event"
 
@@ -308,6 +331,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.CheckState> -> unit> =
       PropKey.Create.event "CheckBox.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "CheckBox.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.CheckState> -> unit> =
       PropKey.Create.event "CheckBox.ValueChanging_event"
 
@@ -323,6 +349,9 @@ module internal PKey =
     // Events
     member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> =
       PropKey.Create.event "ColorPicker.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "ColorPicker.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit> =
       PropKey.Create.event "ColorPicker.ValueChanging_event"
@@ -343,6 +372,9 @@ module internal PKey =
     // Events
     member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> =
       PropKey.Create.event "ColorPicker16.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "ColorPicker16.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> =
       PropKey.Create.event "ColorPicker16.ValueChanging_event"
@@ -379,6 +411,9 @@ module internal PKey =
     // Events
     member val ValueChanged: PropKey<ValueChangedEventArgs<System.DateTime> -> unit> =
       PropKey.Create.event "DatePicker.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "DatePicker.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<System.DateTime> -> unit> =
       PropKey.Create.event "DatePicker.ValueChanging_event"
@@ -542,6 +577,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> =
       PropKey.Create.event "ListView.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "ListView.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> =
       PropKey.Create.event "ListView.ValueChanging_event"
 
@@ -556,19 +594,26 @@ module internal PKey =
     inherit BarPKeys()
 
     // Properties
-    member val SelectedMenuItem: PropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SelectedMenuItem_view"
-
-    member val SelectedMenuItem_element: PropKey<IMenuItemTerminalElement> =
-      PropKey.Create.subElement "Menu.SelectedMenuItem_element"
-
     member val SuperMenuItem: PropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.SuperMenuItem_view"
 
     member val SuperMenuItem_element: PropKey<IMenuItemTerminalElement> =
       PropKey.Create.subElement "Menu.SuperMenuItem_element"
 
+    member val Value: PropKey<Terminal.Gui.Views.MenuItem> = PropKey.Create.view "Menu.Value_view"
+    member val Value_element: PropKey<IMenuItemTerminalElement> = PropKey.Create.subElement "Menu.Value_element"
+
     // Events
     member val SelectedMenuItemChanged: PropKey<Terminal.Gui.Views.MenuItem -> unit> =
       PropKey.Create.event "Menu.SelectedMenuItemChanged_event"
+
+    member val ValueChanged: PropKey<ValueChangedEventArgs<Terminal.Gui.Views.MenuItem> -> unit> =
+      PropKey.Create.event "Menu.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "Menu.ValueChangedUntyped_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Views.MenuItem> -> unit> =
+      PropKey.Create.event "Menu.ValueChanging_event"
 
   type MenuBarPKeys() =
     inherit MenuPKeys()
@@ -598,6 +643,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<'T> -> unit> =
       PropKey.Create.event "NumericUpDown.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "NumericUpDown.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<'T> -> unit> =
       PropKey.Create.event "NumericUpDown.ValueChanging_event"
 
@@ -609,14 +657,31 @@ module internal PKey =
     inherit AdornmentPKeys()
 
 
-  type PopoverBaseImplPKeys() =
+  type PopoverImplPKeys() =
     inherit ViewPKeys()
 
     // Properties
-    member val Current: PropKey<Terminal.Gui.App.IRunnable> = PropKey.Create.simple "PopoverBaseImpl.Current"
+    member val Anchor: PropKey<Func<Nullable<System.Drawing.Rectangle>>> = PropKey.Create.simple "PopoverImpl.Anchor"
+    member val Owner: PropKey<Terminal.Gui.App.IRunnable> = PropKey.Create.simple "PopoverImpl.Owner"
+    member val Target: PropKey<WeakReference<Terminal.Gui.ViewBase.View>> = PropKey.Create.simple "PopoverImpl.Target"
+
+  type PopoverPKeys<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>() =
+    inherit PopoverImplPKeys()
+
+    // Properties
+    member val ContentView: PropKey<'TView> = PropKey.Create.view "Popover.ContentView_view"
+
+    member val ContentView_element: PropKey<ITViewTerminalElement> =
+      PropKey.Create.subElement "Popover.ContentView_element"
+
+    member val ResultExtractor: PropKey<Func<'TView, 'TResult>> = PropKey.Create.simple "Popover.ResultExtractor"
+
+    // Events
+    member val ResultChanged: PropKey<ValueChangedEventArgs<'TResult> -> unit> =
+      PropKey.Create.event "Popover.ResultChanged_event"
 
   type PopoverMenuPKeys() =
-    inherit PopoverBaseImplPKeys()
+    inherit PopoverPKeys<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>()
 
     // Properties
     member val Key: PropKey<Terminal.Gui.Input.Key> = PropKey.Create.simple "PopoverMenu.Key"
@@ -727,11 +792,14 @@ module internal PKey =
     inherit ViewPKeys()
 
     // Properties
-    member val AutoShow: PropKey<bool> = PropKey.Create.simple "ScrollBar.AutoShow"
     member val Increment: PropKey<int> = PropKey.Create.simple "ScrollBar.Increment"
     member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "ScrollBar.Orientation"
     member val ScrollableContentSize: PropKey<int> = PropKey.Create.simple "ScrollBar.ScrollableContentSize"
     member val Value: PropKey<int> = PropKey.Create.simple "ScrollBar.Value"
+
+    member val VisibilityMode: PropKey<Terminal.Gui.Views.ScrollBarVisibilityMode> =
+      PropKey.Create.simple "ScrollBar.VisibilityMode"
+
     member val VisibleContentSize: PropKey<int> = PropKey.Create.simple "ScrollBar.VisibleContentSize"
 
     // Events
@@ -751,6 +819,9 @@ module internal PKey =
 
     member val ValueChanged: PropKey<ValueChangedEventArgs<int> -> unit> =
       PropKey.Create.event "ScrollBar.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "ScrollBar.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<int> -> unit> =
       PropKey.Create.event "ScrollBar.ValueChanging_event"
@@ -794,6 +865,10 @@ module internal PKey =
       PropKey.Create.simple "SelectorBase.Orientation"
 
     member val Styles: PropKey<Terminal.Gui.Views.SelectorStyles> = PropKey.Create.simple "SelectorBase.Styles"
+
+    member val TabBehavior: PropKey<Nullable<Terminal.Gui.ViewBase.TabBehavior>> =
+      PropKey.Create.simple "SelectorBase.TabBehavior"
+
     member val Value: PropKey<Nullable<int>> = PropKey.Create.simple "SelectorBase.Value"
     member val Values: PropKey<IReadOnlyList<int>> = PropKey.Create.simple "SelectorBase.Values"
 
@@ -806,6 +881,9 @@ module internal PKey =
 
     member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<int>> -> unit> =
       PropKey.Create.event "SelectorBase.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "SelectorBase.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<int>> -> unit> =
       PropKey.Create.event "SelectorBase.ValueChanging_event"
@@ -820,7 +898,7 @@ module internal PKey =
     inherit SelectorBasePKeys()
 
     // Properties
-    member val Cursor: PropKey<int> = PropKey.Create.simple "OptionSelector.Cursor"
+    member val FocusedItem: PropKey<int> = PropKey.Create.simple "OptionSelector.FocusedItem"
 
   type FlagSelectorPKeys<'TFlagsEnum
     when 'TFlagsEnum: struct
@@ -858,13 +936,15 @@ module internal PKey =
       PropKey.Create.simple "Shortcut.AlignmentModes"
 
     member val BindKeyToApplication: PropKey<bool> = PropKey.Create.simple "Shortcut.BindKeyToApplication"
+    member val Command: PropKey<Terminal.Gui.Input.Command> = PropKey.Create.simple "Shortcut.Command"
     member val CommandView: PropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Shortcut.CommandView_view"
     member val CommandView_element: PropKey<ITerminalElement> = PropKey.Create.subElement "Shortcut.CommandView_element"
-    member val ForceFocusColors: PropKey<bool> = PropKey.Create.simple "Shortcut.ForceFocusColors"
     member val HelpText: PropKey<string> = PropKey.Create.simple "Shortcut.HelpText"
     member val Key: PropKey<Terminal.Gui.Input.Key> = PropKey.Create.simple "Shortcut.Key"
     member val MinimumKeyTextSize: PropKey<int> = PropKey.Create.simple "Shortcut.MinimumKeyTextSize"
     member val Orientation: PropKey<Terminal.Gui.ViewBase.Orientation> = PropKey.Create.simple "Shortcut.Orientation"
+    member val TargetView: PropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "Shortcut.TargetView_view"
+    member val TargetView_element: PropKey<ITerminalElement> = PropKey.Create.subElement "Shortcut.TargetView_element"
     member val Text: PropKey<string> = PropKey.Create.simple "Shortcut.Text"
 
     // Events
@@ -878,11 +958,8 @@ module internal PKey =
     inherit ShortcutPKeys()
 
     // Properties
-    member val Command: PropKey<Terminal.Gui.Input.Command> = PropKey.Create.simple "MenuItem.Command"
     member val SubMenu: PropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "MenuItem.SubMenu_view"
     member val SubMenu_element: PropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuItem.SubMenu_element"
-    member val TargetView: PropKey<Terminal.Gui.ViewBase.View> = PropKey.Create.view "MenuItem.TargetView_view"
-    member val TargetView_element: PropKey<ITerminalElement> = PropKey.Create.subElement "MenuItem.TargetView_element"
 
   type MenuBarItemPKeys() =
     inherit MenuItemPKeys()
@@ -898,7 +975,7 @@ module internal PKey =
     member val SubMenu_element: PropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.SubMenu_element"
 
     // Events
-    member val PopoverMenuOpenChanged: PropKey<EventArgs<bool> -> unit> =
+    member val PopoverMenuOpenChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
       PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
 
   type SpinnerViewPKeys() =
@@ -967,6 +1044,9 @@ module internal PKey =
     member val Style: PropKey<Terminal.Gui.Views.TableStyle> = PropKey.Create.simple "TableView.Style"
     member val Table: PropKey<Terminal.Gui.Views.ITableSource> = PropKey.Create.simple "TableView.Table"
 
+    member val UseAllRowsForContentCalculation: PropKey<bool> =
+      PropKey.Create.simple "TableView.UseAllRowsForContentCalculation"
+
     // Events
     member val CellActivated: PropKey<Terminal.Gui.Views.CellActivatedEventArgs -> unit> =
       PropKey.Create.event "TableView.CellActivated_event"
@@ -1002,6 +1082,9 @@ module internal PKey =
     member val ValueChanged: PropKey<ValueChangedEventArgs<string> -> unit> =
       PropKey.Create.event "TextField.ValueChanged_event"
 
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "TextField.ValueChangedUntyped_event"
+
     member val ValueChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
       PropKey.Create.event "TextField.ValueChanging_event"
 
@@ -1036,9 +1119,7 @@ module internal PKey =
     member val EnterKeyAddsLine: PropKey<bool> = PropKey.Create.simple "TextView.EnterKeyAddsLine"
     member val InheritsPreviousAttribute: PropKey<bool> = PropKey.Create.simple "TextView.InheritsPreviousAttribute"
     member val InsertionPoint: PropKey<System.Drawing.Point> = PropKey.Create.simple "TextView.InsertionPoint"
-    member val IsDirty: PropKey<bool> = PropKey.Create.simple "TextView.IsDirty"
     member val IsSelecting: PropKey<bool> = PropKey.Create.simple "TextView.IsSelecting"
-    member val LeftColumn: PropKey<int> = PropKey.Create.simple "TextView.LeftColumn"
     member val Multiline: PropKey<bool> = PropKey.Create.simple "TextView.Multiline"
     member val ReadOnly: PropKey<bool> = PropKey.Create.simple "TextView.ReadOnly"
     member val ScrollBars: PropKey<bool> = PropKey.Create.simple "TextView.ScrollBars"
@@ -1048,7 +1129,6 @@ module internal PKey =
     member val TabKeyAddsTab: PropKey<bool> = PropKey.Create.simple "TextView.TabKeyAddsTab"
     member val TabWidth: PropKey<int> = PropKey.Create.simple "TextView.TabWidth"
     member val Text: PropKey<string> = PropKey.Create.simple "TextView.Text"
-    member val TopRow: PropKey<int> = PropKey.Create.simple "TextView.TopRow"
     member val UseSameRuneTypeForWords: PropKey<bool> = PropKey.Create.simple "TextView.UseSameRuneTypeForWords"
     member val Used: PropKey<bool> = PropKey.Create.simple "TextView.Used"
     member val WordWrap: PropKey<bool> = PropKey.Create.simple "TextView.WordWrap"
@@ -1069,8 +1149,8 @@ module internal PKey =
     member val DrawUsedColor: PropKey<Terminal.Gui.Drawing.CellEventArgs -> unit> =
       PropKey.Create.event "TextView.DrawUsedColor_event"
 
-    member val UnwrappedCursorPosition: PropKey<System.Drawing.Point -> unit> =
-      PropKey.Create.event "TextView.UnwrappedCursorPosition_event"
+    member val UnwrappedCursorPositionChanged: PropKey<System.Drawing.Point -> unit> =
+      PropKey.Create.event "TextView.UnwrappedCursorPositionChanged_event"
 
   type TimeFieldPKeys() =
     inherit TextFieldPKeys()
@@ -1186,6 +1266,9 @@ module internal PKey =
       PropKey.Create.simple "IValueInterface.Value"
 
     // Events
+    let ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "IValueInterface.ValueChangedUntyped_event"
+
     let ValueChanged<'TValue> : PropKey<ValueChangedEventArgs<'TValue> -> unit> =
       PropKey.Create.event "IValueInterface.ValueChanged_event"
 
@@ -1220,7 +1303,11 @@ module internal PKey =
   let NumericUpDown<'T> = NumericUpDownPKeys<'T>()
   let NumericUpDown' = NumericUpDownPKeys()
   let Padding = PaddingPKeys()
-  let PopoverBaseImpl = PopoverBaseImplPKeys()
+  let PopoverImpl = PopoverImplPKeys()
+
+  let Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
+    PopoverPKeys<'TView, 'TResult>()
+
   let PopoverMenu = PopoverMenuPKeys()
   let ProgressBar = ProgressBarPKeys()
   let Runnable = RunnablePKeys()

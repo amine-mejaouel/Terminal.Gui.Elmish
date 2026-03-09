@@ -42,6 +42,10 @@ type ViewProps() =
     this.props |> Props.add (PKey.View.CanFocus, value)
 
 
+  member this.CommandsToBubbleUp(value: IReadOnlyList<Terminal.Gui.Input.Command>) =
+    this.props |> Props.add (PKey.View.CommandsToBubbleUp, value)
+
+
   member this.ContentSizeTracksViewport(value: bool) =
     this.props |> Props.add (PKey.View.ContentSizeTracksViewport, value)
 
@@ -53,6 +57,12 @@ type ViewProps() =
   member this.Data(value: System.Object) =
     this.props |> Props.add (PKey.View.Data, value)
 
+
+  member this.DefaultAcceptView(value: Terminal.Gui.ViewBase.View) =
+    this.props |> Props.add (PKey.View.DefaultAcceptView, value)
+
+  member this.DefaultAcceptView(value: ITerminalElement) =
+    this.props |> Props.add (PKey.View.DefaultAcceptView_element, value)
 
   member this.Enabled(value: bool) =
     this.props |> Props.add (PKey.View.Enabled, value)
@@ -169,6 +179,9 @@ type ViewProps() =
   member this.Accepting(handler: Terminal.Gui.Input.CommandEventArgs -> unit) =
     this.props |> Props.add (PKey.View.Accepting, handler)
 
+  member this.Activated(handler: EventArgs<Terminal.Gui.Input.ICommandContext> -> unit) =
+    this.props |> Props.add (PKey.View.Activated, handler)
+
   member this.Activating(handler: Terminal.Gui.Input.CommandEventArgs -> unit) =
     this.props |> Props.add (PKey.View.Activating, handler)
 
@@ -246,6 +259,9 @@ type ViewProps() =
 
   member this.HotKeyChanged(handler: Terminal.Gui.Input.KeyChangedEventArgs -> unit) =
     this.props |> Props.add (PKey.View.HotKeyChanged, handler)
+
+  member this.HotKeyCommand(handler: EventArgs<Terminal.Gui.Input.ICommandContext> -> unit) =
+    this.props |> Props.add (PKey.View.HotKeyCommand, handler)
 
   member this.Initialized(handler: System.EventArgs -> unit) =
     this.props |> Props.add (PKey.View.Initialized, handler)
@@ -377,6 +393,9 @@ type AttributePickerProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit) =
     this.props |> Props.add (PKey.AttributePicker.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.AttributePicker.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Attribute>> -> unit) =
     this.props |> Props.add (PKey.AttributePicker.ValueChanging, handler)
 
@@ -459,6 +478,9 @@ type CharMapProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<System.Text.Rune> -> unit) =
     this.props |> Props.add (PKey.CharMap.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.CharMap.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<System.Text.Rune> -> unit) =
     this.props |> Props.add (PKey.CharMap.ValueChanging, handler)
 
@@ -489,6 +511,9 @@ type CheckBoxProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<Terminal.Gui.Views.CheckState> -> unit) =
     this.props |> Props.add (PKey.CheckBox.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.CheckBox.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<Terminal.Gui.Views.CheckState> -> unit) =
     this.props |> Props.add (PKey.CheckBox.ValueChanging, handler)
 
@@ -514,6 +539,9 @@ type ColorPickerProps() =
   // Events
   member this.ValueChanged(handler: ValueChangedEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit) =
     this.props |> Props.add (PKey.ColorPicker.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.ColorPicker.ValueChangedUntyped, handler)
 
   member this.ValueChanging(handler: ValueChangingEventArgs<Nullable<Terminal.Gui.Drawing.Color>> -> unit) =
     this.props |> Props.add (PKey.ColorPicker.ValueChanging, handler)
@@ -544,6 +572,9 @@ type ColorPicker16Props() =
   // Events
   member this.ValueChanged(handler: ValueChangedEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit) =
     this.props |> Props.add (PKey.ColorPicker16.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.ColorPicker16.ValueChangedUntyped, handler)
 
   member this.ValueChanging(handler: ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit) =
     this.props |> Props.add (PKey.ColorPicker16.ValueChanging, handler)
@@ -606,6 +637,9 @@ type DatePickerProps() =
   // Events
   member this.ValueChanged(handler: ValueChangedEventArgs<System.DateTime> -> unit) =
     this.props |> Props.add (PKey.DatePicker.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.DatePicker.ValueChangedUntyped, handler)
 
   member this.ValueChanging(handler: ValueChangingEventArgs<System.DateTime> -> unit) =
     this.props |> Props.add (PKey.DatePicker.ValueChanging, handler)
@@ -861,6 +895,9 @@ type ListViewProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<Nullable<int>> -> unit) =
     this.props |> Props.add (PKey.ListView.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.ListView.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<Nullable<int>> -> unit) =
     this.props |> Props.add (PKey.ListView.ValueChanging, handler)
 
@@ -878,21 +915,30 @@ type MarginProps() =
 type MenuProps() =
   inherit BarProps()
   // Properties
-  member this.SelectedMenuItem(value: Terminal.Gui.Views.MenuItem) =
-    this.props |> Props.add (PKey.Menu.SelectedMenuItem, value)
-
-  member this.SelectedMenuItem(value: IMenuItemTerminalElement) =
-    this.props |> Props.add (PKey.Menu.SelectedMenuItem_element, value)
-
   member this.SuperMenuItem(value: Terminal.Gui.Views.MenuItem) =
     this.props |> Props.add (PKey.Menu.SuperMenuItem, value)
 
   member this.SuperMenuItem(value: IMenuItemTerminalElement) =
     this.props |> Props.add (PKey.Menu.SuperMenuItem_element, value)
 
+  member this.Value(value: Terminal.Gui.Views.MenuItem) =
+    this.props |> Props.add (PKey.Menu.Value, value)
+
+  member this.Value(value: IMenuItemTerminalElement) =
+    this.props |> Props.add (PKey.Menu.Value_element, value)
+
   // Events
   member this.SelectedMenuItemChanged(handler: Terminal.Gui.Views.MenuItem -> unit) =
     this.props |> Props.add (PKey.Menu.SelectedMenuItemChanged, handler)
+
+  member this.ValueChanged(handler: ValueChangedEventArgs<Terminal.Gui.Views.MenuItem> -> unit) =
+    this.props |> Props.add (PKey.Menu.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.Menu.ValueChangedUntyped, handler)
+
+  member this.ValueChanging(handler: ValueChangingEventArgs<Terminal.Gui.Views.MenuItem> -> unit) =
+    this.props |> Props.add (PKey.Menu.ValueChanging, handler)
 
 type MenuBarProps() =
   inherit MenuProps()
@@ -930,6 +976,9 @@ type NumericUpDownProps<'T>() =
   member this.ValueChanged(handler: ValueChangedEventArgs<'T> -> unit) =
     this.props |> Props.add (PKey.NumericUpDown<'T>.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.NumericUpDown<'T>.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<'T> -> unit) =
     this.props |> Props.add (PKey.NumericUpDown<'T>.ValueChanging, handler)
 
@@ -939,15 +988,41 @@ type NumericUpDownProps() =
 type PaddingProps() =
   inherit AdornmentProps()
 
-type PopoverBaseImplProps() =
+type PopoverImplProps() =
   inherit ViewProps()
   // Properties
-  member this.Current(value: Terminal.Gui.App.IRunnable) =
-    this.props |> Props.add (PKey.PopoverBaseImpl.Current, value)
+  member this.Anchor(value: Func<Nullable<System.Drawing.Rectangle>>) =
+    this.props |> Props.add (PKey.PopoverImpl.Anchor, value)
 
+
+  member this.Owner(value: Terminal.Gui.App.IRunnable) =
+    this.props |> Props.add (PKey.PopoverImpl.Owner, value)
+
+
+  member this.Target(value: WeakReference<Terminal.Gui.ViewBase.View>) =
+    this.props |> Props.add (PKey.PopoverImpl.Target, value)
+
+
+type PopoverProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>() =
+  inherit PopoverImplProps()
+  // Properties
+  member this.ContentView(value: 'TView) =
+    this.props |> Props.add (PKey.Popover<'TView, 'TResult>.ContentView, value)
+
+  member this.ContentView(value: ITViewTerminalElement) =
+    this.props
+    |> Props.add (PKey.Popover<'TView, 'TResult>.ContentView_element, value)
+
+  member this.ResultExtractor(value: Func<'TView, 'TResult>) =
+    this.props |> Props.add (PKey.Popover<'TView, 'TResult>.ResultExtractor, value)
+
+
+  // Events
+  member this.ResultChanged(handler: ValueChangedEventArgs<'TResult> -> unit) =
+    this.props |> Props.add (PKey.Popover<'TView, 'TResult>.ResultChanged, handler)
 
 type PopoverMenuProps() =
-  inherit PopoverBaseImplProps()
+  inherit PopoverProps<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>()
   // Properties
   member this.Key(value: Terminal.Gui.Input.Key) =
     this.props |> Props.add (PKey.PopoverMenu.Key, value)
@@ -1099,10 +1174,6 @@ type SaveDialogProps() =
 type ScrollBarProps() =
   inherit ViewProps()
   // Properties
-  member this.AutoShow(value: bool) =
-    this.props |> Props.add (PKey.ScrollBar.AutoShow, value)
-
-
   member this.Increment(value: int) =
     this.props |> Props.add (PKey.ScrollBar.Increment, value)
 
@@ -1117,6 +1188,10 @@ type ScrollBarProps() =
 
   member this.Value(value: int) =
     this.props |> Props.add (PKey.ScrollBar.Value, value)
+
+
+  member this.VisibilityMode(value: Terminal.Gui.Views.ScrollBarVisibilityMode) =
+    this.props |> Props.add (PKey.ScrollBar.VisibilityMode, value)
 
 
   member this.VisibleContentSize(value: int) =
@@ -1141,6 +1216,9 @@ type ScrollBarProps() =
 
   member this.ValueChanged(handler: ValueChangedEventArgs<int> -> unit) =
     this.props |> Props.add (PKey.ScrollBar.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.ScrollBar.ValueChangedUntyped, handler)
 
   member this.ValueChanging(handler: ValueChangingEventArgs<int> -> unit) =
     this.props |> Props.add (PKey.ScrollBar.ValueChanging, handler)
@@ -1207,6 +1285,10 @@ type SelectorBaseProps() =
     this.props |> Props.add (PKey.SelectorBase.Styles, value)
 
 
+  member this.TabBehavior(value: Nullable<Terminal.Gui.ViewBase.TabBehavior>) =
+    this.props |> Props.add (PKey.SelectorBase.TabBehavior, value)
+
+
   member this.Value(value: Nullable<int>) =
     this.props |> Props.add (PKey.SelectorBase.Value, value)
 
@@ -1225,6 +1307,9 @@ type SelectorBaseProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<Nullable<int>> -> unit) =
     this.props |> Props.add (PKey.SelectorBase.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.SelectorBase.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<Nullable<int>> -> unit) =
     this.props |> Props.add (PKey.SelectorBase.ValueChanging, handler)
 
@@ -1238,8 +1323,8 @@ type FlagSelectorProps() =
 type OptionSelectorProps() =
   inherit SelectorBaseProps()
   // Properties
-  member this.Cursor(value: int) =
-    this.props |> Props.add (PKey.OptionSelector.Cursor, value)
+  member this.FocusedItem(value: int) =
+    this.props |> Props.add (PKey.OptionSelector.FocusedItem, value)
 
 
 type FlagSelectorProps<'TFlagsEnum
@@ -1288,15 +1373,15 @@ type ShortcutProps() =
     this.props |> Props.add (PKey.Shortcut.BindKeyToApplication, value)
 
 
+  member this.Command(value: Terminal.Gui.Input.Command) =
+    this.props |> Props.add (PKey.Shortcut.Command, value)
+
+
   member this.CommandView(value: Terminal.Gui.ViewBase.View) =
     this.props |> Props.add (PKey.Shortcut.CommandView, value)
 
   member this.CommandView(value: ITerminalElement) =
     this.props |> Props.add (PKey.Shortcut.CommandView_element, value)
-
-  member this.ForceFocusColors(value: bool) =
-    this.props |> Props.add (PKey.Shortcut.ForceFocusColors, value)
-
 
   member this.HelpText(value: string) =
     this.props |> Props.add (PKey.Shortcut.HelpText, value)
@@ -1314,6 +1399,12 @@ type ShortcutProps() =
     this.props |> Props.add (PKey.Shortcut.Orientation, value)
 
 
+  member this.TargetView(value: Terminal.Gui.ViewBase.View) =
+    this.props |> Props.add (PKey.Shortcut.TargetView, value)
+
+  member this.TargetView(value: ITerminalElement) =
+    this.props |> Props.add (PKey.Shortcut.TargetView_element, value)
+
   member this.Text(value: string) =
     this.props |> Props.add (PKey.Shortcut.Text, value)
 
@@ -1328,21 +1419,11 @@ type ShortcutProps() =
 type MenuItemProps() =
   inherit ShortcutProps()
   // Properties
-  member this.Command(value: Terminal.Gui.Input.Command) =
-    this.props |> Props.add (PKey.MenuItem.Command, value)
-
-
   member this.SubMenu(value: Terminal.Gui.Views.Menu) =
     this.props |> Props.add (PKey.MenuItem.SubMenu, value)
 
   member this.SubMenu(value: IMenuTerminalElement) =
     this.props |> Props.add (PKey.MenuItem.SubMenu_element, value)
-
-  member this.TargetView(value: Terminal.Gui.ViewBase.View) =
-    this.props |> Props.add (PKey.MenuItem.TargetView, value)
-
-  member this.TargetView(value: ITerminalElement) =
-    this.props |> Props.add (PKey.MenuItem.TargetView_element, value)
 
 type MenuBarItemProps() =
   inherit MenuItemProps()
@@ -1364,7 +1445,7 @@ type MenuBarItemProps() =
     this.props |> Props.add (PKey.MenuBarItem.SubMenu_element, value)
 
   // Events
-  member this.PopoverMenuOpenChanged(handler: EventArgs<bool> -> unit) =
+  member this.PopoverMenuOpenChanged(handler: ValueChangedEventArgs<bool> -> unit) =
     this.props |> Props.add (PKey.MenuBarItem.PopoverMenuOpenChanged, handler)
 
 type SpinnerViewProps() =
@@ -1497,6 +1578,10 @@ type TableViewProps() =
     this.props |> Props.add (PKey.TableView.Table, value)
 
 
+  member this.UseAllRowsForContentCalculation(value: bool) =
+    this.props |> Props.add (PKey.TableView.UseAllRowsForContentCalculation, value)
+
+
   // Events
   member this.CellActivated(handler: Terminal.Gui.Views.CellActivatedEventArgs -> unit) =
     this.props |> Props.add (PKey.TableView.CellActivated, handler)
@@ -1557,6 +1642,9 @@ type TextFieldProps() =
   member this.ValueChanged(handler: ValueChangedEventArgs<string> -> unit) =
     this.props |> Props.add (PKey.TextField.ValueChanged, handler)
 
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.TextField.ValueChangedUntyped, handler)
+
   member this.ValueChanging(handler: ValueChangingEventArgs<string> -> unit) =
     this.props |> Props.add (PKey.TextField.ValueChanging, handler)
 
@@ -1608,16 +1696,8 @@ type TextViewProps() =
     this.props |> Props.add (PKey.TextView.InsertionPoint, value)
 
 
-  member this.IsDirty(value: bool) =
-    this.props |> Props.add (PKey.TextView.IsDirty, value)
-
-
   member this.IsSelecting(value: bool) =
     this.props |> Props.add (PKey.TextView.IsSelecting, value)
-
-
-  member this.LeftColumn(value: int) =
-    this.props |> Props.add (PKey.TextView.LeftColumn, value)
 
 
   member this.Multiline(value: bool) =
@@ -1656,10 +1736,6 @@ type TextViewProps() =
     this.props |> Props.add (PKey.TextView.Text, value)
 
 
-  member this.TopRow(value: int) =
-    this.props |> Props.add (PKey.TextView.TopRow, value)
-
-
   member this.UseSameRuneTypeForWords(value: bool) =
     this.props |> Props.add (PKey.TextView.UseSameRuneTypeForWords, value)
 
@@ -1688,8 +1764,8 @@ type TextViewProps() =
   member this.DrawUsedColor(handler: Terminal.Gui.Drawing.CellEventArgs -> unit) =
     this.props |> Props.add (PKey.TextView.DrawUsedColor, handler)
 
-  member this.UnwrappedCursorPosition(handler: System.Drawing.Point -> unit) =
-    this.props |> Props.add (PKey.TextView.UnwrappedCursorPosition, handler)
+  member this.UnwrappedCursorPositionChanged(handler: System.Drawing.Point -> unit) =
+    this.props |> Props.add (PKey.TextView.UnwrappedCursorPositionChanged, handler)
 
 type TimeFieldProps() =
   inherit TextFieldProps()

@@ -45,7 +45,10 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
               // p.HelpText "Quit UI Catalog"
               p.HotKey Key.Q
 
-              p.Accepted(fun _ -> dispatch TerminalMsg.Terminate)) ])
+              // TODO: too confusing, button are triggered by Accepting, but MenuItem does not have their Accepting event triggered.
+              // TODO: maybe I should create a helper that make it easier to link an action to a item
+              // TODO: or maybe there is an already Terminal.Gui way to do it that I missed
+              p.Action(fun () -> dispatch TerminalMsg.Terminate)) ])
 
       m.MenuBarItem(fun p m ->
         p.Title "_Themes"

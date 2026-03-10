@@ -45,9 +45,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
               // p.HelpText "Quit UI Catalog"
               p.HotKey Key.Q
 
-              p.MouseEvent(fun e ->
-                if e.IsSingleClicked then
-                  dispatch TerminalMsg.Terminate)) ])
+              p.Accepted(fun _ -> dispatch TerminalMsg.Terminate)) ])
 
       m.MenuBarItem(fun p m ->
         p.Title "_Themes"

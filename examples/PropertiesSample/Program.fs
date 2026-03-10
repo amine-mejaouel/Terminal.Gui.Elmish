@@ -42,7 +42,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
                             p.Title "Quit"
                             // p.HelpText "Quit UI Catalog"
                             // p.Key Application.QuitKey
-                            p.Command Command.Quit) ])
+                            p.Accepted(fun _ -> dispatch TerminalMsg.Terminate)) ])
                   ))
               ))
             View.MenuBarItem(fun p _ ->

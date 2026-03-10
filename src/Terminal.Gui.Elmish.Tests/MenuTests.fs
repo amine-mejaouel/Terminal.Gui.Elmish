@@ -88,3 +88,30 @@ let ``Using macros syntax: Menu should be correctly set`` () =
 
   Assert.That(menuItems[0].Title, Is.EqualTo("MenuItem 0"))
   Assert.That(menuItems[1].Title, Is.EqualTo("MenuItem 1"))
+
+
+[<Test>]
+let ``Sub-elements are not added to parent SubViews by Elmish traverse`` () =
+  // Shortcut.TargetView is a sub-element whose setter is a plain auto-property (no View.Add).
+  // If Elmish's traverse incorrectly calls View.Add for sub-elements, the TargetView
+  // will appear in the Shortcut's SubViews. With the fix, only children get View.Add'd
+  // by the traverse; sub-elements are wired through their property setters only.
+  let viewTE =
+    View.Runnable [ View.Shortcut(fun p -> p.TargetView(View.Label(fun p -> p.Text "target"))) :> ITerminalElement ]
+    :?> IViewTE
+
+  let view = (ElmishTester.render viewTE).View
+  let shortcut = view.SubViews |> Seq.head :?> Shortcut
+
+  // The TargetView property should be set
+  Assert.That(shortcut.TargetView, Is.Not.Null)
+  Assert.That(shortcut.TargetView, Is.InstanceOf<Label>())
+
+  // But TargetView must NOT appear in the Shortcut's SubViews —
+  // it's a sub-element, not a child. Only children get View.Add'd by the traverse.
+  Assert.That(
+    shortcut.SubViews
+    |> Seq.exists (fun sv -> obj.ReferenceEquals(sv, shortcut.TargetView)),
+    Is.False,
+    "TargetView (a sub-element) should not be added to Shortcut.SubViews"
+  )

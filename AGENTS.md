@@ -148,3 +148,13 @@ All projects target `net10.0`. Ensure .NET SDK 10.0+ is installed (see `global.j
 
 ### Build Warnings
 The project uses prerelease Terminal.Gui. Warnings about prerelease packages are expected.
+
+## Code Formatting
+
+This repository uses [Fantomas](https://fsprojects.github.io/fantomas/) for F# code formatting. After finishing all edits to `.fs` files in a task, run:
+
+```bash
+dotnet fantomas .
+```
+
+This must be the **last step** before considering the task complete, to ensure all F# files conform to the project's formatting rules.

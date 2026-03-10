@@ -28,6 +28,7 @@ let ``Should include all elements in Elements module`` () =
       "LinearRange`1"
       "NumericUpDown`1"
       "Prompt`2"
+      "Popover`2"
       "Runnable`1"
       "FlagSelector`1"
       "OptionSelector`1"

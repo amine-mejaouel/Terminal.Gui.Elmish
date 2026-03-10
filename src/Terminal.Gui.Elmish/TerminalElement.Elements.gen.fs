@@ -224,6 +224,8 @@ type internal ViewTerminalElement(props: Props) =
 
     terminalElement.TrySetEventHandler(PKey.View.KeyDownNotHandled, view.KeyDownNotHandled)
 
+    terminalElement.TrySetEventHandler(PKey.View.KeyUp, view.KeyUp)
+
     terminalElement.TrySetEventHandler(PKey.View.MouseEnter, view.MouseEnter)
 
     terminalElement.TrySetEventHandler(PKey.View.MouseEvent, view.MouseEvent)
@@ -454,6 +456,7 @@ type internal ViewTerminalElement(props: Props) =
     terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
     terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
     terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
+    terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
     terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
     terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
     terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
@@ -1047,92 +1050,6 @@ type internal ColorPicker16TerminalElement(props: Props) =
 
   interface ITerminalElement
 
-type internal ComboBoxTerminalElement(props: Props) =
-  inherit ViewTerminalElement(props)
-
-  override _.Name = "ComboBox"
-
-  override _.NewView() = new ComboBox()
-
-  override _.SetAsChildOfParentView = true
-
-  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    base.SetProps(terminalElement, props)
-
-    let view = terminalElement.View :?> ComboBox
-
-    // Properties
-    props
-    |> Props.tryFind PKey.ComboBox.HideDropdownListOnClick
-    |> Option.iter (fun v -> view.HideDropdownListOnClick <- v)
-
-    props
-    |> Props.tryFind PKey.ComboBox.ReadOnly
-    |> Option.iter (fun v -> view.ReadOnly <- v)
-
-    props
-    |> Props.tryFind PKey.ComboBox.SearchText
-    |> Option.iter (fun v -> view.SearchText <- v)
-
-    props
-    |> Props.tryFind PKey.ComboBox.SelectedItem
-    |> Option.iter (fun v -> view.SelectedItem <- v)
-
-    props
-    |> Props.tryFind PKey.ComboBox.Source
-    |> Option.iter (fun v -> view.Source <- v)
-
-    props
-    |> Props.tryFind PKey.ComboBox.Text
-    |> Option.iter (fun v -> view.Text <- v)
-
-    // Events
-    terminalElement.TrySetEventHandler(PKey.ComboBox.Collapsed, view.Collapsed)
-
-    terminalElement.TrySetEventHandler(PKey.ComboBox.Expanded, view.Expanded)
-
-    terminalElement.TrySetEventHandler(PKey.ComboBox.OpenSelectedItem, view.OpenSelectedItem)
-
-    terminalElement.TrySetEventHandler(PKey.ComboBox.SelectedItemChanged, view.SelectedItemChanged)
-
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    base.RemoveProps(terminalElement, props)
-
-    let view = terminalElement.View :?> ComboBox
-
-    // Properties
-    props
-    |> Props.tryFind PKey.ComboBox.HideDropdownListOnClick
-    |> Option.iter (fun _ -> view.HideDropdownListOnClick <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ComboBox.ReadOnly
-    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ComboBox.SearchText
-    |> Option.iter (fun _ -> view.SearchText <- "")
-
-    props
-    |> Props.tryFind PKey.ComboBox.SelectedItem
-    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ComboBox.Source
-    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ComboBox.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    // Events
-    terminalElement.TryRemoveEventHandler(PKey.ComboBox.Collapsed)
-    terminalElement.TryRemoveEventHandler(PKey.ComboBox.Expanded)
-    terminalElement.TryRemoveEventHandler(PKey.ComboBox.OpenSelectedItem)
-    terminalElement.TryRemoveEventHandler(PKey.ComboBox.SelectedItemChanged)
-
-  interface ITerminalElement
-
 type internal DatePickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -1651,6 +1568,42 @@ type internal LinearRangeTerminalElement(props: Props) =
 
   interface ITerminalElement
 
+type internal LinkTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "Link"
+
+  override _.NewView() = new Link()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let view = terminalElement.View :?> Link
+
+    // Properties
+    props |> Props.tryFind PKey.Link.Url |> Option.iter (fun v -> view.Url <- v)
+
+    // Events
+    terminalElement.TrySetEventHandler(PKey.Link.UrlChanged, view.UrlChanged)
+
+    terminalElement.TrySetEventHandler(PKey.Link.UrlChanging, view.UrlChanging)
+
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let view = terminalElement.View :?> Link
+
+    // Properties
+    props |> Props.tryFind PKey.Link.Url |> Option.iter (fun _ -> view.Url <- "")
+
+    // Events
+    terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
+    terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
+
+  interface ITerminalElement
+
 type internal ListViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -1681,10 +1634,6 @@ type internal ListViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ListView.Source
     |> Option.iter (fun v -> view.Source <- v)
-
-    props
-    |> Props.tryFind PKey.ListView.TopItem
-    |> Option.iter (fun v -> view.TopItem <- v)
 
     props
     |> Props.tryFind PKey.ListView.Value
@@ -1724,10 +1673,6 @@ type internal ListViewTerminalElement(props: Props) =
     props
     |> Props.tryFind PKey.ListView.Source
     |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.TopItem
-    |> Option.iter (fun _ -> view.TopItem <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.ListView.Value
@@ -3129,8 +3074,7 @@ type internal MenuBarItemTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.MenuBarItem.PopoverMenu_element.key
-      PKey.MenuBarItem.SubMenu_element.key ]
+    [ PKey.MenuBarItem.PopoverMenu_element.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3147,11 +3091,9 @@ type internal MenuBarItemTerminalElement(props: Props) =
     |> Props.tryFind PKey.MenuBarItem.PopoverMenuOpen
     |> Option.iter (fun v -> view.PopoverMenuOpen <- v)
 
-    props
-    |> Props.tryFind PKey.MenuBarItem.SubMenu
-    |> Option.iter (fun v -> view.SubMenu <- v)
-
     // Events
+    terminalElement.TrySetEventHandler(PKey.MenuBarItem.MenuOpenChanged, view.MenuOpenChanged)
+
     terminalElement.TrySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3168,11 +3110,8 @@ type internal MenuBarItemTerminalElement(props: Props) =
     |> Props.tryFind PKey.MenuBarItem.PopoverMenuOpen
     |> Option.iter (fun _ -> view.PopoverMenuOpen <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.MenuBarItem.SubMenu
-    |> Option.iter (fun _ -> view.SubMenu <- Unchecked.defaultof<_>)
-
     // Events
+    terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
     terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
 
   interface IMenuItemTerminalElement
@@ -3647,59 +3586,35 @@ type internal TextFieldTerminalElement(props: Props) =
 
   interface ITerminalElement
 
-type internal DateFieldTerminalElement(props: Props) =
+type internal DropDownListTerminalElement(props: Props) =
   inherit TextFieldTerminalElement(props)
 
-  override _.Name = "DateField"
+  override _.Name = "DropDownList"
 
-  override _.NewView() = new DateField()
+  override _.NewView() = new DropDownList()
 
   override _.SetAsChildOfParentView = true
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let view = terminalElement.View :?> DateField
+    let view = terminalElement.View :?> DropDownList
 
     // Properties
     props
-    |> Props.tryFind PKey.DateField.Culture
-    |> Option.iter (fun v -> view.Culture <- v)
-
-    props
-    |> Props.tryFind PKey.DateField.InsertionPoint
-    |> Option.iter (fun v -> view.InsertionPoint <- v)
-
-    props
-    |> Props.tryFind PKey.DateField.Value
-    |> Option.iter (fun v -> view.Value <- v)
-
-    // Events
-    terminalElement.TrySetEventHandler(PKey.DateField.ValueChanged, view.ValueChanged)
-
-    terminalElement.TrySetEventHandler(PKey.DateField.ValueChanging, view.ValueChanging)
+    |> Props.tryFind PKey.DropDownList.Source
+    |> Option.iter (fun v -> view.Source <- v)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let view = terminalElement.View :?> DateField
+    let view = terminalElement.View :?> DropDownList
 
     // Properties
     props
-    |> Props.tryFind PKey.DateField.Culture
-    |> Option.iter (fun _ -> view.Culture <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.DropDownList.Source
+    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.DateField.InsertionPoint
-    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.DateField.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    terminalElement.TryRemoveEventHandler(PKey.DateField.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.DateField.ValueChanging)
 
   interface ITerminalElement
 
@@ -3726,6 +3641,17 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     |> Props.tryFind PKey.TextValidateField.Text
     |> Option.iter (fun v -> view.Text <- v)
 
+    props
+    |> Props.tryFind PKey.TextValidateField.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+    // Events
+    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanged, view.ValueChanged)
+
+    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChangedUntyped, view.ValueChangedUntyped)
+
+    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanging, view.ValueChanging)
+
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
@@ -3740,6 +3666,65 @@ type internal TextValidateFieldTerminalElement(props: Props) =
     |> Props.tryFind PKey.TextValidateField.Text
     |> Option.iter (fun _ -> view.Text <- "")
 
+    props
+    |> Props.tryFind PKey.TextValidateField.Value
+    |> Option.iter (fun _ -> view.Value <- "")
+
+    // Events
+    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
+    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
+
+  interface ITerminalElement
+
+type internal DateEditorTerminalElement(props: Props) =
+  inherit TextValidateFieldTerminalElement(props)
+
+  override _.Name = "DateEditor"
+
+  override _.NewView() = new DateEditor()
+
+  override _.SetAsChildOfParentView = true
+
+  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    base.SetProps(terminalElement, props)
+
+    let view = terminalElement.View :?> DateEditor
+
+    // Properties
+    props
+    |> Props.tryFind PKey.DateEditor.Format
+    |> Option.iter (fun v -> view.Format <- v)
+
+    props
+    |> Props.tryFind PKey.DateEditor.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+    // Events
+    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanged, view.ValueChanged)
+
+    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChangedUntyped, view.ValueChangedUntyped)
+
+    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanging, view.ValueChanging)
+
+  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    base.RemoveProps(terminalElement, props)
+
+    let view = terminalElement.View :?> DateEditor
+
+    // Properties
+    props
+    |> Props.tryFind PKey.DateEditor.Format
+    |> Option.iter (fun _ -> view.Format <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.DateEditor.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+    // Events
+    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
+    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
 
   interface ITerminalElement
 
@@ -3918,59 +3903,54 @@ type internal TextViewTerminalElement(props: Props) =
 
   interface ITerminalElement
 
-type internal TimeFieldTerminalElement(props: Props) =
-  inherit TextFieldTerminalElement(props)
+type internal TimeEditorTerminalElement(props: Props) =
+  inherit TextValidateFieldTerminalElement(props)
 
-  override _.Name = "TimeField"
+  override _.Name = "TimeEditor"
 
-  override _.NewView() = new TimeField()
+  override _.NewView() = new TimeEditor()
 
   override _.SetAsChildOfParentView = true
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
 
-    let view = terminalElement.View :?> TimeField
+    let view = terminalElement.View :?> TimeEditor
 
     // Properties
     props
-    |> Props.tryFind PKey.TimeField.InsertionPoint
-    |> Option.iter (fun v -> view.InsertionPoint <- v)
+    |> Props.tryFind PKey.TimeEditor.Format
+    |> Option.iter (fun v -> view.Format <- v)
 
     props
-    |> Props.tryFind PKey.TimeField.IsShortFormat
-    |> Option.iter (fun v -> view.IsShortFormat <- v)
-
-    props
-    |> Props.tryFind PKey.TimeField.Value
+    |> Props.tryFind PKey.TimeEditor.Value
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TimeField.ValueChanged, view.ValueChanged)
+    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TimeField.ValueChanging, view.ValueChanging)
+    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChangedUntyped, view.ValueChangedUntyped)
+
+    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanging, view.ValueChanging)
 
   override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.RemoveProps(terminalElement, props)
 
-    let view = terminalElement.View :?> TimeField
+    let view = terminalElement.View :?> TimeEditor
 
     // Properties
     props
-    |> Props.tryFind PKey.TimeField.InsertionPoint
-    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.TimeEditor.Format
+    |> Option.iter (fun _ -> view.Format <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.TimeField.IsShortFormat
-    |> Option.iter (fun _ -> view.IsShortFormat <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TimeField.Value
+    |> Props.tryFind PKey.TimeEditor.Value
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TimeField.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TimeField.ValueChanging)
+    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
+    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
+    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
 
   interface ITerminalElement
 

@@ -23,15 +23,14 @@ let init () : Model * Cmd<TerminalMsg<Msg>> =
 
   model, Cmd.none
 
-let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>> =
+let update (msg: Msg) (model: Model) : Model * Cmd<TerminalMsg<Msg>> =
   match msg with
-  | Msg(ThemeIndexChanged index) ->
+  | ThemeIndexChanged index ->
     ThemeManager.Theme <- model.AvailableThemes[index]
 
     { model with
         SelectedThemeIndex = index },
     Cmd.none
-  | _ -> model, Cmd.none
 
 let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
   let menuBar =

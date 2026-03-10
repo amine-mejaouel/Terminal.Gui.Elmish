@@ -44,13 +44,13 @@ let _component (set: IProps -> unit) =
               View.Button(fun p ->
                 p.Text "Button 1: Click to test changing the Terminal Element !"
 
-                p.Accepting(fun e -> dispatch (ChangeDisplayedButton Button2)))
+                p.Accepting(fun e -> dispatch (TerminalMsg.ofMsg (ChangeDisplayedButton Button2))))
             else
               View.Button(fun p ->
                 p.Text "Button 2: Click to test changing the Terminal Element !"
                 p.ShadowStyle ShadowStyle.Transparent
 
-                p.Accepting(fun e -> dispatch (ChangeDisplayedButton Button1)))
+                p.Accepting(fun e -> dispatch (TerminalMsg.ofMsg (ChangeDisplayedButton Button1))))
 
           let second =
             View.Label(fun p ->

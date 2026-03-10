@@ -24,7 +24,7 @@ type Msg = unit
 
 let init _ = (), Cmd.none
 
-let update (msg: TerminalMsg<Msg>) (model: Model) : Model * Cmd<TerminalMsg<Msg>> = (), Cmd.none
+let update (msg: Msg) (model: Model) : Model * Cmd<TerminalMsg<Msg>> = (), Cmd.none
 
 let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement =
   View.Runnable

@@ -272,6 +272,9 @@ type ViewProps() =
   member this.KeyDownNotHandled(handler: Terminal.Gui.Input.Key -> unit) =
     this.props |> Props.add (PKey.View.KeyDownNotHandled, handler)
 
+  member this.KeyUp(handler: Terminal.Gui.Input.Key -> unit) =
+    this.props |> Props.add (PKey.View.KeyUp, handler)
+
   member this.MouseEnter(handler: System.ComponentModel.CancelEventArgs -> unit) =
     this.props |> Props.add (PKey.View.MouseEnter, handler)
 
@@ -579,46 +582,6 @@ type ColorPicker16Props() =
   member this.ValueChanging(handler: ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit) =
     this.props |> Props.add (PKey.ColorPicker16.ValueChanging, handler)
 
-type ComboBoxProps() =
-  inherit ViewProps()
-  // Properties
-  member this.HideDropdownListOnClick(value: bool) =
-    this.props |> Props.add (PKey.ComboBox.HideDropdownListOnClick, value)
-
-
-  member this.ReadOnly(value: bool) =
-    this.props |> Props.add (PKey.ComboBox.ReadOnly, value)
-
-
-  member this.SearchText(value: string) =
-    this.props |> Props.add (PKey.ComboBox.SearchText, value)
-
-
-  member this.SelectedItem(value: int) =
-    this.props |> Props.add (PKey.ComboBox.SelectedItem, value)
-
-
-  member this.Source(value: Terminal.Gui.Views.IListDataSource) =
-    this.props |> Props.add (PKey.ComboBox.Source, value)
-
-
-  member this.Text(value: string) =
-    this.props |> Props.add (PKey.ComboBox.Text, value)
-
-
-  // Events
-  member this.Collapsed(handler: System.EventArgs -> unit) =
-    this.props |> Props.add (PKey.ComboBox.Collapsed, handler)
-
-  member this.Expanded(handler: System.EventArgs -> unit) =
-    this.props |> Props.add (PKey.ComboBox.Expanded, handler)
-
-  member this.OpenSelectedItem(handler: Terminal.Gui.Views.ListViewItemEventArgs -> unit) =
-    this.props |> Props.add (PKey.ComboBox.OpenSelectedItem, handler)
-
-  member this.SelectedItemChanged(handler: Terminal.Gui.Views.ListViewItemEventArgs -> unit) =
-    this.props |> Props.add (PKey.ComboBox.SelectedItemChanged, handler)
-
 type DatePickerProps() =
   inherit ViewProps()
   // Properties
@@ -855,6 +818,20 @@ type LinearRangeProps<'T>() =
 type LinearRangeProps() =
   inherit LinearRangeProps<System.Object>()
 
+type LinkProps() =
+  inherit ViewProps()
+  // Properties
+  member this.Url(value: string) =
+    this.props |> Props.add (PKey.Link.Url, value)
+
+
+  // Events
+  member this.UrlChanged(handler: ValueChangedEventArgs<string> -> unit) =
+    this.props |> Props.add (PKey.Link.UrlChanged, handler)
+
+  member this.UrlChanging(handler: ValueChangingEventArgs<string> -> unit) =
+    this.props |> Props.add (PKey.Link.UrlChanging, handler)
+
 type ListViewProps() =
   inherit ViewProps()
   // Properties
@@ -872,10 +849,6 @@ type ListViewProps() =
 
   member this.Source(value: Terminal.Gui.Views.IListDataSource) =
     this.props |> Props.add (PKey.ListView.Source, value)
-
-
-  member this.TopItem(value: int) =
-    this.props |> Props.add (PKey.ListView.TopItem, value)
 
 
   member this.Value(value: Nullable<int>) =
@@ -1438,13 +1411,10 @@ type MenuBarItemProps() =
     this.props |> Props.add (PKey.MenuBarItem.PopoverMenuOpen, value)
 
 
-  member this.SubMenu(value: Terminal.Gui.Views.Menu) =
-    this.props |> Props.add (PKey.MenuBarItem.SubMenu, value)
-
-  member this.SubMenu(value: IMenuTerminalElement) =
-    this.props |> Props.add (PKey.MenuBarItem.SubMenu_element, value)
-
   // Events
+  member this.MenuOpenChanged(handler: ValueChangedEventArgs<bool> -> unit) =
+    this.props |> Props.add (PKey.MenuBarItem.MenuOpenChanged, handler)
+
   member this.PopoverMenuOpenChanged(handler: ValueChangedEventArgs<bool> -> unit) =
     this.props |> Props.add (PKey.MenuBarItem.PopoverMenuOpenChanged, handler)
 
@@ -1648,27 +1618,12 @@ type TextFieldProps() =
   member this.ValueChanging(handler: ValueChangingEventArgs<string> -> unit) =
     this.props |> Props.add (PKey.TextField.ValueChanging, handler)
 
-type DateFieldProps() =
+type DropDownListProps() =
   inherit TextFieldProps()
   // Properties
-  member this.Culture(value: System.Globalization.CultureInfo) =
-    this.props |> Props.add (PKey.DateField.Culture, value)
+  member this.Source(value: Terminal.Gui.Views.IListDataSource) =
+    this.props |> Props.add (PKey.DropDownList.Source, value)
 
-
-  member this.InsertionPoint(value: int) =
-    this.props |> Props.add (PKey.DateField.InsertionPoint, value)
-
-
-  member this.Value(value: Nullable<System.DateTime>) =
-    this.props |> Props.add (PKey.DateField.Value, value)
-
-
-  // Events
-  member this.ValueChanged(handler: ValueChangedEventArgs<Nullable<System.DateTime>> -> unit) =
-    this.props |> Props.add (PKey.DateField.ValueChanged, handler)
-
-  member this.ValueChanging(handler: ValueChangingEventArgs<Nullable<System.DateTime>> -> unit) =
-    this.props |> Props.add (PKey.DateField.ValueChanging, handler)
 
 type TextValidateFieldProps() =
   inherit ViewProps()
@@ -1680,6 +1635,41 @@ type TextValidateFieldProps() =
   member this.Text(value: string) =
     this.props |> Props.add (PKey.TextValidateField.Text, value)
 
+
+  member this.Value(value: string) =
+    this.props |> Props.add (PKey.TextValidateField.Value, value)
+
+
+  // Events
+  member this.ValueChanged(handler: ValueChangedEventArgs<string> -> unit) =
+    this.props |> Props.add (PKey.TextValidateField.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.TextValidateField.ValueChangedUntyped, handler)
+
+  member this.ValueChanging(handler: ValueChangingEventArgs<string> -> unit) =
+    this.props |> Props.add (PKey.TextValidateField.ValueChanging, handler)
+
+type DateEditorProps() =
+  inherit TextValidateFieldProps()
+  // Properties
+  member this.Format(value: System.Globalization.DateTimeFormatInfo) =
+    this.props |> Props.add (PKey.DateEditor.Format, value)
+
+
+  member this.Value(value: System.DateTime) =
+    this.props |> Props.add (PKey.DateEditor.Value, value)
+
+
+  // Events
+  member this.ValueChanged(handler: ValueChangedEventArgs<System.DateTime> -> unit) =
+    this.props |> Props.add (PKey.DateEditor.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.DateEditor.ValueChangedUntyped, handler)
+
+  member this.ValueChanging(handler: ValueChangingEventArgs<System.DateTime> -> unit) =
+    this.props |> Props.add (PKey.DateEditor.ValueChanging, handler)
 
 type TextViewProps() =
   inherit ViewProps()
@@ -1767,27 +1757,26 @@ type TextViewProps() =
   member this.UnwrappedCursorPositionChanged(handler: System.Drawing.Point -> unit) =
     this.props |> Props.add (PKey.TextView.UnwrappedCursorPositionChanged, handler)
 
-type TimeFieldProps() =
-  inherit TextFieldProps()
+type TimeEditorProps() =
+  inherit TextValidateFieldProps()
   // Properties
-  member this.InsertionPoint(value: int) =
-    this.props |> Props.add (PKey.TimeField.InsertionPoint, value)
-
-
-  member this.IsShortFormat(value: bool) =
-    this.props |> Props.add (PKey.TimeField.IsShortFormat, value)
+  member this.Format(value: System.Globalization.DateTimeFormatInfo) =
+    this.props |> Props.add (PKey.TimeEditor.Format, value)
 
 
   member this.Value(value: System.TimeSpan) =
-    this.props |> Props.add (PKey.TimeField.Value, value)
+    this.props |> Props.add (PKey.TimeEditor.Value, value)
 
 
   // Events
   member this.ValueChanged(handler: ValueChangedEventArgs<System.TimeSpan> -> unit) =
-    this.props |> Props.add (PKey.TimeField.ValueChanged, handler)
+    this.props |> Props.add (PKey.TimeEditor.ValueChanged, handler)
+
+  member this.ValueChangedUntyped(handler: ValueChangedEventArgs<System.Object> -> unit) =
+    this.props |> Props.add (PKey.TimeEditor.ValueChangedUntyped, handler)
 
   member this.ValueChanging(handler: ValueChangingEventArgs<System.TimeSpan> -> unit) =
-    this.props |> Props.add (PKey.TimeField.ValueChanging, handler)
+    this.props |> Props.add (PKey.TimeEditor.ValueChanging, handler)
 
 type TreeViewProps<'T when 'T: not struct>() =
   inherit ViewProps()

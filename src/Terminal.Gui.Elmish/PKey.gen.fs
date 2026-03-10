@@ -160,6 +160,8 @@ module internal PKey =
     member val KeyDownNotHandled: PropKey<Terminal.Gui.Input.Key -> unit> =
       PropKey.Create.event "View.KeyDownNotHandled_event"
 
+    member val KeyUp: PropKey<Terminal.Gui.Input.Key -> unit> = PropKey.Create.event "View.KeyUp_event"
+
     member val MouseEnter: PropKey<System.ComponentModel.CancelEventArgs -> unit> =
       PropKey.Create.event "View.MouseEnter_event"
 
@@ -379,27 +381,6 @@ module internal PKey =
     member val ValueChanging: PropKey<ValueChangingEventArgs<Terminal.Gui.Drawing.ColorName16> -> unit> =
       PropKey.Create.event "ColorPicker16.ValueChanging_event"
 
-  type ComboBoxPKeys() =
-    inherit ViewPKeys()
-
-    // Properties
-    member val HideDropdownListOnClick: PropKey<bool> = PropKey.Create.simple "ComboBox.HideDropdownListOnClick"
-    member val ReadOnly: PropKey<bool> = PropKey.Create.simple "ComboBox.ReadOnly"
-    member val SearchText: PropKey<string> = PropKey.Create.simple "ComboBox.SearchText"
-    member val SelectedItem: PropKey<int> = PropKey.Create.simple "ComboBox.SelectedItem"
-    member val Source: PropKey<Terminal.Gui.Views.IListDataSource> = PropKey.Create.simple "ComboBox.Source"
-    member val Text: PropKey<string> = PropKey.Create.simple "ComboBox.Text"
-
-    // Events
-    member val Collapsed: PropKey<System.EventArgs -> unit> = PropKey.Create.event "ComboBox.Collapsed_event"
-    member val Expanded: PropKey<System.EventArgs -> unit> = PropKey.Create.event "ComboBox.Expanded_event"
-
-    member val OpenSelectedItem: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> =
-      PropKey.Create.event "ComboBox.OpenSelectedItem_event"
-
-    member val SelectedItemChanged: PropKey<Terminal.Gui.Views.ListViewItemEventArgs -> unit> =
-      PropKey.Create.event "ComboBox.SelectedItemChanged_event"
-
   type DatePickerPKeys() =
     inherit ViewPKeys()
 
@@ -554,6 +535,18 @@ module internal PKey =
     inherit LinearRangePKeys<System.Object>()
 
 
+  type LinkPKeys() =
+    inherit ViewPKeys()
+
+    // Properties
+    member val Url: PropKey<string> = PropKey.Create.simple "Link.Url"
+
+    // Events
+    member val UrlChanged: PropKey<ValueChangedEventArgs<string> -> unit> = PropKey.Create.event "Link.UrlChanged_event"
+
+    member val UrlChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
+      PropKey.Create.event "Link.UrlChanging_event"
+
   type ListViewPKeys() =
     inherit ViewPKeys()
 
@@ -562,7 +555,6 @@ module internal PKey =
     member val SelectedItem: PropKey<Nullable<int>> = PropKey.Create.simple "ListView.SelectedItem"
     member val ShowMarks: PropKey<bool> = PropKey.Create.simple "ListView.ShowMarks"
     member val Source: PropKey<Terminal.Gui.Views.IListDataSource> = PropKey.Create.simple "ListView.Source"
-    member val TopItem: PropKey<int> = PropKey.Create.simple "ListView.TopItem"
     member val Value: PropKey<Nullable<int>> = PropKey.Create.simple "ListView.Value"
 
     // Events
@@ -971,10 +963,11 @@ module internal PKey =
       PropKey.Create.subElement "MenuBarItem.PopoverMenu_element"
 
     member val PopoverMenuOpen: PropKey<bool> = PropKey.Create.simple "MenuBarItem.PopoverMenuOpen"
-    member val SubMenu: PropKey<Terminal.Gui.Views.Menu> = PropKey.Create.view "MenuBarItem.SubMenu_view"
-    member val SubMenu_element: PropKey<IMenuTerminalElement> = PropKey.Create.subElement "MenuBarItem.SubMenu_element"
 
     // Events
+    member val MenuOpenChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
+      PropKey.Create.event "MenuBarItem.MenuOpenChanged_event"
+
     member val PopoverMenuOpenChanged: PropKey<ValueChangedEventArgs<bool> -> unit> =
       PropKey.Create.event "MenuBarItem.PopoverMenuOpenChanged_event"
 
@@ -1088,20 +1081,11 @@ module internal PKey =
     member val ValueChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
       PropKey.Create.event "TextField.ValueChanging_event"
 
-  type DateFieldPKeys() =
+  type DropDownListPKeys() =
     inherit TextFieldPKeys()
 
     // Properties
-    member val Culture: PropKey<System.Globalization.CultureInfo> = PropKey.Create.simple "DateField.Culture"
-    member val InsertionPoint: PropKey<int> = PropKey.Create.simple "DateField.InsertionPoint"
-    member val Value: PropKey<Nullable<System.DateTime>> = PropKey.Create.simple "DateField.Value"
-
-    // Events
-    member val ValueChanged: PropKey<ValueChangedEventArgs<Nullable<System.DateTime>> -> unit> =
-      PropKey.Create.event "DateField.ValueChanged_event"
-
-    member val ValueChanging: PropKey<ValueChangingEventArgs<Nullable<System.DateTime>> -> unit> =
-      PropKey.Create.event "DateField.ValueChanging_event"
+    member val Source: PropKey<Terminal.Gui.Views.IListDataSource> = PropKey.Create.simple "DropDownList.Source"
 
   type TextValidateFieldPKeys() =
     inherit ViewPKeys()
@@ -1111,6 +1095,34 @@ module internal PKey =
       PropKey.Create.simple "TextValidateField.Provider"
 
     member val Text: PropKey<string> = PropKey.Create.simple "TextValidateField.Text"
+    member val Value: PropKey<string> = PropKey.Create.simple "TextValidateField.Value"
+
+    // Events
+    member val ValueChanged: PropKey<ValueChangedEventArgs<string> -> unit> =
+      PropKey.Create.event "TextValidateField.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "TextValidateField.ValueChangedUntyped_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<string> -> unit> =
+      PropKey.Create.event "TextValidateField.ValueChanging_event"
+
+  type DateEditorPKeys() =
+    inherit TextValidateFieldPKeys()
+
+    // Properties
+    member val Format: PropKey<System.Globalization.DateTimeFormatInfo> = PropKey.Create.simple "DateEditor.Format"
+    member val Value: PropKey<System.DateTime> = PropKey.Create.simple "DateEditor.Value"
+
+    // Events
+    member val ValueChanged: PropKey<ValueChangedEventArgs<System.DateTime> -> unit> =
+      PropKey.Create.event "DateEditor.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "DateEditor.ValueChangedUntyped_event"
+
+    member val ValueChanging: PropKey<ValueChangingEventArgs<System.DateTime> -> unit> =
+      PropKey.Create.event "DateEditor.ValueChanging_event"
 
   type TextViewPKeys() =
     inherit ViewPKeys()
@@ -1152,20 +1164,22 @@ module internal PKey =
     member val UnwrappedCursorPositionChanged: PropKey<System.Drawing.Point -> unit> =
       PropKey.Create.event "TextView.UnwrappedCursorPositionChanged_event"
 
-  type TimeFieldPKeys() =
-    inherit TextFieldPKeys()
+  type TimeEditorPKeys() =
+    inherit TextValidateFieldPKeys()
 
     // Properties
-    member val InsertionPoint: PropKey<int> = PropKey.Create.simple "TimeField.InsertionPoint"
-    member val IsShortFormat: PropKey<bool> = PropKey.Create.simple "TimeField.IsShortFormat"
-    member val Value: PropKey<System.TimeSpan> = PropKey.Create.simple "TimeField.Value"
+    member val Format: PropKey<System.Globalization.DateTimeFormatInfo> = PropKey.Create.simple "TimeEditor.Format"
+    member val Value: PropKey<System.TimeSpan> = PropKey.Create.simple "TimeEditor.Value"
 
     // Events
     member val ValueChanged: PropKey<ValueChangedEventArgs<System.TimeSpan> -> unit> =
-      PropKey.Create.event "TimeField.ValueChanged_event"
+      PropKey.Create.event "TimeEditor.ValueChanged_event"
+
+    member val ValueChangedUntyped: PropKey<ValueChangedEventArgs<System.Object> -> unit> =
+      PropKey.Create.event "TimeEditor.ValueChangedUntyped_event"
 
     member val ValueChanging: PropKey<ValueChangingEventArgs<System.TimeSpan> -> unit> =
-      PropKey.Create.event "TimeField.ValueChanging_event"
+      PropKey.Create.event "TimeEditor.ValueChanging_event"
 
   type TreeViewPKeys<'T when 'T: not struct>() =
     inherit ViewPKeys()
@@ -1286,7 +1300,6 @@ module internal PKey =
   let CheckBox = CheckBoxPKeys()
   let ColorPicker = ColorPickerPKeys()
   let ColorPicker16 = ColorPicker16PKeys()
-  let ComboBox = ComboBoxPKeys()
   let DatePicker = DatePickerPKeys()
   let FrameView = FrameViewPKeys()
   let GraphView = GraphViewPKeys()
@@ -1296,6 +1309,7 @@ module internal PKey =
   let Line = LinePKeys()
   let LinearRange<'T> = LinearRangePKeys<'T>()
   let LinearRange' = LinearRangePKeys()
+  let Link = LinkPKeys()
   let ListView = ListViewPKeys()
   let Margin = MarginPKeys()
   let Menu = MenuPKeys()
@@ -1347,10 +1361,11 @@ module internal PKey =
   let TabView = TabViewPKeys()
   let TableView = TableViewPKeys()
   let TextField = TextFieldPKeys()
-  let DateField = DateFieldPKeys()
+  let DropDownList = DropDownListPKeys()
   let TextValidateField = TextValidateFieldPKeys()
+  let DateEditor = DateEditorPKeys()
   let TextView = TextViewPKeys()
-  let TimeField = TimeFieldPKeys()
+  let TimeEditor = TimeEditorPKeys()
   let TreeView<'T when 'T: not struct> = TreeViewPKeys<'T>()
   let TreeView' = TreeViewPKeys()
   let Window = WindowPKeys()

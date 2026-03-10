@@ -95,16 +95,6 @@ type View =
     viewProps.Children children
     new ColorPicker16TerminalElement(viewProps.props) :> ITerminalElement
 
-  static member ComboBox(set: ComboBoxProps -> unit) =
-    let viewProps = ComboBoxProps()
-    set viewProps
-    new ComboBoxTerminalElement(viewProps.props) :> ITerminalElement
-
-  static member ComboBox(children: ITerminalElement list) =
-    let viewProps = ComboBoxProps()
-    viewProps.Children children
-    new ComboBoxTerminalElement(viewProps.props) :> ITerminalElement
-
   static member DatePicker(set: DatePickerProps -> unit) =
     let viewProps = DatePickerProps()
     set viewProps
@@ -194,6 +184,16 @@ type View =
     let viewProps = LinearRangeProps()
     viewProps.Children children
     new LinearRangeTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Link(set: LinkProps -> unit) =
+    let viewProps = LinkProps()
+    set viewProps
+    new LinkTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Link(children: ITerminalElement list) =
+    let viewProps = LinkProps()
+    viewProps.Children children
+    new LinkTerminalElement(viewProps.props) :> ITerminalElement
 
   static member ListView(set: ListViewProps -> unit) =
     let viewProps = ListViewProps()
@@ -563,15 +563,15 @@ type View =
     viewProps.Children children
     new TextFieldTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member DateField(set: DateFieldProps -> unit) =
-    let viewProps = DateFieldProps()
+  static member DropDownList(set: DropDownListProps -> unit) =
+    let viewProps = DropDownListProps()
     set viewProps
-    new DateFieldTerminalElement(viewProps.props) :> ITerminalElement
+    new DropDownListTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member DateField(children: ITerminalElement list) =
-    let viewProps = DateFieldProps()
+  static member DropDownList(children: ITerminalElement list) =
+    let viewProps = DropDownListProps()
     viewProps.Children children
-    new DateFieldTerminalElement(viewProps.props) :> ITerminalElement
+    new DropDownListTerminalElement(viewProps.props) :> ITerminalElement
 
   static member TextValidateField(set: TextValidateFieldProps -> unit) =
     let viewProps = TextValidateFieldProps()
@@ -583,6 +583,16 @@ type View =
     viewProps.Children children
     new TextValidateFieldTerminalElement(viewProps.props) :> ITerminalElement
 
+  static member DateEditor(set: DateEditorProps -> unit) =
+    let viewProps = DateEditorProps()
+    set viewProps
+    new DateEditorTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member DateEditor(children: ITerminalElement list) =
+    let viewProps = DateEditorProps()
+    viewProps.Children children
+    new DateEditorTerminalElement(viewProps.props) :> ITerminalElement
+
   static member TextView(set: TextViewProps -> unit) =
     let viewProps = TextViewProps()
     set viewProps
@@ -593,15 +603,15 @@ type View =
     viewProps.Children children
     new TextViewTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member TimeField(set: TimeFieldProps -> unit) =
-    let viewProps = TimeFieldProps()
+  static member TimeEditor(set: TimeEditorProps -> unit) =
+    let viewProps = TimeEditorProps()
     set viewProps
-    new TimeFieldTerminalElement(viewProps.props) :> ITerminalElement
+    new TimeEditorTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member TimeField(children: ITerminalElement list) =
-    let viewProps = TimeFieldProps()
+  static member TimeEditor(children: ITerminalElement list) =
+    let viewProps = TimeEditorProps()
     viewProps.Children children
-    new TimeFieldTerminalElement(viewProps.props) :> ITerminalElement
+    new TimeEditorTerminalElement(viewProps.props) :> ITerminalElement
 
   static member TreeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
     let viewProps = TreeViewProps<'T>()

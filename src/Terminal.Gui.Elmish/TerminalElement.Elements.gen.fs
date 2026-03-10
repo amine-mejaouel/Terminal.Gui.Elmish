@@ -1976,7 +1976,7 @@ type internal PopoverImplTerminalElement(props: Props) =
   override _.NewView() =
     failwith "Cannot instantiate abstract view type PopoverImpl"
 
-  override _.SetAsChildOfParentView = true
+  override _.SetAsChildOfParentView = false
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -2025,7 +2025,7 @@ type internal PopoverTerminalElement<'TView, 'TResult
 
   override _.NewView() = new Popover<'TView, 'TResult>()
 
-  override _.SetAsChildOfParentView = true
+  override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
     [ PKey.Popover<'TView, 'TResult>.ContentView_element.key ]
@@ -2074,7 +2074,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
 
   override _.NewView() = new PopoverMenu()
 
-  override _.SetAsChildOfParentView = true
+  override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
     [ PKey.PopoverMenu.Root_element.key ] |> List.append base.SubElements_PropKeys

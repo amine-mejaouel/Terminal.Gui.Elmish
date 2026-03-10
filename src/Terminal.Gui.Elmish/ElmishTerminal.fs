@@ -57,19 +57,15 @@ module ElmishTerminal =
   /// </summary>
   type internal TerminalModel<'model>(application: IApplication, origin: Origin, clientModel: 'model) =
     let terminalElementState = TerminalElementState()
-    let termination: TaskCompletionSource = TaskCompletionSource()
 
     member val ClientModel = clientModel with get, set
     member this.Application = application
     member this.Origin = origin
-    member this.Termination = termination
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 
     /// Disposes element tree and signals termination.
-    member this.Dispose() =
-      terminalElementState.Dispose()
-      termination.SetResult()
+    member this.Dispose() = terminalElementState.Dispose()
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
@@ -342,9 +338,7 @@ module ElmishTerminal =
 
   let runTerminal (ElmishTerminalProgram program) =
 
-    let waitForStart = TaskCompletionSource()
-    let stopped = TaskCompletionSource()
-    let mutable waitForTermination = null
+    let applicationStopped = TaskCompletionSource() // Rethrow any exception from the application thread.
 
     let runTerminal (model: TerminalModel<_>) =
       let start dispatch =
@@ -364,21 +358,17 @@ module ElmishTerminal =
                   // Run return after Application.RequestStop is called in terminate.
                   model.Application.Run(rootView :?> Runnable) |> ignore
                 finally
-                  (model :> IDisposable).Dispose()
+                  model.Dispose()
                   // 2. Dispose the IApplication (restores terminal, cleans up driver)
                   model.Application.Dispose()
 
-                stopped.SetResult()
+                applicationStopped.SetResult()
                with ex ->
-                 stopped.SetException ex
+                 applicationStopped.SetException ex
 
-                 if not model.Termination.Task.IsCompleted then
-                   model.Termination.SetResult()),
+              ),
               TaskCreationOptions.LongRunning)
             |> ignore
-
-            waitForStart.SetResult()
-            waitForTermination <- model.Termination
 
         }
         |> Task.wait
@@ -396,5 +386,4 @@ module ElmishTerminal =
     |> Program.withTermination (fun msg -> msg = Terminate) terminate
     |> Program.run
 
-    waitForStart.Task.GetAwaiter().GetResult()
-    Task.WhenAll(stopped.Task, waitForTermination.Task).GetAwaiter().GetResult()
+    Task.WhenAll(applicationStopped.Task).GetAwaiter().GetResult()

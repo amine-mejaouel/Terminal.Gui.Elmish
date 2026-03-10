@@ -73,6 +73,10 @@ let removePropsCode (view: ViewMetadata) =
         let defaultValue =
           if prop.PropertyInfo.PropertyType = typeof<string> then
             "\"\""
+          else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.Input.Key> then
+            "Terminal.Gui.Input.Key.Empty"
+          else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.ViewBase.View> then
+            "new View()"
           else
             "Unchecked.defaultof<_>"
 

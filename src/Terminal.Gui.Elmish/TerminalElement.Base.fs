@@ -200,12 +200,12 @@ type internal ViewBackedTerminalElement(props: Props) =
       Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
 #endif
 
-      // Here, the "children" views are added to their parent
+      // Here, the "children" views are added to their parent.
       match node.TerminalElement with
-      | ElmishComponentTE _ -> ()
-      | ViewTE te ->
+      | ViewTE te when te.Origin.IsChild ->
         if te.SetAsChildOfParentView then
           te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
+      | _ -> ()
 
     traverseTree
       [ { TerminalElement = TerminalElement.from this

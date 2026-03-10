@@ -66,14 +66,13 @@ module ElmishTerminal =
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 
+    /// Disposes element tree and signals termination.
+    member this.Dispose() =
+      terminalElementState.Dispose()
+      termination.SetResult()
+
     interface IDisposable with
-      member this.Dispose() =
-        terminalElementState.Dispose()
-
-        if not origin.IsElmishComponent then
-          application.RequestStop()
-
-        termination.SetResult()
+      member this.Dispose() = this.Dispose()
 
 
   module internal OuterModel =
@@ -165,7 +164,13 @@ module ElmishTerminal =
     }
     |> Task.wait
 
-  let internal terminate (model: TerminalModel<_>) = (model :> IDisposable).Dispose()
+  let internal terminate (model: TerminalModel<_>) =
+    match model.Origin with
+    | Origin.Root ->
+      // For root apps, signal stop and let runTerminal handle cleanup after Run() returns
+      model.Application.RequestStop()
+    | Origin.ElmishComponent _ -> (model :> IDisposable).Dispose()
+    | _ -> failwith "Internal error: unexpected Origin in termination"
 
   type internal Subscription<'model, 'msg> =
     { SubId: SubId
@@ -338,7 +343,7 @@ module ElmishTerminal =
   let runTerminal (ElmishTerminalProgram program) =
 
     let waitForStart = TaskCompletionSource()
-    let running = TaskCompletionSource()
+    let stopped = TaskCompletionSource()
     let mutable waitForTermination = null
 
     let runTerminal (model: TerminalModel<_>) =
@@ -354,13 +359,21 @@ module ElmishTerminal =
           else
             Task.Run(fun () ->
               (try
-                model.Application.Init() |> ignore
+                try
+                  model.Application.Init() |> ignore
+                  // Run return after Application.RequestStop is called in terminate.
+                  model.Application.Run(rootView :?> Runnable) |> ignore
+                finally
+                  (model :> IDisposable).Dispose()
+                  // 2. Dispose the IApplication (restores terminal, cleans up driver)
+                  model.Application.Dispose()
 
-                model.Application.Run(rootView :?> Runnable) |> ignore
-
-                running.SetResult()
+                stopped.SetResult()
                with ex ->
-                 running.SetException ex),
+                 stopped.SetException ex
+
+                 if not model.Termination.Task.IsCompleted then
+                   model.Termination.SetResult()),
               TaskCreationOptions.LongRunning)
             |> ignore
 
@@ -384,4 +397,4 @@ module ElmishTerminal =
     |> Program.run
 
     waitForStart.Task.GetAwaiter().GetResult()
-    Task.WhenAll(running.Task, waitForTermination.Task).GetAwaiter().GetResult()
+    Task.WhenAll(stopped.Task, waitForTermination.Task).GetAwaiter().GetResult()

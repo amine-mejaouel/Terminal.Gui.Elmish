@@ -34,6 +34,6 @@ let _component (set: IProps -> unit) =
     View.Label(fun p ->
       p.Text model.Text
       props.y_value |> Option.iter p.Y
-      p.Activating(fun _ -> dispatch ChangeText))
+      p.Accepting(fun _ -> dispatch ChangeText))
 
   ElmishTerminal.mkSimpleComponent "SampleComponent" init update view

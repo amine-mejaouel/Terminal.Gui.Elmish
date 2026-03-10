@@ -2,7 +2,6 @@ module TreeDiffUpdateTesterComponent
 
 open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
-open Terminal.Gui.Input
 open Terminal.Gui.ViewBase
 
 type DisplayedButton =
@@ -45,23 +44,13 @@ let _component (set: IProps -> unit) =
               View.Button(fun p ->
                 p.Text "Button 1: Click to test changing the Terminal Element !"
 
-                p.Activating(fun e ->
-                  match e.Context.Binding with
-                  | :? MouseBinding as mb when mb.MouseEvent.Flags.HasFlag MouseFlags.LeftButtonClicked ->
-                    dispatch (ChangeDisplayedButton Button2)
-                    e.Handled <- true
-                  | _ -> ()))
+                p.Accepting(fun e -> dispatch (ChangeDisplayedButton Button2)))
             else
               View.Button(fun p ->
                 p.Text "Button 2: Click to test changing the Terminal Element !"
                 p.ShadowStyle ShadowStyle.Transparent
 
-                p.Activating(fun e ->
-                  match e.Context.Binding with
-                  | :? MouseBinding as mb when mb.MouseEvent.Flags.HasFlag MouseFlags.LeftButtonClicked ->
-                    dispatch (ChangeDisplayedButton Button1)
-                    e.Handled <- true
-                  | _ -> ()))
+                p.Accepting(fun e -> dispatch (ChangeDisplayedButton Button1)))
 
           let second =
             View.Label(fun p ->

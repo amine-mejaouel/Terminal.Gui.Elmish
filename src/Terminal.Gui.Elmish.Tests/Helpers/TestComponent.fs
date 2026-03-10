@@ -37,6 +37,6 @@ let create (set: IProps -> unit) =
         [ View.Label(fun p -> p.Text(sprintf "Counter: %d" model.Counter))
           View.Button(fun p ->
             p.Text "Increment"
-            p.Activating(fun _ -> dispatch Increment)) ])
+            p.Accepting(fun _ -> dispatch Increment)) ])
 
   ElmishTester.mkTestableComponent "TestComponent" init update view

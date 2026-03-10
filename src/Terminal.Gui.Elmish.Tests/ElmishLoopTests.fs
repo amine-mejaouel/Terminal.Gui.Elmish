@@ -28,11 +28,11 @@ let ``Button instance, used as relative position, should be collected after it's
               if model.DisplayedView = Button then
                 View.Button(fun p ->
                   p.Text "Click to test changing the Terminal Element type!"
-                  p.Activating(fun _ -> dispatch (ChangeView Label)))
+                  p.Accepting(fun _ -> dispatch (ChangeView Label)))
               else
                 View.Label(fun p ->
                   p.Text "Click to test changing the Terminal Element type!"
-                  p.Activating(fun _ -> dispatch (ChangeView Button)))
+                  p.Accepting(fun _ -> dispatch (ChangeView Button)))
 
             let second =
               View.Label(fun p ->

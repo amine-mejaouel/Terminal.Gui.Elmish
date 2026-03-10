@@ -316,7 +316,7 @@ type internal ViewTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.View.DefaultAcceptView
-    |> Option.iter (fun _ -> view.DefaultAcceptView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.DefaultAcceptView <- new View())
 
     props
     |> Props.tryFind PKey.View.Enabled
@@ -336,7 +336,7 @@ type internal ViewTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.View.HotKey
-    |> Option.iter (fun _ -> view.HotKey <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.HotKey <- Terminal.Gui.Input.Key.Empty)
 
     props
     |> Props.tryFind PKey.View.HotKeySpecifier
@@ -538,7 +538,7 @@ type internal AdornmentTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.Adornment.Parent
-    |> Option.iter (fun _ -> view.Parent <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Parent <- new View())
 
     props
     |> Props.tryFind PKey.Adornment.SuperViewRendersLineCanvas
@@ -1814,7 +1814,7 @@ type internal MenuBarTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.MenuBar.Key
-    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
 
     // Events
     terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
@@ -2053,7 +2053,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
     // Properties
     props
     |> Props.tryFind PKey.PopoverMenu.Key
-    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
 
     props
     |> Props.tryFind PKey.PopoverMenu.MouseFlags
@@ -2995,7 +2995,7 @@ type internal ShortcutTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.Shortcut.CommandView
-    |> Option.iter (fun _ -> view.CommandView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.CommandView <- new View())
 
     props
     |> Props.tryFind PKey.Shortcut.HelpText
@@ -3003,7 +3003,7 @@ type internal ShortcutTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.Shortcut.Key
-    |> Option.iter (fun _ -> view.Key <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
 
     props
     |> Props.tryFind PKey.Shortcut.MinimumKeyTextSize
@@ -3015,7 +3015,7 @@ type internal ShortcutTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.Shortcut.TargetView
-    |> Option.iter (fun _ -> view.TargetView <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.TargetView <- new View())
 
     props
     |> Props.tryFind PKey.Shortcut.Text
@@ -3238,7 +3238,7 @@ type internal TabTerminalElement(props: Props) =
 
     props
     |> Props.tryFind PKey.Tab.View
-    |> Option.iter (fun _ -> view.View <- Unchecked.defaultof<_>)
+    |> Option.iter (fun _ -> view.View <- new View())
 
 
   interface ITabTerminalElement

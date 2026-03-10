@@ -76,14 +76,9 @@
     <Message Text="Generating source files..." Importance="high" />
     <Exec Command="dotnet run --project ../Terminal.Gui.Elmish.Generator/Terminal.Gui.Elmish.Generator.fsproj" />
   </Target>
-  <Target
-    Name="Format auto generated code"
-    BeforeTargets="CoreCompile"
-    DependsOnTargets="Auto generate code">
+  <Target Name="Format auto generated code" BeforeTargets="CoreCompile" DependsOnTargets="Auto generate code">
     <Message Text="Formatting generated source files..." Importance="high" />
-    <Exec
-      WorkingDirectory="$(MSBuildProjectDirectory)"
-      Command="dotnet fantomas Types.gen.fs PKey.gen.fs TerminalElement.Elements.gen.fs Props.gen.fs View.gen.fs" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="dotnet fantomas Types.gen.fs PKey.gen.fs TerminalElement.Elements.gen.fs Props.gen.fs View.gen.fs" />
   </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

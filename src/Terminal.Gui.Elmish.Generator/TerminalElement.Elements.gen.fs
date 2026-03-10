@@ -90,9 +90,15 @@ let removePropsCode (view: ViewMetadata) =
     }
 
 let setAsChildOfParentView (viewType: Type) =
-  let exceptions = [ typeof<Terminal.Gui.Views.Menu> ]
+  // Menu: set via PopoverMenu.Root property, not a regular child view
+  let exactExceptions = [ typeof<Terminal.Gui.Views.Menu> ]
+  // PopoverImpl and subclasses (Popover<>, PopoverMenu): floating overlays managed by Application.Popovers
+  let assignableExceptions = [ typeof<Terminal.Gui.App.PopoverImpl> ]
 
-  exceptions |> Seq.filter (fun t -> t = viewType) |> Seq.isEmpty
+  not (
+    exactExceptions |> Seq.exists (fun t -> t = viewType)
+    || assignableExceptions |> Seq.exists (fun t -> viewType.IsAssignableTo t)
+  )
 
 let opens =
   [ "open System"

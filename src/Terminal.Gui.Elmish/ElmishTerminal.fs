@@ -70,7 +70,6 @@ module ElmishTerminal =
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 
-    /// Disposes element tree and signals termination.
     member this.Dispose() = terminalElementState.Dispose()
 
     interface IDisposable with

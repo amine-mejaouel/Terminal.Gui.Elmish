@@ -7,6 +7,12 @@ open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
+type internal ProgramKind =
+  /// Main elmish program.
+  | Root
+  /// Elmish component with its own elmish loop, nested inside a Root program or another Elmish component.
+  | ElmishComponent of IElmishComponentTE
+
 type TerminalMsg<'a> =
   | Terminate
   | Msg of 'a
@@ -55,12 +61,12 @@ module ElmishTerminal =
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
-  type internal TerminalModel<'model>(application: IApplication, origin: Origin, clientModel: 'model) =
+  type internal TerminalModel<'model>(application: IApplication, kind: ProgramKind, clientModel: 'model) =
     let terminalElementState = TerminalElementState()
 
     member val ClientModel = clientModel with get, set
     member this.Application = application
-    member this.Origin = origin
+    member this.Kind = kind
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 
@@ -100,11 +106,12 @@ module ElmishTerminal =
       : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
       fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel dispatch
 
-    let internal wrapSimpleInit origin (init: 'arg -> 'model) =
+    let internal wrapSimpleInit programKind (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
-        let terminalModel = new TerminalModel<_>(Application.Create(), origin, innerModel)
+        let terminalModel =
+          new TerminalModel<_>(Application.Create(), programKind, innerModel)
 
         terminalModel
 
@@ -138,7 +145,12 @@ module ElmishTerminal =
 
             let initialTe = view model dispatch :?> IViewTE
 
-            initialTe.InitializeTree model.Origin
+            let origin =
+              match model.Kind with
+              | ProgramKind.Root -> Origin.Root
+              | ProgramKind.ElmishComponent te -> te.Origin
+
+            initialTe.InitializeTree origin
 
             return initialTe
 
@@ -161,12 +173,11 @@ module ElmishTerminal =
     |> Task.wait
 
   let internal terminate (model: TerminalModel<_>) =
-    match model.Origin with
-    | Origin.Root ->
-      // For root apps, signal stop and let runTerminal handle cleanup after Run() returns
+    match model.Kind with
+    | ProgramKind.Root ->
+      // For the main elmish loop, signal stop and let runTerminal handle cleanup after Run() returns
       model.Application.RequestStop()
-    | Origin.ElmishComponent _ -> (model :> IDisposable).Dispose()
-    | _ -> failwith "Internal error: unexpected Origin in termination"
+    | ProgramKind.ElmishComponent _ -> model.Dispose()
 
   type internal Subscription<'model, 'msg> =
     { SubId: SubId
@@ -194,13 +205,13 @@ module ElmishTerminal =
     let viewSetEvent = Event<View>()
 
     let mkSimpleComponent
-      terminalElement
+      (terminalElement: IElmishComponentTE)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
       (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
       =
       Program.mkSimple
-        (OuterModel.wrapSimpleInit (Origin.ElmishComponent terminalElement) init)
+        (OuterModel.wrapSimpleInit (ProgramKind.ElmishComponent terminalElement) init)
         (OuterModel.wrapSimpleUpdate update)
         (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
@@ -313,7 +324,10 @@ module ElmishTerminal =
     (update: 'msg -> 'model -> 'model * Cmd<TerminalMsg<'msg>>)
     (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
     =
-    Program.mkProgram (OuterModel.wrapInit Origin.Root init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
+    Program.mkProgram
+      (OuterModel.wrapInit ProgramKind.Root init)
+      (OuterModel.wrapUpdate update)
+      (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
 
@@ -323,7 +337,7 @@ module ElmishTerminal =
     (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
     =
     Program.mkSimple
-      (OuterModel.wrapSimpleInit Origin.Root init)
+      (OuterModel.wrapSimpleInit ProgramKind.Root init)
       (OuterModel.wrapSimpleUpdate update)
       (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
@@ -345,7 +359,7 @@ module ElmishTerminal =
         task {
           let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
 
-          if model.Origin.IsElmishComponent then
+          if model.Kind.IsElmishComponent then
             failwith (
               "`run` is meant to be used for Terminal Elmish loop. "
               + "For Terminal components with separate Elmish loop, use `runComponent`."

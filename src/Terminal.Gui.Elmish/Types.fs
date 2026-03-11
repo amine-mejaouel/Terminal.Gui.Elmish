@@ -136,6 +136,16 @@ and internal IViewTE =
   abstract InitializeTree: origin: Origin -> unit
   abstract Reuse: prev: IViewTE -> unit
 
+/// <summary>
+/// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
+/// It can be used to create complex, self-contained components that manage their own state and logic.
+/// </summary>
+/// <remarks>
+/// <p>For convenience, the child view of an Elmish component is exposed as a property of the component itself,
+/// so that it can be easily accessed and manipulated by parent views.</p>
+/// <p>This also allows the component to be used in the same way as a regular view in the tree,
+/// without requiring special handling for its child view.</p>
+/// </remarks>
 and internal IElmishComponentTE =
   inherit ITerminalElementBase
 
@@ -182,10 +192,15 @@ and internal TerminalElement =
     member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
+// Origin describes how a TerminalElement is related to the root of the tree.
 and internal Origin =
+  /// Root element of the Elmish program.
   | Root
+  /// Root element of an Elmish component.
   | ElmishComponent of Parent: IElmishComponentTE
+  /// Child element of a view.
   | Child of Parent: IViewTE * Index: int
+  /// SubElement of a view, such as a property that is itself a view, or a collection of views.
   | SubElement of Parent: IViewTE * Index: int option * Property: RawPropKey
 
 type PosAxis =

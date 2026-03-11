@@ -194,6 +194,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         (te :?> ViewBackedTerminalElement).InitializeView()
       | ElmishComponentTE ce ->
         ce.Origin <- node.Origin
+        // TODO: could accept an origin
         ce.StartElmishLoop()
 
 #if DEBUG

@@ -205,6 +205,8 @@ type internal ViewBackedTerminalElement(props: Props) =
       | ViewTE te when te.Origin.IsChild ->
         if te.SetAsChildOfParentView then
           te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
+      | ElmishComponentTE ce when ce.Origin.IsChild ->
+        ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
     traverseTree

@@ -95,7 +95,10 @@ module internal Differ =
 
                   match ne with
                   | ViewTE ve -> ve.InitializeTree(Origin.Child(newTree, idx))
-                  | _ -> ()
+                  | ElmishComponentTE ce ->
+                    ce.Origin <- Origin.Child(newTree, idx)
+                    ce.StartElmishLoop()
+                    ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
 
               )
             else

@@ -96,6 +96,8 @@ module internal Differ =
                   match ne with
                   | ViewTE ve -> ve.InitializeTree(Origin.Child(newTree, idx))
                   | ElmishComponentTE ce ->
+                    // TODO: ElmishComponenet can be mixed up, with their State not matching their intended position in the tree
+                    // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
                     ce.Origin <- Origin.Child(newTree, idx)
                     ce.StartElmishLoop()
                     ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)

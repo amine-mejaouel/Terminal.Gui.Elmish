@@ -49,6 +49,7 @@
     <Compile Include="Task.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Differ.fs" />
+    <Compile Include="TwoEndedScanDiffer.fs" />
     <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />

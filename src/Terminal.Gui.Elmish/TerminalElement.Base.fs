@@ -416,6 +416,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IViewTE with
+    // TODO: rename InitializeAndAttachToParentView
     member this.InitializeTree origin = this.InitializeTree origin
     member this.Reuse prevElementData = this.Reuse prevElementData
 

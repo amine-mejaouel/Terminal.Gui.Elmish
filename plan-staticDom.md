@@ -67,13 +67,30 @@ and internal DomOrigin =
 - `initializeTree: DomOrigin -> TerminalElement -> DomChild` — recursively creates DomNode tree
 - `dispose: DomNode -> unit` — recursively disposes views and cleans up
 
+### `createFromTE` initialization ordering
+
+`createFromTE` must follow the same lifecycle as the current `InitializeView()`. The ordering is critical:
+
+1. **Create View** via `NewView()`
+2. **Initialize sub-element DomNodes** — For each `_element` prop in `SubElementsPropKeys`, recursively create a child DomNode for the sub-element TE. Store the sub-element DomNode in the parent DomNode's sub-element list. Then inject the sub-element's View as a `_view` prop into the DomNode's AppliedProps, so that `applyProps` can assign it to the Terminal.Gui property (e.g., `view.DefaultAcceptView <- subElementView`).
+3. **Apply positions** via PositionService
+4. **Call `applyProps`** — at this point `_view` props are available for sub-element assignment
+
+### `dispose` cleanup
+
+`dispose` must mirror the current `Dispose()`:
+1. Call `removeProps` to unregister all event handlers
+2. Remove from parent view via Origin
+3. Dispose sub-element DomNodes
+4. Dispose child DomNodes
+5. Call `PositionService.ExecuteCleanups`
+6. Dispose the View itself
+
 ### TE→DomNode mapping and position resolution
 
-`initializeTree` builds a `Dictionary<ITerminalElement, DomNode>` mapping as it creates DomNodes. This mapping serves two purposes:
+`initializeTree` builds a `Dictionary<ITerminalElement, DomNode>` mapping as it creates DomNodes. This mapping is used for:
 
 1. **TPos resolution** — When a DomNode's Props contain `XDelayed`/`YDelayed` (TPos values that reference other TEs via `TPos.X(someTE)`), the mapping resolves those TE references to their corresponding DomNodes. The resolved DomNode is then passed to PositionService. PositionService never sees `ITerminalElement`.
-
-2. **Sub-element identity** — Same mapping used to track which TEs became which DomNodes, for sub-element view re-injection during diffing (Phase 3).
 
 **Deferred positioning**: During `initializeTree`, nodes are created in traversal order. If node A's TPos references a sibling B that hasn't been created yet, the position application is deferred. DomNode exposes a `ViewReady` event (analogous to the current `ViewSet` on ViewBackedTerminalElement) that PositionService can subscribe to for deferred cases. Once all nodes are created, deferred positions resolve automatically.
 
@@ -152,19 +169,51 @@ module internal DomDiffer =
         //   - For each (DomNode, newTE) pair, record newTE → existing DomNode
         //   - This mapping is used to resolve TPos references in new Props
         //
-        // Compare currentDom.AppliedProps vs newTE.Props
-        // Call RemoveProps for removed, ApplyProps for changed
-        // Resolve TPos in new Props via TE→DomNode mapping, re-apply positions via PositionService
-        // Call PositionService.ExecuteCleanups before re-applying positions (mirrors current Reuse() behavior)
+        // 1. Compare currentDom.AppliedProps vs newTE.Props via compare()
         //
-        // Recurse into children using the SAME matching algorithm as current Differ:
-        //   - Group by type name, match by positional index within group
-        //   - New children → DomNode.initializeTree (extends the TE→DomNode mapping)
-        //   - Removed children → DomNode.dispose
-        //   - Same children → recurse
+        // 2. Handle sub-elements (replaces the Reuse() view re-injection pattern):
+        //    - Unchanged sub-elements: keep existing sub-element DomNode, no action needed.
+        //      The View is already assigned to the parent's Terminal.Gui property.
+        //    - Changed sub-elements: recurse DomDiffer.update into the sub-element DomNode
+        //      with the new TE's _element prop. If structurally incompatible (name changed),
+        //      dispose old sub-element DomNode, create new one, update the parent's _view prop
+        //      and call applyProps for the _view key.
+        //    - Removed sub-elements: dispose sub-element DomNode, remove _view prop.
+        //    - New sub-elements: create sub-element DomNode, inject _view prop, apply.
+        //
+        // 3. Positions:
+        //    - Call PositionService.ExecuteCleanups on current DomNode
+        //    - Resolve TPos in new Props via TE→DomNode mapping
+        //    - Re-apply positions via PositionService
+        //
+        // 4. Props:
+        //    - Call removeProps for removed props
+        //    - Call applyProps for changed props
+        //    Note: EventRegistrar lives on DomNode (persistent), no transfer needed.
+        //
+        // 5. Recurse into children using the SAME matching algorithm as current Differ:
+        //    - Group by type name, match by positional index within group
+        //    - New children → DomNode.initializeTree (extends the TE→DomNode mapping)
+        //    - Removed children → DomNode.dispose
+        //    - Same children → recurse
+        //
+        // 6. Update currentDom.AppliedProps to newTE.Props
 ```
 
 Key difference from current `Differ.update`: it takes `(DomNode, TerminalElement)` instead of `(TerminalElement, TerminalElement)`. The DomNode is mutated in-place. No more `Reuse()`.
+
+### Why sub-element handling is simpler
+
+The current `Reuse()` must transfer `_view` props from the old TE to the new TE because:
+- `InitializeSubElements()` only runs on first render, injecting `_view` props
+- On subsequent renders, the new TE has `_element` props but no `_view` props
+- So `Reuse()` extracts `_view` props from `removedProps` and re-injects them
+
+With DomNode, this transfer pattern is eliminated:
+- Sub-element DomNodes persist and own their Views
+- Unchanged sub-elements → DomNode already has the View assigned; nothing to do
+- Changed sub-elements → DomDiffer recurses into the sub-element DomNode, or replaces it
+- The `_view` prop is a DomNode-internal concern managed during `createFromTE` and updated by DomDiffer
 
 **Important**: The initial DomDiffer must use the **exact same** child-matching algorithm as the current Differ (type-name grouping + positional index). Switching to TwoEndedScanDiffer is a separate future improvement enabled by the persistent DomNode tree.
 

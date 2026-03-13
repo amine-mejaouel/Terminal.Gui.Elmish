@@ -6,15 +6,14 @@
 
 ---
 
-## 2. `Reuse()` does far more than the DomDiffer description suggests
+## ~~2. `Reuse()` does far more than the DomDiffer description suggests~~
 
-The plan describes DomDiffer as: "Compare props, call RemoveProps for removed, ApplyProps for changed." But the actual `Reuse()` logic (lines 293–328 of TerminalElement.Base.fs) also:
+**RESOLVED**: Phase 3 now details all operations the DomDiffer must perform per node:
+- **Sub-element handling**: Unchanged sub-elements keep their DomNode (no transfer needed). Changed/new/removed sub-elements are recursed into, created, or disposed. The `_view` prop re-injection pattern from `Reuse()` is eliminated — DomNode owns sub-element DomNodes directly.
+- **EventRegistrar**: Lives on the persistent DomNode, no transfer needed.
+- **PositionService**: ExecuteCleanups called before re-applying positions with resolved DomNode references.
 
-- **Re-injects unchanged sub-element Views** — It finds `_element` props that haven't changed, extracts the corresponding `_view` props from `removedProps`, and adds them back to the new TE's Props. This is critical because sub-element views are persistent objects that must survive across renders.
-- **Transfers the EventRegistrar** — not just the View
-- **Calls `PositionService.ExecuteCleanups`** on the previous element before transferring
-
-The plan's Phase 3 description of `DomDiffer.update` doesn't mention any of this sub-element view re-injection logic. Missing it would break any view that uses sub-elements (e.g., `DefaultAcceptView`).
+Phase 1 now also details `createFromTE` initialization ordering (sub-elements before `applyProps`) and `dispose` cleanup steps.
 
 ---
 
@@ -42,11 +41,9 @@ Also: `ElmishComponentTE.Child` returns `IViewTE`, but after Phase 4, the stored
 
 ---
 
-## 6. `InitializeSubElements` lifecycle is entangled with Props mutation
+## ~~6. `InitializeSubElements` lifecycle is entangled with Props mutation~~
 
-`InitializeSubElements()` (line 219) does something subtle: it reads `_element` props, initializes their trees, then **writes back** `_view` props into the same Props object. The DomNode's `createFromTE` must replicate this — and it must happen *before* `applyProps` is called, because `applyProps` may read those `_view` props to assign them to the actual Terminal.Gui view properties.
-
-The plan's Phase 1 lists `createFromTE` but doesn't detail this ordering constraint. Getting it wrong means sub-element views never get assigned to their parent view properties.
+**RESOLVED**: Phase 1 now details the exact `createFromTE` initialization ordering: (1) create View, (2) initialize sub-element DomNodes and inject `_view` props, (3) apply positions, (4) call `applyProps`. This ensures `_view` props are available when `applyProps` reads them.
 
 ---
 

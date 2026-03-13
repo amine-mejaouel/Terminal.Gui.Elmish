@@ -26,7 +26,7 @@ DomNode tree patched in-place:
 
 ## Phase 1: Introduce DomNode type (additive)
 
-**New file**: `src/Terminal.Gui.Elmish/DomNode.fs` (add to fsproj after `TerminalElement.Base.fs`)
+**New file**: `src/Terminal.Gui.Elmish/DomNode.fs` (add to fsproj after `TerminalElement.Elements.gen.fs`)
 
 ```fsharp
 type internal DomNode(
@@ -66,6 +66,16 @@ and internal DomOrigin =
 - `createFromTE: ViewBackedTerminalElement -> DomNode` — creates a DomNode from a TE, calling `NewView()`, `SetProps()`, etc.
 - `initializeTree: DomOrigin -> TerminalElement -> DomChild` — recursively creates DomNode tree
 - `dispose: DomNode -> unit` — recursively disposes views and cleans up
+
+### TE→DomNode mapping and position resolution
+
+`initializeTree` builds a `Dictionary<ITerminalElement, DomNode>` mapping as it creates DomNodes. This mapping serves two purposes:
+
+1. **TPos resolution** — When a DomNode's Props contain `XDelayed`/`YDelayed` (TPos values that reference other TEs via `TPos.X(someTE)`), the mapping resolves those TE references to their corresponding DomNodes. The resolved DomNode is then passed to PositionService. PositionService never sees `ITerminalElement`.
+
+2. **Sub-element identity** — Same mapping used to track which TEs became which DomNodes, for sub-element view re-injection during diffing (Phase 3).
+
+**Deferred positioning**: During `initializeTree`, nodes are created in traversal order. If node A's TPos references a sibling B that hasn't been created yet, the position application is deferred. DomNode exposes a `ViewReady` event (analogous to the current `ViewSet` on ViewBackedTerminalElement) that PositionService can subscribe to for deferred cases. Once all nodes are created, deferred positions resolve automatically.
 
 **Files to modify**:
 - `Terminal.Gui.Elmish.fsproj` — add `DomNode.fs` after `TerminalElement.Elements.gen.fs`
@@ -138,17 +148,25 @@ member _.DomSubElementsPropKeys = ButtonDom.subElementsPropKeys
 ```fsharp
 module internal DomDiffer =
     let update (currentDom: DomNode) (newTE: IViewTE) : unit =
+        // Build TE→DomNode mapping as we match nodes:
+        //   - For each (DomNode, newTE) pair, record newTE → existing DomNode
+        //   - This mapping is used to resolve TPos references in new Props
+        //
         // Compare currentDom.AppliedProps vs newTE.Props
         // Call RemoveProps for removed, ApplyProps for changed
-        // Recurse into children: match DomNode.Children vs newTE.Children
-        // New children → DomNode.initializeTree
-        // Removed children → DomNode.dispose
-        // Same children → recurse
+        // Resolve TPos in new Props via TE→DomNode mapping, re-apply positions via PositionService
+        // Call PositionService.ExecuteCleanups before re-applying positions (mirrors current Reuse() behavior)
+        //
+        // Recurse into children using the SAME matching algorithm as current Differ:
+        //   - Group by type name, match by positional index within group
+        //   - New children → DomNode.initializeTree (extends the TE→DomNode mapping)
+        //   - Removed children → DomNode.dispose
+        //   - Same children → recurse
 ```
 
 Key difference from current `Differ.update`: it takes `(DomNode, TerminalElement)` instead of `(TerminalElement, TerminalElement)`. The DomNode is mutated in-place. No more `Reuse()`.
 
-This also enables switching to the `TwoEndedScanDiffer` algorithm more easily, since the persistent DomNode tree gives stable identity for matching.
+**Important**: The initial DomDiffer must use the **exact same** child-matching algorithm as the current Differ (type-name grouping + positional index). Switching to TwoEndedScanDiffer is a separate future improvement enabled by the persistent DomNode tree.
 
 **Files to modify/create**:
 - `src/Terminal.Gui.Elmish/DomNode.fs` — add DomDiffer module
@@ -166,13 +184,18 @@ This also enables switching to the `TwoEndedScanDiffer` algorithm more easily, s
 **Files to modify**:
 - `src/Terminal.Gui.Elmish/ElmishTerminal.fs`
 
-## Phase 5: Update PositionService
+## Phase 5: Refactor PositionService to use DomNode
 
 **Modify**: `src/Terminal.Gui.Elmish/Services/PositionService.fs`
 
-- `ApplyPos` accepts `DomNode` instead of `ViewBackedTerminalElement`
-- `ExecuteCleanups` accepts `DomNode`
-- Maintain a mapping from `ITerminalElement` (TPos targets) to `DomNode` during tree init/diff, so relative positioning can resolve TEs to their DomNodes
+PositionService is refactored to work exclusively with DomNodes. It never sees `ITerminalElement`, `IViewTE`, or `TPos` directly.
+
+- `TePairKey` uses `DomNode` instead of `ITerminalElementBase`
+- `ApplyPos(domNode, axis, targetDomNode, applyFn)` — accepts resolved DomNode references (the caller — `initializeTree` or `DomDiffer` — resolves TPos's `ITerminalElement` to `DomNode` via the TE→DomNode mapping before calling)
+- `ExecuteCleanups(domNode: DomNode)` — cleans up position handlers for a DomNode
+- The high-level `ApplyPos(domNode: DomNode)` entry point reads `Props.X`/`Props.Y`/`Props.XDelayed`/`Props.YDelayed` and resolves TPos targets using a resolver function passed by the caller (e.g., `resolveTe: ITerminalElement -> DomNode`)
+
+**Why this works**: The TE→DomNode mapping is built naturally during `initializeTree` (Phase 1) and `DomDiffer.update` (Phase 3) as they traverse and match nodes. These callers pass a resolution function to PositionService, keeping the mapping logic in the DomNode layer where it belongs. PositionService stays a pure DomNode-to-DomNode relationship tracker.
 
 **Files to modify**:
 - `src/Terminal.Gui.Elmish/Services/PositionService.fs`

@@ -19,7 +19,7 @@ Phase 1 now also details `createFromTE` initialization ordering (sub-elements be
 
 ## 3. `TerminalElement.Interfaces.fs` (OrientationInterface) is not mentioned
 
-This file contains `OrientationInterface.setProps`/`removeProps` which are called from generated TE code (e.g., `SliderTerminalElement`). These methods take `ViewBackedTerminalElement` and call `terminalElement.TrySetEventHandler(...)`. The plan needs to generate DomNode equivalents for interface-based property applicators too, not just per-view-type modules.
+**IGNORED**This file contains `OrientationInterface.setProps`/`removeProps` which are called from generated TE code (e.g., `SliderTerminalElement`). These methods take `ViewBackedTerminalElement` and call `terminalElement.TrySetEventHandler(...)`. The plan needs to generate DomNode equivalents for interface-based property applicators too, not just per-view-type modules.
 
 ---
 

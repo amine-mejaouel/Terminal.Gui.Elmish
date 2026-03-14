@@ -56,7 +56,10 @@
     <Compile Include="Services\PositionService.fs" />
     <Compile Include="TerminalElement.Base.fs" />
     <Compile Include="TerminalElement.Interfaces.fs" />
+    <Compile Include="DomNode.Types.fs" />
+    <Compile Include="DomNode.Elements.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
+    <Compile Include="DomNode.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />
@@ -79,7 +82,7 @@
   </Target>
   <Target Name="Format auto generated code" BeforeTargets="CoreCompile" DependsOnTargets="Auto generate code">
     <Message Text="Formatting generated source files..." Importance="high" />
-    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="dotnet fantomas Types.gen.fs PKey.gen.fs TerminalElement.Elements.gen.fs Props.gen.fs View.gen.fs" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="dotnet fantomas Types.gen.fs PKey.gen.fs DomNode.Elements.gen.fs TerminalElement.Elements.gen.fs Props.gen.fs View.gen.fs" />
   </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

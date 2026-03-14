@@ -105,8 +105,7 @@ let setAsChildOfParentView (viewType: Type) =
   )
 
 let opens =
-  [ "open System"
-    "open Terminal.Gui.App"
+  [ "open Terminal.Gui.App"
     "open Terminal.Gui.ViewBase"
     "open Terminal.Gui.Views" ]
 
@@ -162,5 +161,17 @@ let gen () =
       for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces viewType do
         yield $"  interface {i}"
         yield ""
+
+      // IDomSpecProvider implementation referencing the companion *Dom module
+      let domModuleName = $"{Registry.ViewTypes.GetUniqueTypeName viewType}Dom"
+
+      yield $"  interface IDomSpecProvider with"
+      yield $"    member _.DomSpec ="
+      yield $"      {{ ApplyProps = {domModuleName}.applyProps{genericParamsBlock}"
+      yield $"        RemoveProps = {domModuleName}.removeProps{genericParamsBlock}"
+      yield $"        NewView = {domModuleName}.newView{genericParamsBlock}"
+      yield $"        SetAsChildOfParentView = {domModuleName}.setAsChildOfParentView"
+      yield $"        SubElementsPropKeys = {domModuleName}.subElementsPropKeys }}"
+      yield ""
   }
   |> CodeWriter.write "TerminalElement.Elements.gen.fs"

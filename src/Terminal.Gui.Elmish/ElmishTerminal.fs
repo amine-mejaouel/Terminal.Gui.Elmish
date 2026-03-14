@@ -147,7 +147,7 @@ module ElmishTerminal =
             let origin =
               match model.Kind with
               | ProgramKind.Root -> Origin.Root
-              | ProgramKind.ElmishComponent te -> te.Origin
+              | ProgramKind.ElmishComponent te -> Origin.ElmishComponent te
 
             initialTe.InitializeTree origin
 

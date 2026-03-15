@@ -7,6 +7,9 @@ open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
+type VirtualTerminalTree() =
+  interface IVirtualTerminalTree
+
 type internal ProgramKind =
   /// Main elmish program.
   | Root
@@ -25,9 +28,14 @@ module TerminalMsg =
 module ElmishTerminal =
 
   type internal TerminalElementState() =
+
+    let virtualTerminalTree = VirtualTerminalTree()
+
     let mutable _currentTe: IViewTE option = None
     let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
     let rootViewTcs: TaskCompletionSource<View> = TaskCompletionSource<View>()
+
+    member this.VTT = virtualTerminalTree
 
     member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
 
@@ -149,7 +157,7 @@ module ElmishTerminal =
               | ProgramKind.Root -> Origin.Root
               | ProgramKind.ElmishComponent te -> te.Origin
 
-            initialTe.InitializeTree origin
+            initialTe.InitializeTree origin model.TerminalElementState.VTT
 
             return initialTe
 
@@ -158,7 +166,10 @@ module ElmishTerminal =
 
             let nextTe = view model dispatch :?> IViewTE
 
-            Differ.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
+            Differ.update
+              model.TerminalElementState.VTT
+              (TerminalElement.ViewTE currentTe)
+              (TerminalElement.ViewTE nextTe)
 
             currentTe.Dispose()
             return nextTe

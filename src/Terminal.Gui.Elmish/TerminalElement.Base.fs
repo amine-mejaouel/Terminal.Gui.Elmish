@@ -167,13 +167,13 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView() =
+  member this.InitializeView(vtt: IVirtualTerminalTree) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
     this.View <- this.NewView()
 
-    this.InitializeSubElements()
+    this.InitializeSubElements(vtt)
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
 
     PositionService.Current.ApplyPos this
@@ -183,7 +183,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree(origin: Origin) : unit =
+  member this.InitializeTree (origin: Origin) (vtt: IVirtualTerminalTree) : unit =
     this.Origin <- origin
 
     let traverse (node: TreeNode) =
@@ -191,7 +191,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       match node.TerminalElement with
       | ViewTE te ->
         te.Origin <- node.Origin
-        (te :?> ViewBackedTerminalElement).InitializeView()
+        (te :?> ViewBackedTerminalElement).InitializeView(vtt)
       | ElmishComponentTE ce ->
         ce.Origin <- node.Origin
         // TODO: could accept an origin
@@ -216,7 +216,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.InitializeSubElements() : (PropKey * obj) seq =
+  member this.InitializeSubElements(vtt) : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
         match this.Props |> Props.tryFind (PropKeyKind.SubElement, x) with
@@ -226,14 +226,14 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree(Origin.SubElement(this, None, x))
+            subElement.InitializeTree (Origin.SubElement(this, None, x)) vtt
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree(Origin.SubElement(this, Some i, x)))
+            |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement(this, Some i, x)) vtt)
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
@@ -416,7 +416,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IViewTE with
-    member this.InitializeTree origin = this.InitializeTree origin
+    member this.InitializeTree origin vtt = this.InitializeTree origin vtt
     member this.Reuse prevElementData = this.Reuse prevElementData
 
     member this.GetPath() =

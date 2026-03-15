@@ -4,6 +4,8 @@ open System
 open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
+type internal IVirtualTerminalTree = interface end
+
 type ITerminalElement = interface end
 
 [<RequireQualifiedAccess>]
@@ -133,7 +135,7 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin -> unit
+  abstract InitializeTree: origin: Origin -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
 /// <summary>

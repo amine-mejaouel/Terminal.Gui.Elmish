@@ -19,7 +19,7 @@ module internal Differ =
 
     if cve1 <> cve2 then Some() else None
 
-  let update (prevTree: TerminalElement) (newTree: TerminalElement) =
+  let update (vtt: IVirtualTerminalTree) (prevTree: TerminalElement) (newTree: TerminalElement) =
 
     let workStack = System.Collections.Generic.Stack<_>()
     workStack.Push((prevTree, newTree))
@@ -42,7 +42,7 @@ module internal Differ =
 
           prevTree.Dispose()
 
-          newTree.InitializeTree prevTree.Origin
+          newTree.InitializeTree prevTree.Origin vtt
 
         | OnlyPropsChanged ->
 
@@ -94,9 +94,9 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewTE ve -> ve.InitializeTree(Origin.Child(newTree, idx))
+                  | ViewTE ve -> ve.InitializeTree (Origin.Child(newTree, idx)) vtt
                   | ElmishComponentTE ce ->
-                    // TODO: ElmishComponenet can be mixed up, with their State not matching their intended position in the tree
+                    // TODO: ElmishComponent can be mixed up, with their State not matching their intended position in the tree
                     // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
                     ce.Origin <- Origin.Child(newTree, idx)
                     ce.StartElmishLoop()

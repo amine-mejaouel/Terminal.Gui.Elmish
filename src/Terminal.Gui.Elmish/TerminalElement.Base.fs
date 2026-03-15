@@ -101,36 +101,41 @@ type internal EventHandlerRegistrar() =
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-type internal TreeNode =
-  { TerminalElement: TerminalElement
-    Origin: Origin }
+type internal CurrentTreeNode = TerminalElement
+type internal ParentTreeNode = IViewTE
 
 [<AbstractClass>]
 type internal ViewBackedTerminalElement(props: Props) =
 
-  /// Go through the tree of TerminalElements and their `Children`, and call the given function on each node.
-  let rec traverseTree (nodes: TreeNode list) (traverse: TreeNode -> unit) =
+  /// <p>Depth-first traversal of a TerminalElement tree.</p>
+  /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
+  /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
+  let rec traverseTEs
+    (head: TerminalElement)
+    (traverse: CurrentTreeNode -> (ParentTreeNode * int) option -> unit)
+    : unit =
 
-    match nodes with
-    | [] -> ()
-    | cur :: remainingNodes ->
-      let curNode =
-        { TerminalElement = cur.TerminalElement
-          Origin = cur.Origin }
+    let rec traverseViewTEs
+      (nodes: TerminalElement list)
+      (origin: (ParentTreeNode * int) option)
+      (traverse: CurrentTreeNode -> (ParentTreeNode * int) option -> unit)
+      =
+      match nodes with
+      | [] -> ()
+      | current :: remainingNodes ->
 
-      traverse curNode
+        traverse current origin
 
-      let childNodes =
-        match curNode.TerminalElement with
-        | ElmishComponentTE _ -> []
-        | ViewTE te ->
-          te.Children
-          |> Seq.mapi (fun i e ->
-            { TerminalElement = e
-              Origin = Origin.Child(te, i) })
-          |> List.ofSeq
+        match current with
+        | ElmishComponentTE _ -> ()
+        | ViewTE viewTe ->
+          viewTe.Children
+          |> Seq.mapi (fun i child -> child, (viewTe, i))
+          |> Seq.iter (fun (child, origin) -> traverseViewTEs [ child ] (Some origin) traverse)
 
-      traverseTree (childNodes @ remainingNodes) traverse
+        traverseViewTEs remainingNodes origin traverse
+
+    traverseViewTEs [ head ] None traverse
 
   let mutable view = null
 
@@ -186,23 +191,25 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.InitializeTree (origin: Origin) (vtt: IVirtualTerminalTree) : unit =
     this.Origin <- origin
 
-    let traverse (node: TreeNode) =
+    let traverse (cur: CurrentTreeNode) (origin: (ParentTreeNode * int) option) =
 
-      match node.TerminalElement with
-      | ViewTE te ->
-        te.Origin <- node.Origin
-        (te :?> ViewBackedTerminalElement).InitializeView(vtt)
+      cur.Origin <-
+        match origin with
+        | Some(parent, index) -> Origin.Child(parent, index)
+        | None -> Origin.Root
+
+      match cur with
+      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt)
       | ElmishComponentTE ce ->
-        ce.Origin <- node.Origin
         // TODO: could accept an origin
         ce.StartElmishLoop()
 
 #if DEBUG
-      Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
+      Diagnostics.Trace.WriteLine $"ID: {cur.GetPath()}"
 #endif
 
       // Here, the "children" views are added to their parent.
-      match node.TerminalElement with
+      match cur with
       | ViewTE te when te.Origin.IsChild ->
         if te.SetAsChildOfParentView then
           te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
@@ -210,10 +217,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
-    traverseTree
-      [ { TerminalElement = TerminalElement.from this
-          Origin = origin } ]
-      traverse
+    traverseTEs (TerminalElement.from this) traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.InitializeSubElements(vtt) : (PropKey * obj) seq =

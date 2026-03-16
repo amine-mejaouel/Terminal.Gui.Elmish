@@ -110,15 +110,12 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  let rec traverseTEs
-    (head: TerminalElement)
-    (traverse: CurrentTreeNode -> (ParentTreeNode * int) option -> unit)
-    : unit =
+  let rec traverseTEs (head: TerminalElement * Origin) (traverse: CurrentTreeNode -> Origin -> unit) : unit =
 
     let rec traverseViewTEs
       (nodes: TerminalElement list)
-      (origin: (ParentTreeNode * int) option)
-      (traverse: CurrentTreeNode -> (ParentTreeNode * int) option -> unit)
+      (origin: Origin)
+      (traverse: CurrentTreeNode -> Origin -> unit)
       =
       match nodes with
       | [] -> ()
@@ -130,12 +127,13 @@ type internal ViewBackedTerminalElement(props: Props) =
         | ElmishComponentTE _ -> ()
         | ViewTE viewTe ->
           viewTe.Children
-          |> Seq.mapi (fun i child -> child, (viewTe, i))
-          |> Seq.iter (fun (child, origin) -> traverseViewTEs [ child ] (Some origin) traverse)
+          |> Seq.mapi (fun i child -> child, Origin.Child(viewTe, i))
+          |> Seq.iter (fun (child, origin) -> traverseViewTEs [ child ] origin traverse)
 
         traverseViewTEs remainingNodes origin traverse
 
-    traverseViewTEs [ head ] None traverse
+    let headElement, headOrigin = head
+    traverseViewTEs [ headElement ] headOrigin traverse
 
   let mutable view = null
 
@@ -189,14 +187,10 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract Name: string
 
   member this.InitializeTree (origin: Origin) (vtt: IVirtualTerminalTree) : unit =
-    this.Origin <- origin
 
-    let traverse (cur: CurrentTreeNode) (origin: (ParentTreeNode * int) option) =
+    let traverse (cur: CurrentTreeNode) (origin: Origin) =
 
-      cur.Origin <-
-        match origin with
-        | Some(parent, index) -> Origin.Child(parent, index)
-        | None -> Origin.Root
+      cur.Origin <- origin
 
       match cur with
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt)
@@ -217,7 +211,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
-    traverseTEs (TerminalElement.from this) traverse
+    traverseTEs ((TerminalElement.from this), origin) traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.InitializeSubElements(vtt) : (PropKey * obj) seq =

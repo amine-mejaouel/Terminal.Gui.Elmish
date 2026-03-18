@@ -10,79 +10,72 @@ open Terminal.Gui.Views
 type VirtualTerminalTree() =
   let mutable root: VttNode option = None
 
-  let rec findNode (address: Address) (root: VttNode) =
-    let path =
-      List.unfold
-        (fun o ->
-          match o with
-          | Address.Root -> None
-          | Address.Child(parent, idx) -> Some(o, parent.Address)
-          | Address.SubElement(parent, idx, prop) -> Some(o, parent.Address)
-          | Address.ElmishComponentRoot parent -> Some(o, parent.Address))
-        address
-      |> List.rev
-
+  let findNode (address: Address) (root: VttNode) =
     List.fold
-      (fun (curNode: VttNode) curAddress ->
-        match curAddress with
-        | Address.Root -> curNode
-        | Address.Child(parent, idx) ->
+      (fun (curNode: VttNode) curSeg ->
+        match curSeg with
+        | Root -> curNode
+        | Child idx ->
           match curNode with
           | VttNode.ViewNode viewNode -> viewNode.Children.[idx]
           | VttNode.ElmishComponentNode _ ->
             failwith "Component nodes cannot have children in the virtual terminal tree."
-        | Address.SubElement(parent, idx, prop) ->
+        | SubElement(idx, prop) ->
           match curNode with
           | VttNode.ViewNode viewNode -> viewNode.SubElements.[(prop, idx)]
           | VttNode.ElmishComponentNode _ ->
             failwith "Component nodes cannot have sub-elements in the virtual terminal tree."
-        | Address.ElmishComponentRoot comp ->
+        | ElmishComponentRoot ->
           match curNode with
           | VttNode.ViewNode _ ->
             failwith "View nodes cannot have Elmish components as children in the virtual terminal tree."
           | VttNode.ElmishComponentNode componentNode -> VttNode.ViewNode componentNode.Root)
       root
-      path
+      address
 
   member internal _.Root = root
 
   interface IVirtualTerminalTree with
     member _.AddView(view, address) =
+      let lastSeg = Origin.lastSegment address
+
       let newNode =
-        match address with
+        match lastSeg with
         | Root
         | Child _
         | SubElement _ -> VttNode.ViewNode(ViewNode(view, address))
-        | ElmishComponentRoot comp ->
-          let viewNode = ViewNode(comp.Child.View, address)
+        | ElmishComponentRoot ->
+          let viewNode = ViewNode(view, address)
           VttNode.ElmishComponentNode(ElmishComponentNode(viewNode, address))
 
       let rec addNode address newNode =
         match address with
-        | Address.Root -> root <- Some newNode
-        | Address.Child(parentView, idx) ->
-          let parentAddress = address |> Origin.getParent
-          let parentNode = findNode parentAddress root.Value
+        | [ Root ] -> root <- Some newNode
+        | _ ->
+          let lastSeg = Origin.lastSegment address
+          let parentAddress = Origin.getParent address
 
-          match parentNode with
-          | VttNode.ViewNode viewNode ->
-            if idx <= viewNode.Children.Count then
-              viewNode.Children.Insert(idx, newNode)
-            else
-              viewNode.Children.Add(newNode)
-          | VttNode.ElmishComponentNode comp ->
-            failwith "Component nodes cannot have children in the virtual terminal tree."
-        | Address.SubElement(parent, idx, prop) ->
-          let parentAddress = address |> Origin.getParent
-          let parentNode = findNode parentAddress root.Value
+          match lastSeg with
+          | Root -> failwith "Root should only appear as [Root]"
+          | Child idx ->
+            let parentNode = findNode parentAddress root.Value
 
-          match parentNode with
-          | VttNode.ViewNode viewNode -> viewNode.SubElements.[(prop, idx)] <- newNode
-          | VttNode.ElmishComponentNode _ ->
-            failwith "Component nodes cannot have sub-elements in the virtual terminal tree."
-        | Address.ElmishComponentRoot comp ->
-          let parentAddress = address |> Origin.getParent
-          addNode parentAddress newNode
+            match parentNode with
+            | VttNode.ViewNode viewNode ->
+              if idx <= viewNode.Children.Count then
+                viewNode.Children.Insert(idx, newNode)
+              else
+                viewNode.Children.Add(newNode)
+            | VttNode.ElmishComponentNode _ ->
+              failwith "Component nodes cannot have children in the virtual terminal tree."
+          | SubElement(idx, prop) ->
+            let parentNode = findNode parentAddress root.Value
+
+            match parentNode with
+            | VttNode.ViewNode viewNode -> viewNode.SubElements.[(prop, idx)] <- newNode
+            | VttNode.ElmishComponentNode _ ->
+              failwith "Component nodes cannot have sub-elements in the virtual terminal tree."
+          | ElmishComponentRoot -> addNode parentAddress newNode
 
       addNode address newNode
 
@@ -230,8 +223,12 @@ module ElmishTerminal =
 
             let origin =
               match model.Kind with
-              | ProgramKind.Root -> Address.Root
-              | ProgramKind.ElmishComponent te -> te.Address
+              | ProgramKind.Root -> [ AddressSegment.Root ]
+              | ProgramKind.ElmishComponent te ->
+                // Each ElmishComponent has its own VTT; the child is always the root of that VTT.
+                // Set parentPath so the child tree inherits the component's hierarchy path.
+                (initialTe :> ITerminalElementBase).ParentPath <- te.GetPath()
+                [ AddressSegment.Root ]
 
             initialTe.InitializeTree origin model.TerminalElementState.VTT
 
@@ -360,6 +357,10 @@ module ElmishTerminal =
 
     member val Origin = Unchecked.defaultof<_> with get, set
 
+    member val ParentViewField: View option = None with get, set
+
+    member val ParentPathField: string = "root" with get, set
+
     [<CLIEvent>]
     member this.OnViewSet = viewSetEvent.Publish
 
@@ -394,7 +395,17 @@ module ElmishTerminal =
         with get () = this.Origin
         and set v = this.Origin <- v
 
-      member this.GetPath() = this.Origin |> Origin.getPath name
+      member this.ParentView
+        with get () = this.ParentViewField
+        and set v = this.ParentViewField <- v
+
+      member this.ParentPath
+        with get () = this.ParentPathField
+        and set v = this.ParentPathField <- v
+
+      member this.GetPath() =
+        Origin.getPath name this.Origin this.ParentPathField
+
       member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent

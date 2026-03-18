@@ -121,6 +121,8 @@ and internal ITerminalElementBase =
   inherit ITerminalElement
   inherit IDisposable
   abstract Address: Address with get, set
+  abstract ParentView: View option with get, set
+  abstract ParentPath: string with get, set
   abstract Name: string
   abstract View: View with get
   abstract OnViewSet: IEvent<View>
@@ -136,9 +138,16 @@ and internal IViewTE =
   abstract InitializeTree: origin: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
-and internal ViewNode(view, origin) =
+and internal ViewNode(view: View, origin) =
+  let viewRef = WeakReference<View>(view)
   member this.Address: Address = origin
-  member this.View: View = view
+
+  /// The View stored in this node. Returns null if the View has been garbage collected.
+  member this.View: View =
+    match viewRef.TryGetTarget() with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<_>
+
   member val SubElements = Dictionary<RawPropKey * int option, VttNode>()
   member val Children = ResizeArray<VttNode>() with get, set
 
@@ -192,6 +201,16 @@ and internal TerminalElement =
   member this.Address
     with set value = this.TerminalElementBase.Address <- value
 
+  member this.ParentView = this.TerminalElementBase.ParentView
+
+  member this.ParentView
+    with set value = this.TerminalElementBase.ParentView <- value
+
+  member this.ParentPath = this.TerminalElementBase.ParentPath
+
+  member this.ParentPath
+    with set value = this.TerminalElementBase.ParentPath <- value
+
   member this.ViewSet = this.TerminalElementBase.OnViewSet
   member this.View = this.TerminalElementBase.View
   member this.GetPath() = this.TerminalElementBase.GetPath()
@@ -206,19 +225,31 @@ and internal TerminalElement =
     member this.Address
       with set value = this.Address <- value
 
+    member this.ParentView = this.ParentView
+
+    member this.ParentView
+      with set value = this.ParentView <- value
+
+    member this.ParentPath = this.ParentPath
+
+    member this.ParentPath
+      with set value = this.ParentPath <- value
+
     member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
-// Origin describes how a TerminalElement is related to the root of the tree.
-and internal Address =
+and internal AddressSegment =
   /// Root element of the Elmish program.
   | Root
-  /// Root element of an Elmish component.
-  | ElmishComponentRoot of Parent: IElmishComponentTE
   /// Child element of a view.
-  | Child of Parent: IViewTE * Index: int
+  | Child of Index: int
   /// SubElement of a view, such as a property that is itself a view, or a collection of views.
-  | SubElement of Parent: IViewTE * Index: int option * Property: RawPropKey
+  | SubElement of Index: int option * Property: RawPropKey
+  /// Root element of an Elmish component.
+  | ElmishComponentRoot
+
+// Origin describes how a TerminalElement is related to the root of the tree.
+and internal Address = AddressSegment list
 
 type PosAxis =
   | X
@@ -337,50 +368,42 @@ type Props with
 module Element =
 
   module internal Origin =
-    let parentTerminalElement this : TerminalElement option =
-      match this with
-      | Root -> None
-      | Child(parent, _) -> Some(TerminalElement.ViewTE parent)
-      | SubElement(parent, _, _) -> Some(TerminalElement.ViewTE parent)
-      | ElmishComponentRoot parent -> Some(TerminalElement.ElmishComponentTE parent)
 
-    let rec parentView (this: Address) =
-      match this |> parentTerminalElement with
-      | Some(ElmishComponentTE parent) -> parent.Address |> parentView
-      | Some(ViewTE parent) -> Some parent.View
-      | None -> None
+    let lastSegment (addr: Address) : AddressSegment =
+      match addr with
+      | [] -> failwith "Empty address"
+      | _ -> List.last addr
 
-    let getParent origin : Address =
-      match origin with
-      | Root -> failwith "Root element does not have a parent."
-      | Child(parent, _)
-      | SubElement(parent, _, _) -> parent.Address
-      | ElmishComponentRoot parent -> parent.Address
+    let isChild (addr: Address) =
+      match lastSegment addr with
+      | Child _ -> true
+      | _ -> false
 
-    let getPath name (this: Address) =
-      let parentPath =
-        match this |> parentTerminalElement with
-        | Some parent -> parent.GetPath()
-        | None -> "root"
+    let getParent (addr: Address) : Address =
+      match addr with
+      | [] -> failwith "Empty address has no parent."
+      | [ Root ] -> failwith "Root element does not have a parent."
+      | _ -> addr |> List.take (addr.Length - 1)
+
+    let getPath name (addr: Address) (parentPath: string) =
+      let seg = lastSegment addr
 
       let propIdStr =
-        match this with
-        | Address.Root -> ""
-        | Address.Child _
-        | Address.ElmishComponentRoot _ -> "child"
-        | Address.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
+        match seg with
+        | Root -> ""
+        | Child _
+        | ElmishComponentRoot -> "child"
+        | SubElement(_, subElementPropKey) -> $"{subElementPropKey}"
 
       let indexStr =
-        let rec indexStr origin =
-          match origin with
-          | Address.Root -> ""
-          | Address.ElmishComponentRoot parent -> indexStr parent.Address
-          | Address.Child(_, index) -> $"[{index}]"
-          | Address.SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+        match seg with
+        | Root -> ""
+        | ElmishComponentRoot -> ""
+        | Child(index) -> $"[{index}]"
+        | SubElement(index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
 
-        indexStr this
-
-      match this with
-      | Address.Root -> $"root:{name}"
-      | Address.ElmishComponentRoot parent -> $"{parent.GetPath()}:{name}"
+      match seg with
+      | Root when parentPath = "root" -> $"root:{name}"
+      | Root
+      | ElmishComponentRoot -> $"{parentPath}:{name}"
       | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"

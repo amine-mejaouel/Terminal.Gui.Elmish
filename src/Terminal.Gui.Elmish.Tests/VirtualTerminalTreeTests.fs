@@ -15,6 +15,8 @@ let private asViewNode (node: VttNode) =
 /// Minimal IViewTE stub for use in Address values.
 type private StubViewTE(initialAddress: Address) =
   let mutable addr = initialAddress
+  let mutable parentView: View option = None
+  let mutable parentPath: string = "root"
 
   interface ITerminalElement
 
@@ -25,6 +27,14 @@ type private StubViewTE(initialAddress: Address) =
     member _.Address
       with get () = addr
       and set v = addr <- v
+
+    member _.ParentView
+      with get () = parentView
+      and set v = parentView <- v
+
+    member _.ParentPath
+      with get () = parentPath
+      and set v = parentPath <- v
 
     member _.Name = "Stub"
     member _.View = Unchecked.defaultof<_>
@@ -44,7 +54,7 @@ let ``AddView with Root address sets the root node`` () =
   let ivtt = vtt :> IVirtualTerminalTree
   let view = new Button()
 
-  ivtt.AddView(view, Address.Root)
+  ivtt.AddView(view, [ Root ])
 
   Assert.That(vtt.Root.IsSome, Is.True, "Root should be set")
 
@@ -54,7 +64,7 @@ let ``AddView with Root address sets the root node`` () =
     Assert.That(rootNode.View, Is.SameAs(view), "Root view should match")
     Assert.That(rootNode.Children.Count, Is.EqualTo(0), "Root should have no children")
     Assert.That(rootNode.SubElements.Count, Is.EqualTo(0), "Root should have no sub-elements")
-    Assert.That(rootNode.Address, Is.EqualTo(Address.Root), "Root address should be Address.Root"))
+    Assert.That(rootNode.Address, Is.EqualTo<Address>([ Root ]), "Root address should be [Root]"))
 
 [<Test>]
 let ``AddView with Child address adds a child node to the root`` () =
@@ -64,10 +74,10 @@ let ``AddView with Child address adds a child node to the root`` () =
   let rootView = new Button()
   let childView = new Label()
 
-  let parentTE = StubViewTE(Address.Root) :> IViewTE
+  let parentTE = StubViewTE([ Root ]) :> IViewTE
 
-  ivtt.AddView(rootView, Address.Root)
-  ivtt.AddView(childView, Address.Child(parentTE, 0))
+  ivtt.AddView(rootView, [ Root ])
+  ivtt.AddView(childView, [ Root; Child 0 ])
 
   let rootNode = vtt.Root.Value |> asViewNode
 
@@ -89,12 +99,12 @@ let ``AddView with multiple children preserves insertion order`` () =
   let child1 = new Button()
   let child2 = new Label()
 
-  let parentTE = StubViewTE(Address.Root) :> IViewTE
+  let parentTE = StubViewTE([ Root ]) :> IViewTE
 
-  ivtt.AddView(rootView, Address.Root)
-  ivtt.AddView(child0, Address.Child(parentTE, 0))
-  ivtt.AddView(child1, Address.Child(parentTE, 1))
-  ivtt.AddView(child2, Address.Child(parentTE, 2))
+  ivtt.AddView(rootView, [ Root ])
+  ivtt.AddView(child0, [ Root; Child 0 ])
+  ivtt.AddView(child1, [ Root; Child 1 ])
+  ivtt.AddView(child2, [ Root; Child 2 ])
 
   let rootNode = vtt.Root.Value |> asViewNode
 
@@ -115,14 +125,14 @@ let ``AddView with nested children creates multi-level tree`` () =
   let leafLabel = new Label()
   let leafButton = new Button()
 
-  let rootTE = StubViewTE(Address.Root) :> IViewTE
-  let middleTE = StubViewTE(Address.Child(rootTE, 0)) :> IViewTE
+  let rootTE = StubViewTE([ Root ]) :> IViewTE
+  let middleTE = StubViewTE([ Root; Child 0 ]) :> IViewTE
 
   // Build tree: Root -> middle -> [leafLabel, leafButton]
-  ivtt.AddView(rootView, Address.Root)
-  ivtt.AddView(middleView, Address.Child(rootTE, 0))
-  ivtt.AddView(leafLabel, Address.Child(middleTE, 0))
-  ivtt.AddView(leafButton, Address.Child(middleTE, 1))
+  ivtt.AddView(rootView, [ Root ])
+  ivtt.AddView(middleView, [ Root; Child 0 ])
+  ivtt.AddView(leafLabel, [ Root; Child 0; Child 0 ])
+  ivtt.AddView(leafButton, [ Root; Child 0; Child 1 ])
 
   let rootNode = vtt.Root.Value |> asViewNode
 
@@ -144,10 +154,10 @@ let ``AddView with SubElement address stores node in SubElements dictionary`` ()
   let rootView = new Button()
   let subView = new Label()
 
-  let rootTE = StubViewTE(Address.Root) :> IViewTE
+  let rootTE = StubViewTE([ Root ]) :> IViewTE
 
-  ivtt.AddView(rootView, Address.Root)
-  ivtt.AddView(subView, Address.SubElement(rootTE, None, "title_element"))
+  ivtt.AddView(rootView, [ Root ])
+  ivtt.AddView(subView, [ Root; SubElement(None, "title_element") ])
 
   let rootNode = vtt.Root.Value |> asViewNode
 
@@ -169,11 +179,11 @@ let ``AddView with indexed SubElement stores with correct index`` () =
   let sub0 = new Label()
   let sub1 = new Label()
 
-  let rootTE = StubViewTE(Address.Root) :> IViewTE
+  let rootTE = StubViewTE([ Root ]) :> IViewTE
 
-  ivtt.AddView(rootView, Address.Root)
-  ivtt.AddView(sub0, Address.SubElement(rootTE, Some 0, "items_element"))
-  ivtt.AddView(sub1, Address.SubElement(rootTE, Some 1, "items_element"))
+  ivtt.AddView(rootView, [ Root ])
+  ivtt.AddView(sub0, [ Root; SubElement(Some 0, "items_element") ])
+  ivtt.AddView(sub1, [ Root; SubElement(Some 1, "items_element") ])
 
   let rootNode = vtt.Root.Value |> asViewNode
 
@@ -202,15 +212,15 @@ let ``AddView stores the correct Address on each node`` () =
   let rootView = new Button()
   let childView = new Label()
 
-  let rootTE = StubViewTE(Address.Root) :> IViewTE
-  let childAddress = Address.Child(rootTE, 0)
+  let rootTE = StubViewTE([ Root ]) :> IViewTE
+  let childAddress: Address = [ Root; Child 0 ]
 
-  ivtt.AddView(rootView, Address.Root)
+  ivtt.AddView(rootView, [ Root ])
   ivtt.AddView(childView, childAddress)
 
   let rootNode = vtt.Root.Value |> asViewNode
   let childNode = rootNode.Children.[0] |> asViewNode
 
   Assert.Multiple(fun () ->
-    Assert.That(rootNode.Address, Is.EqualTo(Address.Root), "Root address should be Root")
-    Assert.That(childNode.Address, Is.EqualTo(childAddress), "Child address should match"))
+    Assert.That(rootNode.Address, Is.EqualTo<Address>([ Root ]), "Root address should be Root")
+    Assert.That(childNode.Address, Is.EqualTo<Address>(childAddress), "Child address should match"))

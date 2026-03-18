@@ -40,6 +40,9 @@ module internal Differ =
         match prevTree, newTree with
         | rt, nt when rt.Name <> nt.Name ->
 
+          // Propagate parent info before re-initialization
+          nt.ParentView <- rt.ParentView
+          nt.ParentPath <- rt.ParentPath
           prevTree.Dispose()
 
           newTree.InitializeTree prevTree.Address vtt
@@ -94,16 +97,19 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewTE ve -> ve.InitializeTree (Address.Child(newTree, idx)) vtt
+                  | ViewTE ve ->
+                    ve.ParentView <- Some newTree.View
+                    ve.ParentPath <- newTree.GetPath()
+                    ve.InitializeTree (newTree.Address @ [ Child idx ]) vtt
                   | ElmishComponentTE ce ->
                     // TODO: ElmishComponent can be mixed up, with their State not matching their intended position in the tree
                     // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
-                    ce.Address <- Address.Child(newTree, idx)
+                    ce.Address <- newTree.Address @ [ Child idx ]
+                    ce.ParentView <- Some newTree.View
+                    ce.ParentPath <- newTree.GetPath()
                     ce.StartElmishLoop()
 
-                    ce.Address
-                    |> Origin.parentView
-                    |> Option.iter (fun v -> v.Add ce.View |> ignore)
+                    newTree.View.Add ce.View |> ignore
 
               )
             else

@@ -110,30 +110,38 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
+  let rec traverseTEs
+    (head: TerminalElement * Address * View option * string)
+    (traverse: CurrentTreeNode -> Address -> View option -> string -> unit)
+    : unit =
 
     let rec traverseViewTEs
       (nodes: TerminalElement list)
       (origin: Address)
-      (traverse: CurrentTreeNode -> Address -> unit)
+      (parentView: View option)
+      (parentPath: string)
+      (traverse: CurrentTreeNode -> Address -> View option -> string -> unit)
       =
       match nodes with
       | [] -> ()
       | current :: remainingNodes ->
 
-        traverse current origin
+        traverse current origin parentView parentPath
 
         match current with
         | ElmishComponentTE _ -> ()
         | ViewTE viewTe ->
+          let thisPath = viewTe.GetPath()
+
           viewTe.Children
-          |> Seq.mapi (fun i child -> child, Address.Child(viewTe, i))
-          |> Seq.iter (fun (child, origin) -> traverseViewTEs [ child ] origin traverse)
+          |> Seq.mapi (fun i child -> child, origin @ [ Child i ])
+          |> Seq.iter (fun (child, childOrigin) ->
+            traverseViewTEs [ child ] childOrigin (Some viewTe.View) thisPath traverse)
 
-        traverseViewTEs remainingNodes origin traverse
+        traverseViewTEs remainingNodes origin parentView parentPath traverse
 
-    let headElement, headOrigin = head
-    traverseViewTEs [ headElement ] headOrigin traverse
+    let headElement, headOrigin, headParentView, headParentPath = head
+    traverseViewTEs [ headElement ] headOrigin headParentView headParentPath traverse
 
   let mutable view = null
 
@@ -152,7 +160,11 @@ type internal ViewBackedTerminalElement(props: Props) =
       view <- value
       viewSetEvent.Trigger value
 
-  member val Origin: Address = Address.Root with get, set
+  member val Origin: Address = [ AddressSegment.Root ] with get, set
+
+  member val ParentViewField: View option = None with get, set
+
+  member val ParentPathField: string = "root" with get, set
 
   member val ViewSet = viewSetEvent.Publish
 
@@ -189,9 +201,14 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member this.InitializeTree (origin: Address) (vtt: IVirtualTerminalTree) : unit =
 
-    let traverse (cur: CurrentTreeNode) (origin: Address) =
+    let headParentView = this.ParentViewField
+    let headParentPath = this.ParentPathField
+
+    let traverse (cur: CurrentTreeNode) (origin: Address) (parentView: View option) (parentPath: string) =
 
       cur.Address <- origin
+      cur.ParentView <- parentView
+      cur.ParentPath <- parentPath
 
       match cur with
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, origin)
@@ -205,18 +222,14 @@ type internal ViewBackedTerminalElement(props: Props) =
 
       // Here, the "children" views are added to their parent.
       match cur with
-      | ViewTE te when te.Address.IsChild ->
+      | ViewTE te when Origin.isChild te.Address ->
         if te.SetAsChildOfParentView then
-          te.Address
-          |> Origin.parentView
-          |> Option.iter (fun v -> v.Add te.View |> ignore)
-      | ElmishComponentTE ce when ce.Address.IsChild ->
-        ce.Address
-        |> Origin.parentView
-        |> Option.iter (fun v -> v.Add ce.View |> ignore)
+          te.ParentView |> Option.iter (fun v -> v.Add te.View |> ignore)
+      | ElmishComponentTE ce when Origin.isChild ce.Address ->
+        ce.ParentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
-    traverseTEs ((TerminalElement.from this), origin) traverse
+    traverseTEs ((TerminalElement.from this), origin, headParentView, headParentPath) traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.InitializeSubElements(vtt) : (PropKey * obj) seq =
@@ -229,14 +242,14 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree (Address.SubElement(this, None, x)) vtt
+            subElement.InitializeTree (this.Origin @ [ SubElement(None, x) ]) vtt
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree (Address.SubElement(this, Some i, x)) vtt)
+            |> Seq.iteri (fun i e -> e.InitializeTree (this.Origin @ [ SubElement(Some i, x) ]) vtt)
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
@@ -302,6 +315,9 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     this.View <- prev.View
     this.EventRegistrar <- prev.EventRegistrar
+    this.Origin <- prev.Origin
+    this.ParentViewField <- prev.ParentViewField
+    this.ParentPathField <- prev.ParentPathField
 
     PositionService.Current.ApplyPos this
 
@@ -401,9 +417,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Remove any event subscriptions
       this.RemoveProps(this, this.Props)
 
-      this.Origin
-      |> Origin.parentView
-      |> Option.iter (fun v -> v.Remove this.View |> ignore)
+      this.ParentViewField |> Option.iter (fun v -> v.Remove this.View |> ignore)
 
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
@@ -418,16 +432,28 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Finally, dispose the View itself
       this.View.Dispose()
 
+      // Clear references to help GC
+      this.ParentViewField <- None
+      view <- Unchecked.defaultof<_>
+
   interface IViewTE with
     member this.InitializeTree origin vtt = this.InitializeTree origin vtt
     member this.Reuse prevElementData = this.Reuse prevElementData
 
     member this.GetPath() =
-      this.Origin |> Origin.getPath (this.Name)
+      Origin.getPath this.Name this.Origin this.ParentPathField
 
     member this.Address
       with get () = this.Origin
       and set v = this.Origin <- v
+
+    member this.ParentView
+      with get () = this.ParentViewField
+      and set v = this.ParentViewField <- v
+
+    member this.ParentPath
+      with get () = this.ParentPathField
+      and set v = this.ParentPathField <- v
 
     member this.View = this.View
     member this.Name = this.Name

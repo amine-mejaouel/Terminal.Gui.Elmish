@@ -16,8 +16,8 @@ let ``Simple ID test`` () =
   let view = view :?> IViewTE
 
   Assert.Multiple(fun () ->
-    Assert.That(view.GetPath(), Is.EqualTo("root:Runnable"))
-    Assert.That(label.GetPath(), Is.EqualTo("root:Runnable|child[0]:Label")))
+    Assert.That(view.Address |> Address.getPath, Is.EqualTo("root"))
+    Assert.That(label.Address |> Address.getPath, Is.EqualTo("root:child[0]")))
 
 [<Test>]
 let ``Component ID test`` () =
@@ -37,7 +37,7 @@ let ``Component ID test`` () =
   let button = children.[1]
 
   Assert.Multiple(fun () ->
-    Assert.That(view.GetPath(), Is.EqualTo("root:Runnable"))
-    Assert.That(testComp.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent"))
-    Assert.That(label.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent:Window|child[0]:Label"))
-    Assert.That(button.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent:Window|child[1]:Button")))
+    Assert.That(view.Address |> Address.getPath, Is.EqualTo("root"))
+    Assert.That(testComp.Address |> Address.getPath, Is.EqualTo("root:child[0]"))
+    Assert.That(label.Address |> Address.getPath, Is.EqualTo("root:child[0]:TestComponent:child[0]"))
+    Assert.That(button.Address |> Address.getPath, Is.EqualTo("root:child[0]:TestComponent:child[1]")))

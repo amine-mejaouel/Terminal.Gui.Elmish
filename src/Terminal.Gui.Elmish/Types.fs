@@ -122,11 +122,9 @@ and internal ITerminalElementBase =
   inherit IDisposable
   abstract Address: Address with get, set
   abstract ParentView: View option with get, set
-  abstract ParentPath: string with get, set
   abstract Name: string
   abstract View: View with get
   abstract OnViewSet: IEvent<View>
-  abstract GetPath: unit -> string
 
 and internal IViewTE =
   inherit ITerminalElementBase
@@ -206,14 +204,8 @@ and internal TerminalElement =
   member this.ParentView
     with set value = this.TerminalElementBase.ParentView <- value
 
-  member this.ParentPath = this.TerminalElementBase.ParentPath
-
-  member this.ParentPath
-    with set value = this.TerminalElementBase.ParentPath <- value
-
   member this.ViewSet = this.TerminalElementBase.OnViewSet
   member this.View = this.TerminalElementBase.View
-  member this.GetPath() = this.TerminalElementBase.GetPath()
   member this.Dispose() = this.TerminalElementBase.Dispose()
 
   interface ITerminalElementBase with
@@ -230,12 +222,6 @@ and internal TerminalElement =
     member this.ParentView
       with set value = this.ParentView <- value
 
-    member this.ParentPath = this.ParentPath
-
-    member this.ParentPath
-      with set value = this.ParentPath <- value
-
-    member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
 and internal AddressSegment =
@@ -367,7 +353,7 @@ type Props with
 [<AutoOpen>]
 module Element =
 
-  module internal Origin =
+  module internal Address =
 
     let lastSegment (addr: Address) : AddressSegment =
       match addr with
@@ -385,25 +371,15 @@ module Element =
       | [ Root ] -> failwith "Root element does not have a parent."
       | _ -> addr |> List.take (addr.Length - 1)
 
-    let getPath name (addr: Address) (parentPath: string) =
-      let seg = lastSegment addr
-
-      let propIdStr =
-        match seg with
-        | Root -> ""
-        | Child _
-        | ElmishComponentRoot -> "child"
-        | SubElement(_, subElementPropKey) -> $"{subElementPropKey}"
-
-      let indexStr =
-        match seg with
-        | Root -> ""
-        | ElmishComponentRoot -> ""
-        | Child(index) -> $"[{index}]"
-        | SubElement(index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
-
-      match seg with
-      | Root when parentPath = "root" -> $"root:{name}"
-      | Root
-      | ElmishComponentRoot -> $"{parentPath}:{name}"
-      | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
+    let getPath (addr: Address) =
+      List.fold
+        (fun path segment ->
+          match segment with
+          | Root -> path + "root"
+          | Child index -> path + $":child[{index}]"
+          | ElmishComponentRoot -> path + ":elmishComponentRoot"
+          | SubElement(index, propKey) ->
+            let indexStr = index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+            path + $":{propKey}{indexStr}")
+        ""
+        addr

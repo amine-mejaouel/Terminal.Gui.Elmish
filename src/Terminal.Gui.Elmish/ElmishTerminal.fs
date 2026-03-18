@@ -37,7 +37,7 @@ type VirtualTerminalTree() =
 
   interface IVirtualTerminalTree with
     member _.AddView(view, address) =
-      let lastSeg = Origin.lastSegment address
+      let lastSeg = Address.lastSegment address
 
       let newNode =
         match lastSeg with
@@ -52,8 +52,8 @@ type VirtualTerminalTree() =
         match address with
         | [ Root ] -> root <- Some newNode
         | _ ->
-          let lastSeg = Origin.lastSegment address
-          let parentAddress = Origin.getParent address
+          let lastSeg = Address.lastSegment address
+          let parentAddress = Address.getParent address
 
           match lastSeg with
           | Root -> failwith "Root should only appear as [Root]"
@@ -227,7 +227,6 @@ module ElmishTerminal =
               | ProgramKind.ElmishComponent te ->
                 // Each ElmishComponent has its own VTT; the child is always the root of that VTT.
                 // Set parentPath so the child tree inherits the component's hierarchy path.
-                (initialTe :> ITerminalElementBase).ParentPath <- te.GetPath()
                 [ AddressSegment.Root ]
 
             initialTe.InitializeTree origin model.TerminalElementState.VTT
@@ -398,13 +397,6 @@ module ElmishTerminal =
       member this.ParentView
         with get () = this.ParentViewField
         and set v = this.ParentViewField <- v
-
-      member this.ParentPath
-        with get () = this.ParentPathField
-        and set v = this.ParentPathField <- v
-
-      member this.GetPath() =
-        Origin.getPath name this.Origin this.ParentPathField
 
       member this.Dispose() = this.Dispose()
 

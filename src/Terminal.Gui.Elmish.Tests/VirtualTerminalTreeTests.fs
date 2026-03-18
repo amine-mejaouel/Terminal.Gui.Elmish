@@ -16,7 +16,6 @@ let private asViewNode (node: VttNode) =
 type private StubViewTE(initialAddress: Address) =
   let mutable addr = initialAddress
   let mutable parentView: View option = None
-  let mutable parentPath: string = "root"
 
   interface ITerminalElement
 
@@ -32,14 +31,9 @@ type private StubViewTE(initialAddress: Address) =
       with get () = parentView
       and set v = parentView <- v
 
-    member _.ParentPath
-      with get () = parentPath
-      and set v = parentPath <- v
-
     member _.Name = "Stub"
     member _.View = Unchecked.defaultof<_>
     member _.OnViewSet = Event<View>().Publish
-    member _.GetPath() = ""
 
   interface IViewTE with
     member _.Props = Props()
@@ -73,8 +67,6 @@ let ``AddView with Child address adds a child node to the root`` () =
 
   let rootView = new Button()
   let childView = new Label()
-
-  let parentTE = StubViewTE([ Root ]) :> IViewTE
 
   ivtt.AddView(rootView, [ Root ])
   ivtt.AddView(childView, [ Root; Child 0 ])

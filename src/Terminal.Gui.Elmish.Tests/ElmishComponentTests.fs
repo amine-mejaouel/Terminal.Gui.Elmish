@@ -30,15 +30,9 @@ let ``ElmishComponent.Parent is set`` () =
     Is.GreaterThan(1),
     "ElmishComponent should have a parent (non-root address)"
   )
-  // Verify the component's parent path matches the parent element's path
-  Assert.That(
-    elmishComponent.ParentPath,
-    Is.EqualTo(parent.GetPath()),
-    "ElmishComponent parent path should match parent's path"
-  )
 
 [<Test>]
-let ``ElmishComponent.Origin should keep correct value between elmish loops`` () =
+let ``ElmishComponent address should keep correct value between elmish loops`` () =
   task {
 
     // Arrange
@@ -49,15 +43,15 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
     use program = ElmishTester.render view
 
     // Get initial state
-    let initialPath = testComponentTE.GetPath()
+    let initialPath = testComponentTE.Address |> Address.getPath
 
     // Act - trigger a re-render by dispatching a message
     let! _ = testComponentTE.ProcessMsg(TestComponent.Increment |> TerminalMsg.ofMsg)
 
-    // Assert - Origin should be preserved
+    // Assert - Address should be preserved
     let afterUpdateComponent = program.ViewTE.Children.First()
     let afterUpdateOrigin = afterUpdateComponent.Address
-    let afterUpdatePath = afterUpdateComponent.GetPath()
+    let afterUpdatePath = afterUpdateComponent.Address |> Address.getPath
 
     Assert.Multiple(fun () ->
       // Path should remain consistent
@@ -65,12 +59,5 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
         afterUpdatePath,
         Is.EqualTo(initialPath),
         $"Component path should be consistent: expected %s{initialPath}, got %s{afterUpdatePath}"
-      )
-
-      // Origin should point to the correct parent
-      Assert.That(
-        afterUpdateComponent.ParentPath,
-        Is.EqualTo(program.ViewTE.GetPath()),
-        "ParentPath should point to root"
       ))
   }

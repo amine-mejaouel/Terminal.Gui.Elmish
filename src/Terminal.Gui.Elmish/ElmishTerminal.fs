@@ -8,7 +8,81 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type VirtualTerminalTree() =
-  interface IVirtualTerminalTree
+  let mutable root: VttNode option = None
+
+  let rec findNode (address: Address) (root: VttNode) =
+    let path =
+      List.unfold
+        (fun o ->
+          match o with
+          | Address.Root -> None
+          | Address.Child(parent, idx) -> Some(parent.Address, parent.Address)
+          | Address.SubElement(parent, idx, prop) -> Some(parent.Address, parent.Address)
+          | Address.ElmishComponentRoot parent -> Some(parent.Address, parent.Address))
+        address
+      |> List.rev
+
+    List.fold
+      (fun (curNode: VttNode) curAddress ->
+        match curAddress with
+        | Address.Root -> curNode
+        | Address.Child(parent, idx) ->
+          match curNode with
+          | VttNode.ViewNode viewNode -> viewNode.Children.[idx]
+          | VttNode.ElmishComponentNode _ ->
+            failwith "Component nodes cannot have children in the virtual terminal tree."
+        | Address.SubElement(parent, idx, prop) ->
+          match curNode with
+          | VttNode.ViewNode viewNode -> viewNode.SubElements.[(prop, idx)]
+          | VttNode.ElmishComponentNode _ ->
+            failwith "Component nodes cannot have sub-elements in the virtual terminal tree."
+        | Address.ElmishComponentRoot comp ->
+          match curNode with
+          | VttNode.ViewNode _ ->
+            failwith "View nodes cannot have Elmish components as children in the virtual terminal tree."
+          | VttNode.ElmishComponentNode componentNode -> VttNode.ViewNode componentNode.Root)
+      root
+      path
+
+  interface IVirtualTerminalTree with
+    member _.AddView(view, address) =
+      let newNode =
+        match address with
+        | Root
+        | Child _
+        | SubElement _ -> VttNode.ViewNode(ViewNode(view, address))
+        | ElmishComponentRoot comp ->
+          let viewNode = ViewNode(comp.Child.View, address)
+          VttNode.ElmishComponentNode(ElmishComponentNode(viewNode, address))
+
+      let rec addNode address newNode =
+        match address with
+        | Address.Root -> root <- Some newNode
+        | Address.Child(parentView, idx) ->
+          let parentAddress = address |> Origin.getParent
+          let parentNode = findNode parentAddress root.Value
+
+          match parentNode with
+          | VttNode.ViewNode viewNode ->
+            if idx <= viewNode.Children.Count then
+              viewNode.Children.Insert(idx, newNode)
+            else
+              viewNode.Children.Add(newNode)
+          | VttNode.ElmishComponentNode comp ->
+            failwith "Component nodes cannot have children in the virtual terminal tree."
+        | Address.SubElement(parent, idx, prop) ->
+          let parentAddress = address |> Origin.getParent
+          let parentNode = findNode parentAddress root.Value
+
+          match parentNode with
+          | VttNode.ViewNode viewNode -> viewNode.SubElements.[(prop, idx)] <- newNode
+          | VttNode.ElmishComponentNode _ ->
+            failwith "Component nodes cannot have sub-elements in the virtual terminal tree."
+        | Address.ElmishComponentRoot comp ->
+          let parentAddress = address |> Origin.getParent
+          addNode parentAddress newNode
+
+      addNode address newNode
 
 type internal ProgramKind =
   /// Main elmish program.
@@ -154,8 +228,8 @@ module ElmishTerminal =
 
             let origin =
               match model.Kind with
-              | ProgramKind.Root -> Origin.Root
-              | ProgramKind.ElmishComponent te -> te.Origin
+              | ProgramKind.Root -> Address.Root
+              | ProgramKind.ElmishComponent te -> te.Address
 
             initialTe.InitializeTree origin model.TerminalElementState.VTT
 
@@ -314,7 +388,7 @@ module ElmishTerminal =
       member this.Name = name
       member this.OnViewSet = this.OnViewSet
 
-      member this.Origin
+      member this.Address
         with get () = this.Origin
         and set v = this.Origin <- v
 

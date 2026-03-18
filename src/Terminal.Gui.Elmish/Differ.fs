@@ -42,7 +42,7 @@ module internal Differ =
 
           prevTree.Dispose()
 
-          newTree.InitializeTree prevTree.Origin vtt
+          newTree.InitializeTree prevTree.Address vtt
 
         | OnlyPropsChanged ->
 
@@ -94,13 +94,16 @@ module internal Differ =
                     prevTree.View.CanFocus <- true
 
                   match ne with
-                  | ViewTE ve -> ve.InitializeTree (Origin.Child(newTree, idx)) vtt
+                  | ViewTE ve -> ve.InitializeTree (Address.Child(newTree, idx)) vtt
                   | ElmishComponentTE ce ->
                     // TODO: ElmishComponent can be mixed up, with their State not matching their intended position in the tree
                     // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
-                    ce.Origin <- Origin.Child(newTree, idx)
+                    ce.Address <- Address.Child(newTree, idx)
                     ce.StartElmishLoop()
-                    ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
+
+                    ce.Address
+                    |> Origin.parentView
+                    |> Option.iter (fun v -> v.Add ce.View |> ignore)
 
               )
             else

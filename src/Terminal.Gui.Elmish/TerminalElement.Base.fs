@@ -110,12 +110,12 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  let rec traverseTEs (head: TerminalElement * Origin) (traverse: CurrentTreeNode -> Origin -> unit) : unit =
+  let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
 
     let rec traverseViewTEs
       (nodes: TerminalElement list)
-      (origin: Origin)
-      (traverse: CurrentTreeNode -> Origin -> unit)
+      (origin: Address)
+      (traverse: CurrentTreeNode -> Address -> unit)
       =
       match nodes with
       | [] -> ()
@@ -127,7 +127,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         | ElmishComponentTE _ -> ()
         | ViewTE viewTe ->
           viewTe.Children
-          |> Seq.mapi (fun i child -> child, Origin.Child(viewTe, i))
+          |> Seq.mapi (fun i child -> child, Address.Child(viewTe, i))
           |> Seq.iter (fun (child, origin) -> traverseViewTEs [ child ] origin traverse)
 
         traverseViewTEs remainingNodes origin traverse
@@ -152,7 +152,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       view <- value
       viewSetEvent.Trigger value
 
-  member val Origin: Origin = Origin.Root with get, set
+  member val Origin: Address = Address.Root with get, set
 
   member val ViewSet = viewSetEvent.Publish
 
@@ -170,11 +170,12 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView(vtt: IVirtualTerminalTree) =
-#if DEBUG
-    Diagnostics.Trace.WriteLine $"{this.Name} created!"
-#endif
+  member this.InitializeView(vtt: IVirtualTerminalTree, origin: Address) =
     this.View <- this.NewView()
+
+    // Add this view to the VTT before initializing sub-elements,
+    // so sub-elements can find their parent node in the tree.
+    vtt.AddView(this.View, origin)
 
     this.InitializeSubElements(vtt)
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
@@ -186,14 +187,14 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree (origin: Origin) (vtt: IVirtualTerminalTree) : unit =
+  member this.InitializeTree (origin: Address) (vtt: IVirtualTerminalTree) : unit =
 
-    let traverse (cur: CurrentTreeNode) (origin: Origin) =
+    let traverse (cur: CurrentTreeNode) (origin: Address) =
 
-      cur.Origin <- origin
+      cur.Address <- origin
 
       match cur with
-      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt)
+      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, origin)
       | ElmishComponentTE ce ->
         // TODO: could accept an origin
         ce.StartElmishLoop()
@@ -204,11 +205,15 @@ type internal ViewBackedTerminalElement(props: Props) =
 
       // Here, the "children" views are added to their parent.
       match cur with
-      | ViewTE te when te.Origin.IsChild ->
+      | ViewTE te when te.Address.IsChild ->
         if te.SetAsChildOfParentView then
-          te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
-      | ElmishComponentTE ce when ce.Origin.IsChild ->
-        ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
+          te.Address
+          |> Origin.parentView
+          |> Option.iter (fun v -> v.Add te.View |> ignore)
+      | ElmishComponentTE ce when ce.Address.IsChild ->
+        ce.Address
+        |> Origin.parentView
+        |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
     traverseTEs ((TerminalElement.from this), origin) traverse
@@ -224,14 +229,14 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree (Origin.SubElement(this, None, x)) vtt
+            subElement.InitializeTree (Address.SubElement(this, None, x)) vtt
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree (Origin.SubElement(this, Some i, x)) vtt)
+            |> Seq.iteri (fun i e -> e.InitializeTree (Address.SubElement(this, Some i, x)) vtt)
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
@@ -420,7 +425,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     member this.GetPath() =
       this.Origin |> Origin.getPath (this.Name)
 
-    member this.Origin
+    member this.Address
       with get () = this.Origin
       and set v = this.Origin <- v
 

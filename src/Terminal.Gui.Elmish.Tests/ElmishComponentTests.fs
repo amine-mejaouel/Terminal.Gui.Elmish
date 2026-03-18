@@ -24,8 +24,8 @@ let ``ElmishComponent.Parent is set`` () =
   let elmishComponent = elmishComponent :?> ITerminalElementBase
   let parent = parent :?> ITerminalElementBase
 
-  Assert.That(elmishComponent.Origin |> Origin.parentTerminalElement, Is.Not.Null)
-  Assert.That((elmishComponent.Origin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(parent.GetPath()))
+  Assert.That(elmishComponent.Address |> Origin.parentTerminalElement, Is.Not.Null)
+  Assert.That((elmishComponent.Address |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(parent.GetPath()))
 
 [<Test>]
 let ``ElmishComponent.Origin should keep correct value between elmish loops`` () =
@@ -46,7 +46,7 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
 
     // Assert - Origin should be preserved
     let afterUpdateComponent = program.ViewTE.Children.First()
-    let afterUpdateOrigin = afterUpdateComponent.Origin
+    let afterUpdateOrigin = afterUpdateComponent.Address
     let afterUpdatePath = afterUpdateComponent.GetPath()
 
     Assert.Multiple(fun () ->

@@ -4,8 +4,6 @@ open System
 open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
-type internal IVirtualTerminalTree = interface end
-
 type ITerminalElement = interface end
 
 [<RequireQualifiedAccess>]
@@ -122,7 +120,7 @@ type internal Props() =
 and internal ITerminalElementBase =
   inherit ITerminalElement
   inherit IDisposable
-  abstract Origin: Origin with get, set
+  abstract Address: Address with get, set
   abstract Name: string
   abstract View: View with get
   abstract OnViewSet: IEvent<View>
@@ -135,8 +133,25 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin -> vtt: IVirtualTerminalTree -> unit
+  abstract InitializeTree: origin: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
+
+and internal ViewNode(view, origin) =
+  member this.Address: Address = origin
+  member this.View: View = view
+  member val SubElements = Dictionary<RawPropKey * int option, VttNode>()
+  member val Children = ResizeArray<VttNode>() with get, set
+
+and internal ElmishComponentNode(child, origin) =
+  member this.Address: Address = origin
+  member val Root: ViewNode = child with get, set
+
+and [<RequireQualifiedAccess>] internal VttNode =
+  | ViewNode of ViewNode
+  | ElmishComponentNode of ElmishComponentNode
+
+and internal IVirtualTerminalTree =
+  abstract AddView: View * Address -> unit
 
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
@@ -172,10 +187,10 @@ and internal TerminalElement =
     | ElmishComponentTE elmishComponentTE -> elmishComponentTE :> ITerminalElementBase
 
   member this.Name = this.TerminalElementBase.Name
-  member this.Origin = this.TerminalElementBase.Origin
+  member this.Address = this.TerminalElementBase.Address
 
-  member this.Origin
-    with set value = this.TerminalElementBase.Origin <- value
+  member this.Address
+    with set value = this.TerminalElementBase.Address <- value
 
   member this.ViewSet = this.TerminalElementBase.OnViewSet
   member this.View = this.TerminalElementBase.View
@@ -186,20 +201,20 @@ and internal TerminalElement =
     member this.View = this.View
     member this.OnViewSet = this.ViewSet
     member this.Name = this.Name
-    member this.Origin = this.Origin
+    member this.Address = this.Address
 
-    member this.Origin
-      with set value = this.Origin <- value
+    member this.Address
+      with set value = this.Address <- value
 
     member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
 // Origin describes how a TerminalElement is related to the root of the tree.
-and internal Origin =
+and internal Address =
   /// Root element of the Elmish program.
   | Root
   /// Root element of an Elmish component.
-  | ElmishComponent of Parent: IElmishComponentTE
+  | ElmishComponentRoot of Parent: IElmishComponentTE
   /// Child element of a view.
   | Child of Parent: IViewTE * Index: int
   /// SubElement of a view, such as a property that is itself a view, or a collection of views.
@@ -327,15 +342,22 @@ module Element =
       | Root -> None
       | Child(parent, _) -> Some(TerminalElement.ViewTE parent)
       | SubElement(parent, _, _) -> Some(TerminalElement.ViewTE parent)
-      | ElmishComponent parent -> Some(TerminalElement.ElmishComponentTE parent)
+      | ElmishComponentRoot parent -> Some(TerminalElement.ElmishComponentTE parent)
 
-    let rec parentView (this: Origin) =
+    let rec parentView (this: Address) =
       match this |> parentTerminalElement with
-      | Some(ElmishComponentTE parent) -> parent.Origin |> parentView
+      | Some(ElmishComponentTE parent) -> parent.Address |> parentView
       | Some(ViewTE parent) -> Some parent.View
       | None -> None
 
-    let getPath name (this: Origin) =
+    let getParent origin : Address =
+      match origin with
+      | Root -> failwith "Root element does not have a parent."
+      | Child(parent, _)
+      | SubElement(parent, _, _) -> parent.Address
+      | ElmishComponentRoot parent -> parent.Address
+
+    let getPath name (this: Address) =
       let parentPath =
         match this |> parentTerminalElement with
         | Some parent -> parent.GetPath()
@@ -343,22 +365,22 @@ module Element =
 
       let propIdStr =
         match this with
-        | Origin.Root -> ""
-        | Origin.Child _
-        | Origin.ElmishComponent _ -> "child"
-        | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
+        | Address.Root -> ""
+        | Address.Child _
+        | Address.ElmishComponentRoot _ -> "child"
+        | Address.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
 
       let indexStr =
         let rec indexStr origin =
           match origin with
-          | Origin.Root -> ""
-          | Origin.ElmishComponent parent -> indexStr parent.Origin
-          | Origin.Child(_, index) -> $"[{index}]"
-          | Origin.SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+          | Address.Root -> ""
+          | Address.ElmishComponentRoot parent -> indexStr parent.Address
+          | Address.Child(_, index) -> $"[{index}]"
+          | Address.SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
 
         indexStr this
 
       match this with
-      | Origin.Root -> $"root:{name}"
-      | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
+      | Address.Root -> $"root:{name}"
+      | Address.ElmishComponentRoot parent -> $"{parent.GetPath()}:{name}"
       | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"

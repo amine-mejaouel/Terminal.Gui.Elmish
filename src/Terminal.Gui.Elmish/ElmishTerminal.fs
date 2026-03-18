@@ -16,9 +16,9 @@ type VirtualTerminalTree() =
         (fun o ->
           match o with
           | Address.Root -> None
-          | Address.Child(parent, idx) -> Some(parent.Address, parent.Address)
-          | Address.SubElement(parent, idx, prop) -> Some(parent.Address, parent.Address)
-          | Address.ElmishComponentRoot parent -> Some(parent.Address, parent.Address))
+          | Address.Child(parent, idx) -> Some(o, parent.Address)
+          | Address.SubElement(parent, idx, prop) -> Some(o, parent.Address)
+          | Address.ElmishComponentRoot parent -> Some(o, parent.Address))
         address
       |> List.rev
 
@@ -43,6 +43,8 @@ type VirtualTerminalTree() =
           | VttNode.ElmishComponentNode componentNode -> VttNode.ViewNode componentNode.Root)
       root
       path
+
+  member internal _.Root = root
 
   interface IVirtualTerminalTree with
     member _.AddView(view, address) =

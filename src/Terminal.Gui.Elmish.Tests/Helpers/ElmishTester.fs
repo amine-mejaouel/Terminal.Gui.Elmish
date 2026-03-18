@@ -14,6 +14,7 @@ type internal TestableElmishProgram<'msg> =
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task
   abstract member ViewTE: IViewTE
   abstract member View: Terminal.Gui.ViewBase.View
+  abstract member VTT: VirtualTerminalTree
   inherit IDisposable
 
 type internal MsgDispatcherSubscription<'model, 'msg>() =
@@ -72,6 +73,7 @@ let internal run
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
+  let mutable vtt = Unchecked.defaultof<VirtualTerminalTree>
   let triggerTerminationTcs = TaskCompletionSource()
 
   let application = Application.Create()
@@ -81,6 +83,7 @@ let internal run
       task {
         let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
         curTE <- currentTE
+        vtt <- model.TerminalElementState.VTT
 
         waitForStart.SetResult()
       }
@@ -133,6 +136,8 @@ let internal run
       member _.ViewTE = curTE
 
       member _.View = curTE.View
+
+      member _.VTT = vtt
 
       member this.Dispose() =
         triggerTerminationTcs.SetResult()

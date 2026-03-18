@@ -25,6 +25,7 @@
     <Compile Include="CodeGenTests.fs" />
     <Compile Include="PropKeyTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
+    <Compile Include="VirtualTerminalTreeTests.fs" />
     <Compile Include="ElmishLoopTests.fs" />
     <Compile Include="PositionServiceTests.fs" />
   </ItemGroup>

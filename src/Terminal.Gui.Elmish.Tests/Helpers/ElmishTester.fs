@@ -31,7 +31,7 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  member this.subscribe(model: ElmishTerminal.TerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
+  member this.subscribe(model: MainLoop._RootTerminalModel<_>) : Subscribe<TerminalMsg<'msg>> =
     let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
       let cancellationToken = new CancellationTokenSource()
 
@@ -66,7 +66,7 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
     }
 
 let internal run
-  (ElmishTerminal.ElmishTerminalProgram program: ElmishTerminal.ElmishTerminalProgram<IApplication, 'model, 'msg, 'view>)
+  (MainLoop.MainTerminalProgram program: MainLoop.MainTerminalProgram<IApplication, 'model, 'msg, 'view>)
   =
 
   let msgDispatcherSub = MsgDispatcherSubscription()
@@ -78,7 +78,7 @@ let internal run
 
   let application = Application.Create()
 
-  let waitForProgramStartSub (model: ElmishTerminal.TerminalModel<_>) =
+  let waitForProgramStartSub (model: MainLoop._RootTerminalModel<_>) =
     let start dispatch =
       task {
         let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
@@ -121,7 +121,7 @@ let internal run
 
   program
   |> Program.withSubscription subscribe
-  |> Program.withTermination (fun msg -> msg = Terminate) ElmishTerminal.terminate
+  |> Program.withTermination (fun msg -> msg = Terminate) MainLoop.terminate
   |> Program.runWith application
 
   waitForStart.Task.GetAwaiter().GetResult()
@@ -148,14 +148,14 @@ let internal render view : TestableElmishProgram<'msg> =
   let update _ _ = (), Cmd.none
   let view _ _ = view
 
-  ElmishTerminal.mkSimple init update view |> run
+  MainLoop.mkSimple init update view |> run
 
 type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
   inherit IElmishComponentTE
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task
 
 type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) =
-  inherit ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
+  inherit MainLoop.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
 
   let msgDispatcherSub = MsgDispatcherSubscription<'model, 'msg>()
 

@@ -126,6 +126,6 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
 let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
-  ElmishTerminal.mkProgram init update view |> ElmishTerminal.runTerminal
+  MainLoop.mkProgram init update view |> MainLoop.runTerminal
 
   0

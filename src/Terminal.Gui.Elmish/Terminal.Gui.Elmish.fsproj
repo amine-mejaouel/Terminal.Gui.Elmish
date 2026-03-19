@@ -49,7 +49,10 @@
     <Compile Include="Task.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Differ.fs" />
-    <Compile Include="ElmishTerminal.fs" />
+    <Compile Include="VirtualTerminalTree.fs" />
+    <Compile Include="ElmishLoop\Common.fs" />
+    <Compile Include="ElmishLoop\ComponentLoop.fs" />
+    <Compile Include="ElmishLoop\MainLoop.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="Services\PositionService.fs" />

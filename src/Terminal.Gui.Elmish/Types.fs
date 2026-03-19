@@ -175,7 +175,8 @@ and internal IElmishComponentTE =
 
   abstract Child: IViewTE with get
 
-  abstract StartElmishLoop: unit -> unit
+  abstract StartElmishLoop: IVirtualTerminalTree * Address -> unit
+  // TODO: should also take vtt + address
   abstract Reuse: prev: IElmishComponentTE -> unit
 
 and internal TerminalElement =

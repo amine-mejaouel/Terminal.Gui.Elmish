@@ -200,16 +200,14 @@ type internal ViewBackedTerminalElement(props: Props) =
     let headParentView = this.ParentViewField
     let headParentPath = this.ParentPathField
 
-    let traverse (cur: CurrentTreeNode) (origin: Address) (parentView: View option) =
+    let traverse (cur: CurrentTreeNode) (address: Address) (parentView: View option) =
 
-      cur.Address <- origin
+      cur.Address <- address
       cur.ParentView <- parentView
 
       match cur with
-      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, origin)
-      | ElmishComponentTE ce ->
-        // TODO: could accept an origin
-        ce.StartElmishLoop()
+      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
+      | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
 
       // Here, the "children" views are added to their parent.
       match cur with

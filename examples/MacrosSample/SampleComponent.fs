@@ -36,4 +36,4 @@ let _component (set: IProps -> unit) =
       props.y_value |> Option.iter p.Y
       p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg ChangeText)))
 
-  ElmishTerminal.mkSimpleComponent "SampleComponent" init update view
+  MainLoop.mkSimpleComponent "SampleComponent" init update view

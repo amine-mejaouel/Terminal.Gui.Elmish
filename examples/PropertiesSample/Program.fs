@@ -109,7 +109,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
 let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
-  let x = ElmishTerminal.mkProgram init update view
-  x |> ElmishTerminal.runTerminal
+  let x = MainLoop.mkProgram init update view
+  x |> MainLoop.runTerminal
 
   0 // return an integer exit code

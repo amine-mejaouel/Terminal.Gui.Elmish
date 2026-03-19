@@ -13,8 +13,7 @@ let ``ElmishComponent.Parent is set`` () =
 
   let view _ _ = View.Button(fun _ -> ())
 
-  let elmishComponent =
-    ElmishTerminal.mkSimpleComponent "ElmishComponent" init update view
+  let elmishComponent = MainLoop.mkSimpleComponent "ElmishComponent" init update view
 
   let parent = View.Runnable [ elmishComponent ]
 

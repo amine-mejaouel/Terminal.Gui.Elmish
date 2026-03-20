@@ -89,9 +89,6 @@ module Program =
           model.ClientModel <- innerModel
           model
 
-    let internal wrapSubscribe (subscribe: 'model -> Sub<'msg>) : MainTerminalModel<'model> -> _ =
-      fun outerModel -> subscribe outerModel.ClientModel |> Sub.map "WrapSubscribe" TerminalMsg.ofMsg
-
   type MainTerminalProgram<'arg, 'model, 'msg, 'view> =
     internal | MainTerminalProgram of Program<'arg, MainTerminalModel<'model>, TerminalMsg<'msg>, 'view>
 
@@ -99,7 +96,7 @@ module Program =
     // For the main elmish loop, signal stop and let runTerminal handle cleanup after Run() returns
     model.Application.RequestStop()
 
-  let internal setState view : (ITerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> unit) =
+  let internal setState view : ITerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> unit =
     let wrapView (view: MainTerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
       fun (model: ITerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'cmd>>) ->
         let model = model :?> MainTerminalModel<'model>
@@ -126,12 +123,22 @@ module Program =
     |> Program.withSetState (setState view)
     |> MainTerminalProgram
 
-  let withSubscription (subscribe: 'model -> Sub<'msg>) (MainTerminalProgram program) =
-    program
-    |> Program.withSubscription (OuterModel.wrapSubscribe subscribe)
-    |> MainTerminalProgram
+  let internal withInternalSubscription
+    (subscribe: MainTerminalModel<'model> -> Sub<TerminalMsg<'msg>>)
+    (program: Program<'arg, MainTerminalModel<'model>, TerminalMsg<'msg>, 'view>)
+    =
 
-  let withTermination predicate (MainTerminalProgram program) = program |> MainTerminalProgram
+    program |> Program.withSubscription subscribe |> MainTerminalProgram
+
+  let internal withInternalTermination
+    predicate
+    terminate
+    (MainTerminalProgram program: MainTerminalProgram<'arg, 'model, 'msg, 'view>)
+    =
+    program |> Program.withTermination predicate terminate |> MainTerminalProgram
+
+  let internal runWith arg (MainTerminalProgram program: MainTerminalProgram<'arg, 'model, 'msg, 'view>) =
+    Program.runWith arg program
 
   let runTerminal (MainTerminalProgram program) =
 

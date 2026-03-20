@@ -64,9 +64,11 @@ let inline internal setState<'model, 'cmd, ^terminalModel when ^terminalModel :>
       task {
         if not model.RootViewSet then
 
+          // TODO: double view evaluation, as view is already called by elmish loop
+          // TODO: this should vanish once VTT is done.
           let initialTe = view model dispatch :?> IViewTE
 
-          initialTe.InitializeTree initialTe.Address model.TerminalElementState.VTT
+          initialTe.InitializeTree model.Address model.TerminalElementState.VTT
 
           return initialTe
 

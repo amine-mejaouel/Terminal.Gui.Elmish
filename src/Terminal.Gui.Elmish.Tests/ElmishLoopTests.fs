@@ -46,7 +46,7 @@ let ``Button instance, used as relative position, should be collected after it's
             first
             second ])
 
-    let program = MainLoop.mkSimple init update view |> ElmishTester.run
+    let program = Program.mkSimple init update view |> ElmishTester.run
 
     let buttonRef = System.WeakReference(program.ViewTE.Children.First().View)
 

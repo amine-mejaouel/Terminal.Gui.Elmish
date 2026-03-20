@@ -34,6 +34,6 @@ let _component (set: IProps -> unit) =
     View.Label(fun p ->
       p.Text model.Text
       props.y_value |> Option.iter p.Y
-      p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg ChangeText)))
+      p.Accepting(fun _ -> dispatch ChangeText))
 
-  MainLoop.mkSimpleComponent "SampleComponent" init update view
+  Component.mkSimple "SampleComponent" init update view

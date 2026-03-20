@@ -1,23 +1,22 @@
-namespace Terminal.Gui.Elmish.ElmishLoop
+namespace Terminal.Gui.Elmish
 
 open System
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.Elmish
-open Terminal.Gui.Elmish.ElmishLoop.Common
 open Terminal.Gui.ViewBase
 
-module ComponentLoop =
+module Component =
 
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
-  type internal ComponentTerminalModel<'model>(vtt: VirtualTerminalTree, address: Address, clientModel: 'model) =
+  type internal ComponentTerminalModel<'model>(vtt: IVirtualTerminalTree, address: Address, clientModel: 'model) =
     // TODO: I prefer to keep vtt and address here, should check that last thing, when all errors are fixed.
     // let terminalElementState = TerminalElementState(vtt, address)
-    let terminalElementState = TerminalElementState()
+    let terminalElementState = TerminalElementState(vtt)
 
     member val ClientModel = clientModel with get, set
     member this.RootViewSet = terminalElementState.RootViewSet
@@ -28,6 +27,7 @@ module ComponentLoop =
     interface ITerminalModel<'model> with
       member this.RootViewSet = this.RootViewSet
       member this.TerminalElementState: TerminalElementState = this.TerminalElementState
+      member this.Address = address
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
@@ -90,7 +90,7 @@ module ComponentLoop =
 
     let mkSimpleComponent
       (terminalElement: IElmishComponentTE)
-      (vtt: VirtualTerminalTree)
+      (vtt: IVirtualTerminalTree)
       (address: Address)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
@@ -204,7 +204,7 @@ module ComponentLoop =
 
       member this.Dispose() = this.Dispose()
 
-  let mkSimpleComponent
+  let mkSimple
     name
     (init: unit -> 'model)
     (update: 'msg -> 'model -> 'model)

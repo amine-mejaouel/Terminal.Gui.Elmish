@@ -1,11 +1,10 @@
-namespace Terminal.Gui.Elmish.ElmishLoop
+namespace Terminal.Gui.Elmish
 
 open System
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
 open Terminal.Gui.Elmish
-open Terminal.Gui.Elmish.Common
 open Terminal.Gui.Views
 
 type TerminalMsg<'a> =
@@ -17,19 +16,18 @@ module TerminalMsg =
   let ofMsg msg = TerminalMsg.Msg msg
 
 [<RequireQualifiedAccess>]
-module MainLoop =
+module Program =
 
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
-  type internal MainTerminalModel<'model>(application: IApplication, kind: ProgramKind, clientModel: 'model) =
+  type internal MainTerminalModel<'model>(application: IApplication, clientModel: 'model) =
     let terminalElementState = TerminalElementState()
 
     member val ClientModel = clientModel with get, set
     member this.Application = application
-    member this.Kind = kind
     member this.RootViewSet = terminalElementState.RootViewSet
     member this.TerminalElementState = terminalElementState
 
@@ -37,22 +35,20 @@ module MainLoop =
 
     interface ITerminalModel<'model> with
       member this.RootViewSet = this.RootViewSet
-      member this.Kind: ProgramKind = this.Kind
       member this.TerminalElementState: TerminalElementState = this.TerminalElementState
+      member this.Address = [ AddressSegment.Root ]
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
 
   module internal OuterModel =
     let internal wrapInit
-      origin
       (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
       : 'arg -> MainTerminalModel<'model> * Cmd<TerminalMsg<'msg>> =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
-        let terminalModel =
-          new MainTerminalModel<_>(Application.Create(), origin, innerModel)
+        let terminalModel = new MainTerminalModel<_>(Application.Create(), innerModel)
 
         terminalModel, cmd
 
@@ -73,12 +69,11 @@ module MainLoop =
       : MainTerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
       fun (model: MainTerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel dispatch
 
-    let internal wrapSimpleInit programKind (init: 'arg -> 'model) =
+    let internal wrapSimpleInit (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
-        let terminalModel =
-          new MainTerminalModel<_>(Application.Create(), programKind, innerModel)
+        let terminalModel = new MainTerminalModel<_>(Application.Create(), innerModel)
 
         terminalModel
 
@@ -101,11 +96,8 @@ module MainLoop =
     internal | MainTerminalProgram of Program<'arg, MainTerminalModel<'model>, TerminalMsg<'msg>, 'view>
 
   let internal terminate (model: MainTerminalModel<_>) =
-    match model.Kind with
-    | ProgramKind.Main ->
-      // For the main elmish loop, signal stop and let runTerminal handle cleanup after Run() returns
-      model.Application.RequestStop()
-    | ProgramKind.ElmishComponent _ -> model.Dispose()
+    // For the main elmish loop, signal stop and let runTerminal handle cleanup after Run() returns
+    model.Application.RequestStop()
 
   let internal setState view : (ITerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> unit) =
     let wrapView (view: MainTerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
@@ -121,10 +113,7 @@ module MainLoop =
     (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
     =
 
-    Program.mkProgram
-      (OuterModel.wrapInit ProgramKind.Main init)
-      (OuterModel.wrapUpdate update)
-      (OuterModel.wrapView view)
+    Program.mkProgram (OuterModel.wrapInit init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState view)
     |> MainTerminalProgram
 
@@ -133,10 +122,7 @@ module MainLoop =
     (update: 'cmd -> 'model -> 'model)
     (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
     =
-    Program.mkSimple
-      (OuterModel.wrapSimpleInit ProgramKind.Main init)
-      (OuterModel.wrapSimpleUpdate update)
-      (OuterModel.wrapView view)
+    Program.mkSimple (OuterModel.wrapSimpleInit init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
     |> Program.withSetState (setState view)
     |> MainTerminalProgram
 
@@ -156,30 +142,24 @@ module MainLoop =
         task {
           let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
 
-          if model.Kind.IsElmishComponent then
-            failwith (
-              "`run` is meant to be used for Terminal Elmish loop. "
-              + "For Terminal components with separate Elmish loop, use `runComponent`."
-            )
-          else
-            Task.Run(fun () ->
-              (try
-                try
-                  model.Application.Init() |> ignore
-                  // Run return after Application.RequestStop is called in terminate.
-                  model.Application.Run(rootView :?> Runnable) |> ignore
-                finally
-                  model.Dispose()
-                  // 2. Dispose the IApplication (restores terminal, cleans up driver)
-                  model.Application.Dispose()
+          Task.Run(fun () ->
+            (try
+              try
+                model.Application.Init() |> ignore
+                // Run return after Application.RequestStop is called in terminate.
+                model.Application.Run(rootView :?> Runnable) |> ignore
+              finally
+                model.Dispose()
+                // 2. Dispose the IApplication (restores terminal, cleans up driver)
+                model.Application.Dispose()
 
-                applicationStopped.SetResult()
-               with ex ->
-                 applicationStopped.SetException ex
+              applicationStopped.SetResult()
+             with ex ->
+               applicationStopped.SetException ex
 
-              ),
-              TaskCreationOptions.LongRunning)
-            |> ignore
+            ),
+            TaskCreationOptions.LongRunning)
+          |> ignore
 
         }
         |> Task.wait

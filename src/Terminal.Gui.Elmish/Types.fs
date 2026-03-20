@@ -133,7 +133,7 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Address -> vtt: IVirtualTerminalTree -> unit
+  abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
 and internal ViewNode(view: View, origin) =
@@ -225,6 +225,7 @@ and internal TerminalElement =
 
     member this.Dispose() = this.Dispose()
 
+// Each segment corresponds to a View in the tree.
 and internal AddressSegment =
   /// Root element of the Elmish program.
   | Root

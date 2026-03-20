@@ -160,8 +160,6 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member val ParentViewField: View option = None with get, set
 
-  member val ParentPathField: string = "root" with get, set
-
   member val ViewSet = viewSetEvent.Publish
 
   member val EventRegistrar: EventHandlerRegistrar = EventHandlerRegistrar() with get, set
@@ -178,12 +176,12 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView(vtt: IVirtualTerminalTree, origin: Address) =
+  member this.InitializeView(vtt: IVirtualTerminalTree, address: Address) =
     this.View <- this.NewView()
 
     // Add this view to the VTT before initializing sub-elements,
     // so sub-elements can find their parent node in the tree.
-    vtt.AddView(this.View, origin)
+    vtt.AddView(this.View, address)
 
     this.InitializeSubElements(vtt)
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
@@ -195,13 +193,13 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree (origin: Address) (vtt: IVirtualTerminalTree) : unit =
+  member this.InitializeTree (address: Address) (vtt: IVirtualTerminalTree) : unit =
 
     let headParentView = this.ParentViewField
-    let headParentPath = this.ParentPathField
 
     let traverse (cur: CurrentTreeNode) (address: Address) (parentView: View option) =
 
+      // TODO: address / parentView should be passed as parameters instead
       cur.Address <- address
       cur.ParentView <- parentView
 
@@ -218,7 +216,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         ce.ParentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
       | _ -> ()
 
-    traverseTEs ((TerminalElement.from this), origin, headParentView) traverse
+    traverseTEs ((TerminalElement.from this), address, headParentView) traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.InitializeSubElements(vtt) : (PropKey * obj) seq =
@@ -306,7 +304,6 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.EventRegistrar <- prev.EventRegistrar
     this.Origin <- prev.Origin
     this.ParentViewField <- prev.ParentViewField
-    this.ParentPathField <- prev.ParentPathField
 
     PositionService.Current.ApplyPos this
 
@@ -426,7 +423,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       view <- Unchecked.defaultof<_>
 
   interface IViewTE with
-    member this.InitializeTree origin vtt = this.InitializeTree origin vtt
+    member this.InitializeTree address vtt = this.InitializeTree address vtt
     member this.Reuse prevElementData = this.Reuse prevElementData
 
     member this.Address

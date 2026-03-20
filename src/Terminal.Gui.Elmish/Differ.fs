@@ -104,7 +104,7 @@ module internal Differ =
                     // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
                     ce.Address <- newTree.Address @ [ Child idx ]
                     ce.ParentView <- Some newTree.View
-                    ce.StartElmishLoop()
+                    ce.StartElmishLoop(vtt, newTree.Address @ [ Child idx ])
 
                     newTree.View.Add ce.View |> ignore
 

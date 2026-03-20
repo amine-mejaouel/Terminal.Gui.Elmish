@@ -126,6 +126,6 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
 let main argv =
   ConfigurationManager.Enable(ConfigLocations.All)
 
-  MainLoop.mkProgram init update view |> MainLoop.runTerminal
+  Program.mkProgram init update view |> Program.runTerminal
 
   0

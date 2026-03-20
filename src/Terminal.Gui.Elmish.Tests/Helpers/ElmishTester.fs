@@ -19,8 +19,7 @@ type internal TestableElmishProgram<'msg> =
 
 type internal MsgDispatcherSubscription<'model, 'msg>() =
 
-  let msgQueue =
-    Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
+  let msgQueue = Channel.CreateUnbounded<'msg * TaskCompletionSource<IViewTE>>()
 
   /// Msg dispatcher:
   /// - listens to the msgQueue (which is written to by the ProcessMsg method)
@@ -31,8 +30,8 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
   /// This allows the ProcessMsg implementation to wait until the msg is fully processed,
   /// Returning the new IViewTE to the caller;
   /// Which is necessary for the tests to be able to assert on the new IViewTE state after processing the msg.
-  member this.subscribe<'msg>(model: ITerminalModel<'model>) : Subscribe<TerminalMsg<'msg>> =
-    let start (dispatch: Dispatch<TerminalMsg<'msg>>) =
+  member this.subscribe<'msg>(model: ITerminalModel<'model>) : Subscribe<'msg> =
+    let start (dispatch: Dispatch<'msg>) =
       let cancellationToken = new CancellationTokenSource()
 
       Task.Factory.StartNew(
@@ -55,7 +54,7 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
     start
 
   /// Sends the message to the Elmish program and waits for it to be processed, returning the new IViewTE after processing.
-  member this.ProcessMsg(msg: TerminalMsg<'msg>) =
+  member this.ProcessMsg(msg: 'msg) =
     task {
       let msgProcessedTcs = TaskCompletionSource<_>()
       let item = (msg, msgProcessedTcs)
@@ -69,7 +68,7 @@ let internal run<'model, 'msg, 'view>
   (Program.MainTerminalProgram program: Program.MainTerminalProgram<IApplication, 'model, 'msg, 'view>)
   =
 
-  let msgDispatcherSub = MsgDispatcherSubscription<'model, 'msg>()
+  let msgDispatcherSub = MsgDispatcherSubscription<'model, TerminalMsg<'msg>>()
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
@@ -151,7 +150,7 @@ let internal render view : TestableElmishProgram<'msg> =
 
 type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
   inherit IElmishComponentTE
-  abstract member ProcessMsg: TerminalMsg<'msg> -> Task
+  abstract member ProcessMsg: 'msg -> Task
 
 type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) =
   inherit Component.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
@@ -166,7 +165,7 @@ type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update,
         { SubId = [ "msgDispatcher" ]
           SubscriptionFunc = msgDispatcherSub.subscribe } ]
 
-  member this.ProcessMsg(msg: TerminalMsg<'msg>) = msgDispatcherSub.ProcessMsg msg
+  member this.ProcessMsg(msg: 'msg) = msgDispatcherSub.ProcessMsg msg
 
   interface ITestableElmishComponentTE<'model, 'msg, 'view> with
     member this.ProcessMsg msg = this.ProcessMsg msg

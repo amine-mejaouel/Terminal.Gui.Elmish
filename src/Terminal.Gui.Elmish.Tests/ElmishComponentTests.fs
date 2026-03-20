@@ -13,7 +13,7 @@ let ``ElmishComponent.Parent is set`` () =
 
   let view _ _ = View.Button(fun _ -> ())
 
-  let elmishComponent = MainLoop.mkSimpleComponent "ElmishComponent" init update view
+  let elmishComponent = Component.mkSimple "ElmishComponent" init update view
 
   let parent = View.Runnable [ elmishComponent ]
 
@@ -45,7 +45,7 @@ let ``ElmishComponent address should keep correct value between elmish loops`` (
     let initialPath = testComponentTE.Address |> Address.getPath
 
     // Act - trigger a re-render by dispatching a message
-    let! _ = testComponentTE.ProcessMsg(TestComponent.Increment |> TerminalMsg.ofMsg)
+    let! _ = testComponentTE.ProcessMsg(TestComponent.Increment)
 
     // Assert - Address should be preserved
     let afterUpdateComponent = program.ViewTE.Children.First()

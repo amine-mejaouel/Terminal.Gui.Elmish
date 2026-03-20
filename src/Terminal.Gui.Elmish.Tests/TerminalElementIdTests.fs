@@ -39,5 +39,5 @@ let ``Component ID test`` () =
   Assert.Multiple(fun () ->
     Assert.That(view.Address |> Address.getPath, Is.EqualTo("root"))
     Assert.That(testComp.Address |> Address.getPath, Is.EqualTo("root:child[0]"))
-    Assert.That(label.Address |> Address.getPath, Is.EqualTo("root:child[0]:TestComponent:child[0]"))
-    Assert.That(button.Address |> Address.getPath, Is.EqualTo("root:child[0]:TestComponent:child[1]")))
+    Assert.That(label.Address |> Address.getPath, Is.EqualTo("root:child[0]:child[0]"))
+    Assert.That(button.Address |> Address.getPath, Is.EqualTo("root:child[0]:child[1]")))

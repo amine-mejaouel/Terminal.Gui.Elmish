@@ -131,7 +131,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         | ElmishComponentTE _ -> ()
         | ViewTE viewTe ->
           viewTe.Children
-          |> Seq.mapi (fun i child -> child, origin @ [ Child i ])
+          |> Seq.mapi (fun i child -> child, origin @ [ Child(i, child.IsElmishComponentTE) ])
           |> Seq.iter (fun (child, childOrigin) -> traverseViewTEs [ child ] childOrigin (Some viewTe.View) traverse)
 
         traverseViewTEs remainingNodes origin parentView traverse
@@ -218,6 +218,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     traverseTEs ((TerminalElement.from this), address, headParentView) traverse
 
+  // TODO: InitializeSubElements does not support elmish components as sub elements.
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
   member this.InitializeSubElements(vtt) : (PropKey * obj) seq =
     seq {
@@ -229,14 +230,14 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree (this.Origin @ [ SubElement(None, x) ]) vtt
+            subElement.InitializeTree (this.Origin @ [ SubElement(None, x, false) ]) vtt
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
             yield viewKey, subElement.View
           | :? List<IViewTE> as elements ->
             elements
-            |> Seq.iteri (fun i e -> e.InitializeTree (this.Origin @ [ SubElement(Some i, x) ]) vtt)
+            |> Seq.iteri (fun i e -> e.InitializeTree (this.Origin @ [ SubElement(Some i, x, false) ]) vtt)
 
             let viewKey = PropKey.viewKeyOfSubElement x
 

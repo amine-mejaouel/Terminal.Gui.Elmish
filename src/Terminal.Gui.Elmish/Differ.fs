@@ -98,13 +98,13 @@ module internal Differ =
                   match ne with
                   | ViewTE ve ->
                     ve.ParentView <- Some newTree.View
-                    ve.InitializeTree (newTree.Address @ [ Child idx ]) vtt
+                    ve.InitializeTree (newTree.Address @ [ Child(idx, false) ]) vtt
                   | ElmishComponentTE ce ->
                     // TODO: ElmishComponent can be mixed up, with their State not matching their intended position in the tree
                     // TODO: Should provide a more robust way to handle ElmishComponent State recovery.
-                    ce.Address <- newTree.Address @ [ Child idx ]
+                    ce.Address <- newTree.Address @ [ Child(idx, true) ]
                     ce.ParentView <- Some newTree.View
-                    ce.StartElmishLoop(vtt, newTree.Address @ [ Child idx ])
+                    ce.StartElmishLoop(vtt, newTree.Address @ [ Child(idx, true) ])
 
                     newTree.View.Add ce.View |> ignore
 

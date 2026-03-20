@@ -136,7 +136,7 @@ and internal IViewTE =
   abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
-and internal ViewNode(view: View, origin) =
+and internal VttNode(view: View, origin) =
   let viewRef = WeakReference<View>(view)
   member this.Address: Address = origin
 
@@ -148,14 +148,6 @@ and internal ViewNode(view: View, origin) =
 
   member val SubElements = Dictionary<RawPropKey * int option, VttNode>()
   member val Children = ResizeArray<VttNode>() with get, set
-
-and internal ElmishComponentNode(child, origin) =
-  member this.Address: Address = origin
-  member val Root: ViewNode = child with get, set
-
-and [<RequireQualifiedAccess>] internal VttNode =
-  | ViewNode of ViewNode
-  | ElmishComponentNode of ElmishComponentNode
 
 and internal IVirtualTerminalTree =
   abstract AddView: View * Address -> unit
@@ -230,11 +222,9 @@ and internal AddressSegment =
   /// Root element of the Elmish program.
   | Root
   /// Child element of a view.
-  | Child of Index: int
+  | Child of Index: int * IsComponent: bool
   /// SubElement of a view, such as a property that is itself a view, or a collection of views.
-  | SubElement of Index: int option * Property: RawPropKey
-  /// Root element of an Elmish component.
-  | ElmishComponentRoot
+  | SubElement of Index: int option * Property: RawPropKey * IsComponent: bool
 
 // Origin describes how a TerminalElement is related to the root of the tree.
 and internal Address = AddressSegment list
@@ -378,10 +368,25 @@ module Element =
         (fun path segment ->
           match segment with
           | Root -> path + "root"
-          | Child index -> path + $":child[{index}]"
-          | ElmishComponentRoot -> path + ":elmishComponentRoot"
-          | SubElement(index, propKey) ->
+          | Child(index, isComponent) ->
+            seq {
+              yield path
+              yield $":child[{index}]"
+
+              if isComponent then
+                yield ":component"
+            }
+            |> String.concat ""
+          | SubElement(index, propKey, isComponent) ->
             let indexStr = index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
-            path + $":{propKey}{indexStr}")
+
+            seq {
+              yield path
+              yield $":subElement:{propKey}{indexStr}"
+
+              if isComponent then
+                yield ":component"
+            }
+            |> String.concat "")
         ""
         addr

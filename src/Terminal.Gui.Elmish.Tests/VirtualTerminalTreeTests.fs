@@ -8,9 +8,12 @@ open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 /// Minimal IViewTE stub for use in Address values.
-type private StubViewTE(initialAddress: Address) =
+type private StubViewTE(initialAddress: Address, view: View) =
   let mutable addr = initialAddress
   let mutable parentView: View option = None
+
+  member _.View = view
+  member this.VttNode = VttNode.fromViewTE (this, initialAddress)
 
   interface ITerminalElement
 
@@ -27,7 +30,7 @@ type private StubViewTE(initialAddress: Address) =
       and set v = parentView <- v
 
     member _.Name = "Stub"
-    member _.View = Unchecked.defaultof<_>
+    member _.View = view
     member _.OnViewSet = Event<View>().Publish
 
   interface IViewTE with
@@ -41,16 +44,16 @@ type private StubViewTE(initialAddress: Address) =
 let ``AddView with Root address sets the root node`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
-  let view = new Button()
+  let te = new StubViewTE([ Root ], new Button())
 
-  ivtt.AddView(view, [ Root ], true)
+  ivtt.AddView(te.VttNode)
 
   Assert.That(vtt.Root.IsSome, Is.True, "Root should be set")
 
   let rootNode = vtt.Root.Value
 
   Assert.Multiple(fun () ->
-    Assert.That(rootNode.View, Is.SameAs(view), "Root view should match")
+    Assert.That(rootNode.View, Is.SameAs(te.View), "Root view should match")
     Assert.That(rootNode.Children.Count, Is.EqualTo(0), "Root should have no children")
     Assert.That(rootNode.SubElements.Count, Is.EqualTo(0), "Root should have no sub-elements")
     Assert.That(rootNode.Address, Is.EqualTo<Address>([ Root ]), "Root address should be [Root]"))
@@ -60,11 +63,11 @@ let ``AddView with Child address adds a child node to the root`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let childView = new Label()
+  let rootTE = new StubViewTE([ Root ], new Button())
+  let childTE = new StubViewTE([ Root; Child(0, false) ], new Label())
 
-  ivtt.AddView(rootView, [ Root ], true)
-  ivtt.AddView(childView, [ Root; Child(0, false) ], true)
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(childTE.VttNode)
 
   let rootNode = vtt.Root.Value
 
@@ -73,7 +76,7 @@ let ``AddView with Child address adds a child node to the root`` () =
   let childNode = rootNode.Children[0]
 
   Assert.Multiple(fun () ->
-    Assert.That(childNode.View, Is.SameAs(childView), "Child view should match")
+    Assert.That(childNode.View, Is.SameAs(childTE.View), "Child view should match")
     Assert.That(childNode.Children.Count, Is.EqualTo(0), "Child should have no children"))
 
 [<Test>]
@@ -81,43 +84,44 @@ let ``AddView with multiple children preserves insertion order`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let child0 = new Label()
-  let child1 = new Button()
-  let child2 = new Label()
+  let rootTE = new StubViewTE([ Root ], new Button())
+  let child0TE = new StubViewTE([ Root; Child(0, false) ], new Label())
+  let child1TE = new StubViewTE([ Root; Child(1, false) ], new Button())
+  let child2TE = new StubViewTE([ Root; Child(2, false) ], new Label())
 
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(child0, [ Root; Child(0, false) ])
-  ivtt.AddView(child1, [ Root; Child(1, false) ])
-  ivtt.AddView(child2, [ Root; Child(2, false) ])
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(child0TE.VttNode)
+  ivtt.AddView(child1TE.VttNode)
+  ivtt.AddView(child2TE.VttNode)
 
   let rootNode = vtt.Root.Value
 
   Assert.That(rootNode.Children.Count, Is.EqualTo(3), "Root should have 3 children")
 
   Assert.Multiple(fun () ->
-    Assert.That(rootNode.Children.[0].View, Is.SameAs(child0), "First child")
-    Assert.That(rootNode.Children.[1].View, Is.SameAs(child1), "Second child")
-    Assert.That(rootNode.Children.[2].View, Is.SameAs(child2), "Third child"))
+    Assert.That(rootNode.Children.[0].View, Is.SameAs(child0TE.View), "First child")
+    Assert.That(rootNode.Children.[1].View, Is.SameAs(child1TE.View), "Second child")
+    Assert.That(rootNode.Children.[2].View, Is.SameAs(child2TE.View), "Third child"))
 
 [<Test>]
 let ``AddView with nested children creates multi-level tree`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let middleView = new FrameView()
-  let leafLabel = new Label()
-  let leafButton = new Button()
+  let rootTE = new StubViewTE([ Root ], new Button())
+  let middleTE = new StubViewTE([ Root; Child(0, false) ], new FrameView())
 
-  let rootTE = new StubViewTE([ Root ]) :> IViewTE
-  let middleTE = new StubViewTE([ Root; Child(0, false) ]) :> IViewTE
+  let leafLabelTE =
+    new StubViewTE([ Root; Child(0, false); Child(0, false) ], new Label())
+
+  let leafButtonTE =
+    new StubViewTE([ Root; Child(0, false); Child(1, false) ], new Button())
 
   // Build tree: Root -> middle -> [leafLabel, leafButton]
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(middleView, [ Root; Child(0, false) ])
-  ivtt.AddView(leafLabel, [ Root; Child(0, false); Child(0, false) ])
-  ivtt.AddView(leafButton, [ Root; Child(0, false); Child(1, false) ])
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(middleTE.VttNode)
+  ivtt.AddView(leafLabelTE.VttNode)
+  ivtt.AddView(leafButtonTE.VttNode)
 
   let rootNode = vtt.Root.Value
 
@@ -128,21 +132,21 @@ let ``AddView with nested children creates multi-level tree`` () =
   Assert.That(middleNode.Children.Count, Is.EqualTo(2), "Middle node should have 2 children")
 
   Assert.Multiple(fun () ->
-    Assert.That((middleNode.Children.[0]).View, Is.SameAs(leafLabel), "First leaf should be label")
-    Assert.That((middleNode.Children.[1]).View, Is.SameAs(leafButton), "Second leaf should be button"))
+    Assert.That((middleNode.Children.[0]).View, Is.SameAs(leafLabelTE.View), "First leaf should be label")
+    Assert.That((middleNode.Children.[1]).View, Is.SameAs(leafButtonTE.View), "Second leaf should be button"))
 
 [<Test>]
 let ``AddView with SubElement address stores node in SubElements dictionary`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let subView = new Label()
+  let rootTE = new StubViewTE([ Root ], new Button())
 
-  let rootTE = StubViewTE([ Root ]) :> IViewTE
+  let subTE =
+    new StubViewTE([ Root; SubElement(None, "title_element", false) ], new Label())
 
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(subView, [ Root; SubElement(None, "title_element", false) ])
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(subTE.VttNode)
 
   let rootNode = vtt.Root.Value
 
@@ -153,22 +157,24 @@ let ``AddView with SubElement address stores node in SubElements dictionary`` ()
 
   let subNode = rootNode.SubElements.[("title_element", None)]
 
-  Assert.That(subNode.View, Is.SameAs(subView), "Sub-element view should match")
+  Assert.That(subNode.View, Is.SameAs(subTE.View), "Sub-element view should match")
 
 [<Test>]
 let ``AddView with indexed SubElement stores with correct index`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let sub0 = new Label()
-  let sub1 = new Label()
+  let rootTE = new StubViewTE([ Root ], new Button())
 
-  let rootTE = StubViewTE([ Root ]) :> IViewTE
+  let sub0TE =
+    new StubViewTE([ Root; SubElement(Some 0, "items_element", false) ], new Label())
 
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(sub0, [ Root; SubElement(Some 0, "items_element", false) ])
-  ivtt.AddView(sub1, [ Root; SubElement(Some 1, "items_element", false) ])
+  let sub1TE =
+    new StubViewTE([ Root; SubElement(Some 1, "items_element", false) ], new Label())
+
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(sub0TE.VttNode)
+  ivtt.AddView(sub1TE.VttNode)
 
   let rootNode = vtt.Root.Value
 
@@ -177,27 +183,32 @@ let ``AddView with indexed SubElement stores with correct index`` () =
     Assert.That(rootNode.SubElements.ContainsKey("items_element", Some 0), Is.True, "Index 0 present")
     Assert.That(rootNode.SubElements.ContainsKey("items_element", Some 1), Is.True, "Index 1 present")
 
-    Assert.That((rootNode.SubElements.[("items_element", Some 0)]).View, Is.SameAs(sub0), "Index 0 view should match")
+    Assert.That(
+      (rootNode.SubElements.[("items_element", Some 0)]).View,
+      Is.SameAs(sub0TE.View),
+      "Index 0 view should match"
+    )
 
-    Assert.That((rootNode.SubElements.[("items_element", Some 1)]).View, Is.SameAs(sub1), "Index 1 view should match"))
+    Assert.That(
+      (rootNode.SubElements.[("items_element", Some 1)]).View,
+      Is.SameAs(sub1TE.View),
+      "Index 1 view should match"
+    ))
 
 [<Test>]
 let ``AddView stores the correct Address on each node`` () =
   let vtt = VirtualTerminalTree()
   let ivtt = vtt :> IVirtualTerminalTree
 
-  let rootView = new Button()
-  let childView = new Label()
+  let rootTE = new StubViewTE([ Root ], new Button())
+  let childTE = new StubViewTE([ Root; Child(0, false) ], new Label())
 
-  let rootTE = StubViewTE([ Root ]) :> IViewTE
-  let childAddress: Address = [ Root; Child(0, false) ]
-
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(childView, childAddress)
+  ivtt.AddView(rootTE.VttNode)
+  ivtt.AddView(childTE.VttNode)
 
   let rootNode = vtt.Root.Value
   let childNode = rootNode.Children[0]
 
   Assert.Multiple(fun () ->
     Assert.That(rootNode.Address, Is.EqualTo<Address>([ Root ]), "Root address should be Root")
-    Assert.That(childNode.Address, Is.EqualTo<Address>(childAddress), "Child address should match"))
+    Assert.That(childNode.Address, Is.EqualTo<Address>([ Root; Child(0, false) ]), "Child address should match"))

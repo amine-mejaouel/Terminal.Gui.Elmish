@@ -374,7 +374,7 @@ module Element =
               yield $":child[{index}]"
 
               if isComponent then
-                yield ":component"
+                yield "(component)"
             }
             |> String.concat ""
           | SubElement(index, propKey, isComponent) ->
@@ -385,7 +385,7 @@ module Element =
               yield $":subElement:{propKey}{indexStr}"
 
               if isComponent then
-                yield ":component"
+                yield "(component)"
             }
             |> String.concat "")
         ""

@@ -25,10 +25,6 @@ type private StubViewTE(initialAddress: Address, view: View) =
       with get () = addr
       and set v = addr <- v
 
-    member _.ParentView
-      with get () = parentView
-      and set v = parentView <- v
-
     member _.Name = "Stub"
     member _.View = view
     member _.OnViewSet = Event<View>().Publish

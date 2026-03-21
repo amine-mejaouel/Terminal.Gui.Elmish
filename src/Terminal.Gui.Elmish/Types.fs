@@ -121,7 +121,6 @@ and internal ITerminalElementBase =
   inherit ITerminalElement
   inherit IDisposable
   abstract Address: Address with get, set
-  abstract ParentView: View option with get, set
   abstract Name: string
   abstract View: View with get
   abstract OnViewSet: IEvent<View>
@@ -203,11 +202,6 @@ and internal TerminalElement =
   member this.Address
     with set value = this.TerminalElementBase.Address <- value
 
-  member this.ParentView = this.TerminalElementBase.ParentView
-
-  member this.ParentView
-    with set value = this.TerminalElementBase.ParentView <- value
-
   member this.ViewSet = this.TerminalElementBase.OnViewSet
   member this.View = this.TerminalElementBase.View
   member this.Dispose() = this.TerminalElementBase.Dispose()
@@ -220,11 +214,6 @@ and internal TerminalElement =
 
     member this.Address
       with set value = this.Address <- value
-
-    member this.ParentView = this.ParentView
-
-    member this.ParentView
-      with set value = this.ParentView <- value
 
     member this.Dispose() = this.Dispose()
 

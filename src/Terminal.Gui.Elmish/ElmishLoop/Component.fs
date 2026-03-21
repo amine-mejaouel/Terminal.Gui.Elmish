@@ -78,16 +78,6 @@ module Component =
 
     let viewSetEvent = Event<View>()
 
-    // let setState (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) : (ComponentTerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> unit) =
-    //   let wrapView (view: ComponentTerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
-    //     fun (model: ITerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'cmd>>)  ->
-    //       let model = model :?> ComponentTerminalModel<'model>
-    //       (view model dispatch)
-    //
-    //   let x = (view |> OuterModel.wrapView)
-    //   let y = Common.setState x
-    //   y
-
     let mkSimpleComponent
       (terminalElement: IElmishComponentTE)
       (vtt: IVirtualTerminalTree)
@@ -197,10 +187,6 @@ module Component =
       member this.Address
         with get () = this.Origin
         and set v = this.Origin <- v
-
-      member this.ParentView
-        with get () = this.ParentViewField
-        and set v = this.ParentViewField <- v
 
       member this.Dispose() = this.Dispose()
 

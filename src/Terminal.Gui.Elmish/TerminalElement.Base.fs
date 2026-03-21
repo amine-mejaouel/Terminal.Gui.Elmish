@@ -201,7 +201,6 @@ type internal ViewBackedTerminalElement(props: Props) =
 
       // TODO: address / parentView should be passed as parameters instead
       cur.Address <- address
-      cur.ParentView <- parentView
 
       match cur with
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
@@ -421,10 +420,6 @@ type internal ViewBackedTerminalElement(props: Props) =
     member this.Address
       with get () = this.Origin
       and set v = this.Origin <- v
-
-    member this.ParentView
-      with get () = this.ParentViewField
-      and set v = this.ParentViewField <- v
 
     member this.View = this.View
     member this.Name = this.Name

@@ -136,7 +136,8 @@ and internal IViewTE =
   abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
-and internal VttNode(view: View, origin) =
+and internal VttInternalNode(view: View, origin) =
+  // TODO: remove the usage of weakreference.
   let viewRef = WeakReference<View>(view)
   member this.Address: Address = origin
 
@@ -146,11 +147,21 @@ and internal VttNode(view: View, origin) =
     | true, v -> v
     | _ -> Unchecked.defaultof<_>
 
-  member val SubElements = Dictionary<RawPropKey * int option, VttNode>()
-  member val Children = ResizeArray<VttNode>() with get, set
+  member val SubElements = Dictionary<RawPropKey * int option, VttInternalNode>()
+  member val Children = ResizeArray<VttInternalNode>() with get, set
+
+and internal VttNode =
+  { Address: Address
+    View: View
+    SetAsChildOfParentView: bool }
+
+  static member fromViewTE(viewTE: IViewTE, address: Address) =
+    { Address = address
+      View = viewTE.View
+      SetAsChildOfParentView = viewTE.SetAsChildOfParentView }
 
 and internal IVirtualTerminalTree =
-  abstract AddView: View * Address -> unit
+  abstract AddView: VttNode -> unit
 
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.

@@ -43,7 +43,7 @@ let ``AddView with Root address sets the root node`` () =
   let ivtt = vtt :> IVirtualTerminalTree
   let view = new Button()
 
-  ivtt.AddView(view, [ Root ])
+  ivtt.AddView(view, [ Root ], true)
 
   Assert.That(vtt.Root.IsSome, Is.True, "Root should be set")
 
@@ -63,8 +63,8 @@ let ``AddView with Child address adds a child node to the root`` () =
   let rootView = new Button()
   let childView = new Label()
 
-  ivtt.AddView(rootView, [ Root ])
-  ivtt.AddView(childView, [ Root; Child(0, false) ])
+  ivtt.AddView(rootView, [ Root ], true)
+  ivtt.AddView(childView, [ Root; Child(0, false) ], true)
 
   let rootNode = vtt.Root.Value
 

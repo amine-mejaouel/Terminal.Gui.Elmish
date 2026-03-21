@@ -181,7 +181,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     // Add this view to the VTT before initializing sub-elements,
     // so sub-elements can find their parent node in the tree.
-    vtt.AddView(this.View, address)
+    vtt.AddView(VttNode.fromViewTE (this, address))
 
     this.InitializeSubElements(vtt)
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
@@ -206,15 +206,6 @@ type internal ViewBackedTerminalElement(props: Props) =
       match cur with
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
       | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
-
-      // Here, the "children" views are added to their parent.
-      match cur with
-      | ViewTE te when Address.isChild te.Address ->
-        if te.SetAsChildOfParentView then
-          te.ParentView |> Option.iter (fun v -> v.Add te.View |> ignore)
-      | ElmishComponentTE ce when Address.isChild ce.Address ->
-        ce.ParentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
-      | _ -> ()
 
     traverseTEs ((TerminalElement.from this), address, headParentView) traverse
 

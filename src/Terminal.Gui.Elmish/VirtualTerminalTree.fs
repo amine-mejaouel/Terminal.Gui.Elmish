@@ -1,21 +1,21 @@
 namespace Terminal.Gui.Elmish
 
 type VirtualTerminalTree() =
-  let mutable root: VttNode option = None
+  let mutable root: VttInternalNode option = None
 
-  let findNode (address: Address) (root: VttNode) =
+  let findNode (address: Address) (root: VttInternalNode) =
     List.fold
-      (fun (curNode: VttNode) curSeg ->
+      (fun (curNode: VttInternalNode) curSeg ->
         match curSeg with
         | Root -> curNode
-        | Child(idx, _) -> curNode.Children.[idx]
-        | SubElement(idx, prop, _) -> curNode.SubElements.[(prop, idx)])
+        | Child(idx, _) -> curNode.Children[idx]
+        | SubElement(idx, prop, _) -> curNode.SubElements[(prop, idx)])
       root
       address
 
   /// Returns the parent node and the last segment of the address.
   [<TailCall>]
-  let rec followToParent (address: Address) (root: VttNode) =
+  let rec followToParent (address: Address) (root: VttInternalNode) =
     match address with
     | [] -> failwith "Address cannot be empty."
     | [ Root ]
@@ -31,9 +31,19 @@ type VirtualTerminalTree() =
   member internal _.Root = root
 
   interface IVirtualTerminalTree with
-    member _.AddView(view, address) =
+    member _.AddView(vttNode) =
 
-      let newNode = VttNode(view, address)
+      let newNode = VttInternalNode(vttNode.View, vttNode.Address)
+
+      let addChild (parentNode: VttInternalNode, idx: int, isComponent: bool) =
+        if parentNode.Children.Count > idx then
+          failwithf $"A child node already exists at index %d{idx}."
+        else
+          parentNode.Children.Insert(idx, newNode)
+
+        // Here, the "children" views are added to their parent.
+        if vttNode.SetAsChildOfParentView then
+          parentNode.View.Add vttNode.View |> ignore
 
       let addNode (address: Address) =
         match root, address with
@@ -44,15 +54,11 @@ type VirtualTerminalTree() =
 
           match lastSegment with
           | Root -> failwith "Root node already exists."
-          | Child(idx, isComponent) ->
-            if parentNode.Children.Count > idx then
-              failwithf $"A child node already exists at index %d{idx}."
-            else
-              parentNode.Children.Insert(idx, newNode)
+          | Child(idx, isComponent) -> addChild (parentNode, idx, isComponent)
           | SubElement(idx, prop, isComponent) ->
             if parentNode.SubElements.ContainsKey((prop, idx)) then
               failwithf $"A sub-element node already exists for property '%s{prop}' at index %A{idx}."
             else
               parentNode.SubElements.Add((prop, idx), newNode)
 
-      addNode address
+      addNode vttNode.Address

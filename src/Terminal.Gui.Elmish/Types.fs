@@ -135,10 +135,10 @@ and internal IViewTE =
   abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
 
-and internal VttInternalNode(view: View, origin) =
+and internal VttInternalNode(view: View, address) =
   // TODO: remove the usage of weakreference.
   let viewRef = WeakReference<View>(view)
-  member this.Address: Address = origin
+  member this.Address: Address = address
 
   /// The View stored in this node. Returns null if the View has been garbage collected.
   member this.View: View =

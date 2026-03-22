@@ -110,7 +110,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
+  static let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
 
     let rec traverseViewTEs
       (nodes: TerminalElement list)
@@ -187,7 +187,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree (address: Address) (vtt: IVirtualTerminalTree) : unit =
+  static member InitializeTree (terminalElement) (address: Address) (vtt: IVirtualTerminalTree) : unit =
 
     let traverse (cur: CurrentTreeNode) (address: Address) =
 
@@ -198,7 +198,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
       | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
 
-    traverseTEs ((TerminalElement.from this), address) traverse
+    traverseTEs ((TerminalElement.from terminalElement), address) traverse
 
   // TODO: InitializeSubElements does not support elmish components as sub elements.
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
@@ -212,7 +212,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match value with
           | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree (this.Origin @ [ SubElement(None, x, false) ]) vtt
+            ViewBackedTerminalElement.InitializeTree subElement (this.Origin @ [ SubElement(None, x, false) ]) vtt
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
@@ -406,7 +406,9 @@ type internal ViewBackedTerminalElement(props: Props) =
       view <- Unchecked.defaultof<_>
 
   interface IViewTE with
-    member this.InitializeTree address vtt = this.InitializeTree address vtt
+    member this.InitializeTree address vtt =
+      ViewBackedTerminalElement.InitializeTree this address vtt
+
     member this.Reuse prevElementData = this.Reuse prevElementData
 
     member this.Address

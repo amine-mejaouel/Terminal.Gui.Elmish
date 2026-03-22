@@ -170,18 +170,18 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView(vtt: IVirtualTerminalTree, address: Address) =
-    this.View <- this.NewView()
+  static member InitializeView(te: ViewBackedTerminalElement, vtt: IVirtualTerminalTree, address: Address) =
+    te.View <- te.NewView()
 
     // Add this view to the VTT before initializing sub-elements,
     // so sub-elements can find their parent node in the tree.
-    vtt.AddView(VttNode.fromViewTE (this, address))
+    vtt.AddView(VttNode.fromViewTE (te, address))
 
-    this.InitializeSubElements(vtt)
-    |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
+    te.InitializeSubElements(vtt)
+    |> Seq.iter (fun (k, v) -> te.Props |> Props.add (k, v))
 
-    PositionService.Current.ApplyPos this
-    this.SetProps(this, this.Props)
+    PositionService.Current.ApplyPos te
+    te.SetProps(te, te.Props)
 
   abstract Reuse: prev: IViewTE -> unit
 
@@ -195,7 +195,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       cur.Address <- address
 
       match cur with
-      | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
+      | ViewTE te -> ViewBackedTerminalElement.InitializeView((te :?> ViewBackedTerminalElement), vtt, address)
       | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
 
     traverseTEs ((TerminalElement.from terminalElement), address) traverse

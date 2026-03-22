@@ -110,34 +110,30 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  let rec traverseTEs
-    (head: TerminalElement * Address * View option)
-    (traverse: CurrentTreeNode -> Address -> View option -> unit)
-    : unit =
+  let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
 
     let rec traverseViewTEs
       (nodes: TerminalElement list)
       (origin: Address)
-      (parentView: View option)
-      (traverse: CurrentTreeNode -> Address -> View option -> unit)
+      (traverse: CurrentTreeNode -> Address -> unit)
       =
       match nodes with
       | [] -> ()
       | current :: remainingNodes ->
 
-        traverse current origin parentView
+        traverse current origin
 
         match current with
         | ElmishComponentTE _ -> ()
         | ViewTE viewTe ->
           viewTe.Children
           |> Seq.mapi (fun i child -> child, origin @ [ Child(i, child.IsElmishComponentTE) ])
-          |> Seq.iter (fun (child, childOrigin) -> traverseViewTEs [ child ] childOrigin (Some viewTe.View) traverse)
+          |> Seq.iter (fun (child, childOrigin) -> traverseViewTEs [ child ] childOrigin traverse)
 
-        traverseViewTEs remainingNodes origin parentView traverse
+        traverseViewTEs remainingNodes origin traverse
 
-    let headElement, headOrigin, headParentView = head
-    traverseViewTEs [ headElement ] headOrigin headParentView traverse
+    let headElement, headOrigin = head
+    traverseViewTEs [ headElement ] headOrigin traverse
 
   let mutable view = null
 
@@ -157,8 +153,6 @@ type internal ViewBackedTerminalElement(props: Props) =
       viewSetEvent.Trigger value
 
   member val Origin: Address = [ AddressSegment.Root ] with get, set
-
-  member val ParentViewField: View option = None with get, set
 
   member val ViewSet = viewSetEvent.Publish
 
@@ -195,9 +189,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member this.InitializeTree (address: Address) (vtt: IVirtualTerminalTree) : unit =
 
-    let headParentView = this.ParentViewField
-
-    let traverse (cur: CurrentTreeNode) (address: Address) (parentView: View option) =
+    let traverse (cur: CurrentTreeNode) (address: Address) =
 
       // TODO: address / parentView should be passed as parameters instead
       cur.Address <- address
@@ -206,7 +198,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       | ViewTE te -> (te :?> ViewBackedTerminalElement).InitializeView(vtt, address)
       | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
 
-    traverseTEs ((TerminalElement.from this), address, headParentView) traverse
+    traverseTEs ((TerminalElement.from this), address) traverse
 
   // TODO: InitializeSubElements does not support elmish components as sub elements.
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
@@ -294,7 +286,6 @@ type internal ViewBackedTerminalElement(props: Props) =
     this.View <- prev.View
     this.EventRegistrar <- prev.EventRegistrar
     this.Origin <- prev.Origin
-    this.ParentViewField <- prev.ParentViewField
 
     PositionService.Current.ApplyPos this
 
@@ -394,7 +385,9 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Remove any event subscriptions
       this.RemoveProps(this, this.Props)
 
-      this.ParentViewField |> Option.iter (fun v -> v.Remove this.View |> ignore)
+      // TODO: should confirm if SuperView is the parent view of the current view.
+      // TODO: because I added this code without testing it.
+      this.View.SuperView.Remove this.View |> ignore
 
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
@@ -410,7 +403,6 @@ type internal ViewBackedTerminalElement(props: Props) =
       this.View.Dispose()
 
       // Clear references to help GC
-      this.ParentViewField <- None
       view <- Unchecked.defaultof<_>
 
   interface IViewTE with

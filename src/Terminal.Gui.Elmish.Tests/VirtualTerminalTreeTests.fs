@@ -32,7 +32,7 @@ type private StubViewTE(initialAddress: Address, view: View) =
   interface IViewTE with
     member _.Props = Props()
     member _.SetAsChildOfParentView = true
-    member _.Children = List<TerminalElementBck>()
+    member _.Children = List<TerminalElement>()
     member _.InitializeTree _ _ = ()
     member _.Reuse _ = ()
 

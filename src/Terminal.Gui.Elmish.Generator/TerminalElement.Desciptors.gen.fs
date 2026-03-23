@@ -22,7 +22,7 @@ let gen () =
       if returnInterface <> "ITerminalElement" then
         yield $"  interface {returnInterface}"
 
-      yield $"  interface ITerminalElementDescriptor with"
+      yield $"  interface IViewDescriptor with"
       yield $"    member _.CreateViewTE() = new {elementName}{genericParamsBlock}(props.props) :> IViewTE"
       yield $"    member _.Props = props.props"
       yield ""

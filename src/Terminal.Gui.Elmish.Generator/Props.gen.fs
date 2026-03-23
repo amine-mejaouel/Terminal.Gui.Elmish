@@ -16,7 +16,7 @@ let viewSpecificMembers =
       """
   member this.Children(children: 'terminalElement list) =
     children
-    |> List.map (fun x -> TerminalElementBck.from x)
+    |> List.map (fun x -> TerminalElement.from x)
     |> this.props.Children.AddRange
   """
 

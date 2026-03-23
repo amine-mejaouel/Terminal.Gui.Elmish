@@ -10,9 +10,9 @@ open Terminal.Gui.Views
 type ViewProps() =
   member val internal props = Props()
 
-  member this.Children(children: ITerminalElement list) =
+  member this.Children(children: 'terminalElement list) =
     children
-    |> List.map (fun x -> TerminalElementBck.from x)
+    |> List.map (fun x -> TerminalElement.from x)
     |> this.props.Children.AddRange
 
   // Positions

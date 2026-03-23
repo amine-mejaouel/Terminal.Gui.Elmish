@@ -62,7 +62,7 @@ let _component (set: IProps -> unit) =
               p.Text "I am another static label below the second element."
               p.Y(TPos.Bottom second))
 
-          first
+          first :> ITerminalElement
           second
           third ])
 

@@ -114,7 +114,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
           let treeDiffUpdateTesterComponent =
             TreeDiffUpdateTesterComponent._component (fun p -> p.y (TPos.Bottom sampleComponent))
 
-          label
+          label :> ITerminalElement
           textView
           sampleComponent
           treeDiffUpdateTesterComponent ])

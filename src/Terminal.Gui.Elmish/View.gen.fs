@@ -8,7 +8,7 @@ type View =
     set viewProps
     Adornment(viewProps)
 
-  static member Adornment(children: ITerminalElement list) =
+  static member Adornment(children: 'terminalElement list) =
     let viewProps = AdornmentProps()
     viewProps.Children children
     Adornment(viewProps)
@@ -18,7 +18,7 @@ type View =
     set viewProps
     AttributePicker(viewProps)
 
-  static member AttributePicker(children: ITerminalElement list) =
+  static member AttributePicker(children: 'terminalElement list) =
     let viewProps = AttributePickerProps()
     viewProps.Children children
     AttributePicker(viewProps)
@@ -28,7 +28,7 @@ type View =
     set viewProps
     Bar(viewProps)
 
-  static member Bar(children: ITerminalElement list) =
+  static member Bar(children: 'terminalElement list) =
     let viewProps = BarProps()
     viewProps.Children children
     Bar(viewProps)
@@ -38,7 +38,7 @@ type View =
     set viewProps
     Border(viewProps)
 
-  static member Border(children: ITerminalElement list) =
+  static member Border(children: 'terminalElement list) =
     let viewProps = BorderProps()
     viewProps.Children children
     Border(viewProps)
@@ -48,7 +48,7 @@ type View =
     set viewProps
     Button(viewProps)
 
-  static member Button(children: ITerminalElement list) =
+  static member Button(children: 'terminalElement list) =
     let viewProps = ButtonProps()
     viewProps.Children children
     Button(viewProps)
@@ -58,7 +58,7 @@ type View =
     set viewProps
     CharMap(viewProps)
 
-  static member CharMap(children: ITerminalElement list) =
+  static member CharMap(children: 'terminalElement list) =
     let viewProps = CharMapProps()
     viewProps.Children children
     CharMap(viewProps)
@@ -68,7 +68,7 @@ type View =
     set viewProps
     CheckBox(viewProps)
 
-  static member CheckBox(children: ITerminalElement list) =
+  static member CheckBox(children: 'terminalElement list) =
     let viewProps = CheckBoxProps()
     viewProps.Children children
     CheckBox(viewProps)
@@ -78,7 +78,7 @@ type View =
     set viewProps
     ColorPicker(viewProps)
 
-  static member ColorPicker(children: ITerminalElement list) =
+  static member ColorPicker(children: 'terminalElement list) =
     let viewProps = ColorPickerProps()
     viewProps.Children children
     ColorPicker(viewProps)
@@ -88,7 +88,7 @@ type View =
     set viewProps
     ColorPicker16(viewProps)
 
-  static member ColorPicker16(children: ITerminalElement list) =
+  static member ColorPicker16(children: 'terminalElement list) =
     let viewProps = ColorPicker16Props()
     viewProps.Children children
     ColorPicker16(viewProps)
@@ -98,7 +98,7 @@ type View =
     set viewProps
     DatePicker(viewProps)
 
-  static member DatePicker(children: ITerminalElement list) =
+  static member DatePicker(children: 'terminalElement list) =
     let viewProps = DatePickerProps()
     viewProps.Children children
     DatePicker(viewProps)
@@ -108,7 +108,7 @@ type View =
     set viewProps
     FrameView(viewProps)
 
-  static member FrameView(children: ITerminalElement list) =
+  static member FrameView(children: 'terminalElement list) =
     let viewProps = FrameViewProps()
     viewProps.Children children
     FrameView(viewProps)
@@ -118,7 +118,7 @@ type View =
     set viewProps
     GraphView(viewProps)
 
-  static member GraphView(children: ITerminalElement list) =
+  static member GraphView(children: 'terminalElement list) =
     let viewProps = GraphViewProps()
     viewProps.Children children
     GraphView(viewProps)
@@ -128,7 +128,7 @@ type View =
     set viewProps
     HexView(viewProps)
 
-  static member HexView(children: ITerminalElement list) =
+  static member HexView(children: 'terminalElement list) =
     let viewProps = HexViewProps()
     viewProps.Children children
     HexView(viewProps)
@@ -138,7 +138,7 @@ type View =
     set viewProps
     Label(viewProps)
 
-  static member Label(children: ITerminalElement list) =
+  static member Label(children: 'terminalElement list) =
     let viewProps = LabelProps()
     viewProps.Children children
     Label(viewProps)
@@ -148,7 +148,7 @@ type View =
     set viewProps
     LegendAnnotation(viewProps)
 
-  static member LegendAnnotation(children: ITerminalElement list) =
+  static member LegendAnnotation(children: 'terminalElement list) =
     let viewProps = LegendAnnotationProps()
     viewProps.Children children
     LegendAnnotation(viewProps)
@@ -158,7 +158,7 @@ type View =
     set viewProps
     Line(viewProps)
 
-  static member Line(children: ITerminalElement list) =
+  static member Line(children: 'terminalElement list) =
     let viewProps = LineProps()
     viewProps.Children children
     Line(viewProps)
@@ -168,7 +168,7 @@ type View =
     set viewProps
     LinearRange<'T>(viewProps)
 
-  static member LinearRange<'T>(children: ITerminalElement list) =
+  static member LinearRange<'T>(children: 'terminalElement list) =
     let viewProps = LinearRangeProps<'T>()
     viewProps.Children children
     LinearRange<'T>(viewProps)
@@ -178,7 +178,7 @@ type View =
     set viewProps
     LinearRange(viewProps)
 
-  static member LinearRange(children: ITerminalElement list) =
+  static member LinearRange(children: 'terminalElement list) =
     let viewProps = LinearRangeProps()
     viewProps.Children children
     LinearRange(viewProps)
@@ -188,7 +188,7 @@ type View =
     set viewProps
     Link(viewProps)
 
-  static member Link(children: ITerminalElement list) =
+  static member Link(children: 'terminalElement list) =
     let viewProps = LinkProps()
     viewProps.Children children
     Link(viewProps)
@@ -198,7 +198,7 @@ type View =
     set viewProps
     ListView(viewProps)
 
-  static member ListView(children: ITerminalElement list) =
+  static member ListView(children: 'terminalElement list) =
     let viewProps = ListViewProps()
     viewProps.Children children
     ListView(viewProps)
@@ -208,7 +208,7 @@ type View =
     set viewProps
     Margin(viewProps)
 
-  static member Margin(children: ITerminalElement list) =
+  static member Margin(children: 'terminalElement list) =
     let viewProps = MarginProps()
     viewProps.Children children
     Margin(viewProps)
@@ -218,7 +218,7 @@ type View =
     set viewProps
     Menu(viewProps)
 
-  static member Menu(children: ITerminalElement list) =
+  static member Menu(children: 'terminalElement list) =
     let viewProps = MenuProps()
     viewProps.Children children
     Menu(viewProps)
@@ -234,7 +234,7 @@ type View =
     set viewProps
     MenuBar(viewProps)
 
-  static member MenuBar(children: ITerminalElement list) =
+  static member MenuBar(children: 'terminalElement list) =
     let viewProps = MenuBarProps()
     viewProps.Children children
     MenuBar(viewProps)
@@ -244,7 +244,7 @@ type View =
     set viewProps
     NumericUpDown<'T>(viewProps)
 
-  static member NumericUpDown<'T>(children: ITerminalElement list) =
+  static member NumericUpDown<'T>(children: 'terminalElement list) =
     let viewProps = NumericUpDownProps<'T>()
     viewProps.Children children
     NumericUpDown<'T>(viewProps)
@@ -254,7 +254,7 @@ type View =
     set viewProps
     NumericUpDown(viewProps)
 
-  static member NumericUpDown(children: ITerminalElement list) =
+  static member NumericUpDown(children: 'terminalElement list) =
     let viewProps = NumericUpDownProps()
     viewProps.Children children
     NumericUpDown(viewProps)
@@ -264,7 +264,7 @@ type View =
     set viewProps
     Padding(viewProps)
 
-  static member Padding(children: ITerminalElement list) =
+  static member Padding(children: 'terminalElement list) =
     let viewProps = PaddingProps()
     viewProps.Children children
     Padding(viewProps)
@@ -277,7 +277,7 @@ type View =
     Popover<'TView, 'TResult>(viewProps)
 
   static member Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
-    (children: ITerminalElement list)
+    (children: 'terminalElement list)
     =
     let viewProps = PopoverProps<'TView, 'TResult>()
     viewProps.Children children
@@ -288,7 +288,7 @@ type View =
     set viewProps
     PopoverMenu(viewProps)
 
-  static member PopoverMenu(children: ITerminalElement list) =
+  static member PopoverMenu(children: 'terminalElement list) =
     let viewProps = PopoverMenuProps()
     viewProps.Children children
     PopoverMenu(viewProps)
@@ -298,7 +298,7 @@ type View =
     set viewProps
     ProgressBar(viewProps)
 
-  static member ProgressBar(children: ITerminalElement list) =
+  static member ProgressBar(children: 'terminalElement list) =
     let viewProps = ProgressBarProps()
     viewProps.Children children
     ProgressBar(viewProps)
@@ -308,7 +308,7 @@ type View =
     set viewProps
     Runnable(viewProps)
 
-  static member Runnable(children: ITerminalElement list) =
+  static member Runnable(children: 'terminalElement list) =
     let viewProps = RunnableProps()
     viewProps.Children children
     Runnable(viewProps)
@@ -318,7 +318,7 @@ type View =
     set viewProps
     Runnable<'TResult>(viewProps)
 
-  static member Runnable<'TResult>(children: ITerminalElement list) =
+  static member Runnable<'TResult>(children: 'terminalElement list) =
     let viewProps = RunnableProps<'TResult>()
     viewProps.Children children
     Runnable<'TResult>(viewProps)
@@ -328,7 +328,7 @@ type View =
     set viewProps
     Dialog<'TResult>(viewProps)
 
-  static member Dialog<'TResult>(children: ITerminalElement list) =
+  static member Dialog<'TResult>(children: 'terminalElement list) =
     let viewProps = DialogProps<'TResult>()
     viewProps.Children children
     Dialog<'TResult>(viewProps)
@@ -338,7 +338,7 @@ type View =
     set viewProps
     Dialog(viewProps)
 
-  static member Dialog(children: ITerminalElement list) =
+  static member Dialog(children: 'terminalElement list) =
     let viewProps = DialogProps()
     viewProps.Children children
     Dialog(viewProps)
@@ -351,7 +351,7 @@ type View =
     Prompt<'TView, 'TResult>(viewProps)
 
   static member Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
-    (children: ITerminalElement list)
+    (children: 'terminalElement list)
     =
     let viewProps = PromptProps<'TView, 'TResult>()
     viewProps.Children children
@@ -362,7 +362,7 @@ type View =
     set viewProps
     FileDialog(viewProps)
 
-  static member FileDialog(children: ITerminalElement list) =
+  static member FileDialog(children: 'terminalElement list) =
     let viewProps = FileDialogProps()
     viewProps.Children children
     FileDialog(viewProps)
@@ -372,7 +372,7 @@ type View =
     set viewProps
     OpenDialog(viewProps)
 
-  static member OpenDialog(children: ITerminalElement list) =
+  static member OpenDialog(children: 'terminalElement list) =
     let viewProps = OpenDialogProps()
     viewProps.Children children
     OpenDialog(viewProps)
@@ -382,7 +382,7 @@ type View =
     set viewProps
     SaveDialog(viewProps)
 
-  static member SaveDialog(children: ITerminalElement list) =
+  static member SaveDialog(children: 'terminalElement list) =
     let viewProps = SaveDialogProps()
     viewProps.Children children
     SaveDialog(viewProps)
@@ -392,7 +392,7 @@ type View =
     set viewProps
     ScrollBar(viewProps)
 
-  static member ScrollBar(children: ITerminalElement list) =
+  static member ScrollBar(children: 'terminalElement list) =
     let viewProps = ScrollBarProps()
     viewProps.Children children
     ScrollBar(viewProps)
@@ -402,7 +402,7 @@ type View =
     set viewProps
     ScrollSlider(viewProps)
 
-  static member ScrollSlider(children: ITerminalElement list) =
+  static member ScrollSlider(children: 'terminalElement list) =
     let viewProps = ScrollSliderProps()
     viewProps.Children children
     ScrollSlider(viewProps)
@@ -412,7 +412,7 @@ type View =
     set viewProps
     FlagSelector(viewProps)
 
-  static member FlagSelector(children: ITerminalElement list) =
+  static member FlagSelector(children: 'terminalElement list) =
     let viewProps = FlagSelectorProps()
     viewProps.Children children
     FlagSelector(viewProps)
@@ -422,7 +422,7 @@ type View =
     set viewProps
     OptionSelector(viewProps)
 
-  static member OptionSelector(children: ITerminalElement list) =
+  static member OptionSelector(children: 'terminalElement list) =
     let viewProps = OptionSelectorProps()
     viewProps.Children children
     OptionSelector(viewProps)
@@ -443,7 +443,7 @@ type View =
     and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)
     and 'TFlagsEnum :> System.Enum
     and 'TFlagsEnum :> System.ValueType>
-    (children: ITerminalElement list)
+    (children: 'terminalElement list)
     =
     let viewProps = FlagSelectorProps<'TFlagsEnum>()
     viewProps.Children children
@@ -459,7 +459,7 @@ type View =
 
   static member OptionSelector<'TEnum
     when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
-    (children: ITerminalElement list)
+    (children: 'terminalElement list)
     =
     let viewProps = OptionSelectorProps<'TEnum>()
     viewProps.Children children
@@ -470,7 +470,7 @@ type View =
     set viewProps
     Shortcut(viewProps)
 
-  static member Shortcut(children: ITerminalElement list) =
+  static member Shortcut(children: 'terminalElement list) =
     let viewProps = ShortcutProps()
     viewProps.Children children
     Shortcut(viewProps)
@@ -480,7 +480,7 @@ type View =
     set viewProps
     MenuItem(viewProps)
 
-  static member MenuItem(children: ITerminalElement list) =
+  static member MenuItem(children: 'terminalElement list) =
     let viewProps = MenuItemProps()
     viewProps.Children children
     MenuItem(viewProps)
@@ -496,7 +496,7 @@ type View =
     set viewProps
     MenuBarItem(viewProps)
 
-  static member MenuBarItem(children: ITerminalElement list) =
+  static member MenuBarItem(children: 'terminalElement list) =
     let viewProps = MenuBarItemProps()
     viewProps.Children children
     MenuBarItem(viewProps)
@@ -506,7 +506,7 @@ type View =
     set viewProps
     SpinnerView(viewProps)
 
-  static member SpinnerView(children: ITerminalElement list) =
+  static member SpinnerView(children: 'terminalElement list) =
     let viewProps = SpinnerViewProps()
     viewProps.Children children
     SpinnerView(viewProps)
@@ -516,7 +516,7 @@ type View =
     set viewProps
     StatusBar(viewProps)
 
-  static member StatusBar(children: ITerminalElement list) =
+  static member StatusBar(children: 'terminalElement list) =
     let viewProps = StatusBarProps()
     viewProps.Children children
     StatusBar(viewProps)
@@ -526,7 +526,7 @@ type View =
     set viewProps
     Tab(viewProps)
 
-  static member Tab(children: ITerminalElement list) =
+  static member Tab(children: 'terminalElement list) =
     let viewProps = TabProps()
     viewProps.Children children
     Tab(viewProps)
@@ -536,7 +536,7 @@ type View =
     set viewProps
     TabView(viewProps)
 
-  static member TabView(children: ITerminalElement list) =
+  static member TabView(children: 'terminalElement list) =
     let viewProps = TabViewProps()
     viewProps.Children children
     TabView(viewProps)
@@ -546,7 +546,7 @@ type View =
     set viewProps
     TableView(viewProps)
 
-  static member TableView(children: ITerminalElement list) =
+  static member TableView(children: 'terminalElement list) =
     let viewProps = TableViewProps()
     viewProps.Children children
     TableView(viewProps)
@@ -556,7 +556,7 @@ type View =
     set viewProps
     TextField(viewProps)
 
-  static member TextField(children: ITerminalElement list) =
+  static member TextField(children: 'terminalElement list) =
     let viewProps = TextFieldProps()
     viewProps.Children children
     TextField(viewProps)
@@ -566,7 +566,7 @@ type View =
     set viewProps
     DropDownList(viewProps)
 
-  static member DropDownList(children: ITerminalElement list) =
+  static member DropDownList(children: 'terminalElement list) =
     let viewProps = DropDownListProps()
     viewProps.Children children
     DropDownList(viewProps)
@@ -576,7 +576,7 @@ type View =
     set viewProps
     TextValidateField(viewProps)
 
-  static member TextValidateField(children: ITerminalElement list) =
+  static member TextValidateField(children: 'terminalElement list) =
     let viewProps = TextValidateFieldProps()
     viewProps.Children children
     TextValidateField(viewProps)
@@ -586,7 +586,7 @@ type View =
     set viewProps
     DateEditor(viewProps)
 
-  static member DateEditor(children: ITerminalElement list) =
+  static member DateEditor(children: 'terminalElement list) =
     let viewProps = DateEditorProps()
     viewProps.Children children
     DateEditor(viewProps)
@@ -596,7 +596,7 @@ type View =
     set viewProps
     TextView(viewProps)
 
-  static member TextView(children: ITerminalElement list) =
+  static member TextView(children: 'terminalElement list) =
     let viewProps = TextViewProps()
     viewProps.Children children
     TextView(viewProps)
@@ -606,7 +606,7 @@ type View =
     set viewProps
     TimeEditor(viewProps)
 
-  static member TimeEditor(children: ITerminalElement list) =
+  static member TimeEditor(children: 'terminalElement list) =
     let viewProps = TimeEditorProps()
     viewProps.Children children
     TimeEditor(viewProps)
@@ -616,7 +616,7 @@ type View =
     set viewProps
     TreeView<'T>(viewProps)
 
-  static member TreeView<'T when 'T: not struct>(children: ITerminalElement list) =
+  static member TreeView<'T when 'T: not struct>(children: 'terminalElement list) =
     let viewProps = TreeViewProps<'T>()
     viewProps.Children children
     TreeView<'T>(viewProps)
@@ -626,7 +626,7 @@ type View =
     set viewProps
     TreeView(viewProps)
 
-  static member TreeView(children: ITerminalElement list) =
+  static member TreeView(children: 'terminalElement list) =
     let viewProps = TreeViewProps()
     viewProps.Children children
     TreeView(viewProps)
@@ -636,7 +636,7 @@ type View =
     set viewProps
     Window(viewProps)
 
-  static member Window(children: ITerminalElement list) =
+  static member Window(children: 'terminalElement list) =
     let viewProps = WindowProps()
     viewProps.Children children
     Window(viewProps)
@@ -646,7 +646,7 @@ type View =
     set viewProps
     Wizard(viewProps)
 
-  static member Wizard(children: ITerminalElement list) =
+  static member Wizard(children: 'terminalElement list) =
     let viewProps = WizardProps()
     viewProps.Children children
     Wizard(viewProps)
@@ -656,7 +656,7 @@ type View =
     set viewProps
     WizardStep(viewProps)
 
-  static member WizardStep(children: ITerminalElement list) =
+  static member WizardStep(children: 'terminalElement list) =
     let viewProps = WizardStepProps()
     viewProps.Children children
     WizardStep(viewProps)

@@ -19,7 +19,7 @@ module internal Differ =
 
     if cve1 <> cve2 then Some() else None
 
-  let update (vtt: IVirtualTerminalTree) (prevTree: TerminalElementBck) (newTree: TerminalElementBck) =
+  let update (vtt: IVirtualTerminalTree) (prevTree: TerminalElement) (newTree: TerminalElement) =
 
     let workStack = System.Collections.Generic.Stack<_>()
     workStack.Push((prevTree, newTree))

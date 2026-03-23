@@ -76,7 +76,7 @@ let inline internal setState<'model, 'cmd, ^terminalModel, ^terminalElement
           // TODO: double view evaluation, as view is already called by elmish loop
           // TODO: this should vanish once VTT is done.
           let initialTe =
-            (view model dispatch :> ITerminalElement :?> ITerminalElementDescriptor).CreateViewTE()
+            (view model dispatch :> ITerminalElement :?> IViewDescriptor).CreateViewTE()
 
           initialTe.InitializeTree model.Address model.TerminalElementState.VTT
 
@@ -90,8 +90,8 @@ let inline internal setState<'model, 'cmd, ^terminalModel, ^terminalElement
 
           Differ.update
             model.TerminalElementState.VTT
-            (TerminalElementBck.ViewTE currentTe)
-            (TerminalElementBck.ViewTE nextTe)
+            (TerminalElement.ViewTE currentTe)
+            (TerminalElement.ViewTE nextTe)
 
           currentTe.Dispose()
           return nextTe

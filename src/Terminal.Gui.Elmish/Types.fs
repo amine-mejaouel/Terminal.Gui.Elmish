@@ -109,7 +109,7 @@ module internal PropKey =
 
 /// Props object that is still under construction
 type internal Props() =
-  member val Children: List<TerminalElement> = List<_>() with get
+  member val Children: List<TE> = List<_>() with get
   member val X: Pos option = None with get, set
   member val Y: Pos option = None with get, set
   member val XDelayed: TPos option = None with get, set
@@ -128,9 +128,8 @@ and internal ITerminalElementBase =
 and internal IViewTE =
   inherit ITerminalElementBase
 
-  abstract Props: Props with get
   abstract SetAsChildOfParentView: bool
-  abstract Children: List<TerminalElement>
+  abstract Children: List<TE>
 
   abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
@@ -190,11 +189,11 @@ and internal IElmishComponentTE =
   // TODO: should also take vtt + address
   abstract Reuse: prev: IElmishComponentTE -> unit
 
-and internal TerminalElementDescriptor =
+and internal TEDescriptor =
   | View of IViewDescriptor
   | ElmishComponent of IElmishComponentDescriptor
 
-and internal TerminalElement =
+and internal TE =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 

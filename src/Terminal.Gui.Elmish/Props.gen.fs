@@ -11,9 +11,7 @@ type ViewProps() =
   member val internal props = Props()
 
   member this.Children(children: 'terminalElement list) =
-    children
-    |> List.map (fun x -> TerminalElement.from x)
-    |> this.props.Children.AddRange
+    children |> List.map (fun x -> TE.from x) |> this.props.Children.AddRange
 
   // Positions
   member this.X(value: Pos) = this.props.X <- Some value

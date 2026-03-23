@@ -101,7 +101,7 @@ type internal EventHandlerRegistrar() =
     this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
     this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
 
-type internal CurrentTreeNode = TerminalElement
+type internal CurrentTreeNode = TE
 type internal ParentTreeNode = IViewTE
 
 [<AbstractClass>]
@@ -110,13 +110,9 @@ type internal ViewBackedTerminalElement(props: Props) =
   /// <p>Depth-first traversal of a TerminalElement tree.</p>
   /// <p>Applies the provided <c>traverse</c> function to <c>ViewTE</c> and <c>ElmishComponentTE</c> nodes.</p>
   /// <p>But does not recurse into the children of <c>ElmishComponentTE</c> nodes, as they are expected to manage their own tree.</p>
-  static let rec traverseTEs (head: TerminalElement * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
+  static let rec traverseTEs (head: TE * Address) (traverse: CurrentTreeNode -> Address -> unit) : unit =
 
-    let rec traverseViewTEs
-      (nodes: TerminalElement list)
-      (origin: Address)
-      (traverse: CurrentTreeNode -> Address -> unit)
-      =
+    let rec traverseViewTEs (nodes: TE list) (origin: Address) (traverse: CurrentTreeNode -> Address -> unit) =
       match nodes with
       | [] -> ()
       | current :: remainingNodes ->
@@ -160,7 +156,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member val Props: Props = props with get, set
 
-  member this.Children: List<TerminalElement> = props.Children
+  member this.Children: List<TE> = props.Children
 
   abstract SubElements_PropKeys: RawPropKey list
   default _.SubElements_PropKeys = []
@@ -198,7 +194,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       | ViewTE te -> ViewBackedTerminalElement.InitializeView((te :?> ViewBackedTerminalElement), vtt, address)
       | ElmishComponentTE ce -> ce.StartElmishLoop(vtt, address)
 
-    traverseTEs ((TerminalElement.from terminalElement), address) traverse
+    traverseTEs ((TE.from terminalElement), address) traverse
 
   // TODO: InitializeSubElements does not support elmish components as sub elements.
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)

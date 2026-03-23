@@ -88,10 +88,7 @@ let inline internal setState<'model, 'cmd, ^terminalModel, ^terminalElement
           // TODO: double view evaluation, as view is already called by elmish loop
           let nextTe = view model dispatch :> ITerminalElement :?> IViewTE
 
-          Differ.update
-            model.TerminalElementState.VTT
-            (TerminalElement.ViewTE currentTe)
-            (TerminalElement.ViewTE nextTe)
+          Differ.update model.TerminalElementState.VTT (TE.ViewTE currentTe) (TE.ViewTE nextTe)
 
           currentTe.Dispose()
           return nextTe

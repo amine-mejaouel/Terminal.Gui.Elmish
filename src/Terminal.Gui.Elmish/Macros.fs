@@ -12,7 +12,7 @@ type MenuBarItemMacros internal (props: MenuBarItemProps) =
       |> Props.getOrInit PKey.PopoverMenu.Root_element (fun () -> new MenuTerminalElement(Props()))
       :?> MenuTerminalElement
 
-    value |> List.map TerminalElement.from |> menu.Props.Children.AddRange
+    value |> List.map TE.from |> menu.Props.Children.AddRange
 
 type MenuBarMacros internal (props: MenuBarProps) =
   member _.MenuBarItem(set: MenuBarItemProps -> MenuBarItemMacros -> unit) =
@@ -22,4 +22,4 @@ type MenuBarMacros internal (props: MenuBarProps) =
     let macros = MenuBarItemMacros props
     set props macros
 
-    new MenuBarItemTerminalElement(props.props) |> TerminalElement.from |> menus.Add
+    new MenuBarItemTerminalElement(props.props) |> TE.from |> menus.Add

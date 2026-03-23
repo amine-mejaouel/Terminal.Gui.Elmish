@@ -8,7 +8,7 @@ open Terminal.Gui.Elmish
 type internal TerminalElementExt() =
 
   [<Extension>]
-  static member GetViewBackedTE(this: TerminalElement) =
+  static member GetViewBackedTE(this: TE) =
     match this with
     | ViewTE viewTe -> viewTe
     | ElmishComponentTE _ -> failwith "todo"

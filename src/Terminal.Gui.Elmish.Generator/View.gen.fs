@@ -45,7 +45,7 @@ let genMethods (viewType: Type) =
     yield ""
   }
 
-let opens = [ "open System"; "open Terminal.Gui.Elmish" ]
+let opens = [ "open Terminal.Gui.Elmish" ]
 
 let gen () =
   let viewTypesToGen =

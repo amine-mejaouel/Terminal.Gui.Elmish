@@ -1,6 +1,5 @@
 namespace Terminal.Gui.Elmish
 
-open System
 open Terminal.Gui.Elmish
 
 type View =

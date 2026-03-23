@@ -126,7 +126,11 @@ and internal ITerminalElementBase =
   abstract OnViewSet: IEvent<View>
   abstract GetPath: unit -> string
 
-and internal IViewTE =
+and [<Interface>] internal ViewBase =
+  abstract Props: Props
+  abstract CreateViewTE: unit -> IViewTE
+
+and [<Obsolete>] internal IViewTE =
   inherit ITerminalElementBase
 
   abstract Props: Props with get
@@ -193,7 +197,8 @@ and internal TerminalElement =
     member this.Dispose() = this.Dispose()
 
 // Origin describes how a TerminalElement is related to the root of the tree.
-and internal Origin =
+
+and [<Obsolete>] internal Origin =
   /// Root element of the Elmish program.
   | Root
   /// Root element of an Elmish component.

@@ -6,6 +6,7 @@ let main _argv =
   Props.gen ()
   Types.gen ()
   TerminalElement_Elements.gen ()
+  TerminalElement_Descriptors.gen ()
   View.gen ()
 
   0

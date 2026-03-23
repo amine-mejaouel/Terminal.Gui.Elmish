@@ -46,9 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="paket.references" />
+    <Compile Include="Config.fs" />
     <Compile Include="Task.fs" />
     <Compile Include="Types.fs" />
-    <Compile Include="Differ.fs" />
+    <Compile Include="KeyedDiffer.fs" />
+    <Compile Include="SimpleDiffer.fs" />
     <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
@@ -57,6 +59,7 @@
     <Compile Include="TerminalElement.Interfaces.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="Props.gen.fs" />
+    <Compile Include="TerminalElement.Descriptors.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />
   </ItemGroup>

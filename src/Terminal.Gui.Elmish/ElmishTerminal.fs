@@ -4,6 +4,7 @@ open System
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
+open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
@@ -142,23 +143,32 @@ module ElmishTerminal =
         task {
           if not model.RootViewSet then
 
-            let initialTe = view model dispatch :?> IViewTE
+            if Config.curDiffer = Differ.Keyed then
+              let initialTe = view model dispatch :?> IViewTE
 
-            let origin =
-              match model.Kind with
-              | ProgramKind.Root -> Origin.Root
-              | ProgramKind.ElmishComponent te -> te.Origin
+              let origin =
+                match model.Kind with
+                | ProgramKind.Root -> Origin.Root
+                | ProgramKind.ElmishComponent te -> te.Origin
 
-            initialTe.InitializeTree origin
+              initialTe.InitializeTree origin
 
-            return initialTe
+              return initialTe
+
+            else
+              return Unchecked.defaultof<_>
+          // let initialTe = (view model dispatch :?> IViewTE).Props
+          //
+          // initialTe.InitializeTree model.Address model.TerminalElementState.VTT
+          //
+          // return initialTe
 
           else
             let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
 
             let nextTe = view model dispatch :?> IViewTE
 
-            Differ.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
+            KeyedDiffer.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
 
             currentTe.Dispose()
             return nextTe

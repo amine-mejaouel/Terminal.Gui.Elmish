@@ -1,6 +1,6 @@
 ﻿namespace Terminal.Gui.Elmish
 
-module internal Differ =
+module internal KeyedDiffer =
 
   let sortedChildNames (ve: IViewTE) =
     ve.Children |> Seq.map _.Name |> Seq.sort |> Seq.toList

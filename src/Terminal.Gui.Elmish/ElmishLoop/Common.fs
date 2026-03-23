@@ -48,25 +48,35 @@ type internal ITerminalModel<'model> =
   abstract RootViewSet: bool
   abstract TerminalElementState: TerminalElementState
   abstract Address: Address
+  abstract ClientModel: 'model
 
 // TODO: Only used by the component loop.
 type internal Subscription<'model, 'msg> =
   { SubId: SubId
     SubscriptionFunc: 'model -> Subscribe<'msg> }
 
-let inline internal setState<'model, 'cmd, ^terminalModel when ^terminalModel :> ITerminalModel<'model>>
-  (view: ^terminalModel -> Dispatch<'cmd> -> ITerminalElement)
+let inline internal wrapView
+  (view: 'model -> Dispatch<'msg> -> 'terminalElement)
+  : ITerminalModel<'model> -> Dispatch<'msg> -> 'terminalElement =
+  fun (model: ITerminalModel<'model>) (dispatch: Dispatch<'msg>) -> view model.ClientModel dispatch
+
+let inline internal setState<'model, 'cmd, ^terminalModel, ^terminalElement
+  when ^terminalModel :> ITerminalModel<'model> and ^terminalElement :> ITerminalElement>
+  ([<InlineIfLambda>] view: 'model -> Dispatch<'cmd> -> ^terminalElement)
   (model: ^terminalModel)
   dispatch
   =
   task {
     let nextTe =
       task {
+        let view = wrapView view
+
         if not model.RootViewSet then
 
           // TODO: double view evaluation, as view is already called by elmish loop
           // TODO: this should vanish once VTT is done.
-          let initialTe = view model dispatch :?> IViewTE
+          let initialTe =
+            (view model dispatch :> ITerminalElement :?> ITerminalElementDescriptor).CreateViewTE()
 
           initialTe.InitializeTree model.Address model.TerminalElementState.VTT
 
@@ -75,12 +85,13 @@ let inline internal setState<'model, 'cmd, ^terminalModel when ^terminalModel :>
         else
           let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
 
-          let nextTe = view model dispatch :?> IViewTE
+          // TODO: double view evaluation, as view is already called by elmish loop
+          let nextTe = view model dispatch :> ITerminalElement :?> IViewTE
 
           Differ.update
             model.TerminalElementState.VTT
-            (TerminalElement.ViewTE currentTe)
-            (TerminalElement.ViewTE nextTe)
+            (TerminalElementBck.ViewTE currentTe)
+            (TerminalElementBck.ViewTE nextTe)
 
           currentTe.Dispose()
           return nextTe

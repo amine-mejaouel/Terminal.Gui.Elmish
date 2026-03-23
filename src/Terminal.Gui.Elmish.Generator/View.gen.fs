@@ -4,9 +4,7 @@ open System
 
 let genMethods (viewType: Type) =
   let typeName = getTypeNameWithoutArity viewType
-  let elementName = typeName + "TerminalElement"
   let propsName = typeName + "Props"
-  let viewName = typeName
   let genericBlock = genericTypeParamsWithConstraintsBlock viewType
   let genericParamsBlock = genericTypeParamsBlock viewType
 
@@ -15,37 +13,32 @@ let genMethods (viewType: Type) =
     [ typeof<Terminal.Gui.Views.MenuBar>; typeof<Terminal.Gui.Views.MenuBarItem> ]
     |> List.contains viewType
 
-  let returnInterface = Registry.TEInterfaces.GetAssignableInterface viewType
-
   seq {
     if hasMacros then
       let macrosName = typeName + "Macros"
-      yield $"  static member {viewName}(set: {propsName} -> {macrosName} -> unit) ="
+      yield $"  static member {typeName}(set: {propsName} -> {macrosName} -> unit) ="
       yield $"    let props = {propsName} ()"
       yield $"    let macros = {macrosName} props"
       yield $"    set props macros"
-      yield $"    new {elementName}(props.props)"
-      yield $"    :> {returnInterface}"
+      yield $"    {typeName}(props)"
       yield ""
 
-    yield $"  static member {viewName}{genericBlock}(set: {propsName}{genericParamsBlock} -> unit) ="
+    yield $"  static member {typeName}{genericBlock}(set: {propsName}{genericParamsBlock} -> unit) ="
     yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
     yield $"    set viewProps"
-    yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-    yield $"    :> {returnInterface}"
+    yield $"    {typeName}{genericParamsBlock}(viewProps)"
 
     yield ""
 
-    yield $"  static member {viewName}{genericBlock}(children: ITerminalElement list) ="
+    yield $"  static member {typeName}{genericBlock}(children: ITerminalElement list) ="
     yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
     yield $"    viewProps.Children children"
-    yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-    yield $"    :> {returnInterface}"
+    yield $"    {typeName}{genericParamsBlock}(viewProps)"
 
     yield ""
   }
 
-let opens = [ "open System"; "open Terminal.Gui.Elmish" ]
+let opens = []
 
 let gen () =
   let viewTypesToGen =

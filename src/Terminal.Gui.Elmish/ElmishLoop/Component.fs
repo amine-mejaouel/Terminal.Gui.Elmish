@@ -28,16 +28,12 @@ module Component =
       member this.RootViewSet = this.RootViewSet
       member this.TerminalElementState: TerminalElementState = this.TerminalElementState
       member this.Address = address
+      member this.ClientModel = this.ClientModel
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
 
   module internal OuterModel =
-
-    let internal wrapView
-      (view: 'model -> Dispatch<'msg> -> ITerminalElement)
-      : ComponentTerminalModel<'model> -> Dispatch<'msg> -> ITerminalElement =
-      fun (model: ComponentTerminalModel<'model>) (dispatch: Dispatch<'msg>) -> view model.ClientModel dispatch
 
     let internal wrapSimpleInit vtt address (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
@@ -71,8 +67,8 @@ module Component =
   /// <b>The root TE of the component should remain the same across renders, so it's advisable to have a top Runnable TE as the root of the component.</b>
   /// </remarks>
   /// </summary>
-  type internal ElmishComponentTE<'model, 'msg, 'view>
-    (name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ITerminalElement) =
+  type internal ElmishComponentTE<'model, 'msg, 'view, ^terminalElement when ^terminalElement :> ITerminalElement>
+    (name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<'msg> -> ^terminalElement) =
 
     let initialTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
 
@@ -84,13 +80,10 @@ module Component =
       (address: Address)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
-      (view: 'model -> Dispatch<'cmd> -> ITerminalElement)
+      (view: 'model -> Dispatch<'cmd> -> 'terminalElement)
       =
-      Program.mkSimple
-        (OuterModel.wrapSimpleInit vtt address init)
-        (OuterModel.wrapSimpleUpdate update)
-        (OuterModel.wrapView view)
-      |> Program.withSetState (setState (view |> OuterModel.wrapView))
+      Program.mkSimple (OuterModel.wrapSimpleInit vtt address init) (OuterModel.wrapSimpleUpdate update) (wrapView view)
+      |> Program.withSetState (setState view)
       |> ComponentTerminalProgram
 
     abstract Subscriptions: Subscription<ComponentTerminalModel<'model>, 'msg> list
@@ -190,10 +183,10 @@ module Component =
 
       member this.Dispose() = this.Dispose()
 
-  let mkSimple
+  let mkSimple<'model, 'msg, 'view, 'terminalElement when ^terminalElement :> ITerminalElement>
     name
     (init: unit -> 'model)
     (update: 'msg -> 'model -> 'model)
-    (view: 'model -> Dispatch<'msg> -> ITerminalElement)
+    (view: 'model -> Dispatch<'msg> -> ^terminalElement)
     =
-    new ElmishComponentTE<_, _, _>(name, init, update, view) :> ITerminalElement
+    new ElmishComponentTE<'model, 'msg, 'view, ^terminalElement>(name, init, update, view) :> ITerminalElement

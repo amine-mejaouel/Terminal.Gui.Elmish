@@ -12,7 +12,7 @@ type ViewProps() =
 
   member this.Children(children: ITerminalElement list) =
     children
-    |> List.map (fun x -> TerminalElement.from x)
+    |> List.map (fun x -> TerminalElementBck.from x)
     |> this.props.Children.AddRange
 
   // Positions

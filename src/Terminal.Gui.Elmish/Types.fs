@@ -109,7 +109,7 @@ module internal PropKey =
 
 /// Props object that is still under construction
 type internal Props() =
-  member val Children: List<TerminalElement> = List<_>() with get
+  member val Children: List<TerminalElementBck> = List<_>() with get
   member val X: Pos option = None with get, set
   member val Y: Pos option = None with get, set
   member val XDelayed: TPos option = None with get, set
@@ -130,10 +130,15 @@ and internal IViewTE =
 
   abstract Props: Props with get
   abstract SetAsChildOfParentView: bool
-  abstract Children: List<TerminalElement>
+  abstract Children: List<TerminalElementBck>
 
   abstract InitializeTree: parent: Address -> vtt: IVirtualTerminalTree -> unit
   abstract Reuse: prev: IViewTE -> unit
+
+and internal ITerminalElementDescriptor =
+  inherit ITerminalElement
+  abstract CreateViewTE: unit -> IViewTE
+  abstract Props: Props with get
 
 and internal VttInternalNode(view: View, address) =
   // TODO: remove the usage of weakreference.
@@ -181,13 +186,14 @@ and internal IElmishComponentTE =
   // TODO: should also take vtt + address
   abstract Reuse: prev: IElmishComponentTE -> unit
 
-and internal TerminalElement =
+and internal TerminalElementBck =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 
   static member from(te: ITerminalElement) =
     match te with
     | :? IViewTE as viewTE -> ViewTE viewTE
+    | :? ITerminalElementDescriptor as teDescriptor -> ViewTE(teDescriptor.CreateViewTE())
     | :? IElmishComponentTE as elmishComponentTE -> ElmishComponentTE elmishComponentTE
     | _ -> failwith "Invalid terminal element"
 

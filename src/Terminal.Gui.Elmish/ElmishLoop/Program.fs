@@ -37,6 +37,7 @@ module Program =
       member this.RootViewSet = this.RootViewSet
       member this.TerminalElementState: TerminalElementState = this.TerminalElementState
       member this.Address = [ AddressSegment.Root ]
+      member this.ClientModel = this.ClientModel
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
@@ -63,11 +64,6 @@ module Program =
 
           model.ClientModel <- innerModel
           model, cmd
-
-    let internal wrapView
-      (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
-      : MainTerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
-      fun (model: MainTerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel dispatch
 
     let internal wrapSimpleInit (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
@@ -96,31 +92,23 @@ module Program =
     // For the main elmish loop, signal stop and let runTerminal handle cleanup after Run() returns
     model.Application.RequestStop()
 
-  let internal setState view : ITerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> unit =
-    let wrapView (view: MainTerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement) =
-      fun (model: ITerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'cmd>>) ->
-        let model = model :?> MainTerminalModel<'model>
-        (view model dispatch)
-
-    Common.setState (view |> OuterModel.wrapView |> wrapView)
-
   let mkProgram
     (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
     (update: 'msg -> 'model -> 'model * Cmd<TerminalMsg<'msg>>)
-    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
+    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'terminalElement)
     =
 
-    Program.mkProgram (OuterModel.wrapInit init) (OuterModel.wrapUpdate update) (OuterModel.wrapView view)
-    |> Program.withSetState (setState view)
+    Program.mkProgram (OuterModel.wrapInit init) (OuterModel.wrapUpdate update) (Common.wrapView view)
+    |> Program.withSetState (view |> Common.setState)
     |> MainTerminalProgram
 
   let mkSimple
     (init: 'arg -> 'model)
     (update: 'cmd -> 'model -> 'model)
-    (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
+    (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> 'terminalElement)
     =
-    Program.mkSimple (OuterModel.wrapSimpleInit init) (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
-    |> Program.withSetState (setState view)
+    Program.mkSimple (OuterModel.wrapSimpleInit init) (OuterModel.wrapSimpleUpdate update) (Common.wrapView view)
+    |> Program.withSetState (view |> Common.setState)
     |> MainTerminalProgram
 
   let internal withInternalSubscription

@@ -30,7 +30,7 @@ let genMethods (viewType: Type) =
 
     yield ""
 
-    yield $"  static member {typeName}{genericBlock}(children: ITerminalElement list) ="
+    yield $"  static member {typeName}{genericBlock}(children: 'terminalElement list) ="
     yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
     yield $"    viewProps.Children children"
     yield $"    {typeName}{genericParamsBlock}(viewProps)"

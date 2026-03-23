@@ -14,7 +14,7 @@ let viewSpecificMembers =
 
     yield
       """
-  member this.Children(children: ITerminalElement list) =
+  member this.Children(children: 'terminalElement list) =
     children
     |> List.map (fun x -> TerminalElementBck.from x)
     |> this.props.Children.AddRange

@@ -5,7 +5,7 @@ open Terminal.Gui.Elmish
 
 [<Test>]
 let ``PropKey and PropKey<_> are equal when raw key is same`` () =
-  let rawKey: RawPropKey = "MyView.Parent_element"
+  let rawKey: RawPropKey = "MyView.Parent_viewSpec"
 
   let untyped: PropKey =
     { Kind = PropKeyKind.SubViewSpec
@@ -18,7 +18,7 @@ let ``PropKey and PropKey<_> are equal when raw key is same`` () =
 
 [<Test>]
 let ``PropKey and PropKey<_> have same hashcode when raw key is same`` () =
-  let rawKey: RawPropKey = "MyView.Parent_element"
+  let rawKey: RawPropKey = "MyView.Parent_viewSpec"
 
   let untyped: PropKey =
     { Kind = PropKeyKind.SubViewSpec

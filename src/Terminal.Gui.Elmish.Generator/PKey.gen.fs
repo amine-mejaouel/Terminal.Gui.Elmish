@@ -32,7 +32,7 @@ let genPKeyClassDefinition (viewType: Type) =
             Registry.ViewInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
 
           yield
-            $"    member val {prop.PKey}_element: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_element\""
+            $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_viewSpec\""
         else
           yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
 

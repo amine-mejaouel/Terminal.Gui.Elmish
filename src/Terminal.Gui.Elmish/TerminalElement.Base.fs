@@ -299,7 +299,7 @@ type internal ViewBackedTerminalElement(props: Props) =
     // TODO: Should refactor props to be clear that X and Y are treated separately
     let c = ViewBackedTerminalElement.compare prev.Props this.Props
 
-    // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
+    // 0 - foreach unchanged _viewSpec property, we identify the _view to reinject to `this` TerminalElement
     let view_PropKeys_ToReinject =
       c.unchangedProps
       |> Props.filterSubElementKeys
@@ -374,7 +374,7 @@ type internal ViewBackedTerminalElement(props: Props) =
           curElement.equivalentTo oldElement
         // TODO: comparison is not good here, it can fail for many C# types
         // TODO: Properties values should be comparable
-        // TODO: should also be able to compare _element props
+        // TODO: should also be able to compare _viewSpec props
         | Some v' when kv.Value = v' -> true
         | _ -> false)
 

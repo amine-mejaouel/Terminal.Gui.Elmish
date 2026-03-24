@@ -62,7 +62,7 @@ type ViewProps() =
     this.props |> Props.add (PKey.View.DefaultAcceptView, value)
 
   member this.DefaultAcceptView(value: IView) =
-    this.props |> Props.add (PKey.View.DefaultAcceptView_element, value)
+    this.props |> Props.add (PKey.View.DefaultAcceptView_viewSpec, value)
 
   member this.Enabled(value: bool) =
     this.props |> Props.add (PKey.View.Enabled, value)
@@ -363,7 +363,7 @@ type AdornmentProps() =
     this.props |> Props.add (PKey.Adornment.Parent, value)
 
   member this.Parent(value: IView) =
-    this.props |> Props.add (PKey.Adornment.Parent_element, value)
+    this.props |> Props.add (PKey.Adornment.Parent_viewSpec, value)
 
   member this.SuperViewRendersLineCanvas(value: bool) =
     this.props |> Props.add (PKey.Adornment.SuperViewRendersLineCanvas, value)
@@ -892,13 +892,13 @@ type MenuProps() =
     this.props |> Props.add (PKey.Menu.SuperMenuItem, value)
 
   member this.SuperMenuItem(value: IMenuItemView) =
-    this.props |> Props.add (PKey.Menu.SuperMenuItem_element, value)
+    this.props |> Props.add (PKey.Menu.SuperMenuItem_viewSpec, value)
 
   member this.Value(value: Terminal.Gui.Views.MenuItem) =
     this.props |> Props.add (PKey.Menu.Value, value)
 
   member this.Value(value: IMenuItemView) =
-    this.props |> Props.add (PKey.Menu.Value_element, value)
+    this.props |> Props.add (PKey.Menu.Value_viewSpec, value)
 
   // Events
   member this.SelectedMenuItemChanged(handler: Terminal.Gui.Views.MenuItem -> unit) =
@@ -984,7 +984,7 @@ type PopoverProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView
 
   member this.ContentView(value: ITViewView) =
     this.props
-    |> Props.add (PKey.Popover<'TView, 'TResult>.ContentView_element, value)
+    |> Props.add (PKey.Popover<'TView, 'TResult>.ContentView_viewSpec, value)
 
   member this.ResultExtractor(value: Func<'TView, 'TResult>) =
     this.props |> Props.add (PKey.Popover<'TView, 'TResult>.ResultExtractor, value)
@@ -1009,7 +1009,7 @@ type PopoverMenuProps() =
     this.props |> Props.add (PKey.PopoverMenu.Root, value)
 
   member this.Root(value: IMenuView) =
-    this.props |> Props.add (PKey.PopoverMenu.Root_element, value)
+    this.props |> Props.add (PKey.PopoverMenu.Root_viewSpec, value)
 
   // Events
   member this.KeyChanged(handler: Terminal.Gui.Input.KeyChangedEventArgs -> unit) =
@@ -1354,7 +1354,7 @@ type ShortcutProps() =
     this.props |> Props.add (PKey.Shortcut.CommandView, value)
 
   member this.CommandView(value: IView) =
-    this.props |> Props.add (PKey.Shortcut.CommandView_element, value)
+    this.props |> Props.add (PKey.Shortcut.CommandView_viewSpec, value)
 
   member this.HelpText(value: string) =
     this.props |> Props.add (PKey.Shortcut.HelpText, value)
@@ -1376,7 +1376,7 @@ type ShortcutProps() =
     this.props |> Props.add (PKey.Shortcut.TargetView, value)
 
   member this.TargetView(value: IView) =
-    this.props |> Props.add (PKey.Shortcut.TargetView_element, value)
+    this.props |> Props.add (PKey.Shortcut.TargetView_viewSpec, value)
 
   member this.Text(value: string) =
     this.props |> Props.add (PKey.Shortcut.Text, value)
@@ -1396,7 +1396,7 @@ type MenuItemProps() =
     this.props |> Props.add (PKey.MenuItem.SubMenu, value)
 
   member this.SubMenu(value: IMenuView) =
-    this.props |> Props.add (PKey.MenuItem.SubMenu_element, value)
+    this.props |> Props.add (PKey.MenuItem.SubMenu_viewSpec, value)
 
 type MenuBarItemProps() =
   inherit MenuItemProps()
@@ -1405,7 +1405,7 @@ type MenuBarItemProps() =
     this.props |> Props.add (PKey.MenuBarItem.PopoverMenu, value)
 
   member this.PopoverMenu(value: IPopoverMenuView) =
-    this.props |> Props.add (PKey.MenuBarItem.PopoverMenu_element, value)
+    this.props |> Props.add (PKey.MenuBarItem.PopoverMenu_viewSpec, value)
 
   member this.PopoverMenuOpen(value: bool) =
     this.props |> Props.add (PKey.MenuBarItem.PopoverMenuOpen, value)
@@ -1459,7 +1459,7 @@ type TabProps() =
     this.props |> Props.add (PKey.Tab.View, value)
 
   member this.View(value: IView) =
-    this.props |> Props.add (PKey.Tab.View_element, value)
+    this.props |> Props.add (PKey.Tab.View_viewSpec, value)
 
 type TabViewProps() =
   inherit ViewProps()
@@ -1472,7 +1472,7 @@ type TabViewProps() =
     this.props |> Props.add (PKey.TabView.SelectedTab, value)
 
   member this.SelectedTab(value: ITabView) =
-    this.props |> Props.add (PKey.TabView.SelectedTab_element, value)
+    this.props |> Props.add (PKey.TabView.SelectedTab_viewSpec, value)
 
   member this.Style(value: Terminal.Gui.Views.TabStyle) =
     this.props |> Props.add (PKey.TabView.Style, value)
@@ -1852,7 +1852,7 @@ type WizardProps() =
     this.props |> Props.add (PKey.Wizard.CurrentStep, value)
 
   member this.CurrentStep(value: IWizardStepView) =
-    this.props |> Props.add (PKey.Wizard.CurrentStep_element, value)
+    this.props |> Props.add (PKey.Wizard.CurrentStep_viewSpec, value)
 
   // Events
   member this.MovingBack(handler: System.ComponentModel.CancelEventArgs -> unit) =

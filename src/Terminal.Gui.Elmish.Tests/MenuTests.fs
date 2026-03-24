@@ -35,9 +35,9 @@ let ``Using properties syntax: Menu should be correctly set`` () =
     menuBarElement.Props.Children.Single().GetViewBackedTE() :?> MenuBarItemTerminalElement
 
   let popoverMenu =
-    menuBarItemElement.Props |> Props.find PKey.MenuBarItem.PopoverMenu_element :?> ViewBase
+    menuBarItemElement.Props |> Props.find PKey.MenuBarItem.PopoverMenu_viewSpec :?> ViewBase
 
-  let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_element
+  let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_viewSpec
 
   let view = program.View
 
@@ -75,9 +75,9 @@ let ``Using macros syntax: Menu should be correctly set`` () =
     menuBarElement.Props.Children.Single().GetViewBackedTE() :?> MenuBarItemTerminalElement
 
   let popoverMenu =
-    menuBarItemElement.Props |> Props.find PKey.MenuBarItem.PopoverMenu_element :?> ViewBase
+    menuBarItemElement.Props |> Props.find PKey.MenuBarItem.PopoverMenu_viewSpec :?> ViewBase
 
-  let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_element
+  let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_viewSpec
 
 
   let view = program.View

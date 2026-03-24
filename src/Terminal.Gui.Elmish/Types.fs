@@ -36,7 +36,7 @@ module internal PropKey =
       match this.Kind with
       | PropKeyKind.SubViewSpec ->
         { Kind = PropKeyKind.SubView
-          Key = this.Key.Replace("_element", "_view") }
+          Key = this.Key.Replace("_viewSpec", "_view") }
       | _ -> failwith $"viewKey is only valid for SubView PropKeys, got: {this}"
 
     override this.Equals(obj) = equalsByRawKey this.Key obj
@@ -64,11 +64,11 @@ module internal PropKey =
 
     let viewKeyOfSubElement (key: RawPropKey) : PropKey =
       { Kind = PropKeyKind.SubView
-        Key = key.Replace("_element", "_view") }
+        Key = key.Replace("_viewSpec", "_view") }
 
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
-        if key.EndsWith "_element" then
+        if key.EndsWith "_viewSpec" then
           PropKey
             { Kind = PropKeyKind.SubViewSpec
               Key = key }
@@ -76,7 +76,7 @@ module internal PropKey =
           failwith $"Invalid key: {key}"
 
       static member simple<'a>(key: string) : PropKey<'a> =
-        if key.EndsWith "_element" || key.EndsWith "_view" then
+        if key.EndsWith "_viewSpec" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
         else
           PropKey { Kind = PropKeyKind.Simple; Key = key }

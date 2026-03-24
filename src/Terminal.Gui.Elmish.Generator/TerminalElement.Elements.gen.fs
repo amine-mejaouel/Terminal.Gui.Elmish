@@ -1,4 +1,4 @@
-module Terminal.Gui.Elmish.Generator.TerminalElement_Elements
+module Terminal.Gui.Elmish.Generator.TerminalElement_viewSpecs
 
 open System
 open Terminal.Gui.Elmish.Generator
@@ -18,7 +18,7 @@ let subElementsPropKeys (view: ViewMetadata) =
     yield $"    ["
 
     for prop in view.View_Typed_Properties do
-      yield $"      {PKey.getAccessor view.Type}.{prop.PKey}_element.key"
+      yield $"      {PKey.getAccessor view.Type}.{prop.PKey}_viewSpec.key"
 
     yield $"    ]"
     yield $"    |> List.append base.SubElements_PropKeys"

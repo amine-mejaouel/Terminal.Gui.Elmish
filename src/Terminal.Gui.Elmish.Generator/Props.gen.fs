@@ -68,7 +68,7 @@ let gen () =
             Registry.ViewInterfaces.CreateInterface prop.PropertyInfo.PropertyType
 
           yield $"  member this.{prop.PKey}(value: {valueType}) ="
-          yield $"    this.props |> Props.add ({PKey.getAccessor viewType}.{prop.PKey}_element, value)"
+          yield $"    this.props |> Props.add ({PKey.getAccessor viewType}.{prop.PKey}_viewSpec, value)"
 
         yield ""
 

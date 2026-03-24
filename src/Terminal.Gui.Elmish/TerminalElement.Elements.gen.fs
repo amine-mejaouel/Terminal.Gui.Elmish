@@ -16,7 +16,7 @@ type internal ViewTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.View.DefaultAcceptView_element.key ]
+    [ PKey.View.DefaultAcceptView_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -493,7 +493,7 @@ type internal AdornmentTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.Adornment.Parent_element.key ] |> List.append base.SubElements_PropKeys
+    [ PKey.Adornment.Parent_viewSpec.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -1694,7 +1694,7 @@ type internal MenuTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
-    [ PKey.Menu.SuperMenuItem_element.key; PKey.Menu.Value_element.key ]
+    [ PKey.Menu.SuperMenuItem_viewSpec.key; PKey.Menu.Value_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1913,7 +1913,7 @@ type internal PopoverTerminalElement<'TView, 'TResult
   override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
-    [ PKey.Popover<'TView, 'TResult>.ContentView_element.key ]
+    [ PKey.Popover<'TView, 'TResult>.ContentView_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1960,7 +1960,7 @@ type internal PopoverMenuTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = false
 
   override this.SubElements_PropKeys =
-    [ PKey.PopoverMenu.Root_element.key ] |> List.append base.SubElements_PropKeys
+    [ PKey.PopoverMenu.Root_viewSpec.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -2817,7 +2817,8 @@ type internal ShortcutTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.Shortcut.CommandView_element.key; PKey.Shortcut.TargetView_element.key ]
+    [ PKey.Shortcut.CommandView_viewSpec.key
+      PKey.Shortcut.TargetView_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2937,7 +2938,7 @@ type internal MenuItemTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.MenuItem.SubMenu_element.key ] |> List.append base.SubElements_PropKeys
+    [ PKey.MenuItem.SubMenu_viewSpec.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -2970,7 +2971,7 @@ type internal MenuBarItemTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.MenuBarItem.PopoverMenu_element.key ]
+    [ PKey.MenuBarItem.PopoverMenu_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3100,7 +3101,7 @@ type internal TabTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.Tab.View_element.key ] |> List.append base.SubElements_PropKeys
+    [ PKey.Tab.View_viewSpec.key ] |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)
@@ -3139,7 +3140,7 @@ type internal TabViewTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.TabView.SelectedTab_element.key ]
+    [ PKey.TabView.SelectedTab_viewSpec.key ]
     |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3981,7 +3982,8 @@ type internal WizardTerminalElement(props: Props) =
   override _.SetAsChildOfParentView = true
 
   override this.SubElements_PropKeys =
-    [ PKey.Wizard.CurrentStep_element.key ] |> List.append base.SubElements_PropKeys
+    [ PKey.Wizard.CurrentStep_viewSpec.key ]
+    |> List.append base.SubElements_PropKeys
 
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     base.SetProps(terminalElement, props)

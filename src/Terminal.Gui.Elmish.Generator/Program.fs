@@ -5,7 +5,7 @@ let main _argv =
   PKey.gen ()
   Props.gen ()
   Types.gen ()
-  TerminalElement_Elements.gen ()
+  TerminalElement_viewSpecs.gen ()
   TerminalElement_Descriptors.gen ()
   View.gen ()
 

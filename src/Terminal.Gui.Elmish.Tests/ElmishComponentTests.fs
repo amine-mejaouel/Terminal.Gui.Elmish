@@ -19,10 +19,10 @@ let ``ElmishComponent.Parent is set`` () =
   let parent = View.Runnable [ elmishComponent ]
 
   // Act
-  use _ = ElmishTester.render parent
+  use program = ElmishTester.render parent
 
   let elmishComponent = elmishComponent :?> ITerminalElementBase
-  let parent = parent :?> ITerminalElementBase
+  let parent = program.ViewTE :> ITerminalElementBase
 
   Assert.That(elmishComponent.Origin |> Origin.parentTerminalElement, Is.Not.Null)
   Assert.That((elmishComponent.Origin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(parent.GetPath()))
@@ -34,7 +34,8 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
     // Arrange
     let testComponentTE = TestComponent.create (fun p -> p.text "Test")
 
-    let view = View.Runnable(fun (p: RunnableProps) -> p.Children [ testComponentTE ])
+    let view =
+      View.Runnable(fun (p: RunnableProps) -> p.Children [ testComponentTE :> IView ])
 
     use program = ElmishTester.render view
 

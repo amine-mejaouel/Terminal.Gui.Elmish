@@ -145,11 +145,12 @@ let internal render view : TestableElmishProgram<'msg> =
 
   ElmishTerminal.mkSimple init update view |> run
 
-type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
+type internal ITestableElmishComponentTE<'model, 'msg, 'view when 'view :> IView> =
   inherit IElmishComponentTE
+  inherit IView
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task
 
-type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) =
+type internal TestableElmishComponentTE<'model, 'msg, 'view when 'view :> IView>(name, init, update, view) =
   inherit ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
 
   let msgDispatcherSub = MsgDispatcherSubscription<'model, 'msg>()
@@ -167,6 +168,6 @@ type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update,
   interface ITestableElmishComponentTE<'model, 'msg, 'view> with
     member this.ProcessMsg msg = this.ProcessMsg msg
 
-let internal mkTestableComponent<'model, 'msg, 'view> name init update view =
+let internal mkTestableComponent<'model, 'msg, 'view when 'view :> IView> name init update view =
   new TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
   :> ITestableElmishComponentTE<'model, 'msg, 'view>

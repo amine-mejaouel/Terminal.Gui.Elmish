@@ -21,18 +21,20 @@ let ``Button instance, used as relative position, should be collected after it's
       match msg with
       | ChangeView view -> { model with DisplayedView = view }
 
-    let view model dispatch : ITerminalElement =
+    let view model dispatch : IView =
       View.Runnable(fun (p: RunnableProps) ->
         p.Children
-          [ let first =
+          [ let first: IView =
               if model.DisplayedView = Button then
                 View.Button(fun p ->
                   p.Text "Click to test changing the Terminal Element type!"
                   p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg (ChangeView Label))))
+                :> IView
               else
                 View.Label(fun p ->
                   p.Text "Click to test changing the Terminal Element type!"
                   p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg (ChangeView Button))))
+                :> IView
 
             let second =
               View.Label(fun p ->

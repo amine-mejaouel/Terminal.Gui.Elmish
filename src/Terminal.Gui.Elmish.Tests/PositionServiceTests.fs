@@ -15,18 +15,23 @@ let private mkService () = PositionService()
 /// Quickly build a rendered Label IViewTE with the ElmishTester helper.
 let private renderLabel () =
   let label = View.Label(fun p -> p.Text "test")
-  let root = View.Runnable [ label ]
+  let root = View.Runnable [ label :> IView ]
   let tester = ElmishTester.render root
-  let labelTE = label :?> IViewTE
+  let labelTE = tester.ViewTE.Children.[0].GetViewBackedTE()
   tester, labelTE
 
-/// Render two labels next to each other and return both IViewTE handles.
+/// Render two labels next to each other and return both IViewTE handles
+/// (for use as curElementData in ApplyPos / assertions) plus IView handles
+/// (for use in TPos relative positions).
 let private renderTwoLabels () =
   let first = View.Label(fun p -> p.Text "first")
   let second = View.Label(fun p -> p.Text "second")
-  let root = View.Runnable [ first; second ]
+  let root = View.Runnable [ first :> IView; second :> IView ]
   let tester = ElmishTester.render root
-  first :?> IViewTE, second :?> IViewTE, tester
+  let children = tester.ViewTE.Children
+  let firstTE = children.[0].GetViewBackedTE()
+  let secondTE = children.[1].GetViewBackedTE()
+  firstTE, secondTE, first :> IView, second :> IView, tester
 
 // ---------------------------------------------------------------------------
 // Absolute / self-contained positions
@@ -95,72 +100,72 @@ let ``ApplyPos - Absolute positions do not add entries to RemoveHandlerRepositor
 
 [<Test>]
 let ``ApplyPos - TPos.Bottom registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.X relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, X, TPos.X firstTE)
+  svc.ApplyPos(secondTE, X, TPos.X firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Y relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Y firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Y firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Top relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Top firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Top firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Left relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, X, TPos.Left firstTE)
+  svc.ApplyPos(secondTE, X, TPos.Left firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Right relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
+  svc.ApplyPos(secondTE, X, TPos.Right firstView)
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
 [<Test>]
 let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
   let func = fun (v: View) -> v.Frame.X + 10
 
-  svc.ApplyPos(secondTE, X, TPos.Func(func, firstTE))
+  svc.ApplyPos(secondTE, X, TPos.Func(func, firstView))
 
   Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
 
@@ -170,11 +175,11 @@ let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
 
 [<Test>]
 let ``ApplyPos - Both elements are indexed after a relative position is registered`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
 
   Assert.Multiple(fun () ->
     Assert.That(
@@ -184,7 +189,7 @@ let ``ApplyPos - Both elements are indexed after a relative position is register
     )
 
     Assert.That(
-      svc.TerminalElementPairs.ContainsKey(firstTE :> ITerminalElementBase),
+      svc.TerminalElementPairs.ContainsKey((TerminalElement.from firstView) :> ITerminalElementBase),
       Is.True,
       "firstTE should be indexed"
     ))
@@ -195,11 +200,11 @@ let ``ApplyPos - Both elements are indexed after a relative position is register
 
 [<Test>]
 let ``SignalReuse - removes handler entries for the reused element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
 
   let countBefore = svc.Cleanups.Count
   Assert.That(countBefore, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
@@ -213,7 +218,9 @@ let ``SignalReuse - removes handler entries for the reused element`` () =
       "Index entry for secondTE should be removed after SignalReuse"
     )
 
-    let pairRemoved = not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
+    let pairRemoved =
+      not (svc.Cleanups.ContainsKey(TePairKey(secondTE, TerminalElement.from firstView)))
+
     Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository"))
 
 [<Test>]
@@ -230,11 +237,11 @@ let ``SignalReuse - calling on element without handlers is a no-op`` () =
 
 [<Test>]
 let ``SignalDispose - removes handler entries for the disposed element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
 
   svc.ExecuteCleanups secondTE
 
@@ -245,7 +252,9 @@ let ``SignalDispose - removes handler entries for the disposed element`` () =
       "Index entry for secondTE should be removed after SignalDispose"
     )
 
-    let pairRemoved = not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
+    let pairRemoved =
+      not (svc.Cleanups.ContainsKey(TePairKey(secondTE, TerminalElement.from firstView)))
+
     Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository")
 
     Assert.That(
@@ -270,12 +279,12 @@ let ``SignalDispose - calling on element without handlers is a no-op`` () =
 
 [<Test>]
 let ``ApplyPos - multiple relative positions accumulate handlers for the same element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
+  svc.ApplyPos(secondTE, X, TPos.Right firstView)
 
   Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True)
 
@@ -284,12 +293,12 @@ let ``ApplyPos - multiple relative positions accumulate handlers for the same el
 
 [<Test>]
 let ``SignalReuse - clears ALL handlers registered for element with multiple relative positions`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
+  svc.ApplyPos(secondTE, X, TPos.Right firstView)
 
   svc.ExecuteCleanups secondTE
 
@@ -305,11 +314,11 @@ let ``SignalReuse - clears ALL handlers registered for element with multiple rel
 
 [<Test>]
 let ``After SignalDispose on both elements no orphan entries remain`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
+  let firstTE, secondTE, firstView, _, tester = renderTwoLabels ()
   use _ = tester
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyPos(secondTE, Y, TPos.Bottom firstView)
 
   svc.ExecuteCleanups secondTE
   svc.ExecuteCleanups firstTE

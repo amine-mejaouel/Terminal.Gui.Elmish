@@ -1,4 +1,4 @@
-﻿module Terminal.Gui.Elmish.Tests.Tests
+module Terminal.Gui.Elmish.Tests.Tests
 
 open System.Linq
 open NUnit.Framework
@@ -7,7 +7,7 @@ open Terminal.Gui.Views
 
 [<Test>]
 let ``Using properties syntax: Menu should be correctly set`` () =
-  let viewTE =
+  let root =
     View.Runnable
       [ View.MenuBar(fun p m ->
           p.Children
@@ -23,8 +23,10 @@ let ``Using properties syntax: Menu should be correctly set`` () =
                             View.MenuItem(fun p -> p.Title "MenuItem 1") ])
                     ))
                 )) ])
-        :> ITerminalElement ]
-    :?> IViewTE
+        :> IView ]
+
+  use program = ElmishTester.render root
+  let viewTE = program.ViewTE
 
   let menuBarElement =
     viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
@@ -37,7 +39,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 
   let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_element
 
-  let view = (ElmishTester.render viewTE).View
+  let view = program.View
 
   let menuBar = (view.SubViews |> Seq.head) :?> MenuBar
 
@@ -52,7 +54,7 @@ let ``Using properties syntax: Menu should be correctly set`` () =
 
 [<Test>]
 let ``Using macros syntax: Menu should be correctly set`` () =
-  let viewTE =
+  let root =
     View.Runnable
       [ View.MenuBar(fun p m ->
           m.MenuBarItem(fun p m ->
@@ -61,8 +63,10 @@ let ``Using macros syntax: Menu should be correctly set`` () =
             m.MenuItems
               [ View.MenuItem(fun p -> p.Title "MenuItem 0")
                 View.MenuItem(fun p -> p.Title "MenuItem 1") ]))
-        :> ITerminalElement ]
-    :?> IViewTE
+        :> IView ]
+
+  use program = ElmishTester.render root
+  let viewTE = program.ViewTE
 
   let menuBarElement =
     viewTE.Children.Single().GetViewBackedTE() :?> MenuBarTerminalElement
@@ -76,7 +80,7 @@ let ``Using macros syntax: Menu should be correctly set`` () =
   let popoverMenuRoot = popoverMenu.Props |> Props.find PKey.PopoverMenu.Root_element
 
 
-  let view = (ElmishTester.render viewTE).View
+  let view = program.View
 
   let menuBar = (view.SubViews |> Seq.head) :?> MenuBar
 
@@ -96,11 +100,11 @@ let ``Sub-elements are not added to parent SubViews by Elmish traverse`` () =
   // If Elmish's traverse incorrectly calls View.Add for sub-elements, the TargetView
   // will appear in the Shortcut's SubViews. With the fix, only children get View.Add'd
   // by the traverse; sub-elements are wired through their property setters only.
-  let viewTE =
-    View.Runnable [ View.Shortcut(fun p -> p.TargetView(View.Label(fun p -> p.Text "target"))) :> ITerminalElement ]
-    :?> IViewTE
+  let root =
+    View.Runnable [ View.Shortcut(fun p -> p.TargetView(View.Label(fun p -> p.Text "target"))) :> IView ]
 
-  let view = (ElmishTester.render viewTE).View
+  use program = ElmishTester.render root
+  let view = program.View
   let shortcut = view.SubViews |> Seq.head :?> Shortcut
 
   // The TargetView property should be set

@@ -88,6 +88,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F87DB780
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".claude", ".claude", "{0857FE80-8B56-47EF-8615-F9504E1F0B91}"
+	ProjectSection(SolutionItems) = preProject
+		.claude\settings.local.json = .claude\settings.local.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +138,7 @@ Global
 		{948761AA-68F5-433D-9019-E8CCD79A9910} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
 		{078A9C52-DDC1-46F4-9235-9E6C89C87AFD} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
 		{D8B74F07-0FB1-4975-9E2D-C012FAEFF0F5} = {078A9C52-DDC1-46F4-9235-9E6C89C87AFD}
+		{0857FE80-8B56-47EF-8615-F9504E1F0B91} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC3C897C-7452-47F0-86EF-345D01CA45C1}

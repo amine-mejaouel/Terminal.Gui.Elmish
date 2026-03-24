@@ -396,8 +396,8 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props
-        |> Props.tryFind<IDisposable> (PropKeyKind.SubElement, key)
-        |> Option.iter _.Dispose()
+        |> Props.tryFind (PropKeyKind.SubElement, key)
+        |> Option.iter (fun v -> ((v :?> ViewBase).CreateViewTE() :> IDisposable).Dispose())
 
       for child in this.Children do
         child.Dispose()

@@ -15,7 +15,7 @@
     <Compile Include="PKey.gen.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
-    <Compile Include="TerminalElement.Desciptors.gen.fs" />
+    <Compile Include="TerminalElement.Descriptors.gen.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="View.gen.fs" />
     <Compile Include="Program.fs" />

@@ -8,8 +8,9 @@ let gen () =
 
     for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces() do
       if i <> "ITerminalElement" then
-        yield $"type {i} ="
-        yield "  inherit ITerminalElement"
+        let interfaceName = i.Replace("TerminalElement", "View")
+        yield $"type {interfaceName} ="
+        yield "  inherit IView"
         yield ""
   }
   |> CodeWriter.write "Types.gen.fs"

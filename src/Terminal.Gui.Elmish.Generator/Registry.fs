@@ -122,3 +122,14 @@ module Registry =
       match result with
       | Some interfaceName -> interfaceName
       | None -> "ITerminalElement"
+
+  type ViewInterfaces =
+    static let getViewInterfaceName propertyType =
+      if propertyType = typeof<Terminal.Gui.ViewBase.View> then
+        "IView"
+      else
+        $"I{propertyType.Name}View"
+
+    static member CreateInterface(propertyType: Type) =
+      TEInterfaces.TEInterfaces.Add(propertyType) |> ignore
+      getViewInterfaceName propertyType

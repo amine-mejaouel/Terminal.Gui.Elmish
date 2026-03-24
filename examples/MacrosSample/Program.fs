@@ -119,7 +119,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
           sampleComponent
           treeDiffUpdateTesterComponent ])
 
-  View.Runnable [ menuBar :> ITerminalElement; categoriesListView; scenariosListView ]
+  View.Runnable [ menuBar :> IView; categoriesListView; scenariosListView ]
 
 
 [<EntryPoint>]

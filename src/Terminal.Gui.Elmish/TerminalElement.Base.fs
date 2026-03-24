@@ -224,22 +224,13 @@ type internal ViewBackedTerminalElement(props: Props) =
         | None -> ()
 
         | Some value ->
-          match value with
-          | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree(Origin.SubElement(this, None, x))
+          match TerminalElement.from (value :?> IView) with
+          | ViewTE viewTe ->
+            viewTe.InitializeTree(Origin.SubElement(this, None, x))
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
-            yield viewKey, subElement.View
-          | :? List<IViewTE> as elements ->
-            elements
-            |> Seq.iteri (fun i e -> e.InitializeTree(Origin.SubElement(this, Some i, x)))
-
-            let viewKey = PropKey.viewKeyOfSubElement x
-
-            let views = elements |> Seq.map _.View |> Seq.toList
-
-            yield viewKey, views
+            yield viewKey, viewTe.View
           | _ -> failwith "Out of range subElement type"
     }
 

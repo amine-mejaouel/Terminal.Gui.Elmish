@@ -18,12 +18,14 @@ let gen () =
       let returnInterface = Registry.TEInterfaces.GetAssignableInterface viewType
 
       yield $"type {typeName}{genericBlock}(props: {propsName}{genericParamsBlock}) ="
+      yield $"  let viewTe = lazy (new {elementName}{genericParamsBlock}(props.props))"
       yield $"  interface ViewBase with"
-      yield $"    member _.CreateViewTE() = new {elementName}{genericParamsBlock}(props.props)"
+      yield $"    member _.CreateViewTE() = viewTe.Value"
       yield $"    member _.Props = props.props"
 
       if returnInterface <> "ITerminalElement" then
-        yield $"  interface {returnInterface}"
+        let interfaceName = returnInterface.Replace("TerminalElement", "View")
+        yield $"  interface {interfaceName}"
 
       yield ""
   }

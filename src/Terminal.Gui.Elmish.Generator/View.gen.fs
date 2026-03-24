@@ -24,23 +24,20 @@ let genMethods (viewType: Type) =
       yield $"    let props = {propsName} ()"
       yield $"    let macros = {macrosName} props"
       yield $"    set props macros"
-      yield $"    new {elementName}(props.props)"
-      yield $"    :> {returnInterface}"
+      yield $"    {viewName}(props)"
       yield ""
 
     yield $"  static member {viewName}{genericBlock}(set: {propsName}{genericParamsBlock} -> unit) ="
     yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
     yield $"    set viewProps"
-    yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-    yield $"    :> {returnInterface}"
+    yield $"    {viewName}{genericParamsBlock}(viewProps)"
 
     yield ""
 
-    yield $"  static member {viewName}{genericBlock}(children: ITerminalElement list) ="
+    yield $"  static member {viewName}{genericBlock}(children: IView list) ="
     yield $"    let viewProps = {propsName}{genericParamsBlock} ()"
     yield $"    viewProps.Children children"
-    yield $"    new {elementName}{genericParamsBlock}(viewProps.props)"
-    yield $"    :> {returnInterface}"
+    yield $"    {viewName}{genericParamsBlock}(viewProps)"
 
     yield ""
   }

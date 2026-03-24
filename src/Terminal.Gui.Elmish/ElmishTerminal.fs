@@ -101,9 +101,9 @@ module ElmishTerminal =
           model.ClientModel <- innerModel
           model, cmd
 
-    let internal wrapView
-      (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
-      : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement =
+    let internal wrapView<'model, 'msg, 'view when 'view :> IView>
+      (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
+      : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> IView =
       fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel dispatch
 
     let internal wrapSimpleInit programKind (init: 'arg -> 'model) =
@@ -134,7 +134,7 @@ module ElmishTerminal =
     internal | ElmishTerminalProgram of Program<'arg, TerminalModel<'model>, TerminalMsg<'msg>, 'view>
 
   let private setState
-    (view: TerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
+    (view: TerminalModel<'model> -> Dispatch<TerminalMsg<'cmd>> -> IView)
     (model: TerminalModel<'model>)
     dispatch
     =
@@ -144,7 +144,7 @@ module ElmishTerminal =
           if not model.RootViewSet then
 
             if Config.curDiffer = Differ.Keyed then
-              let initialTe = view model dispatch :?> IViewTE
+              let initialTe = (view model dispatch :?> ViewBase).CreateViewTE()
 
               let origin =
                 match model.Kind with
@@ -157,16 +157,11 @@ module ElmishTerminal =
 
             else
               return Unchecked.defaultof<_>
-          // let initialTe = (view model dispatch :?> IViewTE).Props
-          //
-          // initialTe.InitializeTree model.Address model.TerminalElementState.VTT
-          //
-          // return initialTe
 
           else
             let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
 
-            let nextTe = view model dispatch :?> IViewTE
+            let nextTe = (view model dispatch :?> ViewBase).CreateViewTE()
 
             KeyedDiffer.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
 
@@ -201,23 +196,19 @@ module ElmishTerminal =
   /// <b>The root TE of the component should remain the same across renders, so it's advisable to have a top Runnable TE as the root of the component.</b>
   /// </remarks>
   /// </summary>
-  type internal ElmishComponentTE<'model, 'msg, 'view>
-    (
-      name,
-      init: unit -> 'model,
-      update: 'msg -> 'model -> 'model,
-      view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement
-    ) =
+  type internal ElmishComponentTE<'model, 'msg, 'view when 'view :> IView>
+    (name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
+    =
 
     let initialTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
 
     let viewSetEvent = Event<View>()
 
-    let mkSimpleComponent
+    static member mkSimpleComponent<'arg, 'model, 'msg, 'view when 'view :> IView>
       (terminalElement: IElmishComponentTE)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
-      (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
+      (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> 'view)
       =
       Program.mkSimple
         (OuterModel.wrapSimpleInit (ProgramKind.ElmishComponent terminalElement) init)
@@ -301,12 +292,14 @@ module ElmishTerminal =
 
     interface IElmishComponentTE with
       member this.StartElmishLoop() =
-        mkSimpleComponent this init update view |> this.RunComponent
+        ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this init update view
+        |> this.RunComponent
 
       member this.Reuse prev = this.Reuse prev
 
       member this.Child = this.Child
 
+    interface IView
 
     interface ITerminalElementBase with
       member this.View = this.View
@@ -320,18 +313,18 @@ module ElmishTerminal =
       member this.GetPath() = this.Origin |> Origin.getPath name
       member this.Dispose() = this.Dispose()
 
-  let mkSimpleComponent
+  let mkSimpleComponent<'model, 'msg, 'view when 'view :> IView>
     name
     (init: unit -> 'model)
     (update: 'msg -> 'model -> 'model)
-    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
+    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
     =
-    new ElmishComponentTE<_, _, _>(name, init, update, view) :> ITerminalElement
+    new ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) :> IView
 
-  let mkProgram
+  let mkProgram<'arg, 'model, 'msg, 'view when 'view :> IView>
     (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
     (update: 'msg -> 'model -> 'model * Cmd<TerminalMsg<'msg>>)
-    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
+    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
     =
     Program.mkProgram
       (OuterModel.wrapInit ProgramKind.Root init)
@@ -343,7 +336,7 @@ module ElmishTerminal =
   let mkSimple
     (init: 'arg -> 'model)
     (update: 'cmd -> 'model -> 'model)
-    (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> ITerminalElement)
+    (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> IView)
     =
     Program.mkSimple
       (OuterModel.wrapSimpleInit ProgramKind.Root init)

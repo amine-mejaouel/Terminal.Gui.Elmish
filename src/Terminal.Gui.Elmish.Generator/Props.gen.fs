@@ -14,7 +14,7 @@ let viewSpecificMembers =
 
     yield
       """
-  member this.Children(children: ITerminalElement list) =
+  member this.Children(children: IView list) =
     children
     |> List.map (fun x -> TerminalElement.from x)
     |> this.props.Children.AddRange
@@ -64,7 +64,9 @@ let gen () =
         yield ""
 
         if prop.IsViewProperty then
-          let valueType = Registry.TEInterfaces.CreateInterface prop.PropertyInfo.PropertyType
+          let valueType =
+            Registry.ViewInterfaces.CreateInterface prop.PropertyInfo.PropertyType
+
           yield $"  member this.{prop.PKey}(value: {valueType}) ="
           yield $"    this.props |> Props.add ({PKey.getAccessor viewType}.{prop.PKey}_element, value)"
 

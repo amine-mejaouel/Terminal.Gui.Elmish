@@ -132,37 +132,37 @@ type internal PositionService() =
     match targetPos with
     | TPos.X te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.X(otherView)))
         resetPos
     | TPos.Y te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Y(otherView)))
         resetPos
     | TPos.Top te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Top(otherView)))
         resetPos
     | TPos.Bottom te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Bottom(otherView)))
         resetPos
     | TPos.Left te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Left(otherView)))
         resetPos
     | TPos.Right te ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Right(otherView)))
         resetPos
     | TPos.Func(func, te) ->
       onViewSetOnElementData
-        (te :?> ITerminalElementBase)
+        (TerminalElement.from te)
         (fun thisView otherView -> applyPos thisView (Pos.Func(func, otherView)))
         resetPos
     | TPos.Absolute position -> applyPos curElementData.View (Pos.Absolute(position))

@@ -159,8 +159,8 @@ let gen () =
       yield! removePropsCode viewMetadata
       yield ""
 
-      for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces viewType do
-        yield $"  interface {i}"
-        yield ""
+  // for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces viewType do
+  //   yield $"  interface {i}"
+  //   yield ""
   }
   |> CodeWriter.write "TerminalElement.Elements.gen.fs"

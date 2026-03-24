@@ -5,21 +5,7 @@ open System.Collections.Generic
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
-
-[<RequireQualifiedAccess>]
-type TPos =
-  | X of ITerminalElement
-  | Y of ITerminalElement
-  | Top of ITerminalElement
-  | Bottom of ITerminalElement
-  | Left of ITerminalElement
-  | Right of ITerminalElement
-  | Absolute of position: int
-  | AnchorEnd of offset: int option
-  | Center
-  | Percent of percent: int
-  | Func of func: (View -> int) * view: ITerminalElement
-  | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
+type IView = interface end
 
 [<AutoOpen>]
 module internal PropKey =
@@ -117,6 +103,20 @@ type internal Props() =
   /// Include all other properties that are not present as explicit members of Props.
   member val Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
 
+and [<RequireQualifiedAccess>] TPos =
+  | X of IView
+  | Y of IView
+  | Top of IView
+  | Bottom of IView
+  | Left of IView
+  | Right of IView
+  | Absolute of position: int
+  | AnchorEnd of offset: int option
+  | Center
+  | Percent of percent: int
+  | Func of func: (View -> int) * view: IView
+  | Align of alignment: Alignment * modes: AlignmentModes * groupId: int option
+
 and internal ITerminalElementBase =
   inherit ITerminalElement
   inherit IDisposable
@@ -127,6 +127,7 @@ and internal ITerminalElementBase =
   abstract GetPath: unit -> string
 
 and [<Interface>] internal ViewBase =
+  inherit IView
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
 
@@ -161,6 +162,12 @@ and internal IElmishComponentTE =
 and internal TerminalElement =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
+
+  static member from(view: IView) =
+    match view with
+    | :? ViewBase as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+    | :? ITerminalElement as terminalElement -> TerminalElement.from terminalElement
+    | _ -> failwith "Invalid view type"
 
   static member from(te: ITerminalElement) =
     match te with

@@ -219,7 +219,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   member this.InitializeSubElements() : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
-        match this.Props |> Props.tryFind (PropKeyKind.SubElement, x) with
+        match this.Props |> Props.tryFind (PropKeyKind.SubViewSpec, x) with
 
         | None -> ()
 
@@ -326,15 +326,16 @@ type internal ViewBackedTerminalElement(props: Props) =
       if isEquivalent then
         if kv.Key.Key = "children" then // TODO: for now children comparison is not yet implemented
           ()
-        elif kv.Key.Kind = PropKeyKind.View then
+        elif kv.Key.Kind = PropKeyKind.SubView then
           ()
-        elif kv.Key.Kind = PropKeyKind.SubElement then
-          let curElement = kv.Value :?> ViewBackedTerminalElement
+        elif kv.Key.Kind = PropKeyKind.SubViewSpec then
+          let curElement =
+            (kv.Value :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
 
           let otherElement =
             other.Props
             |> Props.tryFind kv.Key
-            |> Option.map (fun (x: obj) -> x :?> ViewBackedTerminalElement)
+            |> Option.map (fun (x: obj) -> (x :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement)
 
           match curElement, otherElement with
           | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
@@ -365,10 +366,11 @@ type internal ViewBackedTerminalElement(props: Props) =
         match remainingOldProps |> Props.tryFind kv.Key with
         | _ when kv.Key.Key = "children" -> // Here we always consider the 'children' unchanged
           true
-        | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubElement ->
-          let curElement = kv.Value :?> ViewBackedTerminalElement
+        | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubViewSpec ->
+          let curElement =
+            (kv.Value :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
 
-          let oldElement = v :?> ViewBackedTerminalElement
+          let oldElement = (v :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
           curElement.equivalentTo oldElement
         // TODO: comparison is not good here, it can fail for many C# types
         // TODO: Properties values should be comparable
@@ -396,7 +398,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
       for key in this.SubElements_PropKeys do
         this.Props
-        |> Props.tryFind (PropKeyKind.SubElement, key)
+        |> Props.tryFind (PropKeyKind.SubViewSpec, key)
         |> Option.iter (fun v -> ((v :?> ViewBase).CreateViewTE() :> IDisposable).Dispose())
 
       for child in this.Children do

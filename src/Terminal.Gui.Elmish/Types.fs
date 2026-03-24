@@ -13,9 +13,9 @@ module internal PropKey =
   [<RequireQualifiedAccess>]
   type PropKeyKind =
     | Simple
-    | View
+    | SubView
     | Event
-    | SubElement
+    | SubViewSpec
 
   type RawPropKey = string
 
@@ -34,10 +34,10 @@ module internal PropKey =
 
     member this.viewKey =
       match this.Kind with
-      | PropKeyKind.SubElement ->
-        { Kind = PropKeyKind.View
+      | PropKeyKind.SubViewSpec ->
+        { Kind = PropKeyKind.SubView
           Key = this.Key.Replace("_element", "_view") }
-      | _ -> failwith $"viewKey is only valid for SubElement PropKeys, got: {this}"
+      | _ -> failwith $"viewKey is only valid for SubView PropKeys, got: {this}"
 
     override this.Equals(obj) = equalsByRawKey this.Key obj
 
@@ -63,14 +63,14 @@ module internal PropKey =
   module PropKey =
 
     let viewKeyOfSubElement (key: RawPropKey) : PropKey =
-      { Kind = PropKeyKind.View
+      { Kind = PropKeyKind.SubView
         Key = key.Replace("_element", "_view") }
 
     type Create =
       static member subElement<'a>(key: string) : PropKey<'a> =
         if key.EndsWith "_element" then
           PropKey
-            { Kind = PropKeyKind.SubElement
+            { Kind = PropKeyKind.SubViewSpec
               Key = key }
         else
           failwith $"Invalid key: {key}"
@@ -91,7 +91,9 @@ module internal PropKey =
         if not (key.EndsWith "_view") then
           failwith $"Invalid key: {key}"
         else
-          PropKey { Kind = PropKeyKind.View; Key = key }
+          PropKey
+            { Kind = PropKeyKind.SubView
+              Key = key }
 
 /// Props object that is still under construction
 type internal Props() =
@@ -317,11 +319,11 @@ type Props with
   static member keys(props: Props) = Props.toEntries props |> Seq.map _.Key
 
   static member filterSubElementKeys(props: Props) =
-    match props.Props.TryGetValue PropKeyKind.SubElement with
+    match props.Props.TryGetValue PropKeyKind.SubViewSpec with
     | true, byKey ->
       byKey.Keys
       |> Seq.map (fun key ->
-        { Kind = PropKeyKind.SubElement
+        { Kind = PropKeyKind.SubViewSpec
           Key = key })
     | _ -> Seq.empty
 

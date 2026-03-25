@@ -157,7 +157,8 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   member val Props: Props = props with get, set
 
-  member this.Children: List<TerminalElement> = props.Children
+  member this.Children: List<TerminalElement> =
+    List(props.Children |> Seq.map TerminalElement.from)
 
   abstract SubElements_PropKeys: RawPropKey list
   default _.SubElements_PropKeys = []
@@ -330,12 +331,12 @@ type internal ViewBackedTerminalElement(props: Props) =
           ()
         elif kv.Key.Kind = PropKeyKind.SubViewSpec then
           let curElement =
-            (kv.Value :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+            (kv.Value :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
 
           let otherElement =
             other.Props
             |> Props.tryFind kv.Key
-            |> Option.map (fun (x: obj) -> (x :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement)
+            |> Option.map (fun (x: obj) -> (x :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement)
 
           match curElement, otherElement with
           | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
@@ -368,9 +369,9 @@ type internal ViewBackedTerminalElement(props: Props) =
           true
         | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubViewSpec ->
           let curElement =
-            (kv.Value :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+            (kv.Value :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
 
-          let oldElement = (v :?> ViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+          let oldElement = (v :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
           curElement.equivalentTo oldElement
         // TODO: comparison is not good here, it can fail for many C# types
         // TODO: Properties values should be comparable
@@ -399,7 +400,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       for key in this.SubElements_PropKeys do
         this.Props
         |> Props.tryFind (PropKeyKind.SubViewSpec, key)
-        |> Option.iter (fun v -> ((v :?> ViewBase).CreateViewTE() :> IDisposable).Dispose())
+        |> Option.iter (fun v -> ((v :?> IViewBase).CreateViewTE() :> IDisposable).Dispose())
 
       for child in this.Children do
         child.Dispose()

@@ -97,7 +97,7 @@ module internal PropKey =
 
 /// Props object that is still under construction
 type internal Props() =
-  member val Children: List<TerminalElement> = List<_>() with get
+  member val Children: List<ViewSpec> = List<_>() with get
   member val X: Pos option = None with get, set
   member val Y: Pos option = None with get, set
   member val XDelayed: TPos option = None with get, set
@@ -128,7 +128,13 @@ and internal ITerminalElementBase =
   abstract OnViewSet: IEvent<View>
   abstract GetPath: unit -> string
 
-and [<Interface>] internal ViewBase =
+and internal ViewSpec =
+  | Simple of IViewBase
+  | Component of IElmishComponentTE
+
+  interface IView
+
+and [<Interface>] internal IViewBase =
   inherit IView
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
@@ -165,10 +171,15 @@ and internal TerminalElement =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 
+  [<Obsolete>]
   static member from(view: IView) =
     match view with
-    | :? ViewBase as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+    | :? IViewBase as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
     | :? ITerminalElement as terminalElement -> TerminalElement.from terminalElement
+    | :? ViewSpec as spec ->
+      match spec with
+      | Simple viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+      | Component te -> TerminalElement.ElmishComponentTE te
     | _ -> failwith "Invalid view type"
 
   static member from(te: ITerminalElement) =
@@ -220,6 +231,13 @@ and [<Obsolete>] internal Origin =
 type PosAxis =
   | X
   | Y
+
+module internal ViewSpec =
+  let from<'view when 'view :> IView> (view: 'view) =
+    match box view with
+    | :? IViewBase as viewBase -> Simple viewBase
+    | :? IElmishComponentTE as te -> Component te
+    | _ -> failwith "Invalid view type"
 
 type Props with
   static member private toEntries(props: Props) =

@@ -5,14 +5,14 @@ type MenuBarItemMacros internal (props: MenuBarItemProps) =
     let popoverMenu =
       props.props
       |> Props.getOrInit PKey.MenuBarItem.PopoverMenu_viewSpec (fun () -> new PopoverMenu(PopoverMenuProps()))
-      :?> ViewBase
+      :?> IViewBase
 
     let menu =
       popoverMenu.Props
       |> Props.getOrInit PKey.PopoverMenu.Root_viewSpec (fun () -> new Menu(MenuProps()))
-      :?> ViewBase
+      :?> IViewBase
 
-    value |> List.map TerminalElement.from |> menu.Props.Children.AddRange
+    value |> List.map ViewSpec.from |> menu.Props.Children.AddRange
 
 type MenuBarMacros internal (props: MenuBarProps) =
   member _.MenuBarItem(set: MenuBarItemProps -> MenuBarItemMacros -> unit) =
@@ -22,4 +22,4 @@ type MenuBarMacros internal (props: MenuBarProps) =
     let macros = MenuBarItemMacros props
     set props macros
 
-    new MenuBarItemTerminalElement(props.props) |> TerminalElement.from |> menus.Add
+    new MenuBarItem(props) |> ViewSpec.from |> menus.Add

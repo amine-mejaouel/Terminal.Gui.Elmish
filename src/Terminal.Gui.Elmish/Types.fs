@@ -128,9 +128,23 @@ and internal ITerminalElementBase =
   abstract OnViewSet: IEvent<View>
   abstract GetPath: unit -> string
 
+and internal IComponentView =
+  abstract Props: Props
+  abstract Update: Props -> unit
+
+/// <summary>
+/// <p>ComponentViewSpec is the <c>ViewSpec</c> of an Elmish component.</p>
+/// <p><c>InitComponentView()</c> is intended to be called only once, when the component is first added to the tree.</p>
+/// <p>If the component is already existing in the tree, then <c>InitComponentView()</c> is not meant to be called again, and <c>ClearInitComponentView()</c> can be called to clear the reference to the initialization function, allowing it to be garbage collected.</p>
+/// </summary>
+and [<Interface>] internal IComponentViewSpec =
+  abstract Props: Props
+  abstract InitComponentView: unit -> IComponentView
+  abstract ClearInitComponentView: unit -> unit
+
 and internal ViewSpec =
-  | Simple of IViewBase
-  | Component of IElmishComponentTE
+  | SimpleViewSpec of IViewBase
+  | ComponentViewSpec of IComponentViewSpec
 
   interface IView
 
@@ -159,8 +173,9 @@ and [<Obsolete>] internal IViewTE =
 /// <p>This also allows the component to be used in the same way as a regular view in the tree,
 /// without requiring special handling for its child view.</p>
 /// </remarks>
-and internal IElmishComponentTE =
+and [<Obsolete>] internal IElmishComponentTE =
   inherit ITerminalElementBase
+  inherit IComponentViewSpec
   abstract Child: IViewTE with get
   abstract StartElmishLoop: unit -> unit
 
@@ -175,8 +190,8 @@ and internal TerminalElement =
     | :? ITerminalElement as terminalElement -> TerminalElement.from terminalElement
     | :? ViewSpec as spec ->
       match spec with
-      | Simple viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
-      | Component te -> TerminalElement.ElmishComponentTE te
+      | SimpleViewSpec viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+      | ComponentViewSpec cvs -> TerminalElement.ElmishComponentTE(cvs :?> IElmishComponentTE)
     | _ -> failwith "Invalid view type"
 
   static member from(te: ITerminalElement) =
@@ -232,8 +247,8 @@ type PosAxis =
 module internal ViewSpec =
   let from<'view when 'view :> IView> (view: 'view) =
     match box view with
-    | :? IViewBase as viewBase -> Simple viewBase
-    | :? IElmishComponentTE as te -> Component te
+    | :? IViewBase as viewBase -> SimpleViewSpec viewBase
+    | :? IElmishComponentTE as te -> ComponentViewSpec te
     | _ -> failwith "Invalid view type"
 
 type Props with

@@ -295,6 +295,18 @@ module ElmishTerminal =
 
     interface IView
 
+    interface IComponentViewSpec with
+      member this.Props = failwith "Not implemented yet"
+
+      member this.InitComponentView() =
+        (this :> IElmishComponentTE).StartElmishLoop()
+
+        { new IComponentView with
+            member _.Props = failwith "Not implemented yet"
+            member _.Update(props) = failwith "Not implemented yet" }
+
+      member this.ClearInitComponentView() = failwith "Not implemented yet"
+
     interface ITerminalElementBase with
       member this.View = this.View
       member this.Name = name

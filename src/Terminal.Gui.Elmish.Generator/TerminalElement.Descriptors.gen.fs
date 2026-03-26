@@ -19,7 +19,7 @@ let gen () =
 
       yield $"type {typeName}{genericBlock}(props: {propsName}{genericParamsBlock}) ="
       yield $"  let viewTe = lazy (new {elementName}{genericParamsBlock}(props.props))"
-      yield $"  interface IViewBase with"
+      yield $"  interface ISimpleViewSpec with"
       yield $"    member _.CreateViewTE() = viewTe.Value"
       yield $"    member _.Props = props.props"
       yield $"    member _.ViewType = ViewType.{getDuCaseTypeName viewType}"

@@ -162,12 +162,12 @@ and [<Interface>] internal IComponentViewSpec =
   abstract ClearInitComponentView: unit -> unit
 
 and internal ViewSpec =
-  | SimpleViewSpec of IViewBase
+  | SimpleViewSpec of ISimpleViewSpec
   | ComponentViewSpec of IComponentViewSpec
 
   interface IView
 
-and [<Interface>] internal IViewBase =
+and [<Interface>] internal ISimpleViewSpec =
   inherit IView
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
@@ -206,7 +206,7 @@ and internal TerminalElement =
   [<Obsolete>]
   static member from(view: IView) =
     match view with
-    | :? IViewBase as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+    | :? ISimpleViewSpec as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
     | :? ITerminalElement as terminalElement -> TerminalElement.from terminalElement
     | :? ViewSpec as spec ->
       match spec with
@@ -267,7 +267,7 @@ type PosAxis =
 module internal ViewSpec =
   let from<'view when 'view :> IView> (view: 'view) =
     match box view with
-    | :? IViewBase as viewBase -> SimpleViewSpec viewBase
+    | :? ISimpleViewSpec as viewBase -> SimpleViewSpec viewBase
     | :? IElmishComponentTE as te -> ComponentViewSpec te
     | _ -> failwith "Invalid view type"
 

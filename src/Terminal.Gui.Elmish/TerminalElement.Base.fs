@@ -331,12 +331,12 @@ type internal ViewBackedTerminalElement(props: Props) =
           ()
         elif kv.Key.Kind = PropKeyKind.SubViewSpec then
           let curElement =
-            (kv.Value :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+            (kv.Value :?> ISimpleViewSpec).CreateViewTE() :?> ViewBackedTerminalElement
 
           let otherElement =
             other.Props
             |> Props.tryFind kv.Key
-            |> Option.map (fun (x: obj) -> (x :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement)
+            |> Option.map (fun (x: obj) -> (x :?> ISimpleViewSpec).CreateViewTE() :?> ViewBackedTerminalElement)
 
           match curElement, otherElement with
           | curValue, Some otherValue when (curValue.equivalentTo otherValue) -> ()
@@ -369,9 +369,11 @@ type internal ViewBackedTerminalElement(props: Props) =
           true
         | Some(v: obj) when kv.Key.Kind = PropKeyKind.SubViewSpec ->
           let curElement =
-            (kv.Value :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+            (kv.Value :?> ISimpleViewSpec).CreateViewTE() :?> ViewBackedTerminalElement
 
-          let oldElement = (v :?> IViewBase).CreateViewTE() :?> ViewBackedTerminalElement
+          let oldElement =
+            (v :?> ISimpleViewSpec).CreateViewTE() :?> ViewBackedTerminalElement
+
           curElement.equivalentTo oldElement
         // TODO: comparison is not good here, it can fail for many C# types
         // TODO: Properties values should be comparable
@@ -400,7 +402,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       for key in this.SubElements_PropKeys do
         this.Props
         |> Props.tryFind (PropKeyKind.SubViewSpec, key)
-        |> Option.iter (fun v -> ((v :?> IViewBase).CreateViewTE() :> IDisposable).Dispose())
+        |> Option.iter (fun v -> ((v :?> ISimpleViewSpec).CreateViewTE() :> IDisposable).Dispose())
 
       for child in this.Children do
         child.Dispose()

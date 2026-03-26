@@ -3,7 +3,7 @@ namespace Terminal.Gui.Elmish
 type Adornment(props: AdornmentProps) =
   let viewTe = lazy (new AdornmentTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewBaseAdornment``
@@ -11,7 +11,7 @@ type Adornment(props: AdornmentProps) =
 type AttributePicker(props: AttributePickerProps) =
   let viewTe = lazy (new AttributePickerTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsAttributePicker``
@@ -19,7 +19,7 @@ type AttributePicker(props: AttributePickerProps) =
 type Bar(props: BarProps) =
   let viewTe = lazy (new BarTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsBar``
@@ -27,7 +27,7 @@ type Bar(props: BarProps) =
 type Border(props: BorderProps) =
   let viewTe = lazy (new BorderTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewBaseBorder``
@@ -35,7 +35,7 @@ type Border(props: BorderProps) =
 type Button(props: ButtonProps) =
   let viewTe = lazy (new ButtonTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsButton``
@@ -43,7 +43,7 @@ type Button(props: ButtonProps) =
 type CharMap(props: CharMapProps) =
   let viewTe = lazy (new CharMapTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsCharMap``
@@ -51,7 +51,7 @@ type CharMap(props: CharMapProps) =
 type CheckBox(props: CheckBoxProps) =
   let viewTe = lazy (new CheckBoxTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsCheckBox``
@@ -59,7 +59,7 @@ type CheckBox(props: CheckBoxProps) =
 type ColorPicker(props: ColorPickerProps) =
   let viewTe = lazy (new ColorPickerTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsColorPicker``
@@ -67,7 +67,7 @@ type ColorPicker(props: ColorPickerProps) =
 type ColorPicker16(props: ColorPicker16Props) =
   let viewTe = lazy (new ColorPicker16TerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsColorPicker16``
@@ -75,7 +75,7 @@ type ColorPicker16(props: ColorPicker16Props) =
 type DatePicker(props: DatePickerProps) =
   let viewTe = lazy (new DatePickerTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsDatePicker``
@@ -83,7 +83,7 @@ type DatePicker(props: DatePickerProps) =
 type FrameView(props: FrameViewProps) =
   let viewTe = lazy (new FrameViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsFrameView``
@@ -91,7 +91,7 @@ type FrameView(props: FrameViewProps) =
 type GraphView(props: GraphViewProps) =
   let viewTe = lazy (new GraphViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsGraphView``
@@ -99,7 +99,7 @@ type GraphView(props: GraphViewProps) =
 type HexView(props: HexViewProps) =
   let viewTe = lazy (new HexViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsHexView``
@@ -107,7 +107,7 @@ type HexView(props: HexViewProps) =
 type Label(props: LabelProps) =
   let viewTe = lazy (new LabelTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsLabel``
@@ -115,7 +115,7 @@ type Label(props: LabelProps) =
 type LegendAnnotation(props: LegendAnnotationProps) =
   let viewTe = lazy (new LegendAnnotationTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsLegendAnnotation``
@@ -123,7 +123,7 @@ type LegendAnnotation(props: LegendAnnotationProps) =
 type Line(props: LineProps) =
   let viewTe = lazy (new LineTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsLine``
@@ -131,7 +131,7 @@ type Line(props: LineProps) =
 type LinearRange<'T>(props: LinearRangeProps<'T>) =
   let viewTe = lazy (new LinearRangeTerminalElement<'T>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``LinearRange<'T>``
@@ -139,7 +139,7 @@ type LinearRange<'T>(props: LinearRangeProps<'T>) =
 type LinearRange(props: LinearRangeProps) =
   let viewTe = lazy (new LinearRangeTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsLinearRange``
@@ -147,7 +147,7 @@ type LinearRange(props: LinearRangeProps) =
 type Link(props: LinkProps) =
   let viewTe = lazy (new LinkTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsLink``
@@ -155,7 +155,7 @@ type Link(props: LinkProps) =
 type ListView(props: ListViewProps) =
   let viewTe = lazy (new ListViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsListView``
@@ -163,7 +163,7 @@ type ListView(props: ListViewProps) =
 type Margin(props: MarginProps) =
   let viewTe = lazy (new MarginTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewBaseMargin``
@@ -171,7 +171,7 @@ type Margin(props: MarginProps) =
 type Menu(props: MenuProps) =
   let viewTe = lazy (new MenuTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsMenu``
@@ -181,7 +181,7 @@ type Menu(props: MenuProps) =
 type MenuBar(props: MenuBarProps) =
   let viewTe = lazy (new MenuBarTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsMenuBar``
@@ -191,7 +191,7 @@ type MenuBar(props: MenuBarProps) =
 type NumericUpDown<'T>(props: NumericUpDownProps<'T>) =
   let viewTe = lazy (new NumericUpDownTerminalElement<'T>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``NumericUpDown<'T>``
@@ -199,7 +199,7 @@ type NumericUpDown<'T>(props: NumericUpDownProps<'T>) =
 type NumericUpDown(props: NumericUpDownProps) =
   let viewTe = lazy (new NumericUpDownTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsNumericUpDown``
@@ -207,7 +207,7 @@ type NumericUpDown(props: NumericUpDownProps) =
 type Padding(props: PaddingProps) =
   let viewTe = lazy (new PaddingTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewBasePadding``
@@ -216,7 +216,7 @@ type Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> T
   (props: PopoverProps<'TView, 'TResult>) =
   let viewTe = lazy (new PopoverTerminalElement<'TView, 'TResult>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``Popover<'TView, 'TResult>``
@@ -224,7 +224,7 @@ type Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> T
 type PopoverMenu(props: PopoverMenuProps) =
   let viewTe = lazy (new PopoverMenuTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsPopoverMenu``
@@ -234,7 +234,7 @@ type PopoverMenu(props: PopoverMenuProps) =
 type ProgressBar(props: ProgressBarProps) =
   let viewTe = lazy (new ProgressBarTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsProgressBar``
@@ -242,7 +242,7 @@ type ProgressBar(props: ProgressBarProps) =
 type Runnable(props: RunnableProps) =
   let viewTe = lazy (new RunnableTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsRunnable``
@@ -250,7 +250,7 @@ type Runnable(props: RunnableProps) =
 type Runnable<'TResult>(props: RunnableProps<'TResult>) =
   let viewTe = lazy (new RunnableTerminalElement<'TResult>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``Runnable<'TResult>``
@@ -258,7 +258,7 @@ type Runnable<'TResult>(props: RunnableProps<'TResult>) =
 type Dialog<'TResult>(props: DialogProps<'TResult>) =
   let viewTe = lazy (new DialogTerminalElement<'TResult>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``Dialog<'TResult>``
@@ -266,7 +266,7 @@ type Dialog<'TResult>(props: DialogProps<'TResult>) =
 type Dialog(props: DialogProps) =
   let viewTe = lazy (new DialogTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsDialog``
@@ -275,7 +275,7 @@ type Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Te
   (props: PromptProps<'TView, 'TResult>) =
   let viewTe = lazy (new PromptTerminalElement<'TView, 'TResult>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``Prompt<'TView, 'TResult>``
@@ -283,7 +283,7 @@ type Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Te
 type FileDialog(props: FileDialogProps) =
   let viewTe = lazy (new FileDialogTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsFileDialog``
@@ -291,7 +291,7 @@ type FileDialog(props: FileDialogProps) =
 type OpenDialog(props: OpenDialogProps) =
   let viewTe = lazy (new OpenDialogTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsOpenDialog``
@@ -299,7 +299,7 @@ type OpenDialog(props: OpenDialogProps) =
 type SaveDialog(props: SaveDialogProps) =
   let viewTe = lazy (new SaveDialogTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsSaveDialog``
@@ -307,7 +307,7 @@ type SaveDialog(props: SaveDialogProps) =
 type ScrollBar(props: ScrollBarProps) =
   let viewTe = lazy (new ScrollBarTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsScrollBar``
@@ -315,7 +315,7 @@ type ScrollBar(props: ScrollBarProps) =
 type ScrollSlider(props: ScrollSliderProps) =
   let viewTe = lazy (new ScrollSliderTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsScrollSlider``
@@ -323,7 +323,7 @@ type ScrollSlider(props: ScrollSliderProps) =
 type FlagSelector(props: FlagSelectorProps) =
   let viewTe = lazy (new FlagSelectorTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsFlagSelector``
@@ -331,7 +331,7 @@ type FlagSelector(props: FlagSelectorProps) =
 type OptionSelector(props: OptionSelectorProps) =
   let viewTe = lazy (new OptionSelectorTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsOptionSelector``
@@ -343,7 +343,7 @@ type FlagSelector<'TFlagsEnum
   and 'TFlagsEnum :> System.ValueType>(props: FlagSelectorProps<'TFlagsEnum>) =
   let viewTe = lazy (new FlagSelectorTerminalElement<'TFlagsEnum>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``FlagSelector<'TFlagsEnum>``
@@ -353,7 +353,7 @@ type OptionSelector<'TEnum
   (props: OptionSelectorProps<'TEnum>) =
   let viewTe = lazy (new OptionSelectorTerminalElement<'TEnum>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``OptionSelector<'TEnum>``
@@ -361,7 +361,7 @@ type OptionSelector<'TEnum
 type Shortcut(props: ShortcutProps) =
   let viewTe = lazy (new ShortcutTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsShortcut``
@@ -369,7 +369,7 @@ type Shortcut(props: ShortcutProps) =
 type MenuItem(props: MenuItemProps) =
   let viewTe = lazy (new MenuItemTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsMenuItem``
@@ -379,7 +379,7 @@ type MenuItem(props: MenuItemProps) =
 type MenuBarItem(props: MenuBarItemProps) =
   let viewTe = lazy (new MenuBarItemTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsMenuBarItem``
@@ -389,7 +389,7 @@ type MenuBarItem(props: MenuBarItemProps) =
 type SpinnerView(props: SpinnerViewProps) =
   let viewTe = lazy (new SpinnerViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsSpinnerView``
@@ -397,7 +397,7 @@ type SpinnerView(props: SpinnerViewProps) =
 type StatusBar(props: StatusBarProps) =
   let viewTe = lazy (new StatusBarTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsStatusBar``
@@ -405,7 +405,7 @@ type StatusBar(props: StatusBarProps) =
 type Tab(props: TabProps) =
   let viewTe = lazy (new TabTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTab``
@@ -415,7 +415,7 @@ type Tab(props: TabProps) =
 type TabView(props: TabViewProps) =
   let viewTe = lazy (new TabViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTabView``
@@ -423,7 +423,7 @@ type TabView(props: TabViewProps) =
 type TableView(props: TableViewProps) =
   let viewTe = lazy (new TableViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTableView``
@@ -431,7 +431,7 @@ type TableView(props: TableViewProps) =
 type TextField(props: TextFieldProps) =
   let viewTe = lazy (new TextFieldTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTextField``
@@ -439,7 +439,7 @@ type TextField(props: TextFieldProps) =
 type DropDownList(props: DropDownListProps) =
   let viewTe = lazy (new DropDownListTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsDropDownList``
@@ -447,7 +447,7 @@ type DropDownList(props: DropDownListProps) =
 type TextValidateField(props: TextValidateFieldProps) =
   let viewTe = lazy (new TextValidateFieldTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTextValidateField``
@@ -455,7 +455,7 @@ type TextValidateField(props: TextValidateFieldProps) =
 type DateEditor(props: DateEditorProps) =
   let viewTe = lazy (new DateEditorTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsDateEditor``
@@ -463,7 +463,7 @@ type DateEditor(props: DateEditorProps) =
 type TextView(props: TextViewProps) =
   let viewTe = lazy (new TextViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTextView``
@@ -471,7 +471,7 @@ type TextView(props: TextViewProps) =
 type TimeEditor(props: TimeEditorProps) =
   let viewTe = lazy (new TimeEditorTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTimeEditor``
@@ -479,7 +479,7 @@ type TimeEditor(props: TimeEditorProps) =
 type TreeView<'T when 'T: not struct>(props: TreeViewProps<'T>) =
   let viewTe = lazy (new TreeViewTerminalElement<'T>(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``TreeView<'T>``
@@ -487,7 +487,7 @@ type TreeView<'T when 'T: not struct>(props: TreeViewProps<'T>) =
 type TreeView(props: TreeViewProps) =
   let viewTe = lazy (new TreeViewTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsTreeView``
@@ -495,7 +495,7 @@ type TreeView(props: TreeViewProps) =
 type Window(props: WindowProps) =
   let viewTe = lazy (new WindowTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsWindow``
@@ -503,7 +503,7 @@ type Window(props: WindowProps) =
 type Wizard(props: WizardProps) =
   let viewTe = lazy (new WizardTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsWizard``
@@ -511,7 +511,7 @@ type Wizard(props: WizardProps) =
 type WizardStep(props: WizardStepProps) =
   let viewTe = lazy (new WizardStepTerminalElement(props.props))
 
-  interface IViewBase with
+  interface ISimpleViewSpec with
     member _.CreateViewTE() = viewTe.Value
     member _.Props = props.props
     member _.ViewType = ViewType.``ViewsWizardStep``

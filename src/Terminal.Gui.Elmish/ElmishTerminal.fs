@@ -144,7 +144,7 @@ module ElmishTerminal =
           if not model.RootViewSet then
 
             if Config.curDiffer = Differ.Keyed then
-              let initialTe = (view model dispatch :?> IViewBase).CreateViewTE()
+              let initialTe = (view model dispatch :?> ISimpleViewSpec).CreateViewTE()
 
               let origin =
                 match model.Kind with
@@ -156,14 +156,14 @@ module ElmishTerminal =
               return initialTe
 
             else
-              let initialView = (view model dispatch :?> IViewBase)
+              let initialView = (view model dispatch :?> ISimpleViewSpec)
 
               return Unchecked.defaultof<_>
 
           else
             let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
 
-            let nextTe = (view model dispatch :?> IViewBase).CreateViewTE()
+            let nextTe = (view model dispatch :?> ISimpleViewSpec).CreateViewTE()
 
             KeyedDiffer.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
 

@@ -161,11 +161,8 @@ and [<Obsolete>] internal IViewTE =
 /// </remarks>
 and internal IElmishComponentTE =
   inherit ITerminalElementBase
-
   abstract Child: IViewTE with get
-
   abstract StartElmishLoop: unit -> unit
-  abstract Reuse: prev: IElmishComponentTE -> unit
 
 and internal TerminalElement =
   | ViewTE of IViewTE

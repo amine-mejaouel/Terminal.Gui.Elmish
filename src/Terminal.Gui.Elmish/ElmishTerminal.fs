@@ -279,12 +279,6 @@ module ElmishTerminal =
     [<CLIEvent>]
     member this.OnViewSet = viewSetEvent.Publish
 
-    member this.Reuse(prev: IElmishComponentTE) =
-      // An elmish component could have subscriptions
-      // It is better to reuse the same component instance instead of creating a new one and reusing the view.
-      // For that reason, ElmishComponents should have an ID to identify them and reuse the same instance if the ID is the same.
-      ()
-
     member this.Dispose() =
       task {
         let! te = initialTeTcs.Task
@@ -296,8 +290,6 @@ module ElmishTerminal =
       member this.StartElmishLoop() =
         ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this init update view
         |> this.RunComponent
-
-      member this.Reuse prev = this.Reuse prev
 
       member this.Child = this.Child
 

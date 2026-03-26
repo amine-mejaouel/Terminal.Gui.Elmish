@@ -6,20 +6,29 @@ type Msg = | Increment
 
 type ComponentModel = { Counter: int }
 
+type PKey =
+  | Text = 0
+
 type IProps =
   abstract member text: string -> unit
 
+type IPropsReader =
+  abstract member text: string option with get
+
 type private Props() =
-  member val text_value: string option = None with get, set
-  member this.text(value: string) = this.text_value <- Some value
+  inherit ComponentProps("TestComponent")
 
   interface IProps with
-    member this.text value = this.text value
+    member this.text value = this[int PKey.Text] <- value
+
+  interface IPropsReader with
+    member this.text = this.TryGetPropValue(int PKey.Text)
 
 let create (set: IProps -> unit) =
 
   let props = Props()
   set props
+  let propsReader = props :> IPropsReader
 
   let init () = { Counter = 0 }
 
@@ -31,7 +40,7 @@ let create (set: IProps -> unit) =
 
   let view model dispatch =
     View.Window(fun p ->
-      p.Title(props.text_value |> Option.defaultValue "Default")
+      p.Title(propsReader.text |> Option.defaultValue "Default")
 
       p.Children
         [ View.Label(fun p -> p.Text(sprintf "Counter: %d" model.Counter))
@@ -39,4 +48,4 @@ let create (set: IProps -> unit) =
             p.Text "Increment"
             p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg Increment))) ])
 
-  ElmishTester.mkTestableComponent "TestComponent" init update view
+  ElmishTester.mkTestableComponent props init update view

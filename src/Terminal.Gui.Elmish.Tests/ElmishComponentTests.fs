@@ -14,7 +14,8 @@ let ``ElmishComponent.Parent is set`` () =
   let view _ _ = View.Button(fun _ -> ())
 
   let elmishComponent =
-    ElmishTerminal.mkSimpleComponent "ElmishComponent" init update view
+    let props = ComponentProps("ElmishComponent")
+    ElmishTerminal.mkSimpleComponent props init update view
 
   let parent = View.Runnable [ elmishComponent ]
 

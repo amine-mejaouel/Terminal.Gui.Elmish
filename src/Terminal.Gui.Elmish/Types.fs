@@ -2,7 +2,6 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open Microsoft.FSharp.Reflection
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
@@ -15,6 +14,14 @@ type ComponentProps(componentName) =
   member _.ComponentName: string = componentName
 
   member val Props: Dictionary<int, obj> = Dictionary<int, obj>() with get, private set
+
+  member this.Item
+    with set (key: int) value = this.Props[key] <- value
+
+  member this.TryGetPropValue<'t>(key: int) =
+    match this.Props.TryGetValue key with
+    | true, value -> Some value |> Option.map unbox<'t>
+    | _ -> None
 
 [<AutoOpen>]
 module internal PropKey =

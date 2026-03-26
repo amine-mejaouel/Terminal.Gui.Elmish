@@ -12,20 +12,29 @@ type private Msg = ChangeDisplayedButton of DisplayedButton
 
 type private ComponentModel = { DisplayedView: DisplayedButton }
 
+type PKey =
+  | Y = 0
+
 type IProps =
   abstract member y: TPos -> unit
 
+type IPropsReader =
+  abstract member y: TPos option with get
+
 type private Props() =
-  member val y_value: TPos option = None with get, set
-  member this.y(pos: TPos) = this.y_value <- Some pos
+  inherit ComponentProps("TreeDiffUpdateTesterComponent")
 
   interface IProps with
-    member this.y pos = this.y pos
+    member this.y pos = this[int PKey.Y] <- pos
+
+  interface IPropsReader with
+    member this.y = this.TryGetPropValue(int PKey.Y)
 
 let _component (set: IProps -> unit) =
 
   let props = Props()
   set props
+  let propsReader = props :> IPropsReader
 
   let init () = { DisplayedView = Button1 }
 
@@ -35,7 +44,7 @@ let _component (set: IProps -> unit) =
 
   let view model dispatch =
     View.Runnable(fun (p: RunnableProps) ->
-      props.y_value |> Option.iter p.Y
+      propsReader.y |> Option.iter p.Y
       p.BorderStyle LineStyle.Dashed
 
       p.Children
@@ -66,4 +75,4 @@ let _component (set: IProps -> unit) =
           second
           third ])
 
-  ElmishTerminal.mkSimpleComponent "TreeDiffUpdateTesterComponent" init update view
+  ElmishTerminal.mkSimpleComponent props init update view

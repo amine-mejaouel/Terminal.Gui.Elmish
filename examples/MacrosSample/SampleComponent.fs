@@ -14,16 +14,16 @@ type IProps =
   abstract member y: TPos -> unit
 
 type IPropsReader =
-  abstract member y: TPos with get
+  abstract member y: TPos option with get
 
 type private Props() =
   inherit ComponentProps("SampleComponent")
 
   interface IProps with
-    member this.y pos = this.Props[int PKey.Y] <- pos
+    member this.y pos = this[int PKey.Y] <- pos
 
   interface IPropsReader with
-    member this.y = this.Props.[int PKey.Y] :?> TPos
+    member this.y = this.TryGetPropValue(int PKey.Y)
 
 let _component (set: IProps -> unit) =
 
@@ -42,7 +42,7 @@ let _component (set: IProps -> unit) =
   let view model dispatch =
     View.Label(fun p ->
       p.Text model.Text
-      p.Y propsReader.y
+      propsReader.y |> Option.iter p.Y
       p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg ChangeText)))
 
   ElmishTerminal.mkSimpleComponent props init update view

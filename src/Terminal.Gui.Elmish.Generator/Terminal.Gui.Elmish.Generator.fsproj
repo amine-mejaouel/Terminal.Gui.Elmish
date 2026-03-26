@@ -18,6 +18,7 @@
     <Compile Include="TerminalElement.Descriptors.gen.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="View.gen.fs" />
+    <Compile Include="ViewType.gen.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

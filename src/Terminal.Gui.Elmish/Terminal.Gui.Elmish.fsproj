@@ -48,6 +48,7 @@
     <Content Include="paket.references" />
     <Compile Include="Config.fs" />
     <Compile Include="Task.fs" />
+    <Compile Include="ViewType.gen.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="KeyedDiffer.fs" />
     <Compile Include="SimpleDiffer.fs" />
@@ -81,7 +82,7 @@
   </Target>
   <Target Name="Format auto generated code" BeforeTargets="CoreCompile" DependsOnTargets="Auto generate code">
     <Message Text="Formatting generated source files..." Importance="high" />
-    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="dotnet fantomas Types.gen.fs PKey.gen.fs TerminalElement.Elements.gen.fs TerminalElement.Descriptors.gen.fs Props.gen.fs View.gen.fs" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="dotnet fantomas Types.gen.fs PKey.gen.fs TerminalElement.Elements.gen.fs TerminalElement.Descriptors.gen.fs Props.gen.fs View.gen.fs ViewType.gen.fs" />
   </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

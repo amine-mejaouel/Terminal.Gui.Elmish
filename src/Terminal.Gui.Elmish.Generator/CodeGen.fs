@@ -48,6 +48,10 @@ module CodeGen =
   and genericTypeParamsBlock (t: Type) =
     genericTypeParams t |> fun s -> if s = "" then "" else $"<{s}>"
 
+  let rec getDuCaseTypeName (t: Type) =
+    let name = (getFSharpTypeName t).Replace("Terminal.Gui.", "").Replace(".", "")
+    $"``{name}``"
+
   /// <summary>
   /// <p>Returns the generic constraints of a generic type as an F# 'when' clause.</p>
   /// <p>Example: For a generic type with a type parameter T constrained to be a reference type, it returns <c> when 'T: not struct</c>. If there are no constraints, it returns an empty string.</p>

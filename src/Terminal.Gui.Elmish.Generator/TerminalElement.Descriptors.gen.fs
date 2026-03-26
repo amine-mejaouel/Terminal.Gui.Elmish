@@ -22,6 +22,7 @@ let gen () =
       yield $"  interface IViewBase with"
       yield $"    member _.CreateViewTE() = viewTe.Value"
       yield $"    member _.Props = props.props"
+      yield $"    member _.ViewType = ViewType.{getDuCaseTypeName viewType}"
 
       if returnInterface <> "ITerminalElement" then
         let interfaceName = returnInterface.Replace("TerminalElement", "View")

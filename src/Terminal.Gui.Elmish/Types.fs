@@ -171,6 +171,7 @@ and [<Interface>] internal IViewBase =
   inherit IView
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
+  abstract ViewType: ViewType
 
 and [<Obsolete>] internal IViewTE =
   inherit ITerminalElementBase

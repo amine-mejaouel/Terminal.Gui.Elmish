@@ -95,18 +95,20 @@ module internal PropKey =
             { Kind = PropKeyKind.SubView
               Key = key }
 
-/// Props object that is still under construction
-type internal Props() =
+type Props() =
+  // Internal properties
+
+  /// Includes all others properties that are not present as explicit members of Props.
+  member val internal Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
+  member val internal Children: List<ViewSpec> = List<_>() with get
+
+  // Public properties
   member val Id: string option = None with get, set
-  member val Children: List<ViewSpec> = List<_>() with get
-  member val X: Pos option = None with get, set
-  member val Y: Pos option = None with get, set
-  member val XDelayed: TPos option = None with get, set
-  member val YDelayed: TPos option = None with get, set
-  /// Include all other properties that are not present as explicit members of Props.
-  member val Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
+  member val X: TPos = TPos.Default with get, set
+  member val Y: TPos = TPos.Default with get, set
 
 and [<RequireQualifiedAccess>] TPos =
+  | Default
   | X of IView
   | Y of IView
   | Top of IView
@@ -260,7 +262,7 @@ type Props with
           KeyValuePair({ Kind = kindKv.Key; Key = keyKv.Key }, keyKv.Value)
     }
 
-  static member add(k: PropKey, v: obj) =
+  static member internal add(k: PropKey, v: obj) =
     fun (this: Props) ->
       match this.Props.TryGetValue k.Kind with
       | true, byKey -> byKey.Add(k.Key, v)
@@ -269,10 +271,10 @@ type Props with
         byKey.Add(k.Key, v)
         this.Props.Add(k.Kind, byKey)
 
-  static member add<'a>(k: PropKey<'a>, v: 'a) =
+  static member internal add<'a>(k: PropKey<'a>, v: 'a) =
     fun (this: Props) -> this |> Props.add (k.Untyped, v :> obj)
 
-  static member getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
+  static member internal getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
     match Props.tryFind k.Untyped this with
     | Some value -> value |> unbox<'a>
     | None ->
@@ -280,7 +282,7 @@ type Props with
       Props.add (k.Untyped, value :> obj) this
       value
 
-  static member remove (k: PropKey) (this: Props) =
+  static member internal remove (k: PropKey) (this: Props) =
     match this.Props.TryGetValue k.Kind with
     | true, byKey ->
       byKey.Remove k.Key |> ignore
@@ -289,7 +291,7 @@ type Props with
         this.Props.Remove k.Kind |> ignore
     | false, _ -> ()
 
-  static member tryFind(key: PropKey) =
+  static member internal tryFind(key: PropKey) =
     fun (this: Props) ->
       match this.Props.TryGetValue key.Kind with
       | true, byKey ->
@@ -298,23 +300,23 @@ type Props with
         | _ -> None
       | _ -> None
 
-  static member tryFind(key: PropKey<'a>) =
+  static member internal tryFind(key: PropKey<'a>) =
     fun (this: Props) ->
       match Props.tryFind key.Untyped this with
       | Some v -> v |> unbox<'a> |> Some
       | None -> None
 
-  static member tryFind(kind: PropKeyKind, key: RawPropKey) =
+  static member internal tryFind(kind: PropKeyKind, key: RawPropKey) =
     fun (this: Props) ->
       let propKey = { Kind = kind; Key = key }
       Props.tryFind propKey this
 
-  static member tryFind<'a>(kind: PropKeyKind, key: string) =
+  static member internal tryFind<'a>(kind: PropKeyKind, key: string) =
     fun (this: Props) -> Props.tryFind (kind, key) this |> Option.map (fun v -> v |> unbox<'a>)
 
   /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
   /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
-  static member partition predicate (props: Props) =
+  static member internal partition predicate (props: Props) =
     let first = Props()
     let second = Props()
 
@@ -326,7 +328,7 @@ type Props with
 
     first, second
 
-  static member filter predicate (props: Props) =
+  static member internal filter predicate (props: Props) =
     let result = Props()
 
     for kv in Props.toEntries props do
@@ -335,21 +337,21 @@ type Props with
 
     result
 
-  static member find (key: PropKey<'a>) (props: Props) =
+  static member internal find (key: PropKey<'a>) (props: Props) =
     match Props.tryFind key props with
     | Some v -> v
     | None -> failwith $"Failed to find '{key}'"
 
-  static member rawKeyExists (k: PropKey) (p: Props) =
+  static member internal rawKeyExists (k: PropKey) (p: Props) =
     match p.Props.TryGetValue k.Kind with
     | true, byKey -> byKey.ContainsKey k.Key
     | _ -> false
 
-  static member exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
+  static member internal exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  static member keys(props: Props) = Props.toEntries props |> Seq.map _.Key
+  static member internal keys(props: Props) = Props.toEntries props |> Seq.map _.Key
 
-  static member filterSubElementKeys(props: Props) =
+  static member internal filterSubElementKeys(props: Props) =
     match props.Props.TryGetValue PropKeyKind.SubViewSpec with
     | true, byKey ->
       byKey.Keys
@@ -358,7 +360,7 @@ type Props with
           Key = key })
     | _ -> Seq.empty
 
-  static member iter iteration (props: Props) =
+  static member internal iter iteration (props: Props) =
     Props.toEntries props |> Seq.iter iteration
 
 [<AutoOpen>]

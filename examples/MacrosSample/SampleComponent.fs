@@ -11,8 +11,8 @@ type IProps =
   abstract member y: TPos -> unit
 
 type private Props() =
-  member val y_value: TPos option = None with get, set
-  member this.y(pos: TPos) = this.y_value <- Some pos
+  member val innerProps = Terminal.Gui.Elmish.Props() with get
+  member this.y(pos: TPos) = this.innerProps.Y <- pos
 
   interface IProps with
     member this.y pos = this.y pos
@@ -33,7 +33,7 @@ let _component (set: IProps -> unit) =
   let view model dispatch =
     View.Label(fun p ->
       p.Text model.Text
-      props.y_value |> Option.iter p.Y
+      p.Y props.innerProps.Y
       p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg ChangeText)))
 
   ElmishTerminal.mkSimpleComponent "SampleComponent" init update view

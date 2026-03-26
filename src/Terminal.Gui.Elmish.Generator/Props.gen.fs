@@ -20,19 +20,12 @@ let viewSpecificMembers =
     |> this.props.Children.AddRange
   """
 
-    yield "  // Positions"
-    yield "  member this.X (value: Pos) ="
-    yield "    this.props.X <- Some value"
-    yield ""
-    yield "  member this.Y (value: Pos) ="
-    yield "    this.props.Y <- Some value"
-    yield ""
     yield "  // Delayed Positions"
     yield "  member this.X (value: TPos) ="
-    yield "    this.props.XDelayed <- Some value"
+    yield "    this.props.X <- value"
     yield ""
     yield "  member this.Y (value: TPos) ="
-    yield "    this.props.YDelayed <- Some value"
+    yield "    this.props.Y <- value"
     yield ""
   }
 

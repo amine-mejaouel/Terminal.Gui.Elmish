@@ -13,15 +13,10 @@ type ViewProps() =
   member this.Children(children: IView list) =
     children |> List.map (fun x -> ViewSpec.from x) |> this.props.Children.AddRange
 
-  // Positions
-  member this.X(value: Pos) = this.props.X <- Some value
-
-  member this.Y(value: Pos) = this.props.Y <- Some value
-
   // Delayed Positions
-  member this.X(value: TPos) = this.props.XDelayed <- Some value
+  member this.X(value: TPos) = this.props.X <- value
 
-  member this.Y(value: TPos) = this.props.YDelayed <- Some value
+  member this.Y(value: TPos) = this.props.Y <- value
 
   // Properties
   member this.Arrangement(value: Terminal.Gui.ViewBase.ViewArrangement) =

@@ -130,6 +130,7 @@ type internal PositionService() =
       | PosAxis.Y -> thisView.Y <- thisView.Frame.Y
 
     match targetPos with
+    | TPos.Default -> applyPos curElementData.View (Pos.Absolute(0))
     | TPos.X te ->
       onViewSetOnElementData
         (TerminalElement.from te)
@@ -173,15 +174,5 @@ type internal PositionService() =
       applyPos curElementData.View (Pos.Align(alignment, modes, groupId |> Option.defaultValue 0))
 
   member this.ApplyPos(viewTe: IViewTE) =
-
-    match viewTe.Props.X, viewTe.Props.XDelayed with
-    | Some _, Some _ -> failwith "Cannot set both X and XDelayedPos on the same view."
-    | Some xPos, None -> viewTe.View.X <- xPos
-    | None, Some delayedXPos -> PositionService.Current.ApplyPos(viewTe, X, delayedXPos)
-    | None, None -> viewTe.View.X <- 0
-
-    match viewTe.Props.Y, viewTe.Props.YDelayed with
-    | Some _, Some _ -> failwith "Cannot set both Y and YDelayedPos on the same view."
-    | Some yPos, None -> viewTe.View.Y <- yPos
-    | None, Some delayedYPos -> PositionService.Current.ApplyPos(viewTe, Y, delayedYPos)
-    | None, None -> viewTe.View.Y <- 0
+    PositionService.Current.ApplyPos(viewTe, X, viewTe.Props.X)
+    PositionService.Current.ApplyPos(viewTe, Y, viewTe.Props.Y)

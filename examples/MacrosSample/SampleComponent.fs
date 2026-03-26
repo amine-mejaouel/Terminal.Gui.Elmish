@@ -7,20 +7,29 @@ type private Msg = | ChangeText
 
 type private ComponentModel = { Text: string }
 
+type PKey =
+  | Y = 0
+
 type IProps =
   abstract member y: TPos -> unit
 
+type IPropsReader =
+  abstract member y: TPos with get
+
 type private Props() =
-  member val innerProps = Terminal.Gui.Elmish.Props() with get
-  member this.y(pos: TPos) = this.innerProps.Y <- pos
+  inherit ComponentProps("SampleComponent")
 
   interface IProps with
-    member this.y pos = this.y pos
+    member this.y pos = this.Props[int PKey.Y] <- pos
+
+  interface IPropsReader with
+    member this.y = this.Props.[int PKey.Y] :?> TPos
 
 let _component (set: IProps -> unit) =
 
   let props = Props()
   set props
+  let propsReader = props :> IPropsReader
 
   let init () = { Text = "Hello" }
 
@@ -33,7 +42,7 @@ let _component (set: IProps -> unit) =
   let view model dispatch =
     View.Label(fun p ->
       p.Text model.Text
-      p.Y props.innerProps.Y
+      p.Y propsReader.y
       p.Accepting(fun _ -> dispatch (TerminalMsg.ofMsg ChangeText)))
 
-  ElmishTerminal.mkSimpleComponent "SampleComponent" init update view
+  ElmishTerminal.mkSimpleComponent props init update view

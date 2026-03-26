@@ -2,10 +2,19 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
+open Microsoft.FSharp.Reflection
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
 type IView = interface end
+
+type ComponentProps(componentName) =
+  member val Id: string = "" with get, set
+
+  [<Obsolete("This is only needed for the old implementation of differ")>]
+  member _.ComponentName: string = componentName
+
+  member val Props: Dictionary<int, obj> = Dictionary<int, obj>() with get, private set
 
 [<AutoOpen>]
 module internal PropKey =
@@ -13,8 +22,8 @@ module internal PropKey =
   [<RequireQualifiedAccess>]
   type PropKeyKind =
     | Simple
-    | SubView
     | Event
+    | SubView
     | SubViewSpec
 
   type RawPropKey = string
@@ -95,18 +104,18 @@ module internal PropKey =
             { Kind = PropKeyKind.SubView
               Key = key }
 
-type Props() =
-  // Internal properties
+type internal Props() =
 
-  /// Includes all others properties that are not present as explicit members of Props.
-  member val internal Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
-  member val internal Children: List<ViewSpec> = List<_>() with get
-
-  // Public properties
   member val Id: string option = None with get, set
   member val X: TPos = TPos.Default with get, set
   member val Y: TPos = TPos.Default with get, set
 
+  /// Includes all others properties that are not present as explicit members of Props.
+  member val Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
+  member val Children: List<ViewSpec> = List<_>() with get
+
+// TODO: TPos is no implement all features of Terminal.Gui Pos,
+// TODO: should add a unit test ensuring that all features of TPos are implemented.
 and [<RequireQualifiedAccess>] TPos =
   | Default
   | X of IView
@@ -132,8 +141,8 @@ and internal ITerminalElementBase =
   abstract GetPath: unit -> string
 
 and internal IComponentView =
-  abstract Props: Props
-  abstract Update: Props -> unit
+  abstract Props: ComponentProps
+  abstract Update: ComponentProps -> unit
 
 /// <summary>
 /// <p>ComponentViewSpec is the <c>ViewSpec</c> of an Elmish component.</p>

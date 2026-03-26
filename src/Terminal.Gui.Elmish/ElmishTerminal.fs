@@ -199,8 +199,12 @@ module ElmishTerminal =
   /// </remarks>
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view when 'view :> IView>
-    (name, init: unit -> 'model, update: 'msg -> 'model -> 'model, view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
-    =
+    (
+      props: ComponentProps,
+      init: unit -> 'model,
+      update: 'msg -> 'model -> 'model,
+      view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view
+    ) =
 
     let initialTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
 
@@ -302,30 +306,32 @@ module ElmishTerminal =
         (this :> IElmishComponentTE).StartElmishLoop()
 
         { new IComponentView with
-            member _.Props = failwith "Not implemented yet"
+            member _.Props = props
             member _.Update(props) = failwith "Not implemented yet" }
 
       member this.ClearInitComponentView() = failwith "Not implemented yet"
 
     interface ITerminalElementBase with
       member this.View = this.View
-      member this.Name = name
+      member this.Name = props.ComponentName
       member this.OnViewSet = this.OnViewSet
 
       member this.Origin
         with get () = this.Origin
         and set v = this.Origin <- v
 
-      member this.GetPath() = this.Origin |> Origin.getPath name
+      member this.GetPath() =
+        this.Origin |> Origin.getPath props.ComponentName
+
       member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent<'model, 'msg, 'view when 'view :> IView>
-    name
+    props
     (init: unit -> 'model)
     (update: 'msg -> 'model -> 'model)
     (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
     =
-    new ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) :> IView
+    new ElmishComponentTE<'model, 'msg, 'view>(props, init, update, view) :> IView
 
   let mkProgram<'arg, 'model, 'msg, 'view when 'view :> IView>
     (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)

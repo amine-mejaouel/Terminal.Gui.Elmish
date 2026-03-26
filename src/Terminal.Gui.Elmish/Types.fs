@@ -97,6 +97,7 @@ module internal PropKey =
 
 /// Props object that is still under construction
 type internal Props() =
+  member val Id: string option = None with get, set
   member val Children: List<ViewSpec> = List<_>() with get
   member val X: Pos option = None with get, set
   member val Y: Pos option = None with get, set

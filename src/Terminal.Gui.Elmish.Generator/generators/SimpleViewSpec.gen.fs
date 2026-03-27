@@ -1,4 +1,4 @@
-module Terminal.Gui.Elmish.Generator.TerminalElement_Descriptors
+module Terminal.Gui.Elmish.Generator.SimpleViewSpec
 
 let gen () =
   let viewTypesToGen =
@@ -30,4 +30,4 @@ let gen () =
 
       yield ""
   }
-  |> CodeWriter.write "TerminalElement.Descriptors.gen.fs"
+  |> CodeWriter.write __SOURCE_FILE__

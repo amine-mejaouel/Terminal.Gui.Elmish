@@ -7,7 +7,7 @@ let main _argv =
   Types.gen ()
   ViewType.gen ()
   TerminalElement_viewSpecs.gen ()
-  TerminalElement_Descriptors.gen ()
+  SimpleViewSpec.gen ()
   View.gen ()
 
   0

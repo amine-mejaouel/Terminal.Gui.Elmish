@@ -15,7 +15,7 @@
     <Compile Include="generators\PKey.gen.fs" />
     <Compile Include="generators\Types.gen.fs" />
     <Compile Include="generators\TerminalElement.Elements.gen.fs" />
-    <Compile Include="generators\TerminalElement.Descriptors.gen.fs" />
+    <Compile Include="generators\SimpleViewSpec.gen.fs" />
     <Compile Include="generators\Props.gen.fs" />
     <Compile Include="generators\View.gen.fs" />
     <Compile Include="generators\ViewType.gen.fs" />

@@ -5,7 +5,7 @@ let gen () =
     yield "namespace Terminal.Gui.Elmish"
     yield ""
 
-    yield "type ViewType ="
+    yield "type internal ViewType ="
 
     for i in Registry.ViewTypes.orderedByInheritance do
       yield $"  | {(getDuCaseTypeName i)}"

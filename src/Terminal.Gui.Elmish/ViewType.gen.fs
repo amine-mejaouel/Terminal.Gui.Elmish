@@ -1,6 +1,6 @@
 namespace Terminal.Gui.Elmish
 
-type ViewType =
+type internal ViewType =
   | ``ViewBaseView``
   | ``ViewBaseAdornment``
   | ``ViewsAttributePicker``

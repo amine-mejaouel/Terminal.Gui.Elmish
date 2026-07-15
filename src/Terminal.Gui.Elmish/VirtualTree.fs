@@ -478,8 +478,8 @@ module internal VirtualTree =
     let syncRoot = obj ()
     let mutable current: MountedNode option = None
 
-    new(application: IApplication) = Renderer(application, false)
-    new() = Renderer(Application.Create(), true)
+    new(application: IApplication) = new Renderer(application, false)
+    new() = new Renderer(Application.Create(), true)
 
     member _.Current = current
 

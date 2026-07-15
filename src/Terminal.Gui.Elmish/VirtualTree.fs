@@ -14,7 +14,18 @@ type private ReferenceComparer<'T when 'T: not struct>() =
 type internal MountedNode(spec: ViewSpec, element: TerminalElement) =
   member val Spec = spec with get, set
   member _.Element = element
+
+  /// <summary>
+  /// Ordered child nodes declared through <c>p.Children</c>. This collection mirrors the order of the parent's
+  /// <c>SubViews</c>: keyed children are matched by key, while unkeyed children are matched by position and view type.
+  /// </summary>
   member val Children = ResizeArray<MountedNode>()
+
+  /// <summary>
+  /// Child nodes stored in named view properties, such as <c>Shortcut.CommandView</c>, instead of in
+  /// <c>p.Children</c>. Each dictionary entry maps the generated property ID to the node mounted for that property.
+  /// Slots are reconciled independently and are not part of the parent's ordered <c>SubViews</c> collection.
+  /// </summary>
   member val Slots = Dictionary<int, MountedNode>()
   member val IsDisposed = false with get, set
 

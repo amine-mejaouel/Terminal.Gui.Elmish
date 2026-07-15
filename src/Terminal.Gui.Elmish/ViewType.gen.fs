@@ -2,32 +2,43 @@ namespace Terminal.Gui.Elmish
 
 type internal ViewType =
   | ``ViewBaseView``
-  | ``ViewBaseAdornment``
+  | ``ViewBaseAdornmentView``
   | ``ViewsAttributePicker``
   | ``ViewsBar``
-  | ``ViewBaseBorder``
+  | ``ViewBaseBorderView``
   | ``ViewsButton``
   | ``ViewsCharMap``
   | ``ViewsCheckBox``
+  | ``ViewsCode``
   | ``ViewsColorPicker``
   | ``ViewsColorPicker16``
   | ``ViewsDatePicker``
   | ``ViewsFrameView``
   | ``ViewsGraphView``
   | ``ViewsHexView``
+  | ``ViewsImageView``
   | ``ViewsLabel``
   | ``ViewsLegendAnnotation``
   | ``ViewsLine``
+  | ``LinearRangeViewBase<'TOption, 'TValue>``
+  | ``LinearMultiSelector<'T>``
+  | ``ViewsLinearMultiSelector``
   | ``LinearRange<'T>``
   | ``ViewsLinearRange``
+  | ``LinearSelector<'T>``
+  | ``ViewsLinearSelector``
   | ``ViewsLink``
   | ``ViewsListView``
-  | ``ViewBaseMargin``
+  | ``ListView<'T>``
+  | ``ViewBaseMarginView``
+  | ``ViewsMarkdown``
+  | ``ViewsMarkdownCodeBlock``
+  | ``ViewsMarkdownTable``
   | ``ViewsMenu``
   | ``ViewsMenuBar``
   | ``NumericUpDown<'T>``
   | ``ViewsNumericUpDown``
-  | ``ViewBasePadding``
+  | ``ViewBasePaddingView``
   | ``AppPopoverImpl``
   | ``Popover<'TView, 'TResult>``
   | ``ViewsPopoverMenu``
@@ -35,12 +46,14 @@ type internal ViewType =
   | ``ViewsRunnable``
   | ``Runnable<'TResult>``
   | ``Dialog<'TResult>``
+  | ``RunnableWrapper<'TView, 'TResult>``
   | ``ViewsDialog``
-  | ``Prompt<'TView, 'TResult>``
   | ``ViewsFileDialog``
+  | ``Prompt<'TView, 'TResult>``
   | ``ViewsOpenDialog``
   | ``ViewsSaveDialog``
   | ``ViewsScrollBar``
+  | ``ViewsScrollButton``
   | ``ViewsScrollSlider``
   | ``ViewsSelectorBase``
   | ``ViewsFlagSelector``
@@ -52,15 +65,17 @@ type internal ViewType =
   | ``ViewsMenuBarItem``
   | ``ViewsSpinnerView``
   | ``ViewsStatusBar``
-  | ``ViewsTab``
-  | ``ViewsTabView``
   | ``ViewsTableView``
+  | ``ViewsTabs``
   | ``ViewsTextField``
   | ``ViewsDropDownList``
+  | ``DropDownList<'TEnum>``
   | ``ViewsTextValidateField``
   | ``ViewsDateEditor``
   | ``ViewsTextView``
   | ``ViewsTimeEditor``
+  | ``ViewBaseTitleView``
+  | ``ToolTipHost<'TView>``
   | ``TreeView<'T>``
   | ``ViewsTreeView``
   | ``ViewsWindow``

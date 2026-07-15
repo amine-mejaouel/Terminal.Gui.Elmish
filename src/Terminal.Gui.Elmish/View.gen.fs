@@ -4,15 +4,15 @@ open Terminal.Gui.Elmish
 
 type View =
 
-  static member Adornment(set: AdornmentProps -> unit) =
-    let viewProps = AdornmentProps()
+  static member AdornmentView(set: AdornmentViewProps -> unit) =
+    let viewProps = AdornmentViewProps()
     set viewProps
-    Adornment(viewProps)
+    AdornmentView(viewProps)
 
-  static member Adornment(children: IView list) =
-    let viewProps = AdornmentProps()
+  static member AdornmentView(children: IView list) =
+    let viewProps = AdornmentViewProps()
     viewProps.Children children
-    Adornment(viewProps)
+    AdornmentView(viewProps)
 
   static member AttributePicker(set: AttributePickerProps -> unit) =
     let viewProps = AttributePickerProps()
@@ -34,15 +34,15 @@ type View =
     viewProps.Children children
     Bar(viewProps)
 
-  static member Border(set: BorderProps -> unit) =
-    let viewProps = BorderProps()
+  static member BorderView(set: BorderViewProps -> unit) =
+    let viewProps = BorderViewProps()
     set viewProps
-    Border(viewProps)
+    BorderView(viewProps)
 
-  static member Border(children: IView list) =
-    let viewProps = BorderProps()
+  static member BorderView(children: IView list) =
+    let viewProps = BorderViewProps()
     viewProps.Children children
-    Border(viewProps)
+    BorderView(viewProps)
 
   static member Button(set: ButtonProps -> unit) =
     let viewProps = ButtonProps()
@@ -73,6 +73,16 @@ type View =
     let viewProps = CheckBoxProps()
     viewProps.Children children
     CheckBox(viewProps)
+
+  static member Code(set: CodeProps -> unit) =
+    let viewProps = CodeProps()
+    set viewProps
+    Code(viewProps)
+
+  static member Code(children: IView list) =
+    let viewProps = CodeProps()
+    viewProps.Children children
+    Code(viewProps)
 
   static member ColorPicker(set: ColorPickerProps -> unit) =
     let viewProps = ColorPickerProps()
@@ -134,6 +144,16 @@ type View =
     viewProps.Children children
     HexView(viewProps)
 
+  static member ImageView(set: ImageViewProps -> unit) =
+    let viewProps = ImageViewProps()
+    set viewProps
+    ImageView(viewProps)
+
+  static member ImageView(children: IView list) =
+    let viewProps = ImageViewProps()
+    viewProps.Children children
+    ImageView(viewProps)
+
   static member Label(set: LabelProps -> unit) =
     let viewProps = LabelProps()
     set viewProps
@@ -164,6 +184,26 @@ type View =
     viewProps.Children children
     Line(viewProps)
 
+  static member LinearMultiSelector<'T>(set: LinearMultiSelectorProps<'T> -> unit) =
+    let viewProps = LinearMultiSelectorProps<'T>()
+    set viewProps
+    LinearMultiSelector<'T>(viewProps)
+
+  static member LinearMultiSelector<'T>(children: IView list) =
+    let viewProps = LinearMultiSelectorProps<'T>()
+    viewProps.Children children
+    LinearMultiSelector<'T>(viewProps)
+
+  static member LinearMultiSelector(set: LinearMultiSelectorProps -> unit) =
+    let viewProps = LinearMultiSelectorProps()
+    set viewProps
+    LinearMultiSelector(viewProps)
+
+  static member LinearMultiSelector(children: IView list) =
+    let viewProps = LinearMultiSelectorProps()
+    viewProps.Children children
+    LinearMultiSelector(viewProps)
+
   static member LinearRange<'T>(set: LinearRangeProps<'T> -> unit) =
     let viewProps = LinearRangeProps<'T>()
     set viewProps
@@ -183,6 +223,26 @@ type View =
     let viewProps = LinearRangeProps()
     viewProps.Children children
     LinearRange(viewProps)
+
+  static member LinearSelector<'T>(set: LinearSelectorProps<'T> -> unit) =
+    let viewProps = LinearSelectorProps<'T>()
+    set viewProps
+    LinearSelector<'T>(viewProps)
+
+  static member LinearSelector<'T>(children: IView list) =
+    let viewProps = LinearSelectorProps<'T>()
+    viewProps.Children children
+    LinearSelector<'T>(viewProps)
+
+  static member LinearSelector(set: LinearSelectorProps -> unit) =
+    let viewProps = LinearSelectorProps()
+    set viewProps
+    LinearSelector(viewProps)
+
+  static member LinearSelector(children: IView list) =
+    let viewProps = LinearSelectorProps()
+    viewProps.Children children
+    LinearSelector(viewProps)
 
   static member Link(set: LinkProps -> unit) =
     let viewProps = LinkProps()
@@ -204,15 +264,55 @@ type View =
     viewProps.Children children
     ListView(viewProps)
 
-  static member Margin(set: MarginProps -> unit) =
-    let viewProps = MarginProps()
+  static member ListView<'T>(set: ListViewProps<'T> -> unit) =
+    let viewProps = ListViewProps<'T>()
     set viewProps
-    Margin(viewProps)
+    ListView<'T>(viewProps)
 
-  static member Margin(children: IView list) =
-    let viewProps = MarginProps()
+  static member ListView<'T>(children: IView list) =
+    let viewProps = ListViewProps<'T>()
     viewProps.Children children
-    Margin(viewProps)
+    ListView<'T>(viewProps)
+
+  static member MarginView(set: MarginViewProps -> unit) =
+    let viewProps = MarginViewProps()
+    set viewProps
+    MarginView(viewProps)
+
+  static member MarginView(children: IView list) =
+    let viewProps = MarginViewProps()
+    viewProps.Children children
+    MarginView(viewProps)
+
+  static member Markdown(set: MarkdownProps -> unit) =
+    let viewProps = MarkdownProps()
+    set viewProps
+    Markdown(viewProps)
+
+  static member Markdown(children: IView list) =
+    let viewProps = MarkdownProps()
+    viewProps.Children children
+    Markdown(viewProps)
+
+  static member MarkdownCodeBlock(set: MarkdownCodeBlockProps -> unit) =
+    let viewProps = MarkdownCodeBlockProps()
+    set viewProps
+    MarkdownCodeBlock(viewProps)
+
+  static member MarkdownCodeBlock(children: IView list) =
+    let viewProps = MarkdownCodeBlockProps()
+    viewProps.Children children
+    MarkdownCodeBlock(viewProps)
+
+  static member MarkdownTable(set: MarkdownTableProps -> unit) =
+    let viewProps = MarkdownTableProps()
+    set viewProps
+    MarkdownTable(viewProps)
+
+  static member MarkdownTable(children: IView list) =
+    let viewProps = MarkdownTableProps()
+    viewProps.Children children
+    MarkdownTable(viewProps)
 
   static member Menu(set: MenuProps -> unit) =
     let viewProps = MenuProps()
@@ -260,15 +360,15 @@ type View =
     viewProps.Children children
     NumericUpDown(viewProps)
 
-  static member Padding(set: PaddingProps -> unit) =
-    let viewProps = PaddingProps()
+  static member PaddingView(set: PaddingViewProps -> unit) =
+    let viewProps = PaddingViewProps()
     set viewProps
-    Padding(viewProps)
+    PaddingView(viewProps)
 
-  static member Padding(children: IView list) =
-    let viewProps = PaddingProps()
+  static member PaddingView(children: IView list) =
+    let viewProps = PaddingViewProps()
     viewProps.Children children
-    Padding(viewProps)
+    PaddingView(viewProps)
 
   static member Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
     (set: PopoverProps<'TView, 'TResult> -> unit)
@@ -334,6 +434,22 @@ type View =
     viewProps.Children children
     Dialog<'TResult>(viewProps)
 
+  static member RunnableWrapper<'TView, 'TResult
+    when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (set: RunnableWrapperProps<'TView, 'TResult> -> unit)
+    =
+    let viewProps = RunnableWrapperProps<'TView, 'TResult>()
+    set viewProps
+    RunnableWrapper<'TView, 'TResult>(viewProps)
+
+  static member RunnableWrapper<'TView, 'TResult
+    when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (children: IView list)
+    =
+    let viewProps = RunnableWrapperProps<'TView, 'TResult>()
+    viewProps.Children children
+    RunnableWrapper<'TView, 'TResult>(viewProps)
+
   static member Dialog(set: DialogProps -> unit) =
     let viewProps = DialogProps()
     set viewProps
@@ -343,6 +459,16 @@ type View =
     let viewProps = DialogProps()
     viewProps.Children children
     Dialog(viewProps)
+
+  static member FileDialog(set: FileDialogProps -> unit) =
+    let viewProps = FileDialogProps()
+    set viewProps
+    FileDialog(viewProps)
+
+  static member FileDialog(children: IView list) =
+    let viewProps = FileDialogProps()
+    viewProps.Children children
+    FileDialog(viewProps)
 
   static member Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
     (set: PromptProps<'TView, 'TResult> -> unit)
@@ -357,16 +483,6 @@ type View =
     let viewProps = PromptProps<'TView, 'TResult>()
     viewProps.Children children
     Prompt<'TView, 'TResult>(viewProps)
-
-  static member FileDialog(set: FileDialogProps -> unit) =
-    let viewProps = FileDialogProps()
-    set viewProps
-    FileDialog(viewProps)
-
-  static member FileDialog(children: IView list) =
-    let viewProps = FileDialogProps()
-    viewProps.Children children
-    FileDialog(viewProps)
 
   static member OpenDialog(set: OpenDialogProps -> unit) =
     let viewProps = OpenDialogProps()
@@ -397,6 +513,16 @@ type View =
     let viewProps = ScrollBarProps()
     viewProps.Children children
     ScrollBar(viewProps)
+
+  static member ScrollButton(set: ScrollButtonProps -> unit) =
+    let viewProps = ScrollButtonProps()
+    set viewProps
+    ScrollButton(viewProps)
+
+  static member ScrollButton(children: IView list) =
+    let viewProps = ScrollButtonProps()
+    viewProps.Children children
+    ScrollButton(viewProps)
 
   static member ScrollSlider(set: ScrollSliderProps -> unit) =
     let viewProps = ScrollSliderProps()
@@ -522,26 +648,6 @@ type View =
     viewProps.Children children
     StatusBar(viewProps)
 
-  static member Tab(set: TabProps -> unit) =
-    let viewProps = TabProps()
-    set viewProps
-    Tab(viewProps)
-
-  static member Tab(children: IView list) =
-    let viewProps = TabProps()
-    viewProps.Children children
-    Tab(viewProps)
-
-  static member TabView(set: TabViewProps -> unit) =
-    let viewProps = TabViewProps()
-    set viewProps
-    TabView(viewProps)
-
-  static member TabView(children: IView list) =
-    let viewProps = TabViewProps()
-    viewProps.Children children
-    TabView(viewProps)
-
   static member TableView(set: TableViewProps -> unit) =
     let viewProps = TableViewProps()
     set viewProps
@@ -551,6 +657,16 @@ type View =
     let viewProps = TableViewProps()
     viewProps.Children children
     TableView(viewProps)
+
+  static member Tabs(set: TabsProps -> unit) =
+    let viewProps = TabsProps()
+    set viewProps
+    Tabs(viewProps)
+
+  static member Tabs(children: IView list) =
+    let viewProps = TabsProps()
+    viewProps.Children children
+    Tabs(viewProps)
 
   static member TextField(set: TextFieldProps -> unit) =
     let viewProps = TextFieldProps()
@@ -571,6 +687,22 @@ type View =
     let viewProps = DropDownListProps()
     viewProps.Children children
     DropDownList(viewProps)
+
+  static member DropDownList<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (set: DropDownListProps<'TEnum> -> unit)
+    =
+    let viewProps = DropDownListProps<'TEnum>()
+    set viewProps
+    DropDownList<'TEnum>(viewProps)
+
+  static member DropDownList<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (children: IView list)
+    =
+    let viewProps = DropDownListProps<'TEnum>()
+    viewProps.Children children
+    DropDownList<'TEnum>(viewProps)
 
   static member TextValidateField(set: TextValidateFieldProps -> unit) =
     let viewProps = TextValidateFieldProps()
@@ -611,6 +743,30 @@ type View =
     let viewProps = TimeEditorProps()
     viewProps.Children children
     TimeEditor(viewProps)
+
+  static member TitleView(set: TitleViewProps -> unit) =
+    let viewProps = TitleViewProps()
+    set viewProps
+    TitleView(viewProps)
+
+  static member TitleView(children: IView list) =
+    let viewProps = TitleViewProps()
+    viewProps.Children children
+    TitleView(viewProps)
+
+  static member ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (set: ToolTipHostProps<'TView> -> unit)
+    =
+    let viewProps = ToolTipHostProps<'TView>()
+    set viewProps
+    ToolTipHost<'TView>(viewProps)
+
+  static member ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (children: IView list)
+    =
+    let viewProps = ToolTipHostProps<'TView>()
+    viewProps.Children children
+    ToolTipHost<'TView>(viewProps)
 
   static member TreeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
     let viewProps = TreeViewProps<'T>()

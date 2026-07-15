@@ -12,8 +12,5 @@ type IPopoverMenuView =
 type ITViewView =
   inherit IView
 
-type ITabView =
-  inherit IView
-
 type IWizardStepView =
   inherit IView

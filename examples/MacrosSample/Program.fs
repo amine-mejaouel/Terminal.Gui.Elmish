@@ -80,7 +80,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
                 )) ]))
 
   let categoriesListView =
-    View.ListView(fun p ->
+    View.ListView(fun (p: ListViewProps) ->
       p.BorderStyle LineStyle.Rounded
       p.X TPos.Default
       p.Y(TPos.Bottom menuBar)

@@ -57,7 +57,7 @@ let _component (set: IProps -> unit) =
             else
               View.Button(fun p ->
                 p.Text "Button 2: Click to test changing the Terminal Element !"
-                p.ShadowStyle ShadowStyle.Transparent
+                p.ShadowStyle(System.Nullable ShadowStyles.Transparent)
 
                 p.Accepting(fun e -> dispatch (TerminalMsg.ofMsg (ChangeDisplayedButton Button1))))
 

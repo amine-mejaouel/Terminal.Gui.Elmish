@@ -19,6 +19,7 @@
     <Compile Include="generators\Props.gen.fs" />
     <Compile Include="generators\View.gen.fs" />
     <Compile Include="generators\ViewType.gen.fs" />
+    <Compile Include="generators\PropsHandler.gen.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

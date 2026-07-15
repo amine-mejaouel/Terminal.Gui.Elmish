@@ -95,6 +95,7 @@ module Registry =
     static member GetAllPreviouslyCreatedInterfaces() =
       TEInterfaces.TEInterfaces
       |> Seq.map getTEInterfaceName
+      |> Seq.distinct
       |> Seq.toList
       |> List.sort
 

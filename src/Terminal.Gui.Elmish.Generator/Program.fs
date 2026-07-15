@@ -9,5 +9,6 @@ let main _argv =
   TerminalElement_viewSpecs.gen ()
   SimpleViewSpec.gen ()
   View.gen ()
+  PropsHandler.gen ()
 
   0

@@ -3,6 +3,13 @@ module Terminal.Gui.Elmish.Generator.PKey
 open System
 open Terminal.Gui.Elmish.Generator.TypeExtensions
 
+let mutable private nextPropertyId = 0
+
+let private allocatePropertyId () =
+  let value = nextPropertyId
+  nextPropertyId <- nextPropertyId + 1
+  value
+
 let genPKeyClassDefinition (viewType: Type) =
   seq {
     let className = getTypeNameWithoutArity viewType
@@ -26,15 +33,22 @@ let genPKeyClassDefinition (viewType: Type) =
 
         // Check if this is a delayed pos property
         if prop.IsViewProperty then
-          yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view \"{keyName}_view\""
+          let viewId = allocatePropertyId ()
+          let viewSpecId = allocatePropertyId ()
+
+          yield
+            $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view({viewId}, {viewSpecId}, \"{keyName}_view\")"
 
           let interfaceName =
             Registry.ViewInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
 
           yield
-            $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement \"{keyName}_viewSpec\""
+            $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement({viewSpecId}, {viewId}, \"{keyName}_viewSpec\")"
         else
-          yield $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple \"{keyName}\""
+          let propertyId = allocatePropertyId ()
+
+          yield
+            $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple({propertyId}, \"{keyName}\")"
 
     if view.Events.Length > 0 then
       if view.Properties.Length > 0 then
@@ -45,7 +59,9 @@ let genPKeyClassDefinition (viewType: Type) =
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
-        yield $"    member val {event.PKey}: PropKey<{handlerType}> = PropKey.Create.event \"{keyName}\""
+        let propertyId = allocatePropertyId ()
+
+        yield $"    member val {event.PKey}: PropKey<{handlerType}> = PropKey.Create.event({propertyId}, \"{keyName}\")"
 
     yield ""
   }
@@ -84,8 +100,10 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
         yield "    // Properties"
 
         for prop, interfaceType in allProps do
+          let propertyId = allocatePropertyId ()
+
           yield
-            $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple \"{moduleName}.{prop.PKey}\""
+            $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple({propertyId}, \"{moduleName}.{prop.PKey}\")"
 
           yield ""
 
@@ -94,9 +112,10 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
 
         for event, interfaceType in allEvents do
           let handlerType = eventHandlerType event.EventInfo
+          let propertyId = allocatePropertyId ()
 
           yield
-            $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event \"{moduleName}.{event.PKey}_event\""
+            $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event({propertyId}, \"{moduleName}.{event.PKey}_event\")"
 
           yield ""
     }
@@ -108,6 +127,8 @@ let opens =
     "open Terminal.Gui.Views" ]
 
 let gen () =
+
+  nextPropertyId <- 0
 
   // Get all interfaces from Terminal.Gui that we need to handle
   let interfaces =

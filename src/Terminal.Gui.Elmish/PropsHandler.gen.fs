@@ -148,131 +148,194 @@ type internal ViewPropHandler =
     props |> Props.tryFind PKey.View.Width |> Option.iter (fun v -> view.Width <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.View.Accepted, view.Accepted)
+    if props |> Props.exists PKey.View.Accepted then
+      terminalElement.TrySetEventHandler(PKey.View.Accepted, view.Accepted)
 
-    terminalElement.TrySetEventHandler(PKey.View.Accepting, view.Accepting)
+    if props |> Props.exists PKey.View.Accepting then
+      terminalElement.TrySetEventHandler(PKey.View.Accepting, view.Accepting)
 
-    terminalElement.TrySetEventHandler(PKey.View.Activated, view.Activated)
+    if props |> Props.exists PKey.View.Activated then
+      terminalElement.TrySetEventHandler(PKey.View.Activated, view.Activated)
 
-    terminalElement.TrySetEventHandler(PKey.View.Activating, view.Activating)
+    if props |> Props.exists PKey.View.Activating then
+      terminalElement.TrySetEventHandler(PKey.View.Activating, view.Activating)
 
-    terminalElement.TrySetEventHandler(PKey.View.AdvancingFocus, view.AdvancingFocus)
+    if props |> Props.exists PKey.View.AdvancingFocus then
+      terminalElement.TrySetEventHandler(PKey.View.AdvancingFocus, view.AdvancingFocus)
 
-    terminalElement.TrySetEventHandler(PKey.View.BorderStyleChanged, view.BorderStyleChanged)
+    if props |> Props.exists PKey.View.BorderStyleChanged then
+      terminalElement.TrySetEventHandler(PKey.View.BorderStyleChanged, view.BorderStyleChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.CanFocusChanged, view.CanFocusChanged)
+    if props |> Props.exists PKey.View.CanFocusChanged then
+      terminalElement.TrySetEventHandler(PKey.View.CanFocusChanged, view.CanFocusChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.ClearedViewport, view.ClearedViewport)
+    if props |> Props.exists PKey.View.ClearedViewport then
+      terminalElement.TrySetEventHandler(PKey.View.ClearedViewport, view.ClearedViewport)
 
-    terminalElement.TrySetEventHandler(PKey.View.ClearingViewport, view.ClearingViewport)
+    if props |> Props.exists PKey.View.ClearingViewport then
+      terminalElement.TrySetEventHandler(PKey.View.ClearingViewport, view.ClearingViewport)
 
-    terminalElement.TrySetEventHandler(PKey.View.CommandNotBound, view.CommandNotBound)
+    if props |> Props.exists PKey.View.CommandNotBound then
+      terminalElement.TrySetEventHandler(PKey.View.CommandNotBound, view.CommandNotBound)
 
-    terminalElement.TrySetEventHandler(PKey.View.ContentSizeChanged, view.ContentSizeChanged)
+    if props |> Props.exists PKey.View.ContentSizeChanged then
+      terminalElement.TrySetEventHandler(PKey.View.ContentSizeChanged, view.ContentSizeChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.ContentSizeChanging, view.ContentSizeChanging)
+    if props |> Props.exists PKey.View.ContentSizeChanging then
+      terminalElement.TrySetEventHandler(PKey.View.ContentSizeChanging, view.ContentSizeChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.Disposing, view.Disposing)
+    if props |> Props.exists PKey.View.Disposing then
+      terminalElement.TrySetEventHandler(PKey.View.Disposing, view.Disposing)
 
-    terminalElement.TrySetEventHandler(PKey.View.DrawComplete, view.DrawComplete)
+    if props |> Props.exists PKey.View.DrawComplete then
+      terminalElement.TrySetEventHandler(PKey.View.DrawComplete, view.DrawComplete)
 
-    terminalElement.TrySetEventHandler(PKey.View.DrawingContent, view.DrawingContent)
+    if props |> Props.exists PKey.View.DrawingContent then
+      terminalElement.TrySetEventHandler(PKey.View.DrawingContent, view.DrawingContent)
 
-    terminalElement.TrySetEventHandler(PKey.View.DrawingSubViews, view.DrawingSubViews)
+    if props |> Props.exists PKey.View.DrawingSubViews then
+      terminalElement.TrySetEventHandler(PKey.View.DrawingSubViews, view.DrawingSubViews)
 
-    terminalElement.TrySetEventHandler(PKey.View.DrawingText, view.DrawingText)
+    if props |> Props.exists PKey.View.DrawingText then
+      terminalElement.TrySetEventHandler(PKey.View.DrawingText, view.DrawingText)
 
-    terminalElement.TrySetEventHandler(PKey.View.DrewText, view.DrewText)
+    if props |> Props.exists PKey.View.DrewText then
+      terminalElement.TrySetEventHandler(PKey.View.DrewText, view.DrewText)
 
-    terminalElement.TrySetEventHandler(PKey.View.EnabledChanged, view.EnabledChanged)
+    if props |> Props.exists PKey.View.EnabledChanged then
+      terminalElement.TrySetEventHandler(PKey.View.EnabledChanged, view.EnabledChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.FocusedChanged, view.FocusedChanged)
+    if props |> Props.exists PKey.View.FocusedChanged then
+      terminalElement.TrySetEventHandler(PKey.View.FocusedChanged, view.FocusedChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.FrameChanged, view.FrameChanged)
+    if props |> Props.exists PKey.View.FrameChanged then
+      terminalElement.TrySetEventHandler(PKey.View.FrameChanged, view.FrameChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.GettingAttributeForRole, view.GettingAttributeForRole)
+    if props |> Props.exists PKey.View.GettingAttributeForRole then
+      terminalElement.TrySetEventHandler(PKey.View.GettingAttributeForRole, view.GettingAttributeForRole)
 
-    terminalElement.TrySetEventHandler(PKey.View.GettingScheme, view.GettingScheme)
+    if props |> Props.exists PKey.View.GettingScheme then
+      terminalElement.TrySetEventHandler(PKey.View.GettingScheme, view.GettingScheme)
 
-    terminalElement.TrySetEventHandler(PKey.View.HandlingHotKey, view.HandlingHotKey)
+    if props |> Props.exists PKey.View.HandlingHotKey then
+      terminalElement.TrySetEventHandler(PKey.View.HandlingHotKey, view.HandlingHotKey)
 
-    terminalElement.TrySetEventHandler(PKey.View.HasFocusChanged, view.HasFocusChanged)
+    if props |> Props.exists PKey.View.HasFocusChanged then
+      terminalElement.TrySetEventHandler(PKey.View.HasFocusChanged, view.HasFocusChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.HasFocusChanging, view.HasFocusChanging)
+    if props |> Props.exists PKey.View.HasFocusChanging then
+      terminalElement.TrySetEventHandler(PKey.View.HasFocusChanging, view.HasFocusChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.HeightChanged, view.HeightChanged)
+    if props |> Props.exists PKey.View.HeightChanged then
+      terminalElement.TrySetEventHandler(PKey.View.HeightChanged, view.HeightChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.HeightChanging, view.HeightChanging)
+    if props |> Props.exists PKey.View.HeightChanging then
+      terminalElement.TrySetEventHandler(PKey.View.HeightChanging, view.HeightChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.HotKeyChanged, view.HotKeyChanged)
+    if props |> Props.exists PKey.View.HotKeyChanged then
+      terminalElement.TrySetEventHandler(PKey.View.HotKeyChanged, view.HotKeyChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.HotKeyCommand, view.HotKeyCommand)
+    if props |> Props.exists PKey.View.HotKeyCommand then
+      terminalElement.TrySetEventHandler(PKey.View.HotKeyCommand, view.HotKeyCommand)
 
-    terminalElement.TrySetEventHandler(PKey.View.Initialized, view.Initialized)
+    if props |> Props.exists PKey.View.Initialized then
+      terminalElement.TrySetEventHandler(PKey.View.Initialized, view.Initialized)
 
-    terminalElement.TrySetEventHandler(PKey.View.KeyDown, view.KeyDown)
+    if props |> Props.exists PKey.View.KeyDown then
+      terminalElement.TrySetEventHandler(PKey.View.KeyDown, view.KeyDown)
 
-    terminalElement.TrySetEventHandler(PKey.View.KeyDownNotHandled, view.KeyDownNotHandled)
+    if props |> Props.exists PKey.View.KeyDownNotHandled then
+      terminalElement.TrySetEventHandler(PKey.View.KeyDownNotHandled, view.KeyDownNotHandled)
 
-    terminalElement.TrySetEventHandler(PKey.View.KeyUp, view.KeyUp)
+    if props |> Props.exists PKey.View.KeyUp then
+      terminalElement.TrySetEventHandler(PKey.View.KeyUp, view.KeyUp)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseEnter, view.MouseEnter)
+    if props |> Props.exists PKey.View.MouseEnter then
+      terminalElement.TrySetEventHandler(PKey.View.MouseEnter, view.MouseEnter)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseEvent, view.MouseEvent)
+    if props |> Props.exists PKey.View.MouseEvent then
+      terminalElement.TrySetEventHandler(PKey.View.MouseEvent, view.MouseEvent)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseHoldRepeatChanged, view.MouseHoldRepeatChanged)
+    if props |> Props.exists PKey.View.MouseHoldRepeatChanged then
+      terminalElement.TrySetEventHandler(PKey.View.MouseHoldRepeatChanged, view.MouseHoldRepeatChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseHoldRepeatChanging, view.MouseHoldRepeatChanging)
+    if props |> Props.exists PKey.View.MouseHoldRepeatChanging then
+      terminalElement.TrySetEventHandler(PKey.View.MouseHoldRepeatChanging, view.MouseHoldRepeatChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseLeave, view.MouseLeave)
+    if props |> Props.exists PKey.View.MouseLeave then
+      terminalElement.TrySetEventHandler(PKey.View.MouseLeave, view.MouseLeave)
 
-    terminalElement.TrySetEventHandler(PKey.View.MouseStateChanged, view.MouseStateChanged)
+    if props |> Props.exists PKey.View.MouseStateChanged then
+      terminalElement.TrySetEventHandler(PKey.View.MouseStateChanged, view.MouseStateChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.Pasted, view.Pasted)
+    if props |> Props.exists PKey.View.Pasted then
+      terminalElement.TrySetEventHandler(PKey.View.Pasted, view.Pasted)
 
-    terminalElement.TrySetEventHandler(PKey.View.Pasting, view.Pasting)
+    if props |> Props.exists PKey.View.Pasting then
+      terminalElement.TrySetEventHandler(PKey.View.Pasting, view.Pasting)
 
-    terminalElement.TrySetEventHandler(PKey.View.Removed, view.Removed)
+    if props |> Props.exists PKey.View.Removed then
+      terminalElement.TrySetEventHandler(PKey.View.Removed, view.Removed)
 
-    terminalElement.TrySetEventHandler(PKey.View.SchemeChanged, view.SchemeChanged)
+    if props |> Props.exists PKey.View.SchemeChanged then
+      terminalElement.TrySetEventHandler(PKey.View.SchemeChanged, view.SchemeChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.SchemeChanging, view.SchemeChanging)
+    if props |> Props.exists PKey.View.SchemeChanging then
+      terminalElement.TrySetEventHandler(PKey.View.SchemeChanging, view.SchemeChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.SchemeNameChanged, view.SchemeNameChanged)
+    if props |> Props.exists PKey.View.SchemeNameChanged then
+      terminalElement.TrySetEventHandler(PKey.View.SchemeNameChanged, view.SchemeNameChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.SchemeNameChanging, view.SchemeNameChanging)
+    if props |> Props.exists PKey.View.SchemeNameChanging then
+      terminalElement.TrySetEventHandler(PKey.View.SchemeNameChanging, view.SchemeNameChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.ShadowStyleChanged, view.ShadowStyleChanged)
+    if props |> Props.exists PKey.View.ShadowStyleChanged then
+      terminalElement.TrySetEventHandler(PKey.View.ShadowStyleChanged, view.ShadowStyleChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.SubViewAdded, view.SubViewAdded)
+    if props |> Props.exists PKey.View.SubViewAdded then
+      terminalElement.TrySetEventHandler(PKey.View.SubViewAdded, view.SubViewAdded)
 
-    terminalElement.TrySetEventHandler(PKey.View.SubViewAdding, view.SubViewAdding)
+    if props |> Props.exists PKey.View.SubViewAdding then
+      terminalElement.TrySetEventHandler(PKey.View.SubViewAdding, view.SubViewAdding)
 
-    terminalElement.TrySetEventHandler(PKey.View.SubViewLayout, view.SubViewLayout)
+    if props |> Props.exists PKey.View.SubViewLayout then
+      terminalElement.TrySetEventHandler(PKey.View.SubViewLayout, view.SubViewLayout)
 
-    terminalElement.TrySetEventHandler(PKey.View.SubViewRemoved, view.SubViewRemoved)
+    if props |> Props.exists PKey.View.SubViewRemoved then
+      terminalElement.TrySetEventHandler(PKey.View.SubViewRemoved, view.SubViewRemoved)
 
-    terminalElement.TrySetEventHandler(PKey.View.SubViewsLaidOut, view.SubViewsLaidOut)
+    if props |> Props.exists PKey.View.SubViewsLaidOut then
+      terminalElement.TrySetEventHandler(PKey.View.SubViewsLaidOut, view.SubViewsLaidOut)
 
-    terminalElement.TrySetEventHandler(PKey.View.SuperViewChanged, view.SuperViewChanged)
+    if props |> Props.exists PKey.View.SuperViewChanged then
+      terminalElement.TrySetEventHandler(PKey.View.SuperViewChanged, view.SuperViewChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.SuperViewChanging, view.SuperViewChanging)
+    if props |> Props.exists PKey.View.SuperViewChanging then
+      terminalElement.TrySetEventHandler(PKey.View.SuperViewChanging, view.SuperViewChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.TextChanged, view.TextChanged)
+    if props |> Props.exists PKey.View.TextChanged then
+      terminalElement.TrySetEventHandler(PKey.View.TextChanged, view.TextChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.TitleChanged, view.TitleChanged)
+    if props |> Props.exists PKey.View.TitleChanged then
+      terminalElement.TrySetEventHandler(PKey.View.TitleChanged, view.TitleChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.TitleChanging, view.TitleChanging)
+    if props |> Props.exists PKey.View.TitleChanging then
+      terminalElement.TrySetEventHandler(PKey.View.TitleChanging, view.TitleChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.ViewportChanged, view.ViewportChanged)
+    if props |> Props.exists PKey.View.ViewportChanged then
+      terminalElement.TrySetEventHandler(PKey.View.ViewportChanged, view.ViewportChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.VisibleChanged, view.VisibleChanged)
+    if props |> Props.exists PKey.View.VisibleChanged then
+      terminalElement.TrySetEventHandler(PKey.View.VisibleChanged, view.VisibleChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.VisibleChanging, view.VisibleChanging)
+    if props |> Props.exists PKey.View.VisibleChanging then
+      terminalElement.TrySetEventHandler(PKey.View.VisibleChanging, view.VisibleChanging)
 
-    terminalElement.TrySetEventHandler(PKey.View.WidthChanged, view.WidthChanged)
+    if props |> Props.exists PKey.View.WidthChanged then
+      terminalElement.TrySetEventHandler(PKey.View.WidthChanged, view.WidthChanged)
 
-    terminalElement.TrySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
+    if props |> Props.exists PKey.View.WidthChanging then
+      terminalElement.TrySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
 
@@ -317,7 +380,7 @@ type internal ViewPropHandler =
 
     props
     |> Props.tryFind PKey.View.DefaultAcceptView
-    |> Option.iter (fun _ -> view.DefaultAcceptView <- new View())
+    |> Option.iter (fun _ -> view.DefaultAcceptView <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.View.Enabled
@@ -424,69 +487,194 @@ type internal ViewPropHandler =
     |> Option.iter (fun _ -> view.Width <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
-    terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
-    terminalElement.TryRemoveEventHandler(PKey.View.Activated)
-    terminalElement.TryRemoveEventHandler(PKey.View.Activating)
-    terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
-    terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
-    terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
-    terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
-    terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
-    terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
-    terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
-    terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
-    terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
-    terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
-    terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
-    terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
-    terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
-    terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.HotKeyCommand)
-    terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
-    terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
-    terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
-    terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
-    terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.Pasted)
-    terminalElement.TryRemoveEventHandler(PKey.View.Pasting)
-    terminalElement.TryRemoveEventHandler(PKey.View.Removed)
-    terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.ShadowStyleChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
-    terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdding)
-    terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
-    terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
-    terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
-    terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
-    terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
-    terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
+    if props |> Props.exists PKey.View.Accepted then
+      terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
+
+    if props |> Props.exists PKey.View.Accepting then
+      terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
+
+    if props |> Props.exists PKey.View.Activated then
+      terminalElement.TryRemoveEventHandler(PKey.View.Activated)
+
+    if props |> Props.exists PKey.View.Activating then
+      terminalElement.TryRemoveEventHandler(PKey.View.Activating)
+
+    if props |> Props.exists PKey.View.AdvancingFocus then
+      terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
+
+    if props |> Props.exists PKey.View.BorderStyleChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
+
+    if props |> Props.exists PKey.View.CanFocusChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
+
+    if props |> Props.exists PKey.View.ClearedViewport then
+      terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
+
+    if props |> Props.exists PKey.View.ClearingViewport then
+      terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
+
+    if props |> Props.exists PKey.View.CommandNotBound then
+      terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
+
+    if props |> Props.exists PKey.View.ContentSizeChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
+
+    if props |> Props.exists PKey.View.ContentSizeChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
+
+    if props |> Props.exists PKey.View.Disposing then
+      terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
+
+    if props |> Props.exists PKey.View.DrawComplete then
+      terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
+
+    if props |> Props.exists PKey.View.DrawingContent then
+      terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
+
+    if props |> Props.exists PKey.View.DrawingSubViews then
+      terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
+
+    if props |> Props.exists PKey.View.DrawingText then
+      terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
+
+    if props |> Props.exists PKey.View.DrewText then
+      terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
+
+    if props |> Props.exists PKey.View.EnabledChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
+
+    if props |> Props.exists PKey.View.FocusedChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
+
+    if props |> Props.exists PKey.View.FrameChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
+
+    if props |> Props.exists PKey.View.GettingAttributeForRole then
+      terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
+
+    if props |> Props.exists PKey.View.GettingScheme then
+      terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
+
+    if props |> Props.exists PKey.View.HandlingHotKey then
+      terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
+
+    if props |> Props.exists PKey.View.HasFocusChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
+
+    if props |> Props.exists PKey.View.HasFocusChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
+
+    if props |> Props.exists PKey.View.HeightChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
+
+    if props |> Props.exists PKey.View.HeightChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
+
+    if props |> Props.exists PKey.View.HotKeyChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
+
+    if props |> Props.exists PKey.View.HotKeyCommand then
+      terminalElement.TryRemoveEventHandler(PKey.View.HotKeyCommand)
+
+    if props |> Props.exists PKey.View.Initialized then
+      terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
+
+    if props |> Props.exists PKey.View.KeyDown then
+      terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
+
+    if props |> Props.exists PKey.View.KeyDownNotHandled then
+      terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
+
+    if props |> Props.exists PKey.View.KeyUp then
+      terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
+
+    if props |> Props.exists PKey.View.MouseEnter then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
+
+    if props |> Props.exists PKey.View.MouseEvent then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
+
+    if props |> Props.exists PKey.View.MouseHoldRepeatChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
+
+    if props |> Props.exists PKey.View.MouseHoldRepeatChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
+
+    if props |> Props.exists PKey.View.MouseLeave then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
+
+    if props |> Props.exists PKey.View.MouseStateChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
+
+    if props |> Props.exists PKey.View.Pasted then
+      terminalElement.TryRemoveEventHandler(PKey.View.Pasted)
+
+    if props |> Props.exists PKey.View.Pasting then
+      terminalElement.TryRemoveEventHandler(PKey.View.Pasting)
+
+    if props |> Props.exists PKey.View.Removed then
+      terminalElement.TryRemoveEventHandler(PKey.View.Removed)
+
+    if props |> Props.exists PKey.View.SchemeChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
+
+    if props |> Props.exists PKey.View.SchemeChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
+
+    if props |> Props.exists PKey.View.SchemeNameChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
+
+    if props |> Props.exists PKey.View.SchemeNameChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
+
+    if props |> Props.exists PKey.View.ShadowStyleChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.ShadowStyleChanged)
+
+    if props |> Props.exists PKey.View.SubViewAdded then
+      terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
+
+    if props |> Props.exists PKey.View.SubViewAdding then
+      terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdding)
+
+    if props |> Props.exists PKey.View.SubViewLayout then
+      terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
+
+    if props |> Props.exists PKey.View.SubViewRemoved then
+      terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
+
+    if props |> Props.exists PKey.View.SubViewsLaidOut then
+      terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
+
+    if props |> Props.exists PKey.View.SuperViewChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
+
+    if props |> Props.exists PKey.View.SuperViewChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
+
+    if props |> Props.exists PKey.View.TextChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
+
+    if props |> Props.exists PKey.View.TitleChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
+
+    if props |> Props.exists PKey.View.TitleChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
+
+    if props |> Props.exists PKey.View.ViewportChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
+
+    if props |> Props.exists PKey.View.VisibleChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
+
+    if props |> Props.exists PKey.View.VisibleChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
+
+    if props |> Props.exists PKey.View.WidthChanged then
+      terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
+
+    if props |> Props.exists PKey.View.WidthChanging then
+      terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
 
 type internal AdornmentViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -550,11 +738,14 @@ type internal AttributePickerPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.AttributePicker.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.AttributePicker.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.AttributePicker.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -571,9 +762,14 @@ type internal AttributePickerPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
+    if props |> Props.exists PKey.AttributePicker.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
+
+    if props |> Props.exists PKey.AttributePicker.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.AttributePicker.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
 
 type internal BarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -591,9 +787,11 @@ type internal BarPropHandler =
     |> Option.iter (fun v -> view.Orientation <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.Bar.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.Bar.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanging, view.OrientationChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -610,8 +808,11 @@ type internal BarPropHandler =
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
+    if props |> Props.exists PKey.Bar.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
+
+    if props |> Props.exists PKey.Bar.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
 
 type internal BorderViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -677,7 +878,8 @@ type internal ButtonPropHandler =
     props |> Props.tryFind PKey.Button.Text |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Button.InitializingShadowStyle, view.InitializingShadowStyle)
+    if props |> Props.exists PKey.Button.InitializingShadowStyle then
+      terminalElement.TrySetEventHandler(PKey.Button.InitializingShadowStyle, view.InitializingShadowStyle)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -706,7 +908,8 @@ type internal ButtonPropHandler =
     |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Button.InitializingShadowStyle)
+    if props |> Props.exists PKey.Button.InitializingShadowStyle then
+      terminalElement.TryRemoveEventHandler(PKey.Button.InitializingShadowStyle)
 
 type internal CharMapPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -736,11 +939,14 @@ type internal CharMapPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.CharMap.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.CharMap.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.CharMap.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.CharMap.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.CharMap.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -769,9 +975,14 @@ type internal CharMapPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
+    if props |> Props.exists PKey.CharMap.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
+
+    if props |> Props.exists PKey.CharMap.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.CharMap.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
 
 type internal CheckBoxPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -801,11 +1012,14 @@ type internal CheckBoxPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.CheckBox.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.CheckBox.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.CheckBox.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -834,9 +1048,14 @@ type internal CheckBoxPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
+    if props |> Props.exists PKey.CheckBox.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
+
+    if props |> Props.exists PKey.CheckBox.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.CheckBox.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
 
 type internal CodePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -896,11 +1115,14 @@ type internal ColorPickerPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ColorPicker.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ColorPicker.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ColorPicker.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -925,9 +1147,14 @@ type internal ColorPickerPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
+    if props |> Props.exists PKey.ColorPicker.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
+
+    if props |> Props.exists PKey.ColorPicker.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ColorPicker.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
 
 type internal ColorPicker16PropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -957,11 +1184,14 @@ type internal ColorPicker16PropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ColorPicker16.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ColorPicker16.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ColorPicker16.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -990,9 +1220,14 @@ type internal ColorPicker16PropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
+    if props |> Props.exists PKey.ColorPicker16.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
+
+    if props |> Props.exists PKey.ColorPicker16.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ColorPicker16.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
 
 type internal DatePickerPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1014,11 +1249,14 @@ type internal DatePickerPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.DatePicker.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.DatePicker.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.DatePicker.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1039,9 +1277,14 @@ type internal DatePickerPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
+    if props |> Props.exists PKey.DatePicker.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
+
+    if props |> Props.exists PKey.DatePicker.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.DatePicker.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
 
 type internal FrameViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1149,9 +1392,11 @@ type internal HexViewPropHandler =
     |> Option.iter (fun v -> view.Source <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.HexView.Edited, view.Edited)
+    if props |> Props.exists PKey.HexView.Edited then
+      terminalElement.TrySetEventHandler(PKey.HexView.Edited, view.Edited)
 
-    terminalElement.TrySetEventHandler(PKey.HexView.PositionChanged, view.PositionChanged)
+    if props |> Props.exists PKey.HexView.PositionChanged then
+      terminalElement.TrySetEventHandler(PKey.HexView.PositionChanged, view.PositionChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1180,8 +1425,11 @@ type internal HexViewPropHandler =
     |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
-    terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
+    if props |> Props.exists PKey.HexView.Edited then
+      terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
+
+    if props |> Props.exists PKey.HexView.PositionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
 
 type internal ImageViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1223,7 +1471,8 @@ type internal ImageViewPropHandler =
     |> Option.iter (fun v -> view.ZoomLevel <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ImageView.ZoomLevelChanged, view.ZoomLevelChanged)
+    if props |> Props.exists PKey.ImageView.ZoomLevelChanged then
+      terminalElement.TrySetEventHandler(PKey.ImageView.ZoomLevelChanged, view.ZoomLevelChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1264,7 +1513,8 @@ type internal ImageViewPropHandler =
     |> Option.iter (fun _ -> view.ZoomLevel <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ImageView.ZoomLevelChanged)
+    if props |> Props.exists PKey.ImageView.ZoomLevelChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ImageView.ZoomLevelChanged)
 
 type internal LabelPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1322,9 +1572,11 @@ type internal LinePropHandler =
     props |> Props.tryFind PKey.Line.Style |> Option.iter (fun v -> view.Style <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Line.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.Line.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.Line.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Line.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.Line.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.Line.OrientationChanging, view.OrientationChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1349,8 +1601,11 @@ type internal LinePropHandler =
     |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
+    if props |> Props.exists PKey.Line.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
+
+    if props |> Props.exists PKey.Line.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
 
 type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1408,76 +1663,131 @@ type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged,
-      view.LegendsOrientationChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged,
+        view.LegendsOrientationChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging,
-      view.LegendsOrientationChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging,
+        view.LegendsOrientationChanging
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged,
-      view.MinimumInnerSpacingChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged,
+        view.MinimumInnerSpacingChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging,
-      view.MinimumInnerSpacingChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging,
+        view.MinimumInnerSpacingChanging
+      )
 
-    terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused, view.OptionFocused)
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused then
+      terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused, view.OptionFocused)
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged,
-      view.OrientationChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged,
+        view.OrientationChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging,
-      view.OrientationChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging,
+        view.OrientationChanging
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged,
-      view.ShowEndSpacingChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged,
+        view.ShowEndSpacingChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging,
-      view.ShowEndSpacingChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging,
+        view.ShowEndSpacingChanging
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged,
-      view.ShowLegendsChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged,
+        view.ShowLegendsChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging,
-      view.ShowLegendsChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging,
+        view.ShowLegendsChanging
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged,
-      view.UseMinimumSizeChanged
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged,
+        view.UseMinimumSizeChanged
+      )
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging,
-      view.UseMinimumSizeChanging
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging,
+        view.UseMinimumSizeChanging
+      )
 
-    terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(
-      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped,
-      view.ValueChangedUntyped
-    )
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped
+    then
+      terminalElement.TrySetEventHandler(
+        PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped,
+        view.ValueChangedUntyped
+      )
 
-    terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1534,22 +1844,92 @@ type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging)
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging)
+
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging)
+
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged)
+
+    if
+      props
+      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped
+    then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging)
 
 type internal LinearMultiSelectorPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1675,9 +2055,11 @@ type internal LinkPropHandler =
     props |> Props.tryFind PKey.Link.Url |> Option.iter (fun v -> view.Url <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Link.UrlChanged, view.UrlChanged)
+    if props |> Props.exists PKey.Link.UrlChanged then
+      terminalElement.TrySetEventHandler(PKey.Link.UrlChanged, view.UrlChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Link.UrlChanging, view.UrlChanging)
+    if props |> Props.exists PKey.Link.UrlChanging then
+      terminalElement.TrySetEventHandler(PKey.Link.UrlChanging, view.UrlChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1688,8 +2070,11 @@ type internal LinkPropHandler =
     props |> Props.tryFind PKey.Link.Url |> Option.iter (fun _ -> view.Url <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
+    if props |> Props.exists PKey.Link.UrlChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
+
+    if props |> Props.exists PKey.Link.UrlChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
 
 type internal ListViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1723,17 +2108,23 @@ type internal ListViewPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ListView.CollectionChanged, view.CollectionChanged)
+    if props |> Props.exists PKey.ListView.CollectionChanged then
+      terminalElement.TrySetEventHandler(PKey.ListView.CollectionChanged, view.CollectionChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ListView.RowRender, view.RowRender)
+    if props |> Props.exists PKey.ListView.RowRender then
+      terminalElement.TrySetEventHandler(PKey.ListView.RowRender, view.RowRender)
 
-    terminalElement.TrySetEventHandler(PKey.ListView.SourceChanged, view.SourceChanged)
+    if props |> Props.exists PKey.ListView.SourceChanged then
+      terminalElement.TrySetEventHandler(PKey.ListView.SourceChanged, view.SourceChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ListView.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ListView.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ListView.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ListView.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ListView.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ListView.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ListView.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ListView.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ListView.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1766,12 +2157,23 @@ type internal ListViewPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
-    terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
+    if props |> Props.exists PKey.ListView.CollectionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
+
+    if props |> Props.exists PKey.ListView.RowRender then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
+
+    if props |> Props.exists PKey.ListView.SourceChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
+
+    if props |> Props.exists PKey.ListView.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
+
+    if props |> Props.exists PKey.ListView.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ListView.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
 
 type internal ListViewPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1793,11 +2195,14 @@ type internal ListViewPropHandler<'T> =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ListView'<'T>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ListView'<'T>.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ListView'<'T>.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ListViewPropHandler.removeProps (terminalElement, props)
@@ -1818,9 +2223,14 @@ type internal ListViewPropHandler<'T> =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanging)
+    if props |> Props.exists PKey.ListView'<'T>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanged)
+
+    if props |> Props.exists PKey.ListView'<'T>.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ListView'<'T>.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanging)
 
 type internal MarginViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1896,9 +2306,11 @@ type internal MarkdownPropHandler =
     |> Option.iter (fun v -> view.UseThemeBackground <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Markdown.LinkClicked, view.LinkClicked)
+    if props |> Props.exists PKey.Markdown.LinkClicked then
+      terminalElement.TrySetEventHandler(PKey.Markdown.LinkClicked, view.LinkClicked)
 
-    terminalElement.TrySetEventHandler(PKey.Markdown.MarkdownChanged, view.MarkdownChanged)
+    if props |> Props.exists PKey.Markdown.MarkdownChanged then
+      terminalElement.TrySetEventHandler(PKey.Markdown.MarkdownChanged, view.MarkdownChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -1943,8 +2355,11 @@ type internal MarkdownPropHandler =
     |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Markdown.LinkClicked)
-    terminalElement.TryRemoveEventHandler(PKey.Markdown.MarkdownChanged)
+    if props |> Props.exists PKey.Markdown.LinkClicked then
+      terminalElement.TryRemoveEventHandler(PKey.Markdown.LinkClicked)
+
+    if props |> Props.exists PKey.Markdown.MarkdownChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Markdown.MarkdownChanged)
 
 type internal MarkdownCodeBlockPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2032,7 +2447,8 @@ type internal MarkdownTablePropHandler =
     |> Option.iter (fun v -> view.UseThemeBackground <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.MarkdownTable.LinkClicked, view.LinkClicked)
+    if props |> Props.exists PKey.MarkdownTable.LinkClicked then
+      terminalElement.TrySetEventHandler(PKey.MarkdownTable.LinkClicked, view.LinkClicked)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2057,7 +2473,8 @@ type internal MarkdownTablePropHandler =
     |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.MarkdownTable.LinkClicked)
+    if props |> Props.exists PKey.MarkdownTable.LinkClicked then
+      terminalElement.TryRemoveEventHandler(PKey.MarkdownTable.LinkClicked)
 
 type internal MenuPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2073,13 +2490,17 @@ type internal MenuPropHandler =
     props |> Props.tryFind PKey.Menu.Value |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Menu.SelectedMenuItemChanged, view.SelectedMenuItemChanged)
+    if props |> Props.exists PKey.Menu.SelectedMenuItemChanged then
+      terminalElement.TrySetEventHandler(PKey.Menu.SelectedMenuItemChanged, view.SelectedMenuItemChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Menu.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.Menu.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.Menu.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Menu.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.Menu.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.Menu.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.Menu.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.Menu.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.Menu.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     BarPropHandler.removeProps (terminalElement, props)
@@ -2096,10 +2517,17 @@ type internal MenuPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanging)
+    if props |> Props.exists PKey.Menu.SelectedMenuItemChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
+
+    if props |> Props.exists PKey.Menu.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanged)
+
+    if props |> Props.exists PKey.Menu.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.Menu.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanging)
 
 type internal MenuBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2111,7 +2539,8 @@ type internal MenuBarPropHandler =
     props |> Props.tryFind PKey.MenuBar.Key |> Option.iter (fun v -> view.Key <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
+    if props |> Props.exists PKey.MenuBar.KeyChanged then
+      terminalElement.TrySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuPropHandler.removeProps (terminalElement, props)
@@ -2124,7 +2553,8 @@ type internal MenuBarPropHandler =
     |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
+    if props |> Props.exists PKey.MenuBar.KeyChanged then
+      terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
 
 type internal NumericUpDownPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2146,15 +2576,20 @@ type internal NumericUpDownPropHandler<'T> =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.FormatChanged, view.FormatChanged)
+    if props |> Props.exists PKey.NumericUpDown<'T>.FormatChanged then
+      terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.FormatChanged, view.FormatChanged)
 
-    terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.IncrementChanged, view.IncrementChanged)
+    if props |> Props.exists PKey.NumericUpDown<'T>.IncrementChanged then
+      terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.IncrementChanged, view.IncrementChanged)
 
-    terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2175,11 +2610,20 @@ type internal NumericUpDownPropHandler<'T> =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
-    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
-    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
+    if props |> Props.exists PKey.NumericUpDown<'T>.FormatChanged then
+      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
+
+    if props |> Props.exists PKey.NumericUpDown<'T>.IncrementChanged then
+      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
+
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
+
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
 
 type internal NumericUpDownPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2252,7 +2696,8 @@ type internal PopoverPropHandler<'TView, 'TResult
     |> Option.iter (fun v -> view.ResultExtractor <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged, view.ResultChanged)
+    if props |> Props.exists PKey.Popover<'TView, 'TResult>.ResultChanged then
+      terminalElement.TrySetEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged, view.ResultChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PopoverImplPropHandler.removeProps (terminalElement, props)
@@ -2269,7 +2714,8 @@ type internal PopoverPropHandler<'TView, 'TResult
     |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged)
+    if props |> Props.exists PKey.Popover<'TView, 'TResult>.ResultChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged)
 
 type internal PopoverMenuPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2291,7 +2737,8 @@ type internal PopoverMenuPropHandler =
     |> Option.iter (fun v -> view.Root <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.PopoverMenu.KeyChanged, view.KeyChanged)
+    if props |> Props.exists PKey.PopoverMenu.KeyChanged then
+      terminalElement.TrySetEventHandler(PKey.PopoverMenu.KeyChanged, view.KeyChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.removeProps (terminalElement, props)
@@ -2312,7 +2759,8 @@ type internal PopoverMenuPropHandler =
     |> Option.iter (fun _ -> view.Root <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
+    if props |> Props.exists PKey.PopoverMenu.KeyChanged then
+      terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
 
 type internal ProgressBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2400,11 +2848,14 @@ type internal RunnablePropHandler =
     |> Option.iter (fun v -> view.StopRequested <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Runnable.IsModalChanged, view.IsModalChanged)
+    if props |> Props.exists PKey.Runnable.IsModalChanged then
+      terminalElement.TrySetEventHandler(PKey.Runnable.IsModalChanged, view.IsModalChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanged, view.IsRunningChanged)
+    if props |> Props.exists PKey.Runnable.IsRunningChanged then
+      terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanged, view.IsRunningChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanging, view.IsRunningChanging)
+    if props |> Props.exists PKey.Runnable.IsRunningChanging then
+      terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanging, view.IsRunningChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2421,9 +2872,14 @@ type internal RunnablePropHandler =
     |> Option.iter (fun _ -> view.StopRequested <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
+    if props |> Props.exists PKey.Runnable.IsModalChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
+
+    if props |> Props.exists PKey.Runnable.IsRunningChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
+
+    if props |> Props.exists PKey.Runnable.IsRunningChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
 
 type internal RunnablePropHandler<'TResult> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2566,7 +3022,8 @@ type internal FileDialogPropHandler =
     |> Option.iter (fun v -> view.SearchMatcher <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
+    if props |> Props.exists PKey.FileDialog.FilesSelected then
+      terminalElement.TrySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DialogPropHandler<IReadOnlyList<string>>.removeProps (terminalElement, props)
@@ -2603,7 +3060,8 @@ type internal FileDialogPropHandler =
     |> Option.iter (fun _ -> view.SearchMatcher <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
+    if props |> Props.exists PKey.FileDialog.FilesSelected then
+      terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
 
 type internal PromptPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
@@ -2690,21 +3148,29 @@ type internal ScrollBarPropHandler =
     |> Option.iter (fun v -> view.VisibleContentSize <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.ScrollBar.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.ScrollBar.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.OrientationChanging, view.OrientationChanging)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged, view.ScrollableContentSizeChanged)
+    if props |> Props.exists PKey.ScrollBar.ScrollableContentSizeChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged, view.ScrollableContentSizeChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.Scrolled, view.Scrolled)
+    if props |> Props.exists PKey.ScrollBar.Scrolled then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.Scrolled, view.Scrolled)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.SliderPositionChanged, view.SliderPositionChanged)
+    if props |> Props.exists PKey.ScrollBar.SliderPositionChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.SliderPositionChanged, view.SliderPositionChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ScrollBar.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ScrollBar.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ScrollBar.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2737,14 +3203,29 @@ type internal ScrollBarPropHandler =
     |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
+    if props |> Props.exists PKey.ScrollBar.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
+
+    if props |> Props.exists PKey.ScrollBar.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
+
+    if props |> Props.exists PKey.ScrollBar.ScrollableContentSizeChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
+
+    if props |> Props.exists PKey.ScrollBar.Scrolled then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
+
+    if props |> Props.exists PKey.ScrollBar.SliderPositionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
+
+    if props |> Props.exists PKey.ScrollBar.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
+
+    if props |> Props.exists PKey.ScrollBar.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ScrollBar.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
 
 type internal ScrollButtonPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2762,9 +3243,11 @@ type internal ScrollButtonPropHandler =
     |> Option.iter (fun v -> view.Orientation <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ScrollButton.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.ScrollButton.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollButton.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollButton.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.ScrollButton.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollButton.OrientationChanging, view.OrientationChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ButtonPropHandler.removeProps (terminalElement, props)
@@ -2781,8 +3264,11 @@ type internal ScrollButtonPropHandler =
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanging)
+    if props |> Props.exists PKey.ScrollButton.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanged)
+
+    if props |> Props.exists PKey.ScrollButton.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanging)
 
 type internal ScrollSliderPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2816,21 +3302,29 @@ type internal ScrollSliderPropHandler =
     |> Option.iter (fun v -> view.VisibleContentSize <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.ScrollSlider.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.ScrollSlider.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.OrientationChanging, view.OrientationChanging)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.PositionChanged, view.PositionChanged)
+    if props |> Props.exists PKey.ScrollSlider.PositionChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.PositionChanged, view.PositionChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.PositionChanging, view.PositionChanging)
+    if props |> Props.exists PKey.ScrollSlider.PositionChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.PositionChanging, view.PositionChanging)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.Scrolled, view.Scrolled)
+    if props |> Props.exists PKey.ScrollSlider.Scrolled then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.Scrolled, view.Scrolled)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.ScrollSlider.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.ScrollSlider.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.ScrollSlider.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2863,14 +3357,29 @@ type internal ScrollSliderPropHandler =
     |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanging)
+    if props |> Props.exists PKey.ScrollSlider.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
+
+    if props |> Props.exists PKey.ScrollSlider.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
+
+    if props |> Props.exists PKey.ScrollSlider.PositionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
+
+    if props |> Props.exists PKey.ScrollSlider.PositionChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
+
+    if props |> Props.exists PKey.ScrollSlider.Scrolled then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
+
+    if props |> Props.exists PKey.ScrollSlider.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanged)
+
+    if props |> Props.exists PKey.ScrollSlider.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.ScrollSlider.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanging)
 
 type internal SelectorBasePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2912,15 +3421,20 @@ type internal SelectorBasePropHandler =
     |> Option.iter (fun v -> view.Values <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.SelectorBase.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.SelectorBase.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.SelectorBase.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.SelectorBase.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.SelectorBase.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.SelectorBase.OrientationChanging, view.OrientationChanging)
 
-    terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.SelectorBase.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.SelectorBase.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.SelectorBase.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -2961,11 +3475,20 @@ type internal SelectorBasePropHandler =
     |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
-    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
+    if props |> Props.exists PKey.SelectorBase.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
+
+    if props |> Props.exists PKey.SelectorBase.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
+
+    if props |> Props.exists PKey.SelectorBase.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
+
+    if props |> Props.exists PKey.SelectorBase.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.SelectorBase.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
 
 type internal FlagSelectorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3027,7 +3550,8 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.FlagSelector'<'TFlagsEnum>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, view.ValueChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FlagSelectorPropHandler.removeProps (terminalElement, props)
@@ -3040,7 +3564,8 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
+    if props |> Props.exists PKey.FlagSelector'<'TFlagsEnum>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
 
 type internal OptionSelectorPropHandler<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
@@ -3059,7 +3584,8 @@ type internal OptionSelectorPropHandler<'TEnum
     |> Option.iter (fun v -> view.Values <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.OptionSelector'<'TEnum>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged, view.ValueChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     OptionSelectorPropHandler.removeProps (terminalElement, props)
@@ -3076,7 +3602,8 @@ type internal OptionSelectorPropHandler<'TEnum
     |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
+    if props |> Props.exists PKey.OptionSelector'<'TEnum>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
 
 type internal ShortcutPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3128,9 +3655,11 @@ type internal ShortcutPropHandler =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.Shortcut.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.Shortcut.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanging, view.OrientationChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3156,7 +3685,7 @@ type internal ShortcutPropHandler =
 
     props
     |> Props.tryFind PKey.Shortcut.CommandView
-    |> Option.iter (fun _ -> view.CommandView <- new View())
+    |> Option.iter (fun _ -> view.CommandView <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.HelpText
@@ -3176,15 +3705,18 @@ type internal ShortcutPropHandler =
 
     props
     |> Props.tryFind PKey.Shortcut.TargetView
-    |> Option.iter (fun _ -> view.TargetView <- new View())
+    |> Option.iter (fun _ -> view.TargetView <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.Shortcut.Text
     |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
+    if props |> Props.exists PKey.Shortcut.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
+
+    if props |> Props.exists PKey.Shortcut.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
 
 type internal MenuItemPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3224,9 +3756,11 @@ type internal MenuBarItemPropHandler =
     |> Option.iter (fun v -> view.PopoverMenuOpen <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.MenuBarItem.MenuOpenChanged, view.MenuOpenChanged)
+    if props |> Props.exists PKey.MenuBarItem.MenuOpenChanged then
+      terminalElement.TrySetEventHandler(PKey.MenuBarItem.MenuOpenChanged, view.MenuOpenChanged)
 
-    terminalElement.TrySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
+    if props |> Props.exists PKey.MenuBarItem.PopoverMenuOpenChanged then
+      terminalElement.TrySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuItemPropHandler.removeProps (terminalElement, props)
@@ -3243,8 +3777,11 @@ type internal MenuBarItemPropHandler =
     |> Option.iter (fun _ -> view.PopoverMenuOpen <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
-    terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
+    if props |> Props.exists PKey.MenuBarItem.MenuOpenChanged then
+      terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
+
+    if props |> Props.exists PKey.MenuBarItem.PopoverMenuOpenChanged then
+      terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
 
 type internal SpinnerViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3384,11 +3921,14 @@ type internal TableViewPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TableView.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.TableView.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.TableView.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TableView.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.TableView.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.TableView.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.TableView.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.TableView.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.TableView.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3449,9 +3989,14 @@ type internal TableViewPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanging)
+    if props |> Props.exists PKey.TableView.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanged)
+
+    if props |> Props.exists PKey.TableView.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.TableView.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanging)
 
 type internal TabsPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3483,11 +4028,14 @@ type internal TabsPropHandler =
     props |> Props.tryFind PKey.Tabs.Value |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Tabs.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.Tabs.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.Tabs.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Tabs.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.Tabs.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.Tabs.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.Tabs.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.Tabs.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.Tabs.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3517,12 +4065,17 @@ type internal TabsPropHandler =
 
     props
     |> Props.tryFind PKey.Tabs.Value
-    |> Option.iter (fun _ -> view.Value <- new View())
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanging)
+    if props |> Props.exists PKey.Tabs.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanged)
+
+    if props |> Props.exists PKey.Tabs.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.Tabs.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanging)
 
 type internal TextFieldPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3572,13 +4125,17 @@ type internal TextFieldPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TextField.TextChanging, view.TextChanging)
+    if props |> Props.exists PKey.TextField.TextChanging then
+      terminalElement.TrySetEventHandler(PKey.TextField.TextChanging, view.TextChanging)
 
-    terminalElement.TrySetEventHandler(PKey.TextField.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.TextField.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.TextField.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TextField.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.TextField.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.TextField.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.TextField.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.TextField.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.TextField.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3627,10 +4184,17 @@ type internal TextFieldPropHandler =
     |> Option.iter (fun _ -> view.Value <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
-    terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
+    if props |> Props.exists PKey.TextField.TextChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
+
+    if props |> Props.exists PKey.TextField.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
+
+    if props |> Props.exists PKey.TextField.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.TextField.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
 
 type internal DropDownListPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3667,7 +4231,8 @@ type internal DropDownListPropHandler<'TEnum
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.DropDownList'<'TEnum>.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged, view.ValueChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DropDownListPropHandler.removeProps (terminalElement, props)
@@ -3680,7 +4245,8 @@ type internal DropDownListPropHandler<'TEnum
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged)
+    if props |> Props.exists PKey.DropDownList'<'TEnum>.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged)
 
 type internal TextValidateFieldPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3702,11 +4268,14 @@ type internal TextValidateFieldPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.TextValidateField.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.TextValidateField.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.TextValidateField.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3727,9 +4296,14 @@ type internal TextValidateFieldPropHandler =
     |> Option.iter (fun _ -> view.Value <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
+    if props |> Props.exists PKey.TextValidateField.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
+
+    if props |> Props.exists PKey.TextValidateField.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.TextValidateField.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
 
 type internal DateEditorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3747,11 +4321,14 @@ type internal DateEditorPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.DateEditor.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.DateEditor.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.DateEditor.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TextValidateFieldPropHandler.removeProps (terminalElement, props)
@@ -3768,9 +4345,14 @@ type internal DateEditorPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
+    if props |> Props.exists PKey.DateEditor.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
+
+    if props |> Props.exists PKey.DateEditor.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.DateEditor.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
 
 type internal TextViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3844,20 +4426,26 @@ type internal TextViewPropHandler =
     |> Option.iter (fun v -> view.WordWrap <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TextView.ContentsChanged, view.ContentsChanged)
+    if props |> Props.exists PKey.TextView.ContentsChanged then
+      terminalElement.TrySetEventHandler(PKey.TextView.ContentsChanged, view.ContentsChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TextView.DrawNormalColor, view.DrawNormalColor)
+    if props |> Props.exists PKey.TextView.DrawNormalColor then
+      terminalElement.TrySetEventHandler(PKey.TextView.DrawNormalColor, view.DrawNormalColor)
 
-    terminalElement.TrySetEventHandler(PKey.TextView.DrawReadOnlyColor, view.DrawReadOnlyColor)
+    if props |> Props.exists PKey.TextView.DrawReadOnlyColor then
+      terminalElement.TrySetEventHandler(PKey.TextView.DrawReadOnlyColor, view.DrawReadOnlyColor)
 
-    terminalElement.TrySetEventHandler(PKey.TextView.DrawSelectionColor, view.DrawSelectionColor)
+    if props |> Props.exists PKey.TextView.DrawSelectionColor then
+      terminalElement.TrySetEventHandler(PKey.TextView.DrawSelectionColor, view.DrawSelectionColor)
 
-    terminalElement.TrySetEventHandler(PKey.TextView.DrawUsedColor, view.DrawUsedColor)
+    if props |> Props.exists PKey.TextView.DrawUsedColor then
+      terminalElement.TrySetEventHandler(PKey.TextView.DrawUsedColor, view.DrawUsedColor)
 
-    terminalElement.TrySetEventHandler(
-      PKey.TextView.UnwrappedCursorPositionChanged,
-      view.UnwrappedCursorPositionChanged
-    )
+    if props |> Props.exists PKey.TextView.UnwrappedCursorPositionChanged then
+      terminalElement.TrySetEventHandler(
+        PKey.TextView.UnwrappedCursorPositionChanged,
+        view.UnwrappedCursorPositionChanged
+      )
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -3930,12 +4518,23 @@ type internal TextViewPropHandler =
     |> Option.iter (fun _ -> view.WordWrap <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
-    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
-    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
-    terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
-    terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPositionChanged)
+    if props |> Props.exists PKey.TextView.ContentsChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
+
+    if props |> Props.exists PKey.TextView.DrawNormalColor then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
+
+    if props |> Props.exists PKey.TextView.DrawReadOnlyColor then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
+
+    if props |> Props.exists PKey.TextView.DrawSelectionColor then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
+
+    if props |> Props.exists PKey.TextView.DrawUsedColor then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
+
+    if props |> Props.exists PKey.TextView.UnwrappedCursorPositionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPositionChanged)
 
 type internal TimeEditorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3953,11 +4552,14 @@ type internal TimeEditorPropHandler =
     |> Option.iter (fun v -> view.Value <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanged, view.ValueChanged)
+    if props |> Props.exists PKey.TimeEditor.ValueChanged then
+      terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanged, view.ValueChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChangedUntyped, view.ValueChangedUntyped)
+    if props |> Props.exists PKey.TimeEditor.ValueChangedUntyped then
+      terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChangedUntyped, view.ValueChangedUntyped)
 
-    terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanging, view.ValueChanging)
+    if props |> Props.exists PKey.TimeEditor.ValueChanging then
+      terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanging, view.ValueChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TextValidateFieldPropHandler.removeProps (terminalElement, props)
@@ -3974,9 +4576,14 @@ type internal TimeEditorPropHandler =
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
-    terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
+    if props |> Props.exists PKey.TimeEditor.ValueChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
+
+    if props |> Props.exists PKey.TimeEditor.ValueChangedUntyped then
+      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
+
+    if props |> Props.exists PKey.TimeEditor.ValueChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
 
 type internal TitleViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4010,9 +4617,11 @@ type internal TitleViewPropHandler =
     |> Option.iter (fun v -> view.Text <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TitleView.OrientationChanged, view.OrientationChanged)
+    if props |> Props.exists PKey.TitleView.OrientationChanged then
+      terminalElement.TrySetEventHandler(PKey.TitleView.OrientationChanged, view.OrientationChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TitleView.OrientationChanging, view.OrientationChanging)
+    if props |> Props.exists PKey.TitleView.OrientationChanging then
+      terminalElement.TrySetEventHandler(PKey.TitleView.OrientationChanging, view.OrientationChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -4045,8 +4654,11 @@ type internal TitleViewPropHandler =
     |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanging)
+    if props |> Props.exists PKey.TitleView.OrientationChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanged)
+
+    if props |> Props.exists PKey.TitleView.OrientationChanging then
+      terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanging)
 
 type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
   =
@@ -4127,11 +4739,14 @@ type internal TreeViewPropHandler<'T when 'T: not struct> =
     |> Option.iter (fun v -> view.TreeBuilder <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.TreeView<'T>.CheckedChanged, view.CheckedChanged)
+    if props |> Props.exists PKey.TreeView<'T>.CheckedChanged then
+      terminalElement.TrySetEventHandler(PKey.TreeView<'T>.CheckedChanged, view.CheckedChanged)
 
-    terminalElement.TrySetEventHandler(PKey.TreeView<'T>.DrawLine, view.DrawLine)
+    if props |> Props.exists PKey.TreeView<'T>.DrawLine then
+      terminalElement.TrySetEventHandler(PKey.TreeView<'T>.DrawLine, view.DrawLine)
 
-    terminalElement.TrySetEventHandler(PKey.TreeView<'T>.SelectionChanged, view.SelectionChanged)
+    if props |> Props.exists PKey.TreeView<'T>.SelectionChanged then
+      terminalElement.TrySetEventHandler(PKey.TreeView<'T>.SelectionChanged, view.SelectionChanged)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.removeProps (terminalElement, props)
@@ -4188,9 +4803,14 @@ type internal TreeViewPropHandler<'T when 'T: not struct> =
     |> Option.iter (fun _ -> view.TreeBuilder <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.CheckedChanged)
-    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
-    terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
+    if props |> Props.exists PKey.TreeView<'T>.CheckedChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.CheckedChanged)
+
+    if props |> Props.exists PKey.TreeView<'T>.DrawLine then
+      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
+
+    if props |> Props.exists PKey.TreeView<'T>.SelectionChanged then
+      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
 
 type internal TreeViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4220,13 +4840,17 @@ type internal WizardPropHandler =
     |> Option.iter (fun v -> view.CurrentStep <- v)
 
     // Events
-    terminalElement.TrySetEventHandler(PKey.Wizard.MovingBack, view.MovingBack)
+    if props |> Props.exists PKey.Wizard.MovingBack then
+      terminalElement.TrySetEventHandler(PKey.Wizard.MovingBack, view.MovingBack)
 
-    terminalElement.TrySetEventHandler(PKey.Wizard.MovingNext, view.MovingNext)
+    if props |> Props.exists PKey.Wizard.MovingNext then
+      terminalElement.TrySetEventHandler(PKey.Wizard.MovingNext, view.MovingNext)
 
-    terminalElement.TrySetEventHandler(PKey.Wizard.StepChanged, view.StepChanged)
+    if props |> Props.exists PKey.Wizard.StepChanged then
+      terminalElement.TrySetEventHandler(PKey.Wizard.StepChanged, view.StepChanged)
 
-    terminalElement.TrySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
+    if props |> Props.exists PKey.Wizard.StepChanging then
+      terminalElement.TrySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
 
   static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DialogPropHandler.removeProps (terminalElement, props)
@@ -4239,10 +4863,17 @@ type internal WizardPropHandler =
     |> Option.iter (fun _ -> view.CurrentStep <- Unchecked.defaultof<_>)
 
     // Events
-    terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
-    terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
-    terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
-    terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
+    if props |> Props.exists PKey.Wizard.MovingBack then
+      terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
+
+    if props |> Props.exists PKey.Wizard.MovingNext then
+      terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
+
+    if props |> Props.exists PKey.Wizard.StepChanged then
+      terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
+
+    if props |> Props.exists PKey.Wizard.StepChanging then
+      terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
 
 type internal WizardStepPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =

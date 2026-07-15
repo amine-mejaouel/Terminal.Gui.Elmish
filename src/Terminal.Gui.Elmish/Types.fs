@@ -2,16 +2,19 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
+open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
 type IView = interface end
 
 type ComponentProps(componentName) =
-  member val Id: string = "" with get, set
-
-  [<Obsolete("This is only needed for the old implementation of differ")>]
   member _.ComponentName: string = componentName
+
+  /// Stable identity used by the virtual terminal tree reconciler among sibling components.
+  member val Key: string option = None with get, set
+
+  member val Id: string = "" with get, set
 
   member val Props: Dictionary<int, obj> = Dictionary<int, obj>() with get, private set
 
@@ -22,6 +25,14 @@ type ComponentProps(componentName) =
     match this.Props.TryGetValue key with
     | true, value -> Some value |> Option.map unbox<'t>
     | _ -> None
+
+  member internal this.UpdateFrom(other: ComponentProps) =
+    this.Key <- other.Key
+    this.Id <- other.Id
+    this.Props.Clear()
+
+    for KeyValue(key, value) in other.Props do
+      this.Props[key] <- value
 
 [<AutoOpen>]
 module internal PropKey =
@@ -36,30 +47,37 @@ module internal PropKey =
   type RawPropKey = string
 
   type internal IRawPropKey =
+    abstract PropertyId: int
     abstract RawKey: RawPropKey
 
-  let private equalsByRawKey (rawKey: RawPropKey) (obj: obj) =
+  let private equalsByIdAndRawKey propertyId (rawKey: RawPropKey) (obj: obj) =
     match obj with
-    | :? IRawPropKey as other -> rawKey = other.RawKey
+    | :? IRawPropKey as other -> propertyId = other.PropertyId && rawKey = other.RawKey
     | _ -> false
 
   [<CustomEquality; NoComparison>]
   type PropKey =
-    { Kind: PropKeyKind
+    { Id: int
+      RelatedId: int
+      Kind: PropKeyKind
       Key: RawPropKey }
 
     member this.viewKey =
       match this.Kind with
       | PropKeyKind.SubViewSpec ->
-        { Kind = PropKeyKind.SubView
+        { Id = this.RelatedId
+          RelatedId = this.Id
+          Kind = PropKeyKind.SubView
           Key = this.Key.Replace("_viewSpec", "_view") }
       | _ -> failwith $"viewKey is only valid for SubView PropKeys, got: {this}"
 
-    override this.Equals(obj) = equalsByRawKey this.Key obj
+    override this.Equals(obj) =
+      equalsByIdAndRawKey this.Id this.Key obj
 
-    override this.GetHashCode() = this.Key.GetHashCode()
+    override this.GetHashCode() = this.Id
 
     interface IRawPropKey with
+      member this.PropertyId = this.Id
       member this.RawKey = this.Key
 
   [<CustomEquality; NoComparison>]
@@ -68,57 +86,74 @@ module internal PropKey =
     | PropKey of PropKey
 
     member this.Untyped = let (PropKey k) = this in k
+    member this.id = this.Untyped.Id
     member this.key = this.Untyped.Key
-    override this.Equals(obj) = equalsByRawKey this.Untyped.Key obj
+
+    override this.Equals(obj) =
+      equalsByIdAndRawKey this.Untyped.Id this.Untyped.Key obj
+
     override this.GetHashCode() = this.Untyped.GetHashCode()
 
     interface IRawPropKey with
+      member this.PropertyId = this.Untyped.Id
       member this.RawKey = this.Untyped.Key
 
   [<RequireQualifiedAccess>]
   module PropKey =
 
-    let viewKeyOfSubElement (key: RawPropKey) : PropKey =
-      { Kind = PropKeyKind.SubView
-        Key = key.Replace("_viewSpec", "_view") }
+    let viewKeyOfSubElement (key: PropKey) : PropKey = key.viewKey
 
     type Create =
-      static member subElement<'a>(key: string) : PropKey<'a> =
+      static member subElement<'a>(id: int, viewId: int, key: string) : PropKey<'a> =
         if key.EndsWith "_viewSpec" then
           PropKey
-            { Kind = PropKeyKind.SubViewSpec
+            { Id = id
+              RelatedId = viewId
+              Kind = PropKeyKind.SubViewSpec
               Key = key }
         else
           failwith $"Invalid key: {key}"
 
-      static member simple<'a>(key: string) : PropKey<'a> =
+      static member simple<'a>(id: int, key: string) : PropKey<'a> =
         if key.EndsWith "_viewSpec" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
         else
-          PropKey { Kind = PropKeyKind.Simple; Key = key }
+          PropKey
+            { Id = id
+              RelatedId = id
+              Kind = PropKeyKind.Simple
+              Key = key }
 
-      static member event<'a>(key: string) : PropKey<'a> =
+      static member event<'a>(id: int, key: string) : PropKey<'a> =
         if not (key.EndsWith "_event") then
           failwith $"Invalid key: {key}"
         else
-          PropKey { Kind = PropKeyKind.Event; Key = key }
+          PropKey
+            { Id = id
+              RelatedId = id
+              Kind = PropKeyKind.Event
+              Key = key }
 
-      static member view<'a>(key: string) : PropKey<'a> =
+      static member view<'a>(id: int, viewSpecId: int, key: string) : PropKey<'a> =
         if not (key.EndsWith "_view") then
           failwith $"Invalid key: {key}"
         else
           PropKey
-            { Kind = PropKeyKind.SubView
+            { Id = id
+              RelatedId = viewSpecId
+              Kind = PropKeyKind.SubView
               Key = key }
 
 type internal Props() =
 
-  member val Id: string option = None with get, set
+  /// Stable identity used by the virtual terminal tree reconciler among sibling views.
+  member val Key: string option = None with get, set
   member val X: TPos = TPos.Default with get, set
   member val Y: TPos = TPos.Default with get, set
 
-  /// Includes all others properties that are not present as explicit members of Props.
-  member val Props = Dictionary<PropKeyKind, Dictionary<RawPropKey, obj>>() with get
+  /// Flat generated-property snapshot keyed by a collision-free generated integer ID.
+  member val Props = Dictionary<int, KeyValuePair<PropKey, obj>>() with get
+  member val SubViewSpecCount = 0 with get, set
   member val Children: List<ViewSpec> = List<_>() with get
 
 // TODO: TPos is no implement all features of Terminal.Gui Pos,
@@ -147,19 +182,11 @@ and internal ITerminalElementBase =
   abstract OnViewSet: IEvent<View>
   abstract GetPath: unit -> string
 
-and internal IComponentView =
-  abstract Props: ComponentProps
-  abstract Update: ComponentProps -> unit
-
-/// <summary>
-/// <p>ComponentViewSpec is the <c>ViewSpec</c> of an Elmish component.</p>
-/// <p><c>InitComponentView()</c> is intended to be called only once, when the component is first added to the tree.</p>
-/// <p>If the component is already existing in the tree, then <c>InitComponentView()</c> is not meant to be called again, and <c>ClearInitComponentView()</c> can be called to clear the reference to the initialization function, allowing it to be garbage collected.</p>
-/// </summary>
 and [<Interface>] internal IComponentViewSpec =
-  abstract Props: Props
-  abstract InitComponentView: unit -> IComponentView
-  abstract ClearInitComponentView: unit -> unit
+  abstract ComponentProps: ComponentProps
+  abstract ComponentType: Type
+  abstract ResolveTerminalElement: unit -> IElmishComponentTE
+  abstract BindTerminalElement: IElmishComponentTE -> unit
 
 and internal ViewSpec =
   | SimpleViewSpec of ISimpleViewSpec
@@ -171,17 +198,19 @@ and [<Interface>] internal ISimpleViewSpec =
   inherit IView
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
+  abstract BindViewTE: IViewTE -> unit
+  abstract SetProps: target: IViewTE * props: Props -> unit
+  abstract RemoveProps: target: IViewTE * props: Props -> unit
   abstract ViewType: ViewType
 
-and [<Obsolete>] internal IViewTE =
+and internal IViewTE =
   inherit ITerminalElementBase
 
   abstract Props: Props with get
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin -> unit
-  abstract Reuse: prev: IViewTE -> unit
+  abstract InitializeTree: origin: Origin * application: IApplication -> unit
 
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
@@ -193,25 +222,27 @@ and [<Obsolete>] internal IViewTE =
 /// <p>This also allows the component to be used in the same way as a regular view in the tree,
 /// without requiring special handling for its child view.</p>
 /// </remarks>
-and [<Obsolete>] internal IElmishComponentTE =
+and internal IElmishComponentTE =
   inherit ITerminalElementBase
   inherit IComponentViewSpec
   abstract Child: IViewTE with get
-  abstract StartElmishLoop: unit -> unit
+  abstract StartElmishLoop: application: IApplication -> unit
+  abstract UpdateProps: ComponentProps -> unit
 
 and internal TerminalElement =
   | ViewTE of IViewTE
   | ElmishComponentTE of IElmishComponentTE
 
-  [<Obsolete>]
   static member from(view: IView) =
     match view with
     | :? ISimpleViewSpec as viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
+    | :? IComponentViewSpec as componentSpec ->
+      componentSpec.ResolveTerminalElement() |> TerminalElement.ElmishComponentTE
     | :? ITerminalElement as terminalElement -> TerminalElement.from terminalElement
     | :? ViewSpec as spec ->
       match spec with
       | SimpleViewSpec viewBase -> viewBase.CreateViewTE() |> TerminalElement.from
-      | ComponentViewSpec cvs -> TerminalElement.ElmishComponentTE(cvs :?> IElmishComponentTE)
+      | ComponentViewSpec componentSpec -> componentSpec.ResolveTerminalElement() |> TerminalElement.ElmishComponentTE
     | _ -> failwith "Invalid view type"
 
   static member from(te: ITerminalElement) =
@@ -268,25 +299,35 @@ module internal ViewSpec =
   let from<'view when 'view :> IView> (view: 'view) =
     match box view with
     | :? ISimpleViewSpec as viewBase -> SimpleViewSpec viewBase
-    | :? IElmishComponentTE as te -> ComponentViewSpec te
+    | :? IComponentViewSpec as componentSpec -> ComponentViewSpec componentSpec
     | _ -> failwith "Invalid view type"
 
+  let key =
+    function
+    | SimpleViewSpec view -> view.Props.Key
+    | ComponentViewSpec componentSpec -> componentSpec.ComponentProps.Key
+
+  let bind viewSpec terminalElement =
+    match viewSpec, terminalElement with
+    | SimpleViewSpec view, TerminalElement.ViewTE viewTe -> view.BindViewTE viewTe
+    | ComponentViewSpec componentSpec, TerminalElement.ElmishComponentTE componentTe ->
+      componentSpec.BindTerminalElement componentTe
+    | _ -> invalidArg (nameof terminalElement) "The view specification and terminal element kinds do not match."
+
 type Props with
-  static member private toEntries(props: Props) =
-    seq {
-      for kindKv in props.Props do
-        for keyKv in kindKv.Value do
-          KeyValuePair({ Kind = kindKv.Key; Key = keyKv.Key }, keyKv.Value)
-    }
+  static member internal toEntries(props: Props) = seq { yield! props.Props.Values }
 
   static member internal add(k: PropKey, v: obj) =
     fun (this: Props) ->
-      match this.Props.TryGetValue k.Kind with
-      | true, byKey -> byKey.Add(k.Key, v)
+      match this.Props.TryGetValue k.Id with
+      | true, existing when not (existing.Key.Equals k) ->
+        invalidOp $"Generated property ID {k.Id} is shared by '{existing.Key.Key}' and '{k.Key}'."
+      | true, _ -> this.Props[k.Id] <- KeyValuePair(k, v)
       | false, _ ->
-        let byKey = Dictionary<RawPropKey, obj>()
-        byKey.Add(k.Key, v)
-        this.Props.Add(k.Kind, byKey)
+        this.Props[k.Id] <- KeyValuePair(k, v)
+
+        if k.Kind = PropKeyKind.SubViewSpec then
+          this.SubViewSpecCount <- this.SubViewSpecCount + 1
 
   static member internal add<'a>(k: PropKey<'a>, v: 'a) =
     fun (this: Props) -> this |> Props.add (k.Untyped, v :> obj)
@@ -299,22 +340,10 @@ type Props with
       Props.add (k.Untyped, value :> obj) this
       value
 
-  static member internal remove (k: PropKey) (this: Props) =
-    match this.Props.TryGetValue k.Kind with
-    | true, byKey ->
-      byKey.Remove k.Key |> ignore
-
-      if byKey.Count = 0 then
-        this.Props.Remove k.Kind |> ignore
-    | false, _ -> ()
-
   static member internal tryFind(key: PropKey) =
     fun (this: Props) ->
-      match this.Props.TryGetValue key.Kind with
-      | true, byKey ->
-        match byKey.TryGetValue key.Key with
-        | true, v -> Some v
-        | _ -> None
+      match this.Props.TryGetValue key.Id with
+      | true, entry when entry.Key.Equals key -> Some entry.Value
       | _ -> None
 
   static member internal tryFind(key: PropKey<'a>) =
@@ -325,34 +354,15 @@ type Props with
 
   static member internal tryFind(kind: PropKeyKind, key: RawPropKey) =
     fun (this: Props) ->
-      let propKey = { Kind = kind; Key = key }
-      Props.tryFind propKey this
+      this.Props.Values
+      |> Seq.tryPick (fun entry ->
+        if entry.Key.Kind = kind && entry.Key.Key = key then
+          Some entry.Value
+        else
+          None)
 
   static member internal tryFind<'a>(kind: PropKeyKind, key: string) =
     fun (this: Props) -> Props.tryFind (kind, key) this |> Option.map (fun v -> v |> unbox<'a>)
-
-  /// <summary>Builds two new Props, the first containing the bindings for which the given predicate returns 'true', and the other the remaining bindings.</summary>
-  /// <returns>A pair of Props in which the first contains the elements for which the predicate returned true and the second containing the elements for which the predicated returned false.</returns>
-  static member internal partition predicate (props: Props) =
-    let first = Props()
-    let second = Props()
-
-    for kv in Props.toEntries props do
-      if predicate kv then
-        first |> Props.add (kv.Key, kv.Value)
-      else
-        second |> Props.add (kv.Key, kv.Value)
-
-    first, second
-
-  static member internal filter predicate (props: Props) =
-    let result = Props()
-
-    for kv in Props.toEntries props do
-      if predicate kv then
-        result |> Props.add (kv.Key, kv.Value)
-
-    result
 
   static member internal find (key: PropKey<'a>) (props: Props) =
     match Props.tryFind key props with
@@ -360,25 +370,37 @@ type Props with
     | None -> failwith $"Failed to find '{key}'"
 
   static member internal rawKeyExists (k: PropKey) (p: Props) =
-    match p.Props.TryGetValue k.Kind with
-    | true, byKey -> byKey.ContainsKey k.Key
+    match p.Props.TryGetValue k.Id with
+    | true, entry -> entry.Key.Equals k
     | _ -> false
 
   static member internal exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  static member internal keys(props: Props) = Props.toEntries props |> Seq.map _.Key
+  /// Returns only properties that need to be removed or applied. View specifications are
+  /// reconciled separately and their live View properties are compared through SubView entries.
+  static member internal diff(prevProps: Props, curProps: Props) =
+    let mutable removed: Props option = None
+    let mutable changed: Props option = None
 
-  static member internal filterSubElementKeys(props: Props) =
-    match props.Props.TryGetValue PropKeyKind.SubViewSpec with
-    | true, byKey ->
-      byKey.Keys
-      |> Seq.map (fun key ->
-        { Kind = PropKeyKind.SubViewSpec
-          Key = key })
-    | _ -> Seq.empty
+    let addEntry current (entry: KeyValuePair<PropKey, obj>) =
+      let target = current |> Option.defaultWith Props
+      target |> Props.add (entry.Key, entry.Value)
+      Some target
 
-  static member internal iter iteration (props: Props) =
-    Props.toEntries props |> Seq.iter iteration
+    for kv in Props.toEntries prevProps do
+      if
+        kv.Key.Kind <> PropKeyKind.SubViewSpec
+        && not (curProps |> Props.rawKeyExists kv.Key)
+      then
+        removed <- addEntry removed kv
+
+    for kv in Props.toEntries curProps do
+      if kv.Key.Kind <> PropKeyKind.SubViewSpec then
+        match prevProps |> Props.tryFind kv.Key with
+        | Some previous when Object.Equals(previous, kv.Value) -> ()
+        | _ -> changed <- addEntry changed kv
+
+    removed, changed
 
 [<AutoOpen>]
 module Element =

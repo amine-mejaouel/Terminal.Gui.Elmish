@@ -12,6 +12,11 @@ let viewSpecificMembers =
   seq {
     yield "  member val internal props = Props()"
 
+    yield ""
+    yield "  /// Stable identity among sibling virtual views."
+    yield "  member this.Key(value: string) ="
+    yield "    this.props.Key <- Some value"
+
     yield
       """
   member this.Children(children: IView list) =

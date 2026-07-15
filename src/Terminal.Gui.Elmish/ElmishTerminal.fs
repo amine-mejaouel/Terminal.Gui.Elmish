@@ -1,6 +1,7 @@
 namespace Terminal.Gui.Elmish
 
 open System
+open System.Threading
 open System.Threading.Tasks
 open Elmish
 open Terminal.Gui.App
@@ -25,10 +26,69 @@ module TerminalMsg =
 [<RequireQualifiedAccess>]
 module ElmishTerminal =
 
-  type internal TerminalElementState() =
+  type internal TerminalElementState(application: IApplication) =
     let mutable _currentTe: IViewTE option = None
     let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
     let rootViewTcs: TaskCompletionSource<View> = TaskCompletionSource<View>()
+    let renderer = VirtualTree.Renderer(application)
+    let renderGate = obj ()
+    let renderCommitGate = obj ()
+    let mutable pendingRender: (ISimpleViewSpec * Origin) option = None
+    let mutable renderScheduled = false
+    let mutable disposed = false
+
+    let setCurrentTe te =
+      _currentTe <- Some te
+
+      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
+        rootViewTcs.SetResult te.View
+
+      nextTeTcs.SetResult(te)
+      nextTeTcs <- TaskCompletionSource<_>()
+
+    let commit (viewSpec, origin) =
+      lock renderCommitGate (fun () ->
+        if not disposed then
+          renderer.Render(viewSpec, origin) |> setCurrentTe)
+
+    let rec drainPendingRenders () =
+      let pending =
+        lock renderGate (fun () ->
+          match disposed, pendingRender with
+          | true, _ ->
+            pendingRender <- None
+            renderScheduled <- false
+            None
+          | false, Some render ->
+            pendingRender <- None
+            Some render
+          | false, None ->
+            renderScheduled <- false
+            None)
+
+      match pending with
+      | Some render ->
+        commit render
+
+        let needsAnotherIteration =
+          lock renderGate (fun () ->
+            if disposed || pendingRender.IsNone then
+              renderScheduled <- false
+              false
+            else
+              true)
+
+        // A render requested during commit is applied on the next main-loop iteration,
+        // preserving the one-commit-per-iteration invariant.
+        if needsAnotherIteration then
+          application.AddTimeout(
+            TimeSpan.Zero,
+            Func<bool>(fun () ->
+              drainPendingRenders ()
+              false)
+          )
+          |> ignore
+      | None -> ()
 
     member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
 
@@ -46,16 +106,45 @@ module ElmishTerminal =
           return! waitForNextTeTask
       }
 
-    member this.SetCurrentTE(te: IViewTE) =
-      _currentTe <- Some te
+    member _.QueueRender(viewSpec: ISimpleViewSpec, origin: Origin) =
+      if disposed then
+        raise (ObjectDisposedException(nameof TerminalElementState))
+      elif not application.Initialized then
+        // The initial tree is required before IApplication.Run can begin. Tests also
+        // intentionally use an uninitialized application, where synchronous commits
+        // provide deterministic behavior.
+        commit (viewSpec, origin)
+      else
+        let shouldSchedule =
+          lock renderGate (fun () ->
+            if disposed then
+              raise (ObjectDisposedException(nameof TerminalElementState))
 
-      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
-        rootViewTcs.SetResult te.View
+            pendingRender <- Some(viewSpec, origin)
 
-      nextTeTcs.SetResult(te)
-      nextTeTcs <- TaskCompletionSource<_>()
+            if renderScheduled then
+              false
+            else
+              renderScheduled <- true
+              true)
 
-    member this.Dispose() = _currentTe |> Option.iter _.Dispose()
+        if shouldSchedule then
+          application.Invoke(Action drainPendingRenders)
+
+    member _.Dispose() =
+      let shouldDispose =
+        lock renderGate (fun () ->
+          let wasActive = not disposed
+
+          if wasActive then
+            disposed <- true
+            pendingRender <- None
+            renderScheduled <- false
+
+          wasActive)
+
+      if shouldDispose then
+        lock renderCommitGate (fun () -> renderer.Dispose())
 
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
@@ -63,7 +152,7 @@ module ElmishTerminal =
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
   type internal TerminalModel<'model>(application: IApplication, kind: ProgramKind, clientModel: 'model) =
-    let terminalElementState = TerminalElementState()
+    let terminalElementState = TerminalElementState(application)
 
     member val ClientModel = clientModel with get, set
     member this.Application = application
@@ -139,40 +228,13 @@ module ElmishTerminal =
     dispatch
     =
     task {
-      let nextTe =
-        task {
-          if not model.RootViewSet then
+      let origin =
+        match model.Kind with
+        | ProgramKind.Root -> Origin.Root
+        | ProgramKind.ElmishComponent te -> Origin.ElmishComponent te
 
-            if Config.curDiffer = Differ.Keyed then
-              let initialTe = (view model dispatch :?> ISimpleViewSpec).CreateViewTE()
-
-              let origin =
-                match model.Kind with
-                | ProgramKind.Root -> Origin.Root
-                | ProgramKind.ElmishComponent te -> Origin.ElmishComponent te
-
-              initialTe.InitializeTree origin
-
-              return initialTe
-
-            else
-              let initialView = (view model dispatch :?> ISimpleViewSpec)
-
-              return Unchecked.defaultof<_>
-
-          else
-            let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
-
-            let nextTe = (view model dispatch :?> ISimpleViewSpec).CreateViewTE()
-
-            KeyedDiffer.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
-
-            currentTe.Dispose()
-            return nextTe
-        }
-
-      let! nextTe = nextTe
-      model.TerminalElementState.SetCurrentTE nextTe
+      let nextSpec = view model dispatch :?> ISimpleViewSpec
+      model.TerminalElementState.QueueRender(nextSpec, origin)
 
       ()
     }
@@ -208,18 +270,29 @@ module ElmishTerminal =
 
     let initialTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
 
+    let componentTerminatedTcs =
+      TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
+
+    let mutable resolvedTerminalElement: IElmishComponentTE option = None
+    let mutable terminateComponent: (unit -> unit) option = None
+    let mutable started = 0
+    let mutable disposing = 0
+
     let viewSetEvent = Event<View>()
 
     static member mkSimpleComponent<'arg, 'model, 'msg, 'view when 'view :> IView>
       (terminalElement: IElmishComponentTE)
+      (application: IApplication)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
       (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> 'view)
       =
-      Program.mkSimple
-        (OuterModel.wrapSimpleInit (ProgramKind.ElmishComponent terminalElement) init)
-        (OuterModel.wrapSimpleUpdate update)
-        (OuterModel.wrapView view)
+      let wrapComponentInit arg =
+        let innerModel = init arg
+
+        new TerminalModel<_>(application, ProgramKind.ElmishComponent terminalElement, innerModel)
+
+      Program.mkSimple wrapComponentInit (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
 
@@ -247,14 +320,39 @@ module ElmishTerminal =
       [ { SubId = [ "runComponent" ]
           SubscriptionFunc = runComponent } ]
 
-    member private this.RunComponent(ElmishTerminalProgram program) =
+    member private this.RunComponent(componentProgram: ElmishTerminalProgram<unit, 'model, 'msg, IView>) =
+      let (ElmishTerminalProgram program) = componentProgram
+
+      let captureTerminationDispatch (_: TerminalModel<_>) =
+        let start dispatch =
+          terminateComponent <- Some(fun () -> dispatch Terminate)
+
+          { new IDisposable with
+              member _.Dispose() = terminateComponent <- None }
+
+        start
 
       let subscribe model : Sub<TerminalMsg<'msg>> =
+        [ yield [ "componentTermination" ], captureTerminationDispatch model
 
-        this.Subscriptions
-        |> List.map (fun sub -> sub.SubId, sub.SubscriptionFunc model)
+          yield!
+            this.Subscriptions
+            |> List.map (fun sub -> sub.SubId, sub.SubscriptionFunc model) ]
 
-      program |> Program.withSubscription subscribe |> Program.run
+      let onTermination model =
+        try
+          terminate model
+        finally
+          componentTerminatedTcs.TrySetResult() |> ignore
+
+      program
+      |> Program.withSubscription subscribe
+      |> Program.withTermination
+        (function
+        | Terminate -> true
+        | Msg _ -> false)
+        onTermination
+      |> Program.run
 
       initialTeTcs.Task |> Task.wait |> ignore
 
@@ -284,32 +382,35 @@ module ElmishTerminal =
     member this.OnViewSet = viewSetEvent.Publish
 
     member this.Dispose() =
-      task {
-        let! te = initialTeTcs.Task
-        te.Dispose()
-      }
-      |> Task.wait
+      if Interlocked.Exchange(&disposing, 1) = 0 then
+        match terminateComponent with
+        | Some terminate ->
+          terminate ()
+          componentTerminatedTcs.Task.GetAwaiter().GetResult()
+        | None when initialTeTcs.Task.IsCompletedSuccessfully -> initialTeTcs.Task.Result.Dispose()
+        | None -> ()
 
     interface IElmishComponentTE with
-      member this.StartElmishLoop() =
-        ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this init update view
-        |> this.RunComponent
+      member this.StartElmishLoop(application) =
+        if Interlocked.Exchange(&started, 1) = 0 then
+          ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this application init update view
+          |> this.RunComponent
 
       member this.Child = this.Child
+
+      member _.UpdateProps(newProps) = props.UpdateFrom newProps
 
     interface IView
 
     interface IComponentViewSpec with
-      member this.Props = failwith "Not implemented yet"
+      member _.ComponentProps = props
 
-      member this.InitComponentView() =
-        (this :> IElmishComponentTE).StartElmishLoop()
+      member this.ComponentType = this.GetType()
 
-        { new IComponentView with
-            member _.Props = props
-            member _.Update(props) = failwith "Not implemented yet" }
+      member this.ResolveTerminalElement() =
+        resolvedTerminalElement |> Option.defaultValue (this :> IElmishComponentTE)
 
-      member this.ClearInitComponentView() = failwith "Not implemented yet"
+      member _.BindTerminalElement(value) = resolvedTerminalElement <- Some value
 
     interface ITerminalElementBase with
       member this.View = this.View

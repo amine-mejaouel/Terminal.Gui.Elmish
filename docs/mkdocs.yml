@@ -3,3 +3,5 @@ theme: material
 nav:
   - Home: index.md
   - Sample: sample.md
+  - Reconciliation and keys: reconciliation.md
+  - Reconciler implementation plan: virtual-terminal-tree-reconciler-plan.md

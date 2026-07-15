@@ -26,6 +26,7 @@
     <Compile Include="PropKeyTests.fs" />
     <Compile Include="TerminalElementIdTests.fs" />
     <Compile Include="ElmishLoopTests.fs" />
+    <Compile Include="VirtualTreeTests.fs" />
     <Compile Include="PositionServiceTests.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -46,23 +46,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="paket.references" />
-    <Compile Include="Config.fs" />
     <Compile Include="Task.fs" />
     <Compile Include="ViewType.gen.fs" />
     <Compile Include="Types.fs" />
-    <Compile Include="KeyedDiffer.fs" />
-    <Compile Include="SimpleDiffer.fs" />
-    <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="Services\PositionService.fs" />
     <Compile Include="TerminalElement.Base.fs" />
+    <Compile Include="PropsHandler.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="SimpleViewSpec.gen.fs" />
+    <Compile Include="VirtualTree.fs" />
+    <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />
-    <Compile Include="PropsHandler.gen.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\docs\img\logo.png">

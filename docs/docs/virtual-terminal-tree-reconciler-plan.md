@@ -1,6 +1,6 @@
 # Virtual Terminal Tree Reconciler Implementation Plan
 
-Status: proposed  
+Status: implemented; measurement follow-up remains  
 Target baseline: Terminal.Gui 2.4.17, .NET 10, Elmish 5.0.2
 
 ## Objective
@@ -16,9 +16,26 @@ Replace the current terminal-element transfer/diff mechanism with a retained vir
 
 The reconciler will determine **what changed**. Generated property patchers will determine **how each change is applied** to a strongly typed Terminal.Gui view.
 
+## Implementation status
+
+Implemented in July 2026:
+
+- retained mounted nodes for views, view-valued property slots, and Elmish components;
+- exact `(type, key)` identity plus positional unkeyed reconciliation;
+- global duplicate/mixed-key validation before committing hierarchy changes;
+- O(n) keyed matching, LIS move minimization, and Terminal.Gui `SubViews` reordering;
+- generated integer property IDs with flat property snapshots and lazy delta allocation;
+- `PropsHandler.gen.fs` as the sole generated property set/unset layer;
+- stable event trampolines whose callbacks can change without resubscribing;
+- application-thread render scheduling with latest-tree coalescing;
+- component-loop/state retention, slot ownership, position cleanup, and deterministic disposal;
+- focused, randomized, lifecycle, and compatibility coverage in `VirtualTreeTests.fs`.
+
+The remaining measurement work is to add a dedicated BenchmarkDotNet project and tune the adjacent-move crossover from recorded results. Collection-valued view properties also remain opt-in: each requires a Terminal.Gui-specific ownership adapter rather than being treated as an ordinary `SubViews` list.
+
 ## Existing implementation and motivation
 
-The active `KeyedDiffer` currently:
+The replaced `KeyedDiffer` implementation:
 
 - identifies children by their view name/type rather than an explicit key;
 - sorts children before matching them, losing sibling-order semantics;
@@ -27,7 +44,7 @@ The active `KeyedDiffer` currently:
 - transfers a `View` from a newly created terminal element and disposes the previous wrapper;
 - does not fully reconcile Elmish components or view-valued sub-elements.
 
-`SimpleDiffer` is currently a stub and is the intended entry point for the replacement.
+`SimpleDiffer` was a stub. Both legacy differ files and their configuration switch were removed after the retained renderer became the only path.
 
 Property application is duplicated between `PropsHandler.gen.fs` and `TerminalElement.Elements.gen.fs`. The new architecture will keep a redesigned generated property-patching layer and remove property ownership from terminal-element wrapper classes.
 
@@ -420,9 +437,9 @@ Acceptance criteria:
 
 ### Phase 1: Retained tree and basic unkeyed reconciliation
 
-- [ ] Introduce renderer keys and exact node kinds.
-- [ ] Implement mount/unmount ownership.
-- [ ] Implement same-type positional reuse and type replacement.
+- [x] Introduce renderer keys and exact node kinds.
+- [x] Implement mount/unmount ownership.
+- [x] Implement same-type positional reuse and type replacement.
 - [ ] Integrate behind a feature flag for root programs without components or view slots.
 
 Acceptance criteria:
@@ -433,10 +450,10 @@ Acceptance criteria:
 
 ### Phase 2: Generated property patchers
 
-- [ ] Add integer property IDs and compact snapshots.
-- [ ] Redesign `PropsHandler.gen.fs` around set/unset/equality/update policy.
-- [ ] Remove new-path dependence on `ViewBackedTerminalElement.SetProps` and `RemoveProps`.
-- [ ] Implement stable event trampolines.
+- [x] Add integer property IDs and compact snapshots.
+- [x] Redesign `PropsHandler.gen.fs` around set/unset/equality/update policy.
+- [x] Remove new-path dependence on `ViewBackedTerminalElement.SetProps` and `RemoveProps`.
+- [x] Implement stable event trampolines.
 
 Acceptance criteria:
 
@@ -447,11 +464,11 @@ Acceptance criteria:
 
 ### Phase 3: Keyed child reconciliation
 
-- [ ] Implement key validation and keyed lookup.
+- [x] Implement key validation and keyed lookup.
 - [ ] Implement prefix/suffix fast paths.
-- [ ] Implement LIS calculation and move planning.
+- [x] Implement LIS calculation and move planning.
 - [ ] Implement the benchmark-driven Terminal.Gui move strategy.
-- [ ] Preserve origins/paths through mounted parent and index metadata.
+- [x] Preserve origins/paths through mounted parent and index metadata.
 
 Acceptance criteria:
 
@@ -462,11 +479,11 @@ Acceptance criteria:
 
 ### Phase 4: View slots and components
 
-- [ ] Reconcile single view-valued properties by property ID.
+- [x] Reconcile single view-valued properties by property ID.
 - [ ] Add adapters for supported collection-valued view properties.
-- [ ] Implement component update without restarting its loop.
-- [ ] Implement component replacement and termination.
-- [ ] Migrate position references to mounted live views.
+- [x] Implement component update without restarting its loop.
+- [x] Implement component replacement and termination.
+- [x] Migrate position references to mounted live views.
 
 Acceptance criteria:
 
@@ -476,10 +493,10 @@ Acceptance criteria:
 
 ### Phase 5: Scheduling and invalidation discipline
 
-- [ ] Coalesce pending view trees.
-- [ ] Commit only on the application thread.
-- [ ] Remove direct renderer calls to layout/draw.
-- [ ] Verify add/remove/move ordering with focusable and overlapping views.
+- [x] Coalesce pending view trees.
+- [x] Commit only on the application thread.
+- [x] Remove direct renderer calls to layout/draw.
+- [x] Verify add/remove/move ordering with focusable and overlapping views.
 
 Acceptance criteria:
 
@@ -491,8 +508,9 @@ Acceptance criteria:
 
 - [ ] Profile before introducing pooling or dense property storage.
 - [ ] Reuse keyed indexes and scratch buffers where measurements justify it.
-- [ ] Remove `KeyedDiffer`, old terminal-element reuse, duplicate generated prop code, and the feature flag.
-- [ ] Update documentation and examples with explicit key guidance.
+- [x] Remove `KeyedDiffer`, old terminal-element reuse, duplicate generated prop code, and the feature flag.
+- [x] Update documentation with explicit key guidance.
+- [ ] Add a keyed dynamic-list example when the examples are next modernized.
 - [ ] Consider proposing the batched reorder API upstream.
 
 Acceptance criteria:

@@ -3,14 +3,8 @@ module Terminal.Gui.Elmish.Generator.TerminalElement_viewSpecs
 open System
 open Terminal.Gui.Elmish.Generator
 
-let terminalElementAndViewDeclaration (viewType: Type) =
-  seq {
-    if viewType <> typeof<Terminal.Gui.ViewBase.View> then
-      yield
-        $"    let view = terminalElement.View :?> {getTypeNameWithoutArity viewType}{genericTypeParamsBlock viewType}"
-    else
-      yield $"    let view = terminalElement.View"
-  }
+let propHandlerTypeName (viewType: Type) =
+  $"{getTypeNameWithoutArity viewType}PropHandler{genericTypeParamsBlock viewType}"
 
 let subElementsPropKeys (view: ViewMetadata) =
   seq {
@@ -18,80 +12,23 @@ let subElementsPropKeys (view: ViewMetadata) =
     yield $"    ["
 
     for prop in view.View_Typed_Properties do
-      yield $"      {PKey.getAccessor view.Type}.{prop.PKey}_viewSpec.key"
+      yield $"      {PKey.getAccessor view.Type}.{prop.PKey}_viewSpec.Untyped"
 
     yield $"    ]"
     yield $"    |> List.append base.SubElements_PropKeys"
   }
 
 let setPropsCode (view: ViewMetadata) =
-  if view.HasNoEventsOrProperties then
-    Seq.empty
-  else
-    seq {
-      yield $"  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
-      yield $"    base.SetProps(terminalElement, props)"
-      yield $""
-      yield! terminalElementAndViewDeclaration view.Type
-      yield $""
-
-      if view.Properties.Length > 0 then
-        yield "    // Properties"
-
-      for prop in view.Properties |> Seq.filter (fun p -> p.PKey <> "X" && p.PKey <> "Y") do
-        yield $"    props"
-        yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
-        yield $"    |> Option.iter (fun v -> view.{prop.PKey} <- v)"
-        yield ""
-
-      if view.Events.Length > 0 then
-        yield "    // Events"
-
-      for event in view.Events do
-        yield $"    terminalElement.TrySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
-
-        yield ""
-
-    }
+  seq {
+    yield $"  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
+    yield $"    {propHandlerTypeName view.Type}.setProps(terminalElement, props)"
+  }
 
 let removePropsCode (view: ViewMetadata) =
-  if view.HasNoEventsOrProperties then
-    Seq.empty
-  else
-    seq {
-      yield $"  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
-      yield $"    base.RemoveProps(terminalElement, props)"
-      yield $""
-      yield! terminalElementAndViewDeclaration view.Type
-      yield $""
-
-      if view.Properties.Length > 0 then
-        yield "    // Properties"
-
-      for prop in view.Properties |> Seq.filter (fun p -> p.PKey <> "X" && p.PKey <> "Y") do
-
-        let defaultValue =
-          if prop.PropertyInfo.PropertyType = typeof<string> then
-            "\"\""
-          else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.Input.Key> then
-            "Terminal.Gui.Input.Key.Empty"
-          else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.ViewBase.View> then
-            "new View()"
-          else
-            "Unchecked.defaultof<_>"
-
-        yield $"    props"
-        yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
-        yield $"    |> Option.iter (fun _ ->"
-        yield $"        view.{prop.PKey} <- {defaultValue})"
-        yield ""
-
-      if view.Events.Length > 0 then
-        yield "    // Events"
-
-      for event in view.Events do
-        yield $"    terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey})"
-    }
+  seq {
+    yield $"  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
+    yield $"    {propHandlerTypeName view.Type}.removeProps(terminalElement, props)"
+  }
 
 let setAsChildOfParentView (viewType: Type) =
   // Menu: set via PopoverMenu.Root property, not a regular child view

@@ -10,6 +10,9 @@ open Terminal.Gui.Views
 type ViewProps() =
   member val internal props = Props()
 
+  /// Stable identity among sibling virtual views.
+  member this.Key(value: string) = this.props.Key <- Some value
+
   member this.Children(children: IView list) =
     children |> List.map (fun x -> ViewSpec.from x) |> this.props.Children.AddRange
 

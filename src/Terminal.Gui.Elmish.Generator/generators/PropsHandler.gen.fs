@@ -53,7 +53,8 @@ let setPropsCode (view: ViewMetadata) =
       yield "    // Events"
 
     for event in view.Events do
-      yield $"    terminalElement.TrySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
+      yield $"    if props |> Props.exists {PKey.getAccessor view.Type}.{event.PKey} then"
+      yield $"      terminalElement.TrySetEventHandler({PKey.getAccessor view.Type}.{event.PKey}, view.{event.PKey})"
 
       yield ""
   }
@@ -81,8 +82,6 @@ let removePropsCode (view: ViewMetadata) =
           "\"\""
         else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.Input.Key> then
           "Terminal.Gui.Input.Key.Empty"
-        else if prop.PropertyInfo.PropertyType = typeof<Terminal.Gui.ViewBase.View> then
-          "new View()"
         else
           "Unchecked.defaultof<_>"
 
@@ -96,7 +95,8 @@ let removePropsCode (view: ViewMetadata) =
       yield "    // Events"
 
     for event in view.Events do
-      yield $"    terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey})"
+      yield $"    if props |> Props.exists {PKey.getAccessor view.Type}.{event.PKey} then"
+      yield $"      terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey})"
   }
 
 let setAsChildOfParentView (viewType: Type) =

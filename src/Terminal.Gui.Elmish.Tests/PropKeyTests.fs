@@ -7,11 +7,8 @@ open Terminal.Gui.Elmish
 let ``PropKey and PropKey<_> are equal when raw key is same`` () =
   let rawKey: RawPropKey = "MyView.Parent_viewSpec"
 
-  let untyped: PropKey =
-    { Kind = PropKeyKind.SubViewSpec
-      Key = rawKey }
-
-  let typed = PropKey.Create.subElement<IViewTE> rawKey
+  let typed = PropKey.Create.subElement<IViewTE> (10000, 9999, rawKey)
+  let untyped: PropKey = typed.Untyped
 
   Assert.That(untyped.Equals typed, Is.True)
   Assert.That(typed.Equals untyped, Is.True)
@@ -20,10 +17,7 @@ let ``PropKey and PropKey<_> are equal when raw key is same`` () =
 let ``PropKey and PropKey<_> have same hashcode when raw key is same`` () =
   let rawKey: RawPropKey = "MyView.Parent_viewSpec"
 
-  let untyped: PropKey =
-    { Kind = PropKeyKind.SubViewSpec
-      Key = rawKey }
-
-  let typed = PropKey.Create.subElement<IViewTE> rawKey
+  let typed = PropKey.Create.subElement<IViewTE> (10000, 9999, rawKey)
+  let untyped: PropKey = typed.Untyped
 
   Assert.That(untyped.GetHashCode(), Is.EqualTo(typed.GetHashCode()))

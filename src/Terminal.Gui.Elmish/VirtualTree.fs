@@ -26,7 +26,7 @@ type internal MountedNode(spec: ViewSpec, element: TerminalElement) =
   /// <c>p.Children</c>. Each dictionary entry maps the generated property ID to the node mounted for that property.
   /// Slots are reconciled independently and are not part of the parent's ordered <c>SubViews</c> collection.
   /// </summary>
-  member val Slots = Dictionary<int, MountedNode>()
+  member val Slots = Dictionary<PropertyId, MountedNode>()
   member val IsDisposed = false with get, set
 
   member this.View = this.Element.View
@@ -482,7 +482,7 @@ module internal VirtualTree =
       // A property slot is an independent identity domain, but its subtree still needs
       // the same sibling-key validation before any hierarchy mutation is committed.
       for entry in Props.toEntries simple.Props do
-        if entry.Key.Kind = PropKeyKind.SubViewSpec then
+        if entry.Key.IsSubViewSpec then
           entry.Value |> specFromView |> validateSpecTree
 
   type Renderer private (application: IApplication, ownsApplication: bool) =

@@ -37,47 +37,86 @@ type ComponentProps(componentName) =
 [<AutoOpen>]
 module internal PropKey =
 
-  [<RequireQualifiedAccess>]
-  type PropKeyKind =
-    | Simple
-    | Event
-    | SubView
-    | SubViewSpec
-
   type RawPropKey = string
 
+  /// Strongly typed identifier used to index generated properties.
+  [<Struct>]
+  type PropertyId =
+    private
+    | PropertyId of int
+
+    static member internal Create(value: int) = PropertyId value
+
+    member this.Value =
+      let (PropertyId value) = this
+      value
+
+    override this.ToString() = string this.Value
+
+  /// Identifiers shared by the native and declarative representations of a view-valued property.
+  type SubViewPropertyIds =
+    {
+      /// Identifies the concrete <c>Terminal.Gui.View</c> property value.
+      View: PropertyId
+      /// Identifies the declarative <c>IView</c> specification for the same property.
+      ViewSpec: PropertyId
+    }
+
+  /// Describes how a generated property participates in property application and virtual-tree reconciliation.
+  [<RequireQualifiedAccess>]
+  type PropKeyIdentity =
+    /// Identifies an ordinary property value that is applied directly to a Terminal.Gui object.
+    | Simple of id: PropertyId
+    /// Identifies an event-handler property managed by the event registrar.
+    | Event of id: PropertyId
+    /// Identifies the concrete <c>Terminal.Gui.View</c> assigned to a view-valued property. This is a native property
+    /// value, not an ordered child in the parent's <c>SubViews</c> collection.
+    | SubView of ids: SubViewPropertyIds
+    /// Identifies the declarative <c>IView</c> supplied for a view-valued property. The virtual-tree reconciler mounts
+    /// this specification as a slot and stores the resulting native view under the paired <c>SubView</c> identity.
+    | SubViewSpec of ids: SubViewPropertyIds
+
   type internal IRawPropKey =
-    abstract PropertyId: int
+    abstract Identity: PropKeyIdentity
     abstract RawKey: RawPropKey
 
-  let private equalsByIdAndRawKey propertyId (rawKey: RawPropKey) (obj: obj) =
+  let private equalsByIdentityAndRawKey identity (rawKey: RawPropKey) (obj: obj) =
     match obj with
-    | :? IRawPropKey as other -> propertyId = other.PropertyId && rawKey = other.RawKey
+    | :? IRawPropKey as other -> identity = other.Identity && rawKey = other.RawKey
     | _ -> false
 
   [<CustomEquality; NoComparison>]
   type PropKey =
-    { Id: int
-      RelatedId: int
-      Kind: PropKeyKind
+    { Identity: PropKeyIdentity
       Key: RawPropKey }
 
+    member this.Id =
+      match this.Identity with
+      | PropKeyIdentity.Simple id
+      | PropKeyIdentity.Event id -> id
+      | PropKeyIdentity.SubView ids -> ids.View
+      | PropKeyIdentity.SubViewSpec ids -> ids.ViewSpec
+
+    member this.IsSubViewSpec =
+      match this.Identity with
+      | PropKeyIdentity.SubViewSpec _ -> true
+      | _ -> false
+
     member this.viewKey =
-      match this.Kind with
-      | PropKeyKind.SubViewSpec ->
-        { Id = this.RelatedId
-          RelatedId = this.Id
-          Kind = PropKeyKind.SubView
+      match this.Identity with
+      | PropKeyIdentity.SubViewSpec ids ->
+        { Identity = PropKeyIdentity.SubView ids
           Key = this.Key.Replace("_viewSpec", "_view") }
       | _ -> failwith $"viewKey is only valid for SubView PropKeys, got: {this}"
 
     override this.Equals(obj) =
-      equalsByIdAndRawKey this.Id this.Key obj
+      equalsByIdentityAndRawKey this.Identity this.Key obj
 
-    override this.GetHashCode() = this.Id
+    override this.GetHashCode() =
+      HashCode.Combine(this.Identity, this.Key)
 
     interface IRawPropKey with
-      member this.PropertyId = this.Id
+      member this.Identity = this.Identity
       member this.RawKey = this.Key
 
   [<CustomEquality; NoComparison>]
@@ -90,12 +129,12 @@ module internal PropKey =
     member this.key = this.Untyped.Key
 
     override this.Equals(obj) =
-      equalsByIdAndRawKey this.Untyped.Id this.Untyped.Key obj
+      equalsByIdentityAndRawKey this.Untyped.Identity this.Untyped.Key obj
 
     override this.GetHashCode() = this.Untyped.GetHashCode()
 
     interface IRawPropKey with
-      member this.PropertyId = this.Untyped.Id
+      member this.Identity = this.Untyped.Identity
       member this.RawKey = this.Untyped.Key
 
   [<RequireQualifiedAccess>]
@@ -104,44 +143,36 @@ module internal PropKey =
     let viewKeyOfSubElement (key: PropKey) : PropKey = key.viewKey
 
     type Create =
-      static member subElement<'a>(id: int, viewId: int, key: string) : PropKey<'a> =
+      static member subElement<'a>(viewId: PropertyId, viewSpecId: PropertyId, key: string) : PropKey<'a> =
         if key.EndsWith "_viewSpec" then
           PropKey
-            { Id = id
-              RelatedId = viewId
-              Kind = PropKeyKind.SubViewSpec
+            { Identity = PropKeyIdentity.SubViewSpec { View = viewId; ViewSpec = viewSpecId }
               Key = key }
         else
           failwith $"Invalid key: {key}"
 
-      static member simple<'a>(id: int, key: string) : PropKey<'a> =
+      static member simple<'a>(id: PropertyId, key: string) : PropKey<'a> =
         if key.EndsWith "_viewSpec" || key.EndsWith "_view" then
           failwith $"Invalid key: {key}"
         else
           PropKey
-            { Id = id
-              RelatedId = id
-              Kind = PropKeyKind.Simple
+            { Identity = PropKeyIdentity.Simple id
               Key = key }
 
-      static member event<'a>(id: int, key: string) : PropKey<'a> =
+      static member event<'a>(id: PropertyId, key: string) : PropKey<'a> =
         if not (key.EndsWith "_event") then
           failwith $"Invalid key: {key}"
         else
           PropKey
-            { Id = id
-              RelatedId = id
-              Kind = PropKeyKind.Event
+            { Identity = PropKeyIdentity.Event id
               Key = key }
 
-      static member view<'a>(id: int, viewSpecId: int, key: string) : PropKey<'a> =
+      static member view<'a>(viewId: PropertyId, viewSpecId: PropertyId, key: string) : PropKey<'a> =
         if not (key.EndsWith "_view") then
           failwith $"Invalid key: {key}"
         else
           PropKey
-            { Id = id
-              RelatedId = viewSpecId
-              Kind = PropKeyKind.SubView
+            { Identity = PropKeyIdentity.SubView { View = viewId; ViewSpec = viewSpecId }
               Key = key }
 
 type internal Props() =
@@ -151,8 +182,8 @@ type internal Props() =
   member val X: TPos = TPos.Default with get, set
   member val Y: TPos = TPos.Default with get, set
 
-  /// Flat generated-property snapshot keyed by a collision-free generated integer ID.
-  member val Props = Dictionary<int, KeyValuePair<PropKey, obj>>() with get
+  /// Flat generated-property snapshot keyed by a collision-free generated property ID.
+  member val Props = Dictionary<PropertyId, KeyValuePair<PropKey, obj>>() with get
   member val SubViewSpecCount = 0 with get, set
   member val Children: List<ViewSpec> = List<_>() with get
 
@@ -281,7 +312,7 @@ and internal TerminalElement =
 
 // Origin describes how a TerminalElement is related to the root of the tree.
 
-and [<Obsolete>] internal Origin =
+and internal Origin =
   /// Root element of the Elmish program.
   | Root
   /// Root element of an Elmish component.
@@ -326,7 +357,7 @@ type Props with
       | false, _ ->
         this.Props[k.Id] <- KeyValuePair(k, v)
 
-        if k.Kind = PropKeyKind.SubViewSpec then
+        if k.IsSubViewSpec then
           this.SubViewSpecCount <- this.SubViewSpecCount + 1
 
   static member internal add<'a>(k: PropKey<'a>, v: 'a) =
@@ -352,18 +383,6 @@ type Props with
       | Some v -> v |> unbox<'a> |> Some
       | None -> None
 
-  static member internal tryFind(kind: PropKeyKind, key: RawPropKey) =
-    fun (this: Props) ->
-      this.Props.Values
-      |> Seq.tryPick (fun entry ->
-        if entry.Key.Kind = kind && entry.Key.Key = key then
-          Some entry.Value
-        else
-          None)
-
-  static member internal tryFind<'a>(kind: PropKeyKind, key: string) =
-    fun (this: Props) -> Props.tryFind (kind, key) this |> Option.map (fun v -> v |> unbox<'a>)
-
   static member internal find (key: PropKey<'a>) (props: Props) =
     match Props.tryFind key props with
     | Some v -> v
@@ -388,14 +407,11 @@ type Props with
       Some target
 
     for kv in Props.toEntries prevProps do
-      if
-        kv.Key.Kind <> PropKeyKind.SubViewSpec
-        && not (curProps |> Props.rawKeyExists kv.Key)
-      then
+      if not kv.Key.IsSubViewSpec && not (curProps |> Props.rawKeyExists kv.Key) then
         removed <- addEntry removed kv
 
     for kv in Props.toEntries curProps do
-      if kv.Key.Kind <> PropKeyKind.SubViewSpec then
+      if not kv.Key.IsSubViewSpec then
         match prevProps |> Props.tryFind kv.Key with
         | Some previous when Object.Equals(previous, kv.Value) -> ()
         | _ -> changed <- addEntry changed kv

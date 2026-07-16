@@ -10,6 +10,8 @@ let private allocatePropertyId () =
   nextPropertyId <- nextPropertyId + 1
   value
 
+let private propertyIdExpression value = $"PropertyId.Create({value})"
+
 let genPKeyClassDefinition (viewType: Type) =
   seq {
     let className = getTypeNameWithoutArity viewType
@@ -35,17 +37,20 @@ let genPKeyClassDefinition (viewType: Type) =
         if prop.IsViewProperty then
           let viewId = allocatePropertyId ()
           let viewSpecId = allocatePropertyId ()
+          let viewPropertyId = propertyIdExpression viewId
+          let viewSpecPropertyId = propertyIdExpression viewSpecId
 
           yield
-            $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view({viewId}, {viewSpecId}, \"{keyName}_view\")"
+            $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.view({viewPropertyId}, {viewSpecPropertyId}, \"{keyName}_view\")"
 
           let interfaceName =
             Registry.ViewInterfaces.CreateInterface(prop.PropertyInfo.PropertyType)
 
           yield
-            $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement({viewSpecId}, {viewId}, \"{keyName}_viewSpec\")"
+            $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement({viewPropertyId}, {viewSpecPropertyId}, \"{keyName}_viewSpec\")"
         else
           let propertyId = allocatePropertyId ()
+          let propertyId = propertyIdExpression propertyId
 
           yield
             $"    member val {prop.PKey}: PropKey<{prop.FSharpTypeName}> = PropKey.Create.simple({propertyId}, \"{keyName}\")"
@@ -60,6 +65,7 @@ let genPKeyClassDefinition (viewType: Type) =
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
         let propertyId = allocatePropertyId ()
+        let propertyId = propertyIdExpression propertyId
 
         yield $"    member val {event.PKey}: PropKey<{handlerType}> = PropKey.Create.event({propertyId}, \"{keyName}\")"
 
@@ -101,6 +107,7 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
 
         for prop, interfaceType in allProps do
           let propertyId = allocatePropertyId ()
+          let propertyId = propertyIdExpression propertyId
 
           yield
             $"    let {prop.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{getFSharpTypeName prop.PropertyInfo.PropertyType}> = PropKey.Create.simple({propertyId}, \"{moduleName}.{prop.PKey}\")"
@@ -113,6 +120,7 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
         for event, interfaceType in allEvents do
           let handlerType = eventHandlerType event.EventInfo
           let propertyId = allocatePropertyId ()
+          let propertyId = propertyIdExpression propertyId
 
           yield
             $"    let {event.PKey}{genericTypeParamsBlock interfaceType}: PropKey<{handlerType}> = PropKey.Create.event({propertyId}, \"{moduleName}.{event.PKey}_event\")"

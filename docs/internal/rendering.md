@@ -148,7 +148,7 @@ Node identity has two modes:
 
 Keys are local to one parent. Every child in a sibling list must either have a key or be unkeyed; keyed and unkeyed specifications cannot be mixed. Duplicate keys are also rejected. Validation happens before hierarchy reconciliation so an invalid desired tree does not partially reorder the mounted hierarchy.
 
-A matching key with a different exact type is a replacement, not reuse. For example, changing a keyed `Button` into a keyed `Label` with the same key disposes the button and mounts a new label. For an unkeyed list, inserting at the start shifts positional identities and may replace or recreate every later node. See [Reconciliation and keys](reconciliation.md) for application-facing key guidance.
+A matching key with a different exact type is a replacement, not reuse. For example, changing a keyed `Button` into a keyed `Label` with the same key disposes the button and mounts a new label. For an unkeyed list, inserting at the start shifts positional identities and may replace or recreate every later node. See [Reconciliation and keys](../public/reconciliation.md) for application-facing key guidance.
 
 ### Child matching and ordering
 

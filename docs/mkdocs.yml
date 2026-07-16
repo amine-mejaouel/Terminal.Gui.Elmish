@@ -1,8 +1,5 @@
 site_name: Terminal.Gui.Elmish
 theme: material
+docs_dir: public
 nav:
   - Home: index.md
-  - Sample: sample.md
-  - Rendering mental model: rendering.md
-  - Reconciliation and keys: reconciliation.md
-  - Reconciler implementation plan: virtual-terminal-tree-reconciler-plan.md

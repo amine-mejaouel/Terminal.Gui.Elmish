@@ -2,6 +2,8 @@
 
 # Docs build & run
 [mkdocs](https://www.mkdocs.org/) is being used along with [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) to generate the docs pages.
+Public pages live in `docs/public` and are included in the generated site. Internal documentation lives in `docs/internal` and remains Markdown-only.
+
 In order to work on the docs locally follow these commands:
 ```bash
 # Only required for initial setup

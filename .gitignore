@@ -65,6 +65,7 @@ publish/
 Thumbs.db
 
 # Project-specific generated docs
+docs/site/
 docsrc/content/license.md
 docsrc/content/release-notes.md
 docsrc/tools/FSharp.Formatting.svclog

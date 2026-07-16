@@ -99,14 +99,14 @@ module internal VirtualTree =
     | Origin.SubElement _ -> invalidOp "Elmish components are not supported in view-valued property slots."
     | Origin.ElmishComponent _ -> ()
 
-  let private mount (runtime: TerminalRuntime) origin spec =
+  let private mount (sharedContext: TerminalRenderContext) origin spec =
     let element = terminalElementOf spec
 
     match element with
-    | TerminalElement.ViewTE viewTe -> viewTe.InitializeTree(origin, runtime)
+    | TerminalElement.ViewTE viewTe -> viewTe.InitializeTree(origin, sharedContext)
     | TerminalElement.ElmishComponentTE componentTe ->
       componentTe.Origin <- origin
-      componentTe.StartElmishLoop(runtime)
+      componentTe.StartElmishLoop(sharedContext)
       addComponentToParent componentTe
 
     captureMountedTree spec element
@@ -323,7 +323,7 @@ module internal VirtualTree =
         if not (obj.ReferenceEquals(actual[index], desired[index].View)) then
           invalidOp $"Failed to establish the requested child order for '{parent.Name}'."
 
-  let rec private reconcileNode (runtime: TerminalRuntime) (mounted: MountedNode) (nextSpec: ViewSpec) =
+  let rec private reconcileNode (sharedContext: TerminalRenderContext) (mounted: MountedNode) (nextSpec: ViewSpec) =
     if not (sameIdentity mounted.Spec nextSpec) then
       invalidArg (nameof nextSpec) "reconcileNode requires compatible node identities."
 
@@ -331,8 +331,8 @@ module internal VirtualTree =
 
     match mounted.Spec, nextSpec, mounted.Element with
     | ViewSpec.SimpleViewSpec previous, ViewSpec.SimpleViewSpec next, TerminalElement.ViewTE viewTe ->
-      reconcileSlots runtime mounted next
-      reconcileChildren runtime mounted next
+      reconcileSlots sharedContext mounted next
+      reconcileChildren sharedContext mounted next
 
       let previousProps = previous.Props
       let nextProps = next.Props
@@ -363,7 +363,7 @@ module internal VirtualTree =
 
     | _ -> invalidOp "The retained node kind changed during reconciliation."
 
-  and private reconcileSlots (runtime: TerminalRuntime) (mounted: MountedNode) (next: ISimpleViewSpec) =
+  and private reconcileSlots (sharedContext: TerminalRenderContext) (mounted: MountedNode) (next: ISimpleViewSpec) =
     let viewTe =
       match mounted.Element with
       | TerminalElement.ViewTE value -> value
@@ -392,15 +392,15 @@ module internal VirtualTree =
         match previousSlot, nextSlotSpec with
         | Some previous, Some nextSpec when sameIdentity previous.Spec nextSpec ->
           ViewSpec.bind nextSpec previous.Element
-          reconcileNode runtime previous nextSpec
+          reconcileNode sharedContext previous nextSpec
         | Some previous, Some nextSpec ->
           clearSlotProperty key
           unmount previous
-          let slot = mount runtime (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount sharedContext (Origin.SubElement(viewTe, None, key.Key)) nextSpec
           mounted.Slots[key.Id] <- slot
           setSlotProperty key slot
         | None, Some nextSpec ->
-          let slot = mount runtime (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount sharedContext (Origin.SubElement(viewTe, None, key.Key)) nextSpec
           mounted.Slots[key.Id] <- slot
           setSlotProperty key slot
         | Some previous, None ->
@@ -413,7 +413,7 @@ module internal VirtualTree =
         | true, slot -> next.Props |> Props.add (PropKey.viewKeyOfSubElement key, slot.View)
         | false, _ -> ()
 
-  and private reconcileChildren (runtime: TerminalRuntime) (mounted: MountedNode) (next: ISimpleViewSpec) =
+  and private reconcileChildren (sharedContext: TerminalRenderContext) (mounted: MountedNode) (next: ISimpleViewSpec) =
     let parent =
       match mounted.Element with
       | TerminalElement.ViewTE value -> value
@@ -460,7 +460,7 @@ module internal VirtualTree =
 
         if oldIndex >= 0 then
           let child = oldChildren[oldIndex]
-          reconcileNode runtime child nextSpecs[index]
+          reconcileNode sharedContext child nextSpecs[index]
           result[index] <- Some child
 
       for index = 0 to oldChildren.Length - 1 do
@@ -469,7 +469,7 @@ module internal VirtualTree =
 
       for index = 0 to nextSpecs.Length - 1 do
         if result[index].IsNone then
-          result[index] <- Some(mount runtime (Origin.Child(parent, index)) nextSpecs[index])
+          result[index] <- Some(mount sharedContext (Origin.Child(parent, index)) nextSpecs[index])
 
       let nextChildren = ResizeArray<MountedNode>(result |> Array.map _.Value)
       reorderChildren parent oldChildren nextChildren
@@ -494,12 +494,12 @@ module internal VirtualTree =
         if entry.Key.IsSubViewSpec then
           entry.Value |> specFromView |> validateSpecTree
 
-  type Renderer private (runtime: TerminalRuntime, ownsRuntime: bool) =
+  type Renderer private (sharedContext: TerminalRenderContext, ownsContext: bool) =
     let syncRoot = obj ()
     let mutable current: MountedNode option = None
 
-    new(runtime: TerminalRuntime) = new Renderer(runtime, false)
-    new() = new Renderer(TerminalRuntime.createImmediate (), true)
+    new(sharedContext: TerminalRenderContext) = new Renderer(sharedContext, false)
+    new() = new Renderer(TerminalRenderContext.createImmediate (), true)
 
     member _.Current = current
 
@@ -510,9 +510,9 @@ module internal VirtualTree =
 
         let next =
           match current with
-          | None -> mount runtime origin nextSpec
+          | None -> mount sharedContext origin nextSpec
           | Some mounted when sameIdentity mounted.Spec nextSpec ->
-            reconcileNode runtime mounted nextSpec
+            reconcileNode sharedContext mounted nextSpec
             mounted
           | Some mounted ->
             invalidOp
@@ -530,9 +530,9 @@ module internal VirtualTree =
         current |> Option.iter unmount
         current <- None
 
-        if ownsRuntime then
-          runtime.RenderDispatcher.Dispose()
-          runtime.Application.Dispose())
+        if ownsContext then
+          sharedContext.RenderDispatcher.Dispose()
+          sharedContext.Application.Dispose())
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()

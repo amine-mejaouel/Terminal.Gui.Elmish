@@ -39,10 +39,11 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
           task {
             while not cancellationToken.Token.IsCancellationRequested do
               let! msg, msgHook = msgQueue.Reader.ReadAsync()
-              let nextViewTeTask = model.RenderCoordinator.GetNextTEAsync() // Capture the task before dispatching the msg
+              // Capture the publication before dispatching so the test observes that render.
+              let nextRenderedRoot = model.RenderCoordinator.WaitForNextRenderedRootAsync()
               dispatch msg
-              let! nextViewTe = nextViewTeTask
-              msgHook.SetResult(nextViewTe)
+              let! renderedRoot = nextRenderedRoot
+              msgHook.SetResult(renderedRoot)
           }),
         TaskCreationOptions.LongRunning
       )
@@ -81,8 +82,8 @@ let internal run
     let start dispatch =
       task {
         terminalModel <- Some model
-        let! currentTE = model.RenderCoordinator.GetCurrentTEAsync()
-        curTE <- currentTE
+        let! currentRoot = model.RenderCoordinator.GetCurrentRootAsync()
+        curTE <- currentRoot
 
         waitForStart.SetResult()
       }
@@ -142,13 +143,13 @@ let internal run
         terminalModel
         |> Option.iter (fun model ->
           model.Dispose()
-          model.Runtime.RenderDispatcher.Dispose()
+          model.SharedRenderContext.RenderDispatcher.Dispose()
           model.Application.Dispose())
 
         application.Dispose() }
 
 let internal runSimple init update view =
-  ElmishTerminal.mkSimpleWithRuntime TerminalRuntime.createImmediate init update view
+  ElmishTerminal.mkSimpleWithRenderContext TerminalRenderContext.createImmediate init update view
   |> run
 
 let internal render view : TestableElmishProgram<'msg> =

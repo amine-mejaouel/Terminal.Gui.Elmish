@@ -10,9 +10,9 @@ type internal IRenderDispatcher =
   inherit IDisposable
 
   abstract Activate: unit -> unit
-  abstract InvokeAsync: action: Action * cancellationToken: CancellationToken -> Task
+  abstract DispatchAsync: action: Action * cancellationToken: CancellationToken -> Task
 
-type internal DeferredRenderDispatcher(application: IApplication) =
+type internal TerminalGuiRenderDispatcher(application: IApplication) =
   let activation =
     TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
 
@@ -20,19 +20,19 @@ type internal DeferredRenderDispatcher(application: IApplication) =
 
   member _.Activate() =
     if Volatile.Read(&disposed) <> 0 then
-      raise (ObjectDisposedException(nameof DeferredRenderDispatcher))
+      raise (ObjectDisposedException(nameof TerminalGuiRenderDispatcher))
 
     activation.TrySetResult() |> ignore
 
-  member _.InvokeAsync(action: Action, cancellationToken: CancellationToken) : Task =
+  member _.DispatchAsync(action: Action, cancellationToken: CancellationToken) : Task =
     task {
       if Volatile.Read(&disposed) <> 0 then
-        raise (ObjectDisposedException(nameof DeferredRenderDispatcher))
+        raise (ObjectDisposedException(nameof TerminalGuiRenderDispatcher))
 
       do! activation.Task.WaitAsync(cancellationToken)
 
       if Volatile.Read(&disposed) <> 0 then
-        raise (ObjectDisposedException(nameof DeferredRenderDispatcher))
+        raise (ObjectDisposedException(nameof TerminalGuiRenderDispatcher))
 
       let completion =
         TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
@@ -60,28 +60,28 @@ type internal DeferredRenderDispatcher(application: IApplication) =
 
   member _.Dispose() =
     if Interlocked.Exchange(&disposed, 1) = 0 then
-      activation.TrySetException(ObjectDisposedException(nameof DeferredRenderDispatcher))
+      activation.TrySetException(ObjectDisposedException(nameof TerminalGuiRenderDispatcher))
       |> ignore
 
   interface IRenderDispatcher with
     member this.Activate() = this.Activate()
 
-    member this.InvokeAsync(action, cancellationToken) =
-      this.InvokeAsync(action, cancellationToken)
+    member this.DispatchAsync(action, cancellationToken) =
+      this.DispatchAsync(action, cancellationToken)
 
     member this.Dispose() = this.Dispose()
 
-type internal ImmediateRenderDispatcher() =
+type internal InlineRenderDispatcher() =
   let mutable disposed = 0
 
   member _.Activate() = ()
 
-  member _.InvokeAsync(action: Action, cancellationToken: CancellationToken) : Task =
+  member _.DispatchAsync(action: Action, cancellationToken: CancellationToken) : Task =
     task {
       cancellationToken.ThrowIfCancellationRequested()
 
       if Volatile.Read(&disposed) <> 0 then
-        raise (ObjectDisposedException(nameof ImmediateRenderDispatcher))
+        raise (ObjectDisposedException(nameof InlineRenderDispatcher))
 
       action.Invoke()
     }
@@ -92,23 +92,24 @@ type internal ImmediateRenderDispatcher() =
   interface IRenderDispatcher with
     member this.Activate() = this.Activate()
 
-    member this.InvokeAsync(action, cancellationToken) =
-      this.InvokeAsync(action, cancellationToken)
+    member this.DispatchAsync(action, cancellationToken) =
+      this.DispatchAsync(action, cancellationToken)
 
     member this.Dispose() = this.Dispose()
 
-type internal TerminalRuntime =
+/// Shared by every Elmish loop rendered by one Terminal.Gui application.
+type internal TerminalRenderContext =
   { Application: IApplication
     RenderDispatcher: IRenderDispatcher }
 
 [<RequireQualifiedAccess>]
-module internal TerminalRuntime =
+module internal TerminalRenderContext =
   let createProduction () =
     let application = Application.Create()
 
     { Application = application
-      RenderDispatcher = new DeferredRenderDispatcher(application) }
+      RenderDispatcher = new TerminalGuiRenderDispatcher(application) }
 
   let createImmediate () =
     { Application = Application.Create()
-      RenderDispatcher = new ImmediateRenderDispatcher() }
+      RenderDispatcher = new InlineRenderDispatcher() }

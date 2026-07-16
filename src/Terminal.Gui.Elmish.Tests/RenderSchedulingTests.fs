@@ -30,7 +30,7 @@ type private ManualRenderDispatcher() =
   interface IRenderDispatcher with
     member _.Activate() = ()
 
-    member _.InvokeAsync(action, cancellationToken) =
+    member _.DispatchAsync(action, cancellationToken) =
       if Volatile.Read(&disposed) <> 0 then
         Task.FromException(ObjectDisposedException(nameof ManualRenderDispatcher))
       else
@@ -56,21 +56,20 @@ let ``The initial tree is mounted synchronously`` () =
   use application = Application.Create()
   use dispatcher = new ManualRenderDispatcher()
 
-  let runtime =
+  let sharedContext =
     { Application = application
       RenderDispatcher = dispatcher }
 
-  let state = ElmishTerminal.TerminalRenderCoordinator(runtime)
+  let coordinator = ElmishTerminal.TerminalRenderCoordinator(sharedContext)
 
   try
-    state.RequestRender(root "initial", Origin.Root)
+    coordinator.RequestRender(root "initial", Origin.Root)
 
     Assert.Multiple(fun () ->
-      Assert.That(state.RootViewSet, Is.True)
-      Assert.That(state.GetCurrentTEAsync().IsCompletedSuccessfully, Is.True)
-      Assert.That(renderedText (state.GetCurrentTEAsync().Result), Is.EqualTo("initial")))
+      Assert.That(coordinator.GetCurrentRootAsync().IsCompletedSuccessfully, Is.True)
+      Assert.That(renderedText (coordinator.GetCurrentRootAsync().Result), Is.EqualTo("initial")))
   finally
-    state.Dispose()
+    coordinator.Dispose()
 
 [<Test>]
 let ``Pending trees collapse to the latest tree before the UI commit`` () =
@@ -78,22 +77,22 @@ let ``Pending trees collapse to the latest tree before the UI commit`` () =
     use application = Application.Create()
     use dispatcher = new ManualRenderDispatcher()
 
-    let runtime =
+    let sharedContext =
       { Application = application
         RenderDispatcher = dispatcher }
 
-    let state = ElmishTerminal.TerminalRenderCoordinator(runtime)
+    let coordinator = ElmishTerminal.TerminalRenderCoordinator(sharedContext)
 
     try
-      state.RequestRender(root "initial", Origin.Root)
-      let initial = state.GetCurrentTEAsync().Result
-      let nextRender = state.GetNextTEAsync()
+      coordinator.RequestRender(root "initial", Origin.Root)
+      let initial = coordinator.GetCurrentRootAsync().Result
+      let nextRender = coordinator.WaitForNextRenderedRootAsync()
 
-      state.RequestRender(root "intermediate", Origin.Root)
+      coordinator.RequestRender(root "intermediate", Origin.Root)
 
       let! invocation = dispatcher.NextInvocationAsync().WaitAsync(TimeSpan.FromSeconds 5.0)
 
-      state.RequestRender(root "latest", Origin.Root)
+      coordinator.RequestRender(root "latest", Origin.Root)
       invocation.Run()
 
       let! rendered = nextRender.WaitAsync(TimeSpan.FromSeconds 5.0)
@@ -102,7 +101,7 @@ let ``Pending trees collapse to the latest tree before the UI commit`` () =
         Assert.That(rendered.View, Is.SameAs(initial.View))
         Assert.That(renderedText rendered, Is.EqualTo("latest")))
     finally
-      state.Dispose()
+      coordinator.Dispose()
   }
 
 [<Test>]
@@ -111,23 +110,23 @@ let ``Disposal cancels a scheduled render and rejects later requests`` () =
     use application = Application.Create()
     use dispatcher = new ManualRenderDispatcher()
 
-    let runtime =
+    let sharedContext =
       { Application = application
         RenderDispatcher = dispatcher }
 
-    let state = ElmishTerminal.TerminalRenderCoordinator(runtime)
+    let coordinator = ElmishTerminal.TerminalRenderCoordinator(sharedContext)
 
-    state.RequestRender(root "initial", Origin.Root)
-    let waitingForRender = state.GetNextTEAsync()
-    state.RequestRender(root "pending", Origin.Root)
+    coordinator.RequestRender(root "initial", Origin.Root)
+    let waitingForRender = coordinator.WaitForNextRenderedRootAsync()
+    coordinator.RequestRender(root "pending", Origin.Root)
 
     let! _ = dispatcher.NextInvocationAsync().WaitAsync(TimeSpan.FromSeconds 5.0)
-    state.Dispose()
+    coordinator.Dispose()
 
     Assert.Multiple(fun () ->
       Assert.That(waitingForRender.IsFaulted, Is.True)
       Assert.That(waitingForRender.Exception.GetBaseException(), Is.TypeOf<ObjectDisposedException>())
 
-      Assert.Throws<ObjectDisposedException>(fun () -> state.RequestRender(root "too late", Origin.Root))
+      Assert.Throws<ObjectDisposedException>(fun () -> coordinator.RequestRender(root "too late", Origin.Root))
       |> ignore)
   }

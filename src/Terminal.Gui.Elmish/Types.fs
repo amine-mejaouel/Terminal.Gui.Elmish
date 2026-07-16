@@ -250,7 +250,7 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin * runtime: TerminalRuntime -> unit
+  abstract InitializeTree: origin: Origin * sharedContext: TerminalRenderContext -> unit
 
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
@@ -266,7 +266,7 @@ and internal IElmishComponentTE =
   inherit ITerminalElementBase
   inherit IComponentViewSpec
   abstract Child: IViewTE with get
-  abstract StartElmishLoop: runtime: TerminalRuntime -> unit
+  abstract StartElmishLoop: sharedContext: TerminalRenderContext -> unit
   abstract UpdateProps: ComponentProps -> unit
 
 and internal TerminalElement =

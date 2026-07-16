@@ -49,7 +49,7 @@
     <Content Include="paket.references" />
     <Compile Include="Task.fs" />
     <Compile Include="ViewType.gen.fs" />
-    <Compile Include="RenderRuntime.fs" />
+    <Compile Include="RenderContext.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />

@@ -30,4 +30,4 @@ Event properties use a stable subscription. Re-rendering replaces the callback b
 
 ## Scheduling
 
-The first tree is mounted synchronously so Terminal.Gui has a root `Runnable`. Later desired trees enter a bounded capacity-one `Channel<RenderRequest>` read by a single render pump. Multiple pending renders therefore collapse to the latest tree. After `IApplication.Init`, the production dispatcher posts each pump commit to the Terminal.Gui application thread; the callback drains the channel again immediately before reconciliation so it applies the freshest available tree.
+The first tree is mounted synchronously so Terminal.Gui has a root `Runnable`. Each Elmish loop has its own `TerminalRenderCoordinator`, bounded capacity-one `Channel<RenderRequest>`, and render pump, so pending renders collapse independently within that loop. All coordinators share the application's single `IRenderDispatcher`. After `IApplication.Init`, it posts their commits to the same Terminal.Gui UI thread; each callback drains its coordinator's channel again immediately before reconciliation so it applies the freshest available tree.

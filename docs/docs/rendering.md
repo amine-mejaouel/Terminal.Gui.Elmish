@@ -14,11 +14,16 @@ Terminal.Gui event
                                   desired ViewSpec tree
                                            |
                                            v
-                              Channel<RenderRequest> (capacity 1)
-                                           |
-                                  UI-thread dispatcher
-                                           |
-                                           v
+                               TerminalRenderCoordinator
+                                  /                 \
+                     first mount /                   \ later requests
+                       (sync)   v                     v
+                              |          Channel<RenderRequest> (capacity 1)
+                              |                     |
+                              |            shared UI-thread dispatcher
+                              |                     |
+                              +----------+----------+
+                                         v
                                   VirtualTree.Renderer
                                     |              |
                                first mount     reconciliation
@@ -52,7 +57,39 @@ For example, `View.Label(fun p -> p.Text "Ready")` creates a label specification
 1. calls the application `view` function with the current model and dispatch function;
 2. casts the returned root to `ISimpleViewSpec`;
 3. chooses an `Origin` for either the root program or a nested Elmish component;
-4. sends the desired root to `TerminalElementState.RequestRender`.
+4. sends the desired root to `TerminalRenderCoordinator.RequestRender`.
+
+## One coordinator per Elmish loop
+
+Every Elmish loop owns its own `TerminalRenderCoordinator`. The root program has one, and every mounted Elmish component has another. Each coordinator owns the state that must be isolated per loop: its capacity-one render channel, render pump, `VirtualTree.Renderer`, current rendered root, lifecycle, and waiters.
+
+The `TerminalRenderContext` is different: it belongs to the Terminal.Gui application and is shared by all those coordinators. It contains the single `IApplication` and single `IRenderDispatcher`. When a parent renderer mounts an Elmish component, it passes this same context to `StartElmishLoop`, so the component creates a new coordinator without creating another dispatcher.
+
+```text
+ Root Elmish loop          Component Elmish loop A       Nested component loop B
+         |                           |                              |
+         v                           v                              v
+ TerminalRenderCoordinator  TerminalRenderCoordinator    TerminalRenderCoordinator
+ +-----------------------+  +-------------------------+   +-------------------------+
+ | Channel (capacity 1)  |  | Channel (capacity 1)    |   | Channel (capacity 1)    |
+ | render pump           |  | render pump             |   | render pump             |
+ | VirtualTree.Renderer  |  | VirtualTree.Renderer    |   | VirtualTree.Renderer    |
+ +-----------+-----------+  +------------+------------+   +------------+------------+
+             \                         |                            /
+              \________ subsequent commits call DispatchAsync ____/
+                                        |
+                                        v
+                        TerminalRenderContext (one per application)
+                        +-------------------------------------------+
+                        | IRenderDispatcher (one, shared)           |
+                        | IApplication                              |
+                        +-------------------+-----------------------+
+                                            |
+                                            v
+                             Terminal.Gui application/UI thread
+```
+
+The coordinators do not share desired trees or mounted-tree state. They share only the application-level context needed to commit mutations safely. The shared dispatcher posts every later commit to the same Terminal.Gui UI thread, which serializes native view mutation across the root and every component. The root application owns dispatcher activation and disposal; component disposal stops only that component's coordinator.
 
 ### The first render
 
@@ -62,7 +99,7 @@ Once that root exists, `runTerminal` calls `Init`, activates render dispatching,
 
 ### Later renders
 
-After the initial mount, `TerminalElementState` has one long-lived render pump. `RequestRender` writes desired trees to a bounded `Channel<RenderRequest>` with capacity one and `DropOldest` behavior. The channel is the pending slot: if several Elmish states arrive faster than Terminal.Gui can apply them, only the newest uncommitted tree remains.
+After the initial mount, each `TerminalRenderCoordinator` has one long-lived render pump. `RequestRender` writes desired trees to a bounded `Channel<RenderRequest>` with capacity one and `DropOldest` behavior. The channel is the pending slot: if several Elmish states arrive faster than Terminal.Gui can apply them, only the newest uncommitted tree remains.
 
 Elmish serializes its own `update` and `setState` calls, but that does not make the whole rendering pipeline synchronous. The Terminal.Gui loop is a separate consumer: an Elmish update can request another tree while an earlier request is waiting to enter the UI thread. The channel models that boundary explicitly and guarantees a single render consumer without relying on mutable `pending` and `scheduled` flags.
 
@@ -151,7 +188,7 @@ Ordinary `Props.diff` excludes both halves of a slot. Slot reconciliation is the
 
 ### Elmish components
 
-An Elmish component is one node in its parent's mounted tree, identified by its component type and key. Internally it owns another Elmish model, loop, `TerminalElementState`, renderer, and rendered root view.
+An Elmish component is one node in its parent's mounted tree, identified by its component type and key. Internally it owns another Elmish model, loop, `TerminalRenderCoordinator`, renderer, render channel, and rendered root view. It receives the parent's shared `TerminalRenderContext`, so its later commits use the same `IRenderDispatcher` and `IApplication` as the root loop.
 
 When component identity matches, the parent updates `ComponentProps` on the retained component instead of restarting it. The component's own loop continues to reconcile its child tree, so component-local model state follows the component through a keyed parent reorder. Replacing or removing the component terminates its loop and detaches its rendered root.
 
@@ -197,7 +234,7 @@ The renderer itself does not call `Layout`, `Draw`, or manipulate terminal cells
 
 A view terminal element clears applied properties and event subscriptions, detaches itself when it is an attached child, disposes owned slot elements and children, removes position registrations, and finally disposes its native `View`. Component disposal requests termination of the component loop and waits for that loop to release its renderer and rendered tree.
 
-At program shutdown, `TerminalElementState.Dispose` prevents new renders, discards pending work, and disposes the renderer under the commit guard. The root program then disposes its `IApplication`, allowing Terminal.Gui to restore terminal state and release its driver.
+At program shutdown, `TerminalRenderCoordinator.Dispose` prevents new renders, discards pending work, and disposes that loop's renderer under the commit guard. The root program then disposes the shared dispatcher and `IApplication`, allowing Terminal.Gui to restore terminal state and release its driver.
 
 When adding a new rendering-owned resource, decide which terminal element owns it and add cleanup to that owner's idempotent disposal path. A retained node must not accumulate handlers or references from previous specifications.
 
@@ -212,9 +249,9 @@ The public DSL is mostly generated, but reconciliation policy is handwritten:
 | `SimpleViewSpec.gen.fs` | Cache or bind terminal elements and route typed set/clear operations. |
 | `TerminalElement.Elements.gen.fs` | Construct the correct native Terminal.Gui subclass and expose view-specific metadata. |
 | `PropsHandler.gen.fs` | Apply changed native values and clear removed values with inheritance-aware dispatch. |
-| `Types.fs`, `VirtualTree.fs`, `ElmishTerminal.fs` | Define identity, ownership, reconciliation, scheduling, and program/component integration. |
+| `RenderContext.fs`, `Types.fs`, `VirtualTree.fs`, `ElmishTerminal.fs` | Define the shared application context, per-loop coordination, identity, ownership, reconciliation, scheduling, and program/component integration. |
 
-Generated files are evidence of the runtime bridge, not editing points. Change the corresponding source under `src/Terminal.Gui.Elmish.Generator/generators/` or its metadata/registry, then rebuild to regenerate and format the outputs.
+Generated files are evidence of the render-context bridge, not editing points. Change the corresponding source under `src/Terminal.Gui.Elmish.Generator/generators/` or its metadata/registry, then rebuild to regenerate and format the outputs.
 
 ## How to reason about a rendering change
 
@@ -241,20 +278,21 @@ The renderer assumes exclusive ownership of the hierarchy entries and property s
 | An event fires multiple times or invokes stale model state | `EventHandlerRegistrar` | Is the callback being updated behind one proxy, and is removal routed as an event key? |
 | A relative layout follows an old or disposed view | Specification binding and `PositionService` | Was the new spec bound to the retained element, and were pair cleanups executed? |
 | Component-local state resets after a parent update | Component identity and `UpdateProps` | Was the same component type and key retained, or was a new loop mounted? |
-| An update is not immediately visible | `TerminalElementState.RequestRender` and `runPump` | Was it replaced in the capacity-one channel or waiting for the application-thread callback? |
+| An update is not immediately visible | `TerminalRenderCoordinator.RequestRender` and `runRenderPump` | Was it replaced in that loop's capacity-one channel or waiting for the shared application-thread dispatcher? |
 | A removed control remains referenced | `unmount`, terminal-element `Dispose`, and `Origin` | Which owner should detach it and remove its event/position registrations? |
 
 ## Suggested code-reading order
 
 For a top-down trace through the current implementation:
 
-1. Start with `ElmishTerminal.fs`: `setState`, `TerminalElementState`, and `runTerminal` show when a desired tree is produced and committed.
-2. Read the core types in `Types.fs`: `Props`, `ViewSpec`, terminal-element interfaces, `Origin`, and `Props.diff` define the vocabulary used by the renderer.
-3. Read `VirtualTree.fs`: mount, identity, child/slot reconciliation, reordering, validation, and renderer disposal are kept together.
-4. Read `TerminalElement.Base.fs`: native view initialization, stable event subscriptions, initial tree traversal, and disposal live here.
-5. Read `Services/PositionService.fs` for relative-layout lifetime handling.
-6. Inspect the generator sources for property/view-specific mechanics, using the corresponding `*.gen.fs` outputs to see the emitted code.
-7. Use `VirtualTreeTests.fs`, `PositionServiceTests.fs`, and the component/Elmish-loop tests as executable statements of reference retention and cleanup behavior.
+1. Start with `ElmishTerminal.fs`: `setState`, `TerminalRenderCoordinator`, and `runTerminal` show when a desired tree is produced and committed.
+2. Read `RenderContext.fs` to see the application-level `IApplication` and `IRenderDispatcher` shared by the root and component coordinators.
+3. Read the core types in `Types.fs`: `Props`, `ViewSpec`, terminal-element interfaces, `Origin`, and `Props.diff` define the vocabulary used by the renderer.
+4. Read `VirtualTree.fs`: mount, identity, child/slot reconciliation, reordering, validation, and renderer disposal are kept together.
+5. Read `TerminalElement.Base.fs`: native view initialization, stable event subscriptions, initial tree traversal, and disposal live here.
+6. Read `Services/PositionService.fs` for relative-layout lifetime handling.
+7. Inspect the generator sources for property/view-specific mechanics, using the corresponding `*.gen.fs` outputs to see the emitted code.
+8. Use `RenderSchedulingTests.fs`, `VirtualTreeTests.fs`, `PositionServiceTests.fs`, and the component/Elmish-loop tests as executable statements of scheduling, reference retention, and cleanup behavior.
 
 The [reconciler implementation plan](virtual-terminal-tree-reconciler-plan.md) records the design motivation and performance goals. Treat the current source and tests as authoritative where that historical plan still describes unimplemented alternatives or older intended structure.
 

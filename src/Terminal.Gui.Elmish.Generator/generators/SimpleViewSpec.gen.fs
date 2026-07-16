@@ -38,8 +38,8 @@ let gen () =
       yield $"    member _.Props = props.props"
       yield $"    member _.SetProps(target, changedProps) ="
       yield $"      {propHandlerName}.setProps(target :?> ViewBackedTerminalElement, changedProps)"
-      yield $"    member _.RemoveProps(target, removedProps) ="
-      yield $"      {propHandlerName}.removeProps(target :?> ViewBackedTerminalElement, removedProps)"
+      yield $"    member _.ClearProp(target, propertyId) ="
+      yield $"      {propHandlerName}.clearProp(target :?> ViewBackedTerminalElement, propertyId)"
       yield $"    member _.ViewType = ViewType.{getDuCaseTypeName viewType}"
 
       if returnInterface <> "ITerminalElement" then

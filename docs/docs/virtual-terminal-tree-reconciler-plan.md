@@ -229,7 +229,7 @@ type PropDescriptor =
 
 - Assign stable integer property IDs at generation time.
 - Apply only added or changed properties.
-- Reset removed properties through a generated `Unset` operation.
+- Reset each removed property through a generated integer-ID `ClearProp` operation; removal carries no obsolete value.
 - Use typed equality where safe.
 - Permit property-specific comparison for values whose normal object equality is unsuitable.
 - Mark init-only or unsafe-to-update properties as node-replacement triggers.
@@ -280,6 +280,7 @@ For every slot:
 2. Assign the resulting live `View` through the generated setter.
 3. Never call `View.Add` for a property slot.
 4. Unset the property before disposing a removed slot if the Terminal.Gui control retains the reference.
+5. Exclude both declarative slot specifications and mounted native slot values from ordinary property diffing.
 
 Collection-valued view properties require generated or hand-written collection adapters capable of keyed item deltas. They must not be treated as ordinary child lists unless Terminal.Gui documents them as `SubViews`.
 

@@ -102,6 +102,11 @@ module internal PropKey =
       | PropKeyIdentity.SubViewSpec _ -> true
       | _ -> false
 
+    member this.IsSubView =
+      match this.Identity with
+      | PropKeyIdentity.SubView _ -> true
+      | _ -> false
+
     member this.viewKey =
       match this.Identity with
       | PropKeyIdentity.SubViewSpec ids ->
@@ -231,7 +236,7 @@ and [<Interface>] internal ISimpleViewSpec =
   abstract CreateViewTE: unit -> IViewTE
   abstract BindViewTE: IViewTE -> unit
   abstract SetProps: target: IViewTE * props: Props -> unit
-  abstract RemoveProps: target: IViewTE * props: Props -> unit
+  abstract ClearProp: target: IViewTE * propertyId: PropertyId -> unit
   abstract ViewType: ViewType
 
 and internal IViewTE =
@@ -395,28 +400,37 @@ type Props with
 
   static member internal exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  /// Returns only properties that need to be removed or applied. View specifications are
-  /// reconciled separately and their live View properties are compared through SubView entries.
+  /// Returns only ordinary properties and events that need to be cleared or applied.
+  /// Declarative and native view-slot properties are owned by slot reconciliation.
   static member internal diff(prevProps: Props, curProps: Props) =
-    let mutable removed: Props option = None
+    let mutable removed: ResizeArray<PropertyId> = null
     let mutable changed: Props option = None
 
-    let addEntry current (entry: KeyValuePair<PropKey, obj>) =
+    let addChangedEntry current (entry: KeyValuePair<PropKey, obj>) =
       let target = current |> Option.defaultWith Props
       target |> Props.add (entry.Key, entry.Value)
       Some target
 
+    let addRemovedId propertyId =
+      if isNull removed then
+        removed <- ResizeArray<PropertyId>()
+
+      removed.Add propertyId
+
+    let isOrdinaryProp (key: PropKey) =
+      not key.IsSubViewSpec && not key.IsSubView
+
     for kv in Props.toEntries prevProps do
-      if not kv.Key.IsSubViewSpec && not (curProps |> Props.rawKeyExists kv.Key) then
-        removed <- addEntry removed kv
+      if isOrdinaryProp kv.Key && not (curProps |> Props.rawKeyExists kv.Key) then
+        addRemovedId kv.Key.Id
 
     for kv in Props.toEntries curProps do
-      if not kv.Key.IsSubViewSpec then
+      if isOrdinaryProp kv.Key then
         match prevProps |> Props.tryFind kv.Key with
         | Some previous when Object.Equals(previous, kv.Value) -> ()
-        | _ -> changed <- addEntry changed kv
+        | _ -> changed <- addChangedEntry changed kv
 
-    removed, changed
+    (if isNull removed then Array.empty else removed.ToArray()), changed
 
 [<AutoOpen>]
 module Element =

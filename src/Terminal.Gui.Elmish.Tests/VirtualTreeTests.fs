@@ -57,6 +57,31 @@ let ``Property-only updates preserve view identity and unset removed properties`
     Assert.That(labelWithoutText.Text.ToString(), Is.EqualTo("")))
 
 [<Test>]
+let ``Clear dispatch handles properties declared by derived and base view types`` () =
+  use renderer = new VirtualTree.Renderer()
+
+  let rootWithProps includeProps =
+    keyedRoot
+      [ View.Button(fun p ->
+          p.Key "button"
+
+          if includeProps then
+            p.Title "inherited title"
+            p.NoPadding true)
+        :> IView ]
+
+  let initial = rootWithProps true |> render renderer
+  let button = (subViews initial.View)[0] :?> Button
+
+  let updated = rootWithProps false |> render renderer
+  let retainedButton = (subViews updated.View)[0] :?> Button
+
+  Assert.Multiple(fun () ->
+    Assert.That(retainedButton, Is.SameAs(button))
+    Assert.That(retainedButton.Title.ToString(), Is.EqualTo(""))
+    Assert.That(retainedButton.NoPadding, Is.False))
+
+[<Test>]
 let ``Keyed prepend and reverse preserve existing views in exact requested order`` () =
   use renderer = new VirtualTree.Renderer()
 
@@ -193,6 +218,50 @@ let ``View-valued property slots retain compatible views and never become SubVie
       |> Seq.exists (fun view -> obj.ReferenceEquals(view, shortcut.TargetView)),
       Is.False
     ))
+
+[<Test>]
+let ``Removing a view-valued property clears its owner before disposing the slot`` () =
+  use renderer = new VirtualTree.Renderer()
+
+  let rootWithTarget (target: IView option) =
+    keyedRoot
+      [ View.Shortcut(fun p ->
+          p.Key "shortcut"
+          target |> Option.iter (fun value -> p.TargetView value))
+        :> IView ]
+
+  let initial =
+    rootWithTarget (Some(keyedLabel "target" "removable")) |> render renderer
+
+  let shortcut = (subViews initial.View)[0] :?> Shortcut
+  let target = shortcut.TargetView
+  let mutable ownerWasClearedBeforeDispose = false
+
+  target.Disposing.Add(fun _ -> ownerWasClearedBeforeDispose <- isNull shortcut.TargetView)
+  rootWithTarget None |> render renderer |> ignore
+
+  Assert.Multiple(fun () ->
+    Assert.That(shortcut.TargetView, Is.Null)
+    Assert.That(ownerWasClearedBeforeDispose, Is.True))
+
+[<Test>]
+let ``Ordinary property diff excludes declarative and native view-slot entries`` () =
+  let slotProps = Props()
+  use nativeTarget = new Label()
+
+  slotProps
+  |> Props.add (PKey.Shortcut.TargetView_viewSpec, keyedLabel "target" "declarative")
+
+  slotProps |> Props.add (PKey.Shortcut.TargetView, nativeTarget)
+
+  let removedOnAdd, changedOnAdd = Props.diff (Props(), slotProps)
+  let removedOnDelete, changedOnDelete = Props.diff (slotProps, Props())
+
+  Assert.Multiple(fun () ->
+    Assert.That(removedOnAdd, Is.Empty)
+    Assert.That(changedOnAdd.IsNone, Is.True)
+    Assert.That(removedOnDelete, Is.Empty)
+    Assert.That(changedOnDelete.IsNone, Is.True))
 
 [<Test>]
 let ``Event properties use one stable subscription with the latest callback`` () =

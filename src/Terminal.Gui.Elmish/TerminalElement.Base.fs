@@ -286,17 +286,20 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   default this.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
 
-  abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
+  abstract ClearProp: propertyId: PropertyId -> unit
 
-  default this.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
+  default this.ClearProp(propertyId: PropertyId) = ()
 
   member this.Dispose() =
     if Interlocked.Exchange(&disposing, true) then
       ()
     else
 
-      // Remove any event subscriptions
-      this.RemoveProps(this, this.Props)
+      // Clear applied properties and remove any event subscriptions. Declarative view-slot
+      // specifications are not native properties and are disposed separately below.
+      for entry in Props.toEntries this.Props do
+        if not entry.Key.IsSubViewSpec then
+          this.ClearProp entry.Key.Id
 
       match this.Origin with
       | Origin.Root

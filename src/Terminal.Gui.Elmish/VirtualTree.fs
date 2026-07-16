@@ -343,7 +343,7 @@ module internal VirtualTree =
         not (samePosition previousProps.X nextProps.X)
         || not (samePosition previousProps.Y nextProps.Y)
 
-      let removedProps, changedProps = Props.diff (previousProps, nextProps)
+      let removedPropertyIds, changedProps = Props.diff (previousProps, nextProps)
 
       backed.Props <- nextProps
 
@@ -351,7 +351,9 @@ module internal VirtualTree =
         PositionService.Current.ExecuteCleanups viewTe
         PositionService.Current.ApplyPos viewTe
 
-      removedProps |> Option.iter (fun props -> next.RemoveProps(viewTe, props))
+      for propertyId in removedPropertyIds do
+        next.ClearProp(viewTe, propertyId)
+
       changedProps |> Option.iter (fun props -> next.SetProps(viewTe, props))
       mounted.Spec <- nextSpec
 
@@ -370,10 +372,14 @@ module internal VirtualTree =
 
     let backed = viewTe :?> ViewBackedTerminalElement
 
-    let clearSlotProperty key (slot: MountedNode) =
-      let removed = Props()
-      removed |> Props.add (PropKey.viewKeyOfSubElement key, slot.View)
-      next.RemoveProps(viewTe, removed)
+    let clearSlotProperty key =
+      let viewKey = PropKey.viewKeyOfSubElement key
+      next.ClearProp(viewTe, viewKey.Id)
+
+    let setSlotProperty key (slot: MountedNode) =
+      let changed = Props()
+      changed |> Props.add (PropKey.viewKeyOfSubElement key, slot.View)
+      next.SetProps(viewTe, changed)
 
     if mounted.Slots.Count <> 0 || next.Props.SubViewSpecCount <> 0 then
       for key in backed.SubElements_PropKeys do
@@ -389,13 +395,17 @@ module internal VirtualTree =
           ViewSpec.bind nextSpec previous.Element
           reconcileNode application previous nextSpec
         | Some previous, Some nextSpec ->
-          clearSlotProperty key previous
+          clearSlotProperty key
           unmount previous
-          mounted.Slots[key.Id] <- mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          mounted.Slots[key.Id] <- slot
+          setSlotProperty key slot
         | None, Some nextSpec ->
-          mounted.Slots[key.Id] <- mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          mounted.Slots[key.Id] <- slot
+          setSlotProperty key slot
         | Some previous, None ->
-          clearSlotProperty key previous
+          clearSlotProperty key
           unmount previous
           mounted.Slots.Remove key.Id |> ignore
         | None, None -> ()

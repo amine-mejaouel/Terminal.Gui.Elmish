@@ -24,6 +24,7 @@ Unkeyed children use positional identity. This is appropriate for small, fixed-s
 ## Property slots and events
 
 Properties whose value is another view, such as `Shortcut.TargetView`, are retained as named property slots. They are assigned through the owning property and are never inserted into `SubViews`.
+Slot reconciliation exclusively owns those native properties: it clears a removed or replaced slot before disposing the old view, and ordinary property diffing ignores both the declarative slot specification and its mounted native value.
 
 Event properties use a stable subscription. Re-rendering replaces the callback behind that subscription; removing the property unsubscribes it. This avoids duplicate delivery and repeated add/remove work.
 

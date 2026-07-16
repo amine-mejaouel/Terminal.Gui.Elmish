@@ -19,8 +19,8 @@ type AdornmentView(props: AdornmentViewProps) =
     member _.SetProps(target, changedProps) =
       AdornmentViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      AdornmentViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      AdornmentViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewBaseAdornmentView``
 
@@ -43,8 +43,8 @@ type AttributePicker(props: AttributePickerProps) =
     member _.SetProps(target, changedProps) =
       AttributePickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      AttributePickerPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      AttributePickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsAttributePicker``
 
@@ -67,8 +67,8 @@ type Bar(props: BarProps) =
     member _.SetProps(target, changedProps) =
       BarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      BarPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      BarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsBar``
 
@@ -91,8 +91,8 @@ type BorderView(props: BorderViewProps) =
     member _.SetProps(target, changedProps) =
       BorderViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      BorderViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      BorderViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewBaseBorderView``
 
@@ -115,8 +115,8 @@ type Button(props: ButtonProps) =
     member _.SetProps(target, changedProps) =
       ButtonPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ButtonPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ButtonPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsButton``
 
@@ -139,8 +139,8 @@ type CharMap(props: CharMapProps) =
     member _.SetProps(target, changedProps) =
       CharMapPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      CharMapPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      CharMapPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsCharMap``
 
@@ -163,8 +163,8 @@ type CheckBox(props: CheckBoxProps) =
     member _.SetProps(target, changedProps) =
       CheckBoxPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      CheckBoxPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      CheckBoxPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsCheckBox``
 
@@ -187,8 +187,8 @@ type Code(props: CodeProps) =
     member _.SetProps(target, changedProps) =
       CodePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      CodePropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      CodePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsCode``
 
@@ -211,8 +211,8 @@ type ColorPicker(props: ColorPickerProps) =
     member _.SetProps(target, changedProps) =
       ColorPickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ColorPickerPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ColorPickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsColorPicker``
 
@@ -235,8 +235,8 @@ type ColorPicker16(props: ColorPicker16Props) =
     member _.SetProps(target, changedProps) =
       ColorPicker16PropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ColorPicker16PropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ColorPicker16PropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsColorPicker16``
 
@@ -259,8 +259,8 @@ type DatePicker(props: DatePickerProps) =
     member _.SetProps(target, changedProps) =
       DatePickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DatePickerPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DatePickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsDatePicker``
 
@@ -283,8 +283,8 @@ type FrameView(props: FrameViewProps) =
     member _.SetProps(target, changedProps) =
       FrameViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      FrameViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      FrameViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsFrameView``
 
@@ -307,8 +307,8 @@ type GraphView(props: GraphViewProps) =
     member _.SetProps(target, changedProps) =
       GraphViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      GraphViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      GraphViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsGraphView``
 
@@ -331,8 +331,8 @@ type HexView(props: HexViewProps) =
     member _.SetProps(target, changedProps) =
       HexViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      HexViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      HexViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsHexView``
 
@@ -355,8 +355,8 @@ type ImageView(props: ImageViewProps) =
     member _.SetProps(target, changedProps) =
       ImageViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ImageViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ImageViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsImageView``
 
@@ -379,8 +379,8 @@ type Label(props: LabelProps) =
     member _.SetProps(target, changedProps) =
       LabelPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LabelPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LabelPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLabel``
 
@@ -403,8 +403,8 @@ type LegendAnnotation(props: LegendAnnotationProps) =
     member _.SetProps(target, changedProps) =
       LegendAnnotationPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LegendAnnotationPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LegendAnnotationPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLegendAnnotation``
 
@@ -427,8 +427,8 @@ type Line(props: LineProps) =
     member _.SetProps(target, changedProps) =
       LinePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinePropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLine``
 
@@ -451,8 +451,8 @@ type LinearMultiSelector<'T>(props: LinearMultiSelectorProps<'T>) =
     member _.SetProps(target, changedProps) =
       LinearMultiSelectorPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearMultiSelectorPropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearMultiSelectorPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``LinearMultiSelector<'T>``
 
@@ -475,8 +475,8 @@ type LinearMultiSelector(props: LinearMultiSelectorProps) =
     member _.SetProps(target, changedProps) =
       LinearMultiSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearMultiSelectorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearMultiSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLinearMultiSelector``
 
@@ -499,8 +499,8 @@ type LinearRange<'T>(props: LinearRangeProps<'T>) =
     member _.SetProps(target, changedProps) =
       LinearRangePropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearRangePropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearRangePropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``LinearRange<'T>``
 
@@ -523,8 +523,8 @@ type LinearRange(props: LinearRangeProps) =
     member _.SetProps(target, changedProps) =
       LinearRangePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearRangePropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearRangePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLinearRange``
 
@@ -547,8 +547,8 @@ type LinearSelector<'T>(props: LinearSelectorProps<'T>) =
     member _.SetProps(target, changedProps) =
       LinearSelectorPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearSelectorPropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearSelectorPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``LinearSelector<'T>``
 
@@ -571,8 +571,8 @@ type LinearSelector(props: LinearSelectorProps) =
     member _.SetProps(target, changedProps) =
       LinearSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinearSelectorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinearSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLinearSelector``
 
@@ -595,8 +595,8 @@ type Link(props: LinkProps) =
     member _.SetProps(target, changedProps) =
       LinkPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      LinkPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      LinkPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsLink``
 
@@ -619,8 +619,8 @@ type ListView(props: ListViewProps) =
     member _.SetProps(target, changedProps) =
       ListViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ListViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ListViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsListView``
 
@@ -643,8 +643,8 @@ type ListView<'T>(props: ListViewProps<'T>) =
     member _.SetProps(target, changedProps) =
       ListViewPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ListViewPropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ListViewPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ListView<'T>``
 
@@ -667,8 +667,8 @@ type MarginView(props: MarginViewProps) =
     member _.SetProps(target, changedProps) =
       MarginViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MarginViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MarginViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewBaseMarginView``
 
@@ -691,8 +691,8 @@ type Markdown(props: MarkdownProps) =
     member _.SetProps(target, changedProps) =
       MarkdownPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MarkdownPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MarkdownPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMarkdown``
 
@@ -715,8 +715,8 @@ type MarkdownCodeBlock(props: MarkdownCodeBlockProps) =
     member _.SetProps(target, changedProps) =
       MarkdownCodeBlockPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MarkdownCodeBlockPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MarkdownCodeBlockPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMarkdownCodeBlock``
 
@@ -739,8 +739,8 @@ type MarkdownTable(props: MarkdownTableProps) =
     member _.SetProps(target, changedProps) =
       MarkdownTablePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MarkdownTablePropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MarkdownTablePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMarkdownTable``
 
@@ -763,8 +763,8 @@ type Menu(props: MenuProps) =
     member _.SetProps(target, changedProps) =
       MenuPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MenuPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MenuPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMenu``
 
@@ -789,8 +789,8 @@ type MenuBar(props: MenuBarProps) =
     member _.SetProps(target, changedProps) =
       MenuBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MenuBarPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MenuBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMenuBar``
 
@@ -815,8 +815,8 @@ type NumericUpDown<'T>(props: NumericUpDownProps<'T>) =
     member _.SetProps(target, changedProps) =
       NumericUpDownPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      NumericUpDownPropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      NumericUpDownPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``NumericUpDown<'T>``
 
@@ -839,8 +839,8 @@ type NumericUpDown(props: NumericUpDownProps) =
     member _.SetProps(target, changedProps) =
       NumericUpDownPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      NumericUpDownPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      NumericUpDownPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsNumericUpDown``
 
@@ -863,8 +863,8 @@ type PaddingView(props: PaddingViewProps) =
     member _.SetProps(target, changedProps) =
       PaddingViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      PaddingViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      PaddingViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewBasePaddingView``
 
@@ -888,8 +888,8 @@ type Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> T
     member _.SetProps(target, changedProps) =
       PopoverPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      PopoverPropHandler<'TView, 'TResult>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      PopoverPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``Popover<'TView, 'TResult>``
 
@@ -912,8 +912,8 @@ type PopoverMenu(props: PopoverMenuProps) =
     member _.SetProps(target, changedProps) =
       PopoverMenuPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      PopoverMenuPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      PopoverMenuPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsPopoverMenu``
 
@@ -938,8 +938,8 @@ type ProgressBar(props: ProgressBarProps) =
     member _.SetProps(target, changedProps) =
       ProgressBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ProgressBarPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ProgressBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsProgressBar``
 
@@ -962,8 +962,8 @@ type Runnable(props: RunnableProps) =
     member _.SetProps(target, changedProps) =
       RunnablePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      RunnablePropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      RunnablePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsRunnable``
 
@@ -986,8 +986,8 @@ type Runnable<'TResult>(props: RunnableProps<'TResult>) =
     member _.SetProps(target, changedProps) =
       RunnablePropHandler<'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      RunnablePropHandler<'TResult>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      RunnablePropHandler<'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``Runnable<'TResult>``
 
@@ -1010,8 +1010,8 @@ type Dialog<'TResult>(props: DialogProps<'TResult>) =
     member _.SetProps(target, changedProps) =
       DialogPropHandler<'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DialogPropHandler<'TResult>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DialogPropHandler<'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``Dialog<'TResult>``
 
@@ -1037,8 +1037,8 @@ type RunnableWrapper<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TV
     member _.SetProps(target, changedProps) =
       RunnableWrapperPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      RunnableWrapperPropHandler<'TView, 'TResult>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      RunnableWrapperPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``RunnableWrapper<'TView, 'TResult>``
 
@@ -1061,8 +1061,8 @@ type Dialog(props: DialogProps) =
     member _.SetProps(target, changedProps) =
       DialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DialogPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsDialog``
 
@@ -1085,8 +1085,8 @@ type FileDialog(props: FileDialogProps) =
     member _.SetProps(target, changedProps) =
       FileDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      FileDialogPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      FileDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsFileDialog``
 
@@ -1110,8 +1110,8 @@ type Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Te
     member _.SetProps(target, changedProps) =
       PromptPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      PromptPropHandler<'TView, 'TResult>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      PromptPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``Prompt<'TView, 'TResult>``
 
@@ -1134,8 +1134,8 @@ type OpenDialog(props: OpenDialogProps) =
     member _.SetProps(target, changedProps) =
       OpenDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      OpenDialogPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      OpenDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsOpenDialog``
 
@@ -1158,8 +1158,8 @@ type SaveDialog(props: SaveDialogProps) =
     member _.SetProps(target, changedProps) =
       SaveDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      SaveDialogPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      SaveDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsSaveDialog``
 
@@ -1182,8 +1182,8 @@ type ScrollBar(props: ScrollBarProps) =
     member _.SetProps(target, changedProps) =
       ScrollBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ScrollBarPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ScrollBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsScrollBar``
 
@@ -1206,8 +1206,8 @@ type ScrollButton(props: ScrollButtonProps) =
     member _.SetProps(target, changedProps) =
       ScrollButtonPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ScrollButtonPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ScrollButtonPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsScrollButton``
 
@@ -1230,8 +1230,8 @@ type ScrollSlider(props: ScrollSliderProps) =
     member _.SetProps(target, changedProps) =
       ScrollSliderPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ScrollSliderPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ScrollSliderPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsScrollSlider``
 
@@ -1254,8 +1254,8 @@ type FlagSelector(props: FlagSelectorProps) =
     member _.SetProps(target, changedProps) =
       FlagSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      FlagSelectorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      FlagSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsFlagSelector``
 
@@ -1278,8 +1278,8 @@ type OptionSelector(props: OptionSelectorProps) =
     member _.SetProps(target, changedProps) =
       OptionSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      OptionSelectorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      OptionSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsOptionSelector``
 
@@ -1306,8 +1306,8 @@ type FlagSelector<'TFlagsEnum
     member _.SetProps(target, changedProps) =
       FlagSelectorPropHandler<'TFlagsEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      FlagSelectorPropHandler<'TFlagsEnum>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      FlagSelectorPropHandler<'TFlagsEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``FlagSelector<'TFlagsEnum>``
 
@@ -1332,8 +1332,8 @@ type OptionSelector<'TEnum
     member _.SetProps(target, changedProps) =
       OptionSelectorPropHandler<'TEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      OptionSelectorPropHandler<'TEnum>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      OptionSelectorPropHandler<'TEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``OptionSelector<'TEnum>``
 
@@ -1356,8 +1356,8 @@ type Shortcut(props: ShortcutProps) =
     member _.SetProps(target, changedProps) =
       ShortcutPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ShortcutPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ShortcutPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsShortcut``
 
@@ -1380,8 +1380,8 @@ type MenuItem(props: MenuItemProps) =
     member _.SetProps(target, changedProps) =
       MenuItemPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MenuItemPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MenuItemPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMenuItem``
 
@@ -1406,8 +1406,8 @@ type MenuBarItem(props: MenuBarItemProps) =
     member _.SetProps(target, changedProps) =
       MenuBarItemPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      MenuBarItemPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      MenuBarItemPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsMenuBarItem``
 
@@ -1432,8 +1432,8 @@ type SpinnerView(props: SpinnerViewProps) =
     member _.SetProps(target, changedProps) =
       SpinnerViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      SpinnerViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      SpinnerViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsSpinnerView``
 
@@ -1456,8 +1456,8 @@ type StatusBar(props: StatusBarProps) =
     member _.SetProps(target, changedProps) =
       StatusBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      StatusBarPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      StatusBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsStatusBar``
 
@@ -1480,8 +1480,8 @@ type TableView(props: TableViewProps) =
     member _.SetProps(target, changedProps) =
       TableViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TableViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TableViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTableView``
 
@@ -1504,8 +1504,8 @@ type Tabs(props: TabsProps) =
     member _.SetProps(target, changedProps) =
       TabsPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TabsPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TabsPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTabs``
 
@@ -1528,8 +1528,8 @@ type TextField(props: TextFieldProps) =
     member _.SetProps(target, changedProps) =
       TextFieldPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TextFieldPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TextFieldPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTextField``
 
@@ -1552,8 +1552,8 @@ type DropDownList(props: DropDownListProps) =
     member _.SetProps(target, changedProps) =
       DropDownListPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DropDownListPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DropDownListPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsDropDownList``
 
@@ -1578,8 +1578,8 @@ type DropDownList<'TEnum
     member _.SetProps(target, changedProps) =
       DropDownListPropHandler<'TEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DropDownListPropHandler<'TEnum>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DropDownListPropHandler<'TEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``DropDownList<'TEnum>``
 
@@ -1602,8 +1602,8 @@ type TextValidateField(props: TextValidateFieldProps) =
     member _.SetProps(target, changedProps) =
       TextValidateFieldPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TextValidateFieldPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TextValidateFieldPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTextValidateField``
 
@@ -1626,8 +1626,8 @@ type DateEditor(props: DateEditorProps) =
     member _.SetProps(target, changedProps) =
       DateEditorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      DateEditorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      DateEditorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsDateEditor``
 
@@ -1650,8 +1650,8 @@ type TextView(props: TextViewProps) =
     member _.SetProps(target, changedProps) =
       TextViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TextViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TextViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTextView``
 
@@ -1674,8 +1674,8 @@ type TimeEditor(props: TimeEditorProps) =
     member _.SetProps(target, changedProps) =
       TimeEditorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TimeEditorPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TimeEditorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTimeEditor``
 
@@ -1698,8 +1698,8 @@ type TitleView(props: TitleViewProps) =
     member _.SetProps(target, changedProps) =
       TitleViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TitleViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TitleViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewBaseTitleView``
 
@@ -1723,8 +1723,8 @@ type ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Termina
     member _.SetProps(target, changedProps) =
       ToolTipHostPropHandler<'TView>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      ToolTipHostPropHandler<'TView>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      ToolTipHostPropHandler<'TView>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ToolTipHost<'TView>``
 
@@ -1747,8 +1747,8 @@ type TreeView<'T when 'T: not struct>(props: TreeViewProps<'T>) =
     member _.SetProps(target, changedProps) =
       TreeViewPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TreeViewPropHandler<'T>.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TreeViewPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``TreeView<'T>``
 
@@ -1771,8 +1771,8 @@ type TreeView(props: TreeViewProps) =
     member _.SetProps(target, changedProps) =
       TreeViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      TreeViewPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      TreeViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsTreeView``
 
@@ -1795,8 +1795,8 @@ type Window(props: WindowProps) =
     member _.SetProps(target, changedProps) =
       WindowPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      WindowPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      WindowPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsWindow``
 
@@ -1819,8 +1819,8 @@ type Wizard(props: WizardProps) =
     member _.SetProps(target, changedProps) =
       WizardPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      WizardPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      WizardPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsWizard``
 
@@ -1843,8 +1843,8 @@ type WizardStep(props: WizardStepProps) =
     member _.SetProps(target, changedProps) =
       WizardStepPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
 
-    member _.RemoveProps(target, removedProps) =
-      WizardStepPropHandler.removeProps (target :?> ViewBackedTerminalElement, removedProps)
+    member _.ClearProp(target, propertyId) =
+      WizardStepPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
 
     member _.ViewType = ViewType.``ViewsWizardStep``
 

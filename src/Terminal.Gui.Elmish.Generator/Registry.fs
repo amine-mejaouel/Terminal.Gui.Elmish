@@ -1,6 +1,7 @@
 namespace Terminal.Gui.Elmish.Generator
 
 open System
+open System.Collections.Generic
 
 module Registry =
 
@@ -134,3 +135,78 @@ module Registry =
     static member CreateInterface(propertyType: Type) =
       TEInterfaces.TEInterfaces.Add(propertyType) |> ignore
       getViewInterfaceName propertyType
+
+  type private PropertyIdKind =
+    | Property = 0
+    | ViewProperty = 1
+    | ViewSpecProperty = 2
+    | Event = 3
+
+  /// Deterministic property IDs shared by every generator that emits property metadata or dispatch code.
+  type PropertyIds =
+    static let ids =
+      let ids = Dictionary<struct (Type * string * PropertyIdKind), int>()
+      let mutable nextId = 0
+
+      let add viewType pkey kind =
+        ids.Add(struct (viewType, pkey, kind), nextId)
+        nextId <- nextId + 1
+
+      for viewType in ViewTypes.orderedByInheritance do
+        let view = ViewMetadata.create viewType
+
+        for prop in view.Properties do
+          if prop.IsViewProperty then
+            add viewType prop.PKey PropertyIdKind.ViewProperty
+            add viewType prop.PKey PropertyIdKind.ViewSpecProperty
+          else
+            add viewType prop.PKey PropertyIdKind.Property
+
+        for event in view.Events do
+          add viewType event.PKey PropertyIdKind.Event
+
+      // Preserve the existing ID allocation order for generated Terminal.Gui interface keys.
+      let interfaces =
+        typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()
+        |> Array.filter (fun t ->
+          t.IsInterface
+          && t.Namespace = "Terminal.Gui.ViewBase"
+          && t.Name.StartsWith("I")
+          && t.Name <> "IApplication"
+          && t.Name <> "IDesignTimeProperties")
+        |> Array.sortBy _.Name
+
+      for _, group in interfaces |> Array.groupBy getTypeNameWithoutArity |> Array.sortBy fst do
+        let properties =
+          group
+          |> Array.collect (fun interfaceType ->
+            (ViewMetadata.create interfaceType).Properties
+            |> Array.map (fun prop -> interfaceType, prop))
+
+        let events =
+          group
+          |> Array.collect (fun interfaceType ->
+            (ViewMetadata.create interfaceType).Events
+            |> Array.map (fun event -> interfaceType, event))
+
+        for interfaceType, prop in properties do
+          add interfaceType prop.PKey PropertyIdKind.Property
+
+        for interfaceType, event in events do
+          add interfaceType event.PKey PropertyIdKind.Event
+
+      ids
+
+    static member private Get(viewType, pkey, kind) = ids[struct (viewType, pkey, kind)]
+
+    static member Property(viewType, pkey) =
+      PropertyIds.Get(viewType, pkey, PropertyIdKind.Property)
+
+    static member ViewProperty(viewType, pkey) =
+      PropertyIds.Get(viewType, pkey, PropertyIdKind.ViewProperty)
+
+    static member ViewSpecProperty(viewType, pkey) =
+      PropertyIds.Get(viewType, pkey, PropertyIdKind.ViewSpecProperty)
+
+    static member Event(viewType, pkey) =
+      PropertyIds.Get(viewType, pkey, PropertyIdKind.Event)

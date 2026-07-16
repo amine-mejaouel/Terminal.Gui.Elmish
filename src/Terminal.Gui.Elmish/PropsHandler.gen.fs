@@ -337,344 +337,111 @@ type internal ViewPropHandler =
     if props |> Props.exists PKey.View.WidthChanging then
       terminalElement.TrySetEventHandler(PKey.View.WidthChanging, view.WidthChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View
 
-    // Properties
-    props
-    |> Props.tryFind PKey.View.App
-    |> Option.iter (fun _ -> view.App <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Arrangement
-    |> Option.iter (fun _ -> view.Arrangement <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.AssignHotKeys
-    |> Option.iter (fun _ -> view.AssignHotKeys <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.BorderStyle
-    |> Option.iter (fun _ -> view.BorderStyle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.CanFocus
-    |> Option.iter (fun _ -> view.CanFocus <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.CommandsToBubbleUp
-    |> Option.iter (fun _ -> view.CommandsToBubbleUp <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.ContentSizeTracksViewport
-    |> Option.iter (fun _ -> view.ContentSizeTracksViewport <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Cursor
-    |> Option.iter (fun _ -> view.Cursor <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Data
-    |> Option.iter (fun _ -> view.Data <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.DefaultAcceptView
-    |> Option.iter (fun _ -> view.DefaultAcceptView <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Enabled
-    |> Option.iter (fun _ -> view.Enabled <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Frame
-    |> Option.iter (fun _ -> view.Frame <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.HasFocus
-    |> Option.iter (fun _ -> view.HasFocus <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Height
-    |> Option.iter (fun _ -> view.Height <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.HotKey
-    |> Option.iter (fun _ -> view.HotKey <- Terminal.Gui.Input.Key.Empty)
-
-    props
-    |> Props.tryFind PKey.View.HotKeySpecifier
-    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props |> Props.tryFind PKey.View.Id |> Option.iter (fun _ -> view.Id <- "")
-
-    props
-    |> Props.tryFind PKey.View.IsInitialized
-    |> Option.iter (fun _ -> view.IsInitialized <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.MouseHighlightStates
-    |> Option.iter (fun _ -> view.MouseHighlightStates <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.MouseHoldRepeat
-    |> Option.iter (fun _ -> view.MouseHoldRepeat <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.MousePositionTracking
-    |> Option.iter (fun _ -> view.MousePositionTracking <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.PreserveTrailingSpaces
-    |> Option.iter (fun _ -> view.PreserveTrailingSpaces <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.SchemeName
-    |> Option.iter (fun _ -> view.SchemeName <- "")
-
-    props
-    |> Props.tryFind PKey.View.ShadowStyle
-    |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.SuperViewRendersLineCanvas
-    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.TabStop
-    |> Option.iter (fun _ -> view.TabStop <- Unchecked.defaultof<_>)
-
-    props |> Props.tryFind PKey.View.Text |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.View.TextAlignment
-    |> Option.iter (fun _ -> view.TextAlignment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.TextDirection
-    |> Option.iter (fun _ -> view.TextDirection <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Title
-    |> Option.iter (fun _ -> view.Title <- "")
-
-    props
-    |> Props.tryFind PKey.View.UsedHotKeys
-    |> Option.iter (fun _ -> view.UsedHotKeys <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.ValidatePosDim
-    |> Option.iter (fun _ -> view.ValidatePosDim <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.VerticalTextAlignment
-    |> Option.iter (fun _ -> view.VerticalTextAlignment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Viewport
-    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.ViewportSettings
-    |> Option.iter (fun _ -> view.ViewportSettings <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Visible
-    |> Option.iter (fun _ -> view.Visible <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.View.Width
-    |> Option.iter (fun _ -> view.Width <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.View.Accepted then
-      terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
-
-    if props |> Props.exists PKey.View.Accepting then
-      terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
-
-    if props |> Props.exists PKey.View.Activated then
-      terminalElement.TryRemoveEventHandler(PKey.View.Activated)
-
-    if props |> Props.exists PKey.View.Activating then
-      terminalElement.TryRemoveEventHandler(PKey.View.Activating)
-
-    if props |> Props.exists PKey.View.AdvancingFocus then
-      terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
-
-    if props |> Props.exists PKey.View.BorderStyleChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
-
-    if props |> Props.exists PKey.View.CanFocusChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
-
-    if props |> Props.exists PKey.View.ClearedViewport then
-      terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
-
-    if props |> Props.exists PKey.View.ClearingViewport then
-      terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
-
-    if props |> Props.exists PKey.View.CommandNotBound then
-      terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
-
-    if props |> Props.exists PKey.View.ContentSizeChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
-
-    if props |> Props.exists PKey.View.ContentSizeChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
-
-    if props |> Props.exists PKey.View.Disposing then
-      terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
-
-    if props |> Props.exists PKey.View.DrawComplete then
-      terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
-
-    if props |> Props.exists PKey.View.DrawingContent then
-      terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
-
-    if props |> Props.exists PKey.View.DrawingSubViews then
-      terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
-
-    if props |> Props.exists PKey.View.DrawingText then
-      terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
-
-    if props |> Props.exists PKey.View.DrewText then
-      terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
-
-    if props |> Props.exists PKey.View.EnabledChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
-
-    if props |> Props.exists PKey.View.FocusedChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
-
-    if props |> Props.exists PKey.View.FrameChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
-
-    if props |> Props.exists PKey.View.GettingAttributeForRole then
-      terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
-
-    if props |> Props.exists PKey.View.GettingScheme then
-      terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
-
-    if props |> Props.exists PKey.View.HandlingHotKey then
-      terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
-
-    if props |> Props.exists PKey.View.HasFocusChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
-
-    if props |> Props.exists PKey.View.HasFocusChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
-
-    if props |> Props.exists PKey.View.HeightChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
-
-    if props |> Props.exists PKey.View.HeightChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
-
-    if props |> Props.exists PKey.View.HotKeyChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
-
-    if props |> Props.exists PKey.View.HotKeyCommand then
-      terminalElement.TryRemoveEventHandler(PKey.View.HotKeyCommand)
-
-    if props |> Props.exists PKey.View.Initialized then
-      terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
-
-    if props |> Props.exists PKey.View.KeyDown then
-      terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
-
-    if props |> Props.exists PKey.View.KeyDownNotHandled then
-      terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
-
-    if props |> Props.exists PKey.View.KeyUp then
-      terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
-
-    if props |> Props.exists PKey.View.MouseEnter then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
-
-    if props |> Props.exists PKey.View.MouseEvent then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
-
-    if props |> Props.exists PKey.View.MouseHoldRepeatChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
-
-    if props |> Props.exists PKey.View.MouseHoldRepeatChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
-
-    if props |> Props.exists PKey.View.MouseLeave then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
-
-    if props |> Props.exists PKey.View.MouseStateChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
-
-    if props |> Props.exists PKey.View.Pasted then
-      terminalElement.TryRemoveEventHandler(PKey.View.Pasted)
-
-    if props |> Props.exists PKey.View.Pasting then
-      terminalElement.TryRemoveEventHandler(PKey.View.Pasting)
-
-    if props |> Props.exists PKey.View.Removed then
-      terminalElement.TryRemoveEventHandler(PKey.View.Removed)
-
-    if props |> Props.exists PKey.View.SchemeChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
-
-    if props |> Props.exists PKey.View.SchemeChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
-
-    if props |> Props.exists PKey.View.SchemeNameChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
-
-    if props |> Props.exists PKey.View.SchemeNameChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
-
-    if props |> Props.exists PKey.View.ShadowStyleChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.ShadowStyleChanged)
-
-    if props |> Props.exists PKey.View.SubViewAdded then
-      terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
-
-    if props |> Props.exists PKey.View.SubViewAdding then
-      terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdding)
-
-    if props |> Props.exists PKey.View.SubViewLayout then
-      terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
-
-    if props |> Props.exists PKey.View.SubViewRemoved then
-      terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
-
-    if props |> Props.exists PKey.View.SubViewsLaidOut then
-      terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
-
-    if props |> Props.exists PKey.View.SuperViewChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
-
-    if props |> Props.exists PKey.View.SuperViewChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
-
-    if props |> Props.exists PKey.View.TextChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
-
-    if props |> Props.exists PKey.View.TitleChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
-
-    if props |> Props.exists PKey.View.TitleChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
-
-    if props |> Props.exists PKey.View.ViewportChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
-
-    if props |> Props.exists PKey.View.VisibleChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
-
-    if props |> Props.exists PKey.View.VisibleChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
-
-    if props |> Props.exists PKey.View.WidthChanged then
-      terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
-
-    if props |> Props.exists PKey.View.WidthChanging then
-      terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
+    match propertyId.Value with
+    | 0 -> view.App <- Unchecked.defaultof<_>
+    | 1 -> view.Arrangement <- Unchecked.defaultof<_>
+    | 2 -> view.AssignHotKeys <- Unchecked.defaultof<_>
+    | 3 -> view.BorderStyle <- Unchecked.defaultof<_>
+    | 4 -> view.CanFocus <- Unchecked.defaultof<_>
+    | 5 -> view.CommandsToBubbleUp <- Unchecked.defaultof<_>
+    | 6 -> view.ContentSizeTracksViewport <- Unchecked.defaultof<_>
+    | 7 -> view.Cursor <- Unchecked.defaultof<_>
+    | 8 -> view.Data <- Unchecked.defaultof<_>
+    | 9 -> view.DefaultAcceptView <- Unchecked.defaultof<_>
+    | 11 -> view.Enabled <- Unchecked.defaultof<_>
+    | 12 -> view.Frame <- Unchecked.defaultof<_>
+    | 13 -> view.HasFocus <- Unchecked.defaultof<_>
+    | 14 -> view.Height <- Unchecked.defaultof<_>
+    | 15 -> view.HotKey <- Terminal.Gui.Input.Key.Empty
+    | 16 -> view.HotKeySpecifier <- Unchecked.defaultof<_>
+    | 17 -> view.Id <- ""
+    | 18 -> view.IsInitialized <- Unchecked.defaultof<_>
+    | 19 -> view.MouseHighlightStates <- Unchecked.defaultof<_>
+    | 20 -> view.MouseHoldRepeat <- Unchecked.defaultof<_>
+    | 21 -> view.MousePositionTracking <- Unchecked.defaultof<_>
+    | 22 -> view.PreserveTrailingSpaces <- Unchecked.defaultof<_>
+    | 23 -> view.SchemeName <- ""
+    | 24 -> view.ShadowStyle <- Unchecked.defaultof<_>
+    | 25 -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>
+    | 26 -> view.TabStop <- Unchecked.defaultof<_>
+    | 27 -> view.Text <- ""
+    | 28 -> view.TextAlignment <- Unchecked.defaultof<_>
+    | 29 -> view.TextDirection <- Unchecked.defaultof<_>
+    | 30 -> view.Title <- ""
+    | 31 -> view.UsedHotKeys <- Unchecked.defaultof<_>
+    | 32 -> view.ValidatePosDim <- Unchecked.defaultof<_>
+    | 33 -> view.VerticalTextAlignment <- Unchecked.defaultof<_>
+    | 34 -> view.Viewport <- Unchecked.defaultof<_>
+    | 35 -> view.ViewportSettings <- Unchecked.defaultof<_>
+    | 36 -> view.Visible <- Unchecked.defaultof<_>
+    | 37 -> view.Width <- Unchecked.defaultof<_>
+    | 38 -> terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
+    | 39 -> terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
+    | 40 -> terminalElement.TryRemoveEventHandler(PKey.View.Activated)
+    | 41 -> terminalElement.TryRemoveEventHandler(PKey.View.Activating)
+    | 42 -> terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
+    | 43 -> terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
+    | 44 -> terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
+    | 45 -> terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
+    | 46 -> terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
+    | 47 -> terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
+    | 48 -> terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
+    | 49 -> terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
+    | 50 -> terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
+    | 51 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
+    | 52 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
+    | 53 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
+    | 54 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
+    | 55 -> terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
+    | 56 -> terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
+    | 57 -> terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
+    | 58 -> terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
+    | 59 -> terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
+    | 60 -> terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
+    | 61 -> terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
+    | 62 -> terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
+    | 63 -> terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
+    | 64 -> terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
+    | 65 -> terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
+    | 66 -> terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
+    | 67 -> terminalElement.TryRemoveEventHandler(PKey.View.HotKeyCommand)
+    | 68 -> terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
+    | 69 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
+    | 70 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
+    | 71 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
+    | 72 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
+    | 73 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
+    | 74 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
+    | 75 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
+    | 76 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
+    | 77 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
+    | 78 -> terminalElement.TryRemoveEventHandler(PKey.View.Pasted)
+    | 79 -> terminalElement.TryRemoveEventHandler(PKey.View.Pasting)
+    | 80 -> terminalElement.TryRemoveEventHandler(PKey.View.Removed)
+    | 81 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
+    | 82 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
+    | 83 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
+    | 84 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
+    | 85 -> terminalElement.TryRemoveEventHandler(PKey.View.ShadowStyleChanged)
+    | 86 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
+    | 87 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdding)
+    | 88 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
+    | 89 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
+    | 90 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
+    | 91 -> terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
+    | 92 -> terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
+    | 93 -> terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
+    | 94 -> terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
+    | 95 -> terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
+    | 96 -> terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
+    | 97 -> terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
+    | 98 -> terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
+    | 99 -> terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
+    | 100 -> terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
+    | _ -> invalidOp $"Property ID {propertyId} cannot be cleared on '{terminalElement.Name}'."
 
 type internal AdornmentViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -699,28 +466,15 @@ type internal AdornmentViewPropHandler =
     |> Props.tryFind PKey.AdornmentView.Viewport
     |> Option.iter (fun v -> view.Viewport <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> AdornmentView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.AdornmentView.Adornment
-    |> Option.iter (fun _ -> view.Adornment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.AdornmentView.Diagnostics
-    |> Option.iter (fun _ -> view.Diagnostics <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.AdornmentView.SuperViewRendersLineCanvas
-    |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.AdornmentView.Viewport
-    |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 101 -> view.Adornment <- Unchecked.defaultof<_>
+    | 102 -> view.Diagnostics <- Unchecked.defaultof<_>
+    | 103 -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>
+    | 104 -> view.Viewport <- Unchecked.defaultof<_>
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal AttributePickerPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -747,29 +501,16 @@ type internal AttributePickerPropHandler =
     if props |> Props.exists PKey.AttributePicker.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.AttributePicker.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> AttributePicker
 
-    // Properties
-    props
-    |> Props.tryFind PKey.AttributePicker.SampleText
-    |> Option.iter (fun _ -> view.SampleText <- "")
-
-    props
-    |> Props.tryFind PKey.AttributePicker.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.AttributePicker.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
-
-    if props |> Props.exists PKey.AttributePicker.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.AttributePicker.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
+    match propertyId.Value with
+    | 105 -> view.SampleText <- ""
+    | 106 -> view.Value <- Unchecked.defaultof<_>
+    | 107 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
+    | 108 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChangedUntyped)
+    | 109 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -793,26 +534,15 @@ type internal BarPropHandler =
     if props |> Props.exists PKey.Bar.OrientationChanging then
       terminalElement.TrySetEventHandler(PKey.Bar.OrientationChanging, view.OrientationChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Bar
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Bar.AlignmentModes
-    |> Option.iter (fun _ -> view.AlignmentModes <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Bar.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Bar.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
-
-    if props |> Props.exists PKey.Bar.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
+    match propertyId.Value with
+    | 110 -> view.AlignmentModes <- Unchecked.defaultof<_>
+    | 111 -> view.Orientation <- Unchecked.defaultof<_>
+    | 112 -> terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
+    | 113 -> terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BorderViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -833,24 +563,14 @@ type internal BorderViewPropHandler =
     |> Props.tryFind PKey.BorderView.TabSide
     |> Option.iter (fun v -> view.TabSide <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> BorderView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.BorderView.TabLength
-    |> Option.iter (fun _ -> view.TabLength <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.BorderView.TabOffset
-    |> Option.iter (fun _ -> view.TabOffset <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.BorderView.TabSide
-    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 114 -> view.TabLength <- Unchecked.defaultof<_>
+    | 115 -> view.TabOffset <- Unchecked.defaultof<_>
+    | 116 -> view.TabSide <- Unchecked.defaultof<_>
+    | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ButtonPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -881,35 +601,17 @@ type internal ButtonPropHandler =
     if props |> Props.exists PKey.Button.InitializingShadowStyle then
       terminalElement.TrySetEventHandler(PKey.Button.InitializingShadowStyle, view.InitializingShadowStyle)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Button
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Button.HotKeySpecifier
-    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Button.IsDefault
-    |> Option.iter (fun _ -> view.IsDefault <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Button.NoDecorations
-    |> Option.iter (fun _ -> view.NoDecorations <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Button.NoPadding
-    |> Option.iter (fun _ -> view.NoPadding <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Button.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    // Events
-    if props |> Props.exists PKey.Button.InitializingShadowStyle then
-      terminalElement.TryRemoveEventHandler(PKey.Button.InitializingShadowStyle)
+    match propertyId.Value with
+    | 117 -> view.HotKeySpecifier <- Unchecked.defaultof<_>
+    | 118 -> view.IsDefault <- Unchecked.defaultof<_>
+    | 119 -> view.NoDecorations <- Unchecked.defaultof<_>
+    | 120 -> view.NoPadding <- Unchecked.defaultof<_>
+    | 121 -> view.Text <- ""
+    | 122 -> terminalElement.TryRemoveEventHandler(PKey.Button.InitializingShadowStyle)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CharMapPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -948,41 +650,19 @@ type internal CharMapPropHandler =
     if props |> Props.exists PKey.CharMap.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.CharMap.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> CharMap
 
-    // Properties
-    props
-    |> Props.tryFind PKey.CharMap.SelectedCodePoint
-    |> Option.iter (fun _ -> view.SelectedCodePoint <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CharMap.ShowGlyphWidths
-    |> Option.iter (fun _ -> view.ShowGlyphWidths <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CharMap.ShowUnicodeCategory
-    |> Option.iter (fun _ -> view.ShowUnicodeCategory <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CharMap.StartCodePoint
-    |> Option.iter (fun _ -> view.StartCodePoint <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CharMap.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.CharMap.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
-
-    if props |> Props.exists PKey.CharMap.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.CharMap.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
+    match propertyId.Value with
+    | 123 -> view.SelectedCodePoint <- Unchecked.defaultof<_>
+    | 124 -> view.ShowGlyphWidths <- Unchecked.defaultof<_>
+    | 125 -> view.ShowUnicodeCategory <- Unchecked.defaultof<_>
+    | 126 -> view.StartCodePoint <- Unchecked.defaultof<_>
+    | 127 -> view.Value <- Unchecked.defaultof<_>
+    | 128 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
+    | 129 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChangedUntyped)
+    | 130 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CheckBoxPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1021,41 +701,19 @@ type internal CheckBoxPropHandler =
     if props |> Props.exists PKey.CheckBox.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.CheckBox.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> CheckBox
 
-    // Properties
-    props
-    |> Props.tryFind PKey.CheckBox.AllowCheckStateNone
-    |> Option.iter (fun _ -> view.AllowCheckStateNone <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CheckBox.HotKeySpecifier
-    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CheckBox.RadioStyle
-    |> Option.iter (fun _ -> view.RadioStyle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.CheckBox.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.CheckBox.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.CheckBox.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
-
-    if props |> Props.exists PKey.CheckBox.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.CheckBox.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
+    match propertyId.Value with
+    | 131 -> view.AllowCheckStateNone <- Unchecked.defaultof<_>
+    | 132 -> view.HotKeySpecifier <- Unchecked.defaultof<_>
+    | 133 -> view.RadioStyle <- Unchecked.defaultof<_>
+    | 134 -> view.Text <- ""
+    | 135 -> view.Value <- Unchecked.defaultof<_>
+    | 136 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
+    | 137 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChangedUntyped)
+    | 138 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CodePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1074,22 +732,14 @@ type internal CodePropHandler =
 
     props |> Props.tryFind PKey.Code.Text |> Option.iter (fun v -> view.Text <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Code
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Code.Language
-    |> Option.iter (fun _ -> view.Language <- "")
-
-    props
-    |> Props.tryFind PKey.Code.SyntaxHighlighter
-    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
-
-    props |> Props.tryFind PKey.Code.Text |> Option.iter (fun _ -> view.Text <- "")
-
+    match propertyId.Value with
+    | 139 -> view.Language <- ""
+    | 140 -> view.SyntaxHighlighter <- Unchecked.defaultof<_>
+    | 141 -> view.Text <- ""
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ColorPickerPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1124,37 +774,18 @@ type internal ColorPickerPropHandler =
     if props |> Props.exists PKey.ColorPicker.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ColorPicker.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ColorPicker
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ColorPicker.SelectedColor
-    |> Option.iter (fun _ -> view.SelectedColor <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.ColorPicker.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ColorPicker.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
-
-    if props |> Props.exists PKey.ColorPicker.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ColorPicker.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
+    match propertyId.Value with
+    | 142 -> view.SelectedColor <- Unchecked.defaultof<_>
+    | 143 -> view.Style <- Unchecked.defaultof<_>
+    | 144 -> view.Text <- ""
+    | 145 -> view.Value <- Unchecked.defaultof<_>
+    | 146 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
+    | 147 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChangedUntyped)
+    | 148 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ColorPicker16PropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1193,41 +824,19 @@ type internal ColorPicker16PropHandler =
     if props |> Props.exists PKey.ColorPicker16.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ColorPicker16.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ColorPicker16
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ColorPicker16.BoxHeight
-    |> Option.iter (fun _ -> view.BoxHeight <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker16.BoxWidth
-    |> Option.iter (fun _ -> view.BoxWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker16.Caret
-    |> Option.iter (fun _ -> view.Caret <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker16.SelectedColor
-    |> Option.iter (fun _ -> view.SelectedColor <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker16.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ColorPicker16.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
-
-    if props |> Props.exists PKey.ColorPicker16.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ColorPicker16.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
+    match propertyId.Value with
+    | 149 -> view.BoxHeight <- Unchecked.defaultof<_>
+    | 150 -> view.BoxWidth <- Unchecked.defaultof<_>
+    | 151 -> view.Caret <- Unchecked.defaultof<_>
+    | 152 -> view.SelectedColor <- Unchecked.defaultof<_>
+    | 153 -> view.Value <- Unchecked.defaultof<_>
+    | 154 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
+    | 155 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChangedUntyped)
+    | 156 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DatePickerPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1258,41 +867,25 @@ type internal DatePickerPropHandler =
     if props |> Props.exists PKey.DatePicker.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.DatePicker.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> DatePicker
 
-    // Properties
-    props
-    |> Props.tryFind PKey.DatePicker.Culture
-    |> Option.iter (fun _ -> view.Culture <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.DatePicker.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.DatePicker.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.DatePicker.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
-
-    if props |> Props.exists PKey.DatePicker.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.DatePicker.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
+    match propertyId.Value with
+    | 157 -> view.Culture <- Unchecked.defaultof<_>
+    | 158 -> view.Text <- ""
+    | 159 -> view.Value <- Unchecked.defaultof<_>
+    | 160 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
+    | 161 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChangedUntyped)
+    | 162 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FrameViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal GraphViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1329,40 +922,18 @@ type internal GraphViewPropHandler =
     |> Props.tryFind PKey.GraphView.ScrollOffset
     |> Option.iter (fun v -> view.ScrollOffset <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> GraphView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.GraphView.AxisX
-    |> Option.iter (fun _ -> view.AxisX <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.AxisY
-    |> Option.iter (fun _ -> view.AxisY <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.CellSize
-    |> Option.iter (fun _ -> view.CellSize <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.GraphColor
-    |> Option.iter (fun _ -> view.GraphColor <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.MarginBottom
-    |> Option.iter (fun _ -> view.MarginBottom <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.MarginLeft
-    |> Option.iter (fun _ -> view.MarginLeft <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.GraphView.ScrollOffset
-    |> Option.iter (fun _ -> view.ScrollOffset <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 163 -> view.AxisX <- Unchecked.defaultof<_>
+    | 164 -> view.AxisY <- Unchecked.defaultof<_>
+    | 165 -> view.CellSize <- Unchecked.defaultof<_>
+    | 166 -> view.GraphColor <- Unchecked.defaultof<_>
+    | 167 -> view.MarginBottom <- Unchecked.defaultof<_>
+    | 168 -> view.MarginLeft <- Unchecked.defaultof<_>
+    | 169 -> view.ScrollOffset <- Unchecked.defaultof<_>
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal HexViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1398,38 +969,18 @@ type internal HexViewPropHandler =
     if props |> Props.exists PKey.HexView.PositionChanged then
       terminalElement.TrySetEventHandler(PKey.HexView.PositionChanged, view.PositionChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> HexView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.HexView.Address
-    |> Option.iter (fun _ -> view.Address <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.HexView.AddressWidth
-    |> Option.iter (fun _ -> view.AddressWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.HexView.BytesPerLine
-    |> Option.iter (fun _ -> view.BytesPerLine <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.HexView.ReadOnly
-    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.HexView.Source
-    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.HexView.Edited then
-      terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
-
-    if props |> Props.exists PKey.HexView.PositionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
+    match propertyId.Value with
+    | 170 -> view.Address <- Unchecked.defaultof<_>
+    | 171 -> view.AddressWidth <- Unchecked.defaultof<_>
+    | 172 -> view.BytesPerLine <- Unchecked.defaultof<_>
+    | 173 -> view.ReadOnly <- Unchecked.defaultof<_>
+    | 174 -> view.Source <- Unchecked.defaultof<_>
+    | 175 -> terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
+    | 176 -> terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ImageViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1474,47 +1025,20 @@ type internal ImageViewPropHandler =
     if props |> Props.exists PKey.ImageView.ZoomLevelChanged then
       terminalElement.TrySetEventHandler(PKey.ImageView.ZoomLevelChanged, view.ZoomLevelChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ImageView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ImageView.AllowSixelUpscaling
-    |> Option.iter (fun _ -> view.AllowSixelUpscaling <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.Image
-    |> Option.iter (fun _ -> view.Image <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.MaxSixelPaletteColors
-    |> Option.iter (fun _ -> view.MaxSixelPaletteColors <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.SixelEncoder
-    |> Option.iter (fun _ -> view.SixelEncoder <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.UseBackgroundRendering
-    |> Option.iter (fun _ -> view.UseBackgroundRendering <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.UseRasterGraphics
-    |> Option.iter (fun _ -> view.UseRasterGraphics <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.UseSixel
-    |> Option.iter (fun _ -> view.UseSixel <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ImageView.ZoomLevel
-    |> Option.iter (fun _ -> view.ZoomLevel <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ImageView.ZoomLevelChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ImageView.ZoomLevelChanged)
+    match propertyId.Value with
+    | 177 -> view.AllowSixelUpscaling <- Unchecked.defaultof<_>
+    | 178 -> view.Image <- Unchecked.defaultof<_>
+    | 179 -> view.MaxSixelPaletteColors <- Unchecked.defaultof<_>
+    | 180 -> view.SixelEncoder <- Unchecked.defaultof<_>
+    | 181 -> view.UseBackgroundRendering <- Unchecked.defaultof<_>
+    | 182 -> view.UseRasterGraphics <- Unchecked.defaultof<_>
+    | 183 -> view.UseSixel <- Unchecked.defaultof<_>
+    | 184 -> view.ZoomLevel <- Unchecked.defaultof<_>
+    | 185 -> terminalElement.TryRemoveEventHandler(PKey.ImageView.ZoomLevelChanged)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LabelPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1529,26 +1053,21 @@ type internal LabelPropHandler =
 
     props |> Props.tryFind PKey.Label.Text |> Option.iter (fun v -> view.Text <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Label
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Label.HotKeySpecifier
-    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props |> Props.tryFind PKey.Label.Text |> Option.iter (fun _ -> view.Text <- "")
-
+    match propertyId.Value with
+    | 186 -> view.HotKeySpecifier <- Unchecked.defaultof<_>
+    | 187 -> view.Text <- ""
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LegendAnnotationPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1578,34 +1097,17 @@ type internal LinePropHandler =
     if props |> Props.exists PKey.Line.OrientationChanging then
       terminalElement.TrySetEventHandler(PKey.Line.OrientationChanging, view.OrientationChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Line
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Line.Length
-    |> Option.iter (fun _ -> view.Length <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Line.LineAttribute
-    |> Option.iter (fun _ -> view.LineAttribute <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Line.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Line.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Line.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
-
-    if props |> Props.exists PKey.Line.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
+    match propertyId.Value with
+    | 188 -> view.Length <- Unchecked.defaultof<_>
+    | 189 -> view.LineAttribute <- Unchecked.defaultof<_>
+    | 190 -> view.Orientation <- Unchecked.defaultof<_>
+    | 191 -> view.Style <- Unchecked.defaultof<_>
+    | 192 -> terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
+    | 193 -> terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1789,147 +1291,43 @@ type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
     if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> LinearRangeViewBase<'TOption, 'TValue>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.AllowEmpty
-    |> Option.iter (fun _ -> view.AllowEmpty <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.FocusedOption
-    |> Option.iter (fun _ -> view.FocusedOption <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientation
-    |> Option.iter (fun _ -> view.LegendsOrientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacing
-    |> Option.iter (fun _ -> view.MinimumInnerSpacing <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Options
-    |> Option.iter (fun _ -> view.Options <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacing
-    |> Option.iter (fun _ -> view.ShowEndSpacing <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegends
-    |> Option.iter (fun _ -> view.ShowLegends <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSize
-    |> Option.iter (fun _ -> view.UseMinimumSize <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged
-    then
+    match propertyId.Value with
+    | 194 -> view.AllowEmpty <- Unchecked.defaultof<_>
+    | 195 -> view.FocusedOption <- Unchecked.defaultof<_>
+    | 196 -> view.LegendsOrientation <- Unchecked.defaultof<_>
+    | 197 -> view.MinimumInnerSpacing <- Unchecked.defaultof<_>
+    | 198 -> view.Options <- Unchecked.defaultof<_>
+    | 199 -> view.Orientation <- Unchecked.defaultof<_>
+    | 200 -> view.ShowEndSpacing <- Unchecked.defaultof<_>
+    | 201 -> view.ShowLegends <- Unchecked.defaultof<_>
+    | 202 -> view.Style <- Unchecked.defaultof<_>
+    | 203 -> view.Text <- ""
+    | 204 -> view.UseMinimumSize <- Unchecked.defaultof<_>
+    | 205 -> view.Value <- Unchecked.defaultof<_>
+    | 206 ->
       terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging
-    then
+    | 207 ->
       terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged
-    then
+    | 208 ->
       terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging
-    then
+    | 209 ->
       terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging)
-
-    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging)
-
-    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged)
-
-    if
-      props
-      |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped
-    then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging)
+    | 210 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused)
+    | 211 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged)
+    | 212 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging)
+    | 213 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged)
+    | 214 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging)
+    | 215 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged)
+    | 216 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging)
+    | 217 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged)
+    | 218 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging)
+    | 219 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged)
+    | 220 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped)
+    | 221 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearMultiSelectorPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1942,24 +1340,20 @@ type internal LinearMultiSelectorPropHandler<'T> =
     |> Props.tryFind PKey.LinearMultiSelector<'T>.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, IReadOnlyList<'T>>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> LinearMultiSelector<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.LinearMultiSelector<'T>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 222 -> view.Value <- Unchecked.defaultof<_>
+    | _ -> LinearRangeViewBasePropHandler<'T, IReadOnlyList<'T>>.clearProp (terminalElement, propertyId)
 
 type internal LinearMultiSelectorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearMultiSelectorPropHandler<string>.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearMultiSelectorPropHandler<string>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> LinearMultiSelectorPropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinearRangePropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -1980,32 +1374,22 @@ type internal LinearRangePropHandler<'T> =
     |> Props.tryFind PKey.LinearRange<'T>.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, LinearRangeSpan<'T>>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> LinearRange<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
-    |> Option.iter (fun _ -> view.RangeAllowSingle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.RangeKind
-    |> Option.iter (fun _ -> view.RangeKind <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 223 -> view.RangeAllowSingle <- Unchecked.defaultof<_>
+    | 224 -> view.RangeKind <- Unchecked.defaultof<_>
+    | 225 -> view.Value <- Unchecked.defaultof<_>
+    | _ -> LinearRangeViewBasePropHandler<'T, LinearRangeSpan<'T>>.clearProp (terminalElement, propertyId)
 
 type internal LinearRangePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearRangePropHandler<string>.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangePropHandler<string>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> LinearRangePropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinearSelectorPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2022,28 +1406,21 @@ type internal LinearSelectorPropHandler<'T> =
     |> Props.tryFind PKey.LinearSelector<'T>.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, 'T>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> LinearSelector<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.LinearSelector<'T>.SelectedIndex
-    |> Option.iter (fun _ -> view.SelectedIndex <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearSelector<'T>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 226 -> view.SelectedIndex <- Unchecked.defaultof<_>
+    | 227 -> view.Value <- Unchecked.defaultof<_>
+    | _ -> LinearRangeViewBasePropHandler<'T, 'T>.clearProp (terminalElement, propertyId)
 
 type internal LinearSelectorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearSelectorPropHandler<string>.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearSelectorPropHandler<string>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> LinearSelectorPropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinkPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2061,20 +1438,14 @@ type internal LinkPropHandler =
     if props |> Props.exists PKey.Link.UrlChanging then
       terminalElement.TrySetEventHandler(PKey.Link.UrlChanging, view.UrlChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Link
 
-    // Properties
-    props |> Props.tryFind PKey.Link.Url |> Option.iter (fun _ -> view.Url <- "")
-
-    // Events
-    if props |> Props.exists PKey.Link.UrlChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
-
-    if props |> Props.exists PKey.Link.UrlChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
+    match propertyId.Value with
+    | 228 -> view.Url <- ""
+    | 229 -> terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
+    | 230 -> terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2126,54 +1497,23 @@ type internal ListViewPropHandler =
     if props |> Props.exists PKey.ListView.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ListView.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ListView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ListView.KeystrokeNavigator
-    |> Option.iter (fun _ -> view.KeystrokeNavigator <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.MarkMultiple
-    |> Option.iter (fun _ -> view.MarkMultiple <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.SelectedItem
-    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.ShowMarks
-    |> Option.iter (fun _ -> view.ShowMarks <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.Source
-    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ListView.CollectionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
-
-    if props |> Props.exists PKey.ListView.RowRender then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
-
-    if props |> Props.exists PKey.ListView.SourceChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
-
-    if props |> Props.exists PKey.ListView.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
-
-    if props |> Props.exists PKey.ListView.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ListView.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
+    match propertyId.Value with
+    | 231 -> view.KeystrokeNavigator <- Unchecked.defaultof<_>
+    | 232 -> view.MarkMultiple <- Unchecked.defaultof<_>
+    | 233 -> view.SelectedItem <- Unchecked.defaultof<_>
+    | 234 -> view.ShowMarks <- Unchecked.defaultof<_>
+    | 235 -> view.Source <- Unchecked.defaultof<_>
+    | 236 -> view.Value <- Unchecked.defaultof<_>
+    | 237 -> terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
+    | 238 -> terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
+    | 239 -> terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
+    | 240 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
+    | 241 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChangedUntyped)
+    | 242 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2204,33 +1544,17 @@ type internal ListViewPropHandler<'T> =
     if props |> Props.exists PKey.ListView'<'T>.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ListView'<'T>.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ListViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ListView<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ListView'<'T>.Index
-    |> Option.iter (fun _ -> view.Index <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView'<'T>.SelectedItem
-    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ListView'<'T>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ListView'<'T>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanged)
-
-    if props |> Props.exists PKey.ListView'<'T>.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ListView'<'T>.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanging)
+    match propertyId.Value with
+    | 243 -> view.Index <- Unchecked.defaultof<_>
+    | 244 -> view.SelectedItem <- Unchecked.defaultof<_>
+    | 245 -> view.Value <- Unchecked.defaultof<_>
+    | 246 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanged)
+    | 247 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChangedUntyped)
+    | 248 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanging)
+    | _ -> ListViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarginViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2247,20 +1571,13 @@ type internal MarginViewPropHandler =
     |> Props.tryFind PKey.MarginView.ShadowStyle
     |> Option.iter (fun v -> view.ShadowStyle <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MarginView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MarginView.ShadowSize
-    |> Option.iter (fun _ -> view.ShadowSize <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarginView.ShadowStyle
-    |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 249 -> view.ShadowSize <- Unchecked.defaultof<_>
+    | 250 -> view.ShadowStyle <- Unchecked.defaultof<_>
+    | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2312,54 +1629,22 @@ type internal MarkdownPropHandler =
     if props |> Props.exists PKey.Markdown.MarkdownChanged then
       terminalElement.TrySetEventHandler(PKey.Markdown.MarkdownChanged, view.MarkdownChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Markdown
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Markdown.EnableSixelImages
-    |> Option.iter (fun _ -> view.EnableSixelImages <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.HotKeySpecifier
-    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.ImageLoader
-    |> Option.iter (fun _ -> view.ImageLoader <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.MarkdownPipeline
-    |> Option.iter (fun _ -> view.MarkdownPipeline <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.ShowCopyButtons
-    |> Option.iter (fun _ -> view.ShowCopyButtons <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.ShowHeadingPrefix
-    |> Option.iter (fun _ -> view.ShowHeadingPrefix <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.SyntaxHighlighter
-    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Markdown.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.Markdown.UseThemeBackground
-    |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Markdown.LinkClicked then
-      terminalElement.TryRemoveEventHandler(PKey.Markdown.LinkClicked)
-
-    if props |> Props.exists PKey.Markdown.MarkdownChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Markdown.MarkdownChanged)
+    match propertyId.Value with
+    | 251 -> view.EnableSixelImages <- Unchecked.defaultof<_>
+    | 252 -> view.HotKeySpecifier <- Unchecked.defaultof<_>
+    | 253 -> view.ImageLoader <- Unchecked.defaultof<_>
+    | 254 -> view.MarkdownPipeline <- Unchecked.defaultof<_>
+    | 255 -> view.ShowCopyButtons <- Unchecked.defaultof<_>
+    | 256 -> view.ShowHeadingPrefix <- Unchecked.defaultof<_>
+    | 257 -> view.SyntaxHighlighter <- Unchecked.defaultof<_>
+    | 258 -> view.Text <- ""
+    | 259 -> view.UseThemeBackground <- Unchecked.defaultof<_>
+    | 260 -> terminalElement.TryRemoveEventHandler(PKey.Markdown.LinkClicked)
+    | 261 -> terminalElement.TryRemoveEventHandler(PKey.Markdown.MarkdownChanged)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownCodeBlockPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2392,36 +1677,17 @@ type internal MarkdownCodeBlockPropHandler =
     |> Props.tryFind PKey.MarkdownCodeBlock.ThemeBackground
     |> Option.iter (fun v -> view.ThemeBackground <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MarkdownCodeBlock
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.CodeLines
-    |> Option.iter (fun _ -> view.CodeLines <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.Language
-    |> Option.iter (fun _ -> view.Language <- "")
-
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.ShowCopyButton
-    |> Option.iter (fun _ -> view.ShowCopyButton <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.SyntaxHighlighter
-    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.MarkdownCodeBlock.ThemeBackground
-    |> Option.iter (fun _ -> view.ThemeBackground <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 262 -> view.CodeLines <- Unchecked.defaultof<_>
+    | 263 -> view.Language <- ""
+    | 264 -> view.ShowCopyButton <- Unchecked.defaultof<_>
+    | 265 -> view.SyntaxHighlighter <- Unchecked.defaultof<_>
+    | 266 -> view.Text <- ""
+    | 267 -> view.ThemeBackground <- Unchecked.defaultof<_>
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownTablePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2450,31 +1716,16 @@ type internal MarkdownTablePropHandler =
     if props |> Props.exists PKey.MarkdownTable.LinkClicked then
       terminalElement.TrySetEventHandler(PKey.MarkdownTable.LinkClicked, view.LinkClicked)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MarkdownTable
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MarkdownTable.SyntaxHighlighter
-    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarkdownTable.TableData
-    |> Option.iter (fun _ -> view.TableData <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MarkdownTable.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.MarkdownTable.UseThemeBackground
-    |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.MarkdownTable.LinkClicked then
-      terminalElement.TryRemoveEventHandler(PKey.MarkdownTable.LinkClicked)
+    match propertyId.Value with
+    | 268 -> view.SyntaxHighlighter <- Unchecked.defaultof<_>
+    | 269 -> view.TableData <- Unchecked.defaultof<_>
+    | 270 -> view.Text <- ""
+    | 271 -> view.UseThemeBackground <- Unchecked.defaultof<_>
+    | 272 -> terminalElement.TryRemoveEventHandler(PKey.MarkdownTable.LinkClicked)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2502,32 +1753,17 @@ type internal MenuPropHandler =
     if props |> Props.exists PKey.Menu.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.Menu.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BarPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Menu
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Menu.SuperMenuItem
-    |> Option.iter (fun _ -> view.SuperMenuItem <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Menu.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Menu.SelectedMenuItemChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
-
-    if props |> Props.exists PKey.Menu.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanged)
-
-    if props |> Props.exists PKey.Menu.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.Menu.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanging)
+    match propertyId.Value with
+    | 273 -> view.SuperMenuItem <- Unchecked.defaultof<_>
+    | 275 -> view.Value <- Unchecked.defaultof<_>
+    | 277 -> terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
+    | 278 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanged)
+    | 279 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChangedUntyped)
+    | 280 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanging)
+    | _ -> BarPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2542,19 +1778,13 @@ type internal MenuBarPropHandler =
     if props |> Props.exists PKey.MenuBar.KeyChanged then
       terminalElement.TrySetEventHandler(PKey.MenuBar.KeyChanged, view.KeyChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MenuBar
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MenuBar.Key
-    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
-
-    // Events
-    if props |> Props.exists PKey.MenuBar.KeyChanged then
-      terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
+    match propertyId.Value with
+    | 281 -> view.Key <- Terminal.Gui.Input.Key.Empty
+    | 282 -> terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
+    | _ -> MenuPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler<'T> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2591,55 +1821,35 @@ type internal NumericUpDownPropHandler<'T> =
     if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.NumericUpDown<'T>.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> NumericUpDown<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.NumericUpDown<'T>.Format
-    |> Option.iter (fun _ -> view.Format <- "")
-
-    props
-    |> Props.tryFind PKey.NumericUpDown<'T>.Increment
-    |> Option.iter (fun _ -> view.Increment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.NumericUpDown<'T>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.NumericUpDown<'T>.FormatChanged then
-      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
-
-    if props |> Props.exists PKey.NumericUpDown<'T>.IncrementChanged then
-      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
-
-    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
-
-    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.NumericUpDown<'T>.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
+    match propertyId.Value with
+    | 283 -> view.Format <- ""
+    | 284 -> view.Increment <- Unchecked.defaultof<_>
+    | 285 -> view.Value <- Unchecked.defaultof<_>
+    | 286 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
+    | 287 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
+    | 288 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
+    | 289 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped)
+    | 290 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     NumericUpDownPropHandler<int>.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    NumericUpDownPropHandler<int>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> NumericUpDownPropHandler<int>.clearProp (terminalElement, propertyId)
 
 type internal PaddingViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     AdornmentViewPropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverImplPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2660,24 +1870,14 @@ type internal PopoverImplPropHandler =
     |> Props.tryFind PKey.PopoverImpl.Target
     |> Option.iter (fun v -> view.Target <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> PopoverImpl
 
-    // Properties
-    props
-    |> Props.tryFind PKey.PopoverImpl.Anchor
-    |> Option.iter (fun _ -> view.Anchor <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.PopoverImpl.Owner
-    |> Option.iter (fun _ -> view.Owner <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.PopoverImpl.Target
-    |> Option.iter (fun _ -> view.Target <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 291 -> view.Anchor <- Unchecked.defaultof<_>
+    | 292 -> view.Owner <- Unchecked.defaultof<_>
+    | 293 -> view.Target <- Unchecked.defaultof<_>
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
@@ -2699,23 +1899,14 @@ type internal PopoverPropHandler<'TView, 'TResult
     if props |> Props.exists PKey.Popover<'TView, 'TResult>.ResultChanged then
       terminalElement.TrySetEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged, view.ResultChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverImplPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Popover<'TView, 'TResult>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Popover<'TView, 'TResult>.ContentView
-    |> Option.iter (fun _ -> view.ContentView <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Popover<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Popover<'TView, 'TResult>.ResultChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged)
+    match propertyId.Value with
+    | 294 -> view.ContentView <- Unchecked.defaultof<_>
+    | 296 -> view.ResultExtractor <- Unchecked.defaultof<_>
+    | 297 -> terminalElement.TryRemoveEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged)
+    | _ -> PopoverImplPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverMenuPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2740,27 +1931,16 @@ type internal PopoverMenuPropHandler =
     if props |> Props.exists PKey.PopoverMenu.KeyChanged then
       terminalElement.TrySetEventHandler(PKey.PopoverMenu.KeyChanged, view.KeyChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> PopoverMenu
 
-    // Properties
-    props
-    |> Props.tryFind PKey.PopoverMenu.Key
-    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
-
-    props
-    |> Props.tryFind PKey.PopoverMenu.MouseFlags
-    |> Option.iter (fun _ -> view.MouseFlags <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.PopoverMenu.Root
-    |> Option.iter (fun _ -> view.Root <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.PopoverMenu.KeyChanged then
-      terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
+    match propertyId.Value with
+    | 298 -> view.Key <- Terminal.Gui.Input.Key.Empty
+    | 299 -> view.MouseFlags <- Unchecked.defaultof<_>
+    | 300 -> view.Root <- Unchecked.defaultof<_>
+    | 302 -> terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
+    | _ ->
+      PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.clearProp (terminalElement, propertyId)
 
 type internal ProgressBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2797,40 +1977,18 @@ type internal ProgressBarPropHandler =
     |> Props.tryFind PKey.ProgressBar.Text
     |> Option.iter (fun v -> view.Text <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ProgressBar
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ProgressBar.BidirectionalMarquee
-    |> Option.iter (fun _ -> view.BidirectionalMarquee <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.Fraction
-    |> Option.iter (fun _ -> view.Fraction <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.ProgressBarFormat
-    |> Option.iter (fun _ -> view.ProgressBarFormat <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.ProgressBarStyle
-    |> Option.iter (fun _ -> view.ProgressBarStyle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.SegmentCharacter
-    |> Option.iter (fun _ -> view.SegmentCharacter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.SyncWithTerminal
-    |> Option.iter (fun _ -> view.SyncWithTerminal <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ProgressBar.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
+    match propertyId.Value with
+    | 303 -> view.BidirectionalMarquee <- Unchecked.defaultof<_>
+    | 304 -> view.Fraction <- Unchecked.defaultof<_>
+    | 305 -> view.ProgressBarFormat <- Unchecked.defaultof<_>
+    | 306 -> view.ProgressBarStyle <- Unchecked.defaultof<_>
+    | 307 -> view.SegmentCharacter <- Unchecked.defaultof<_>
+    | 308 -> view.SyncWithTerminal <- Unchecked.defaultof<_>
+    | 309 -> view.Text <- ""
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal RunnablePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2857,29 +2015,16 @@ type internal RunnablePropHandler =
     if props |> Props.exists PKey.Runnable.IsRunningChanging then
       terminalElement.TrySetEventHandler(PKey.Runnable.IsRunningChanging, view.IsRunningChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Runnable
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Runnable.Result
-    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Runnable.StopRequested
-    |> Option.iter (fun _ -> view.StopRequested <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Runnable.IsModalChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
-
-    if props |> Props.exists PKey.Runnable.IsRunningChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
-
-    if props |> Props.exists PKey.Runnable.IsRunningChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
+    match propertyId.Value with
+    | 310 -> view.Result <- Unchecked.defaultof<_>
+    | 311 -> view.StopRequested <- Unchecked.defaultof<_>
+    | 312 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
+    | 313 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
+    | 314 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal RunnablePropHandler<'TResult> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2892,16 +2037,12 @@ type internal RunnablePropHandler<'TResult> =
     |> Props.tryFind PKey.Runnable'<'TResult>.Result
     |> Option.iter (fun v -> view.Result <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Runnable<'TResult>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Runnable'<'TResult>.Result
-    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 315 -> view.Result <- Unchecked.defaultof<_>
+    | _ -> RunnablePropHandler.clearProp (terminalElement, propertyId)
 
 type internal DialogPropHandler<'TResult> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2922,24 +2063,14 @@ type internal DialogPropHandler<'TResult> =
     |> Props.tryFind PKey.Dialog<'TResult>.Buttons
     |> Option.iter (fun v -> view.Buttons <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler<'TResult>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Dialog<'TResult>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignment
-    |> Option.iter (fun _ -> view.ButtonAlignment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Dialog<'TResult>.ButtonAlignmentModes
-    |> Option.iter (fun _ -> view.ButtonAlignmentModes <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Dialog<'TResult>.Buttons
-    |> Option.iter (fun _ -> view.Buttons <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 316 -> view.ButtonAlignment <- Unchecked.defaultof<_>
+    | 317 -> view.ButtonAlignmentModes <- Unchecked.defaultof<_>
+    | 318 -> view.Buttons <- Unchecked.defaultof<_>
+    | _ -> RunnablePropHandler<'TResult>.clearProp (terminalElement, propertyId)
 
 type internal RunnableWrapperPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
@@ -2953,16 +2084,12 @@ type internal RunnableWrapperPropHandler<'TView, 'TResult
     |> Props.tryFind PKey.RunnableWrapper<'TView, 'TResult>.ResultExtractor
     |> Option.iter (fun v -> view.ResultExtractor <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler<'TResult>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> RunnableWrapper<'TView, 'TResult>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.RunnableWrapper<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 319 -> view.ResultExtractor <- Unchecked.defaultof<_>
+    | _ -> RunnablePropHandler<'TResult>.clearProp (terminalElement, propertyId)
 
 type internal DialogPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -2975,16 +2102,12 @@ type internal DialogPropHandler =
     |> Props.tryFind PKey.Dialog'.Result
     |> Option.iter (fun v -> view.Result <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<int>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Dialog
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Dialog'.Result
-    |> Option.iter (fun _ -> view.Result <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 320 -> view.Result <- Unchecked.defaultof<_>
+    | _ -> DialogPropHandler<int>.clearProp (terminalElement, propertyId)
 
 type internal FileDialogPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3025,43 +2148,19 @@ type internal FileDialogPropHandler =
     if props |> Props.exists PKey.FileDialog.FilesSelected then
       terminalElement.TrySetEventHandler(PKey.FileDialog.FilesSelected, view.FilesSelected)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<IReadOnlyList<string>>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> FileDialog
 
-    // Properties
-    props
-    |> Props.tryFind PKey.FileDialog.AllowedTypes
-    |> Option.iter (fun _ -> view.AllowedTypes <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.FileDialog.AllowsMultipleSelection
-    |> Option.iter (fun _ -> view.AllowsMultipleSelection <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.FileDialog.FileOperationsHandler
-    |> Option.iter (fun _ -> view.FileOperationsHandler <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.FileDialog.MustExist
-    |> Option.iter (fun _ -> view.MustExist <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.FileDialog.OpenMode
-    |> Option.iter (fun _ -> view.OpenMode <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.FileDialog.Path
-    |> Option.iter (fun _ -> view.Path <- "")
-
-    props
-    |> Props.tryFind PKey.FileDialog.SearchMatcher
-    |> Option.iter (fun _ -> view.SearchMatcher <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.FileDialog.FilesSelected then
-      terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
+    match propertyId.Value with
+    | 321 -> view.AllowedTypes <- Unchecked.defaultof<_>
+    | 322 -> view.AllowsMultipleSelection <- Unchecked.defaultof<_>
+    | 323 -> view.FileOperationsHandler <- Unchecked.defaultof<_>
+    | 324 -> view.MustExist <- Unchecked.defaultof<_>
+    | 325 -> view.OpenMode <- Unchecked.defaultof<_>
+    | 326 -> view.Path <- ""
+    | 327 -> view.SearchMatcher <- Unchecked.defaultof<_>
+    | 328 -> terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
+    | _ -> DialogPropHandler<IReadOnlyList<string>>.clearProp (terminalElement, propertyId)
 
 type internal PromptPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
@@ -3075,16 +2174,12 @@ type internal PromptPropHandler<'TView, 'TResult
     |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
     |> Option.iter (fun v -> view.ResultExtractor <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<'TResult>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Prompt<'TView, 'TResult>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 329 -> view.ResultExtractor <- Unchecked.defaultof<_>
+    | _ -> DialogPropHandler<'TResult>.clearProp (terminalElement, propertyId)
 
 type internal OpenDialogPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3097,24 +2192,20 @@ type internal OpenDialogPropHandler =
     |> Props.tryFind PKey.OpenDialog.OpenMode
     |> Option.iter (fun v -> view.OpenMode <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FileDialogPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> OpenDialog
 
-    // Properties
-    props
-    |> Props.tryFind PKey.OpenDialog.OpenMode
-    |> Option.iter (fun _ -> view.OpenMode <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 330 -> view.OpenMode <- Unchecked.defaultof<_>
+    | _ -> FileDialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SaveDialogPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FileDialogPropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FileDialogPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> FileDialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3172,60 +2263,25 @@ type internal ScrollBarPropHandler =
     if props |> Props.exists PKey.ScrollBar.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ScrollBar.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ScrollBar
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ScrollBar.Increment
-    |> Option.iter (fun _ -> view.Increment <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollBar.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollBar.ScrollableContentSize
-    |> Option.iter (fun _ -> view.ScrollableContentSize <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollBar.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollBar.VisibilityMode
-    |> Option.iter (fun _ -> view.VisibilityMode <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollBar.VisibleContentSize
-    |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ScrollBar.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
-
-    if props |> Props.exists PKey.ScrollBar.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
-
-    if props |> Props.exists PKey.ScrollBar.ScrollableContentSizeChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
-
-    if props |> Props.exists PKey.ScrollBar.Scrolled then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
-
-    if props |> Props.exists PKey.ScrollBar.SliderPositionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
-
-    if props |> Props.exists PKey.ScrollBar.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
-
-    if props |> Props.exists PKey.ScrollBar.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ScrollBar.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
+    match propertyId.Value with
+    | 331 -> view.Increment <- Unchecked.defaultof<_>
+    | 332 -> view.Orientation <- Unchecked.defaultof<_>
+    | 333 -> view.ScrollableContentSize <- Unchecked.defaultof<_>
+    | 334 -> view.Value <- Unchecked.defaultof<_>
+    | 335 -> view.VisibilityMode <- Unchecked.defaultof<_>
+    | 336 -> view.VisibleContentSize <- Unchecked.defaultof<_>
+    | 337 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
+    | 338 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
+    | 339 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
+    | 340 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
+    | 341 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
+    | 342 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
+    | 343 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChangedUntyped)
+    | 344 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollButtonPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3249,26 +2305,15 @@ type internal ScrollButtonPropHandler =
     if props |> Props.exists PKey.ScrollButton.OrientationChanging then
       terminalElement.TrySetEventHandler(PKey.ScrollButton.OrientationChanging, view.OrientationChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ButtonPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ScrollButton
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ScrollButton.Direction
-    |> Option.iter (fun _ -> view.Direction <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollButton.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ScrollButton.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanged)
-
-    if props |> Props.exists PKey.ScrollButton.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanging)
+    match propertyId.Value with
+    | 345 -> view.Direction <- Unchecked.defaultof<_>
+    | 346 -> view.Orientation <- Unchecked.defaultof<_>
+    | 347 -> terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanged)
+    | 348 -> terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanging)
+    | _ -> ButtonPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollSliderPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3326,60 +2371,25 @@ type internal ScrollSliderPropHandler =
     if props |> Props.exists PKey.ScrollSlider.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.ScrollSlider.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ScrollSlider
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ScrollSlider.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollSlider.Position
-    |> Option.iter (fun _ -> view.Position <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollSlider.Size
-    |> Option.iter (fun _ -> view.Size <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollSlider.SliderPadding
-    |> Option.iter (fun _ -> view.SliderPadding <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollSlider.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ScrollSlider.VisibleContentSize
-    |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.ScrollSlider.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
-
-    if props |> Props.exists PKey.ScrollSlider.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
-
-    if props |> Props.exists PKey.ScrollSlider.PositionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
-
-    if props |> Props.exists PKey.ScrollSlider.PositionChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
-
-    if props |> Props.exists PKey.ScrollSlider.Scrolled then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
-
-    if props |> Props.exists PKey.ScrollSlider.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanged)
-
-    if props |> Props.exists PKey.ScrollSlider.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.ScrollSlider.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanging)
+    match propertyId.Value with
+    | 349 -> view.Orientation <- Unchecked.defaultof<_>
+    | 350 -> view.Position <- Unchecked.defaultof<_>
+    | 351 -> view.Size <- Unchecked.defaultof<_>
+    | 352 -> view.SliderPadding <- Unchecked.defaultof<_>
+    | 353 -> view.Value <- Unchecked.defaultof<_>
+    | 354 -> view.VisibleContentSize <- Unchecked.defaultof<_>
+    | 355 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
+    | 356 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
+    | 357 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
+    | 358 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
+    | 359 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
+    | 360 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanged)
+    | 361 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChangedUntyped)
+    | 362 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SelectorBasePropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3436,59 +2446,24 @@ type internal SelectorBasePropHandler =
     if props |> Props.exists PKey.SelectorBase.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.SelectorBase.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> SelectorBase
 
-    // Properties
-    props
-    |> Props.tryFind PKey.SelectorBase.DoubleClickAccepts
-    |> Option.iter (fun _ -> view.DoubleClickAccepts <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.HorizontalSpace
-    |> Option.iter (fun _ -> view.HorizontalSpace <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.Labels
-    |> Option.iter (fun _ -> view.Labels <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.Styles
-    |> Option.iter (fun _ -> view.Styles <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.TabBehavior
-    |> Option.iter (fun _ -> view.TabBehavior <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SelectorBase.Values
-    |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.SelectorBase.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
-
-    if props |> Props.exists PKey.SelectorBase.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
-
-    if props |> Props.exists PKey.SelectorBase.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
-
-    if props |> Props.exists PKey.SelectorBase.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.SelectorBase.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
+    match propertyId.Value with
+    | 363 -> view.DoubleClickAccepts <- Unchecked.defaultof<_>
+    | 364 -> view.HorizontalSpace <- Unchecked.defaultof<_>
+    | 365 -> view.Labels <- Unchecked.defaultof<_>
+    | 366 -> view.Orientation <- Unchecked.defaultof<_>
+    | 367 -> view.Styles <- Unchecked.defaultof<_>
+    | 368 -> view.TabBehavior <- Unchecked.defaultof<_>
+    | 369 -> view.Value <- Unchecked.defaultof<_>
+    | 370 -> view.Values <- Unchecked.defaultof<_>
+    | 371 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
+    | 372 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
+    | 373 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
+    | 374 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChangedUntyped)
+    | 375 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FlagSelectorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3501,16 +2476,12 @@ type internal FlagSelectorPropHandler =
     |> Props.tryFind PKey.FlagSelector.Value
     |> Option.iter (fun v -> view.Value <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SelectorBasePropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> FlagSelector
 
-    // Properties
-    props
-    |> Props.tryFind PKey.FlagSelector.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 376 -> view.Value <- Unchecked.defaultof<_>
+    | _ -> SelectorBasePropHandler.clearProp (terminalElement, propertyId)
 
 type internal OptionSelectorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3523,16 +2494,12 @@ type internal OptionSelectorPropHandler =
     |> Props.tryFind PKey.OptionSelector.FocusedItem
     |> Option.iter (fun v -> view.FocusedItem <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SelectorBasePropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> OptionSelector
 
-    // Properties
-    props
-    |> Props.tryFind PKey.OptionSelector.FocusedItem
-    |> Option.iter (fun _ -> view.FocusedItem <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 377 -> view.FocusedItem <- Unchecked.defaultof<_>
+    | _ -> SelectorBasePropHandler.clearProp (terminalElement, propertyId)
 
 type internal FlagSelectorPropHandler<'TFlagsEnum
   when 'TFlagsEnum: struct
@@ -3553,19 +2520,13 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
     if props |> Props.exists PKey.FlagSelector'<'TFlagsEnum>.ValueChanged then
       terminalElement.TrySetEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged, view.ValueChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FlagSelectorPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> FlagSelector<'TFlagsEnum>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.FlagSelector'<'TFlagsEnum>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.FlagSelector'<'TFlagsEnum>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
+    match propertyId.Value with
+    | 378 -> view.Value <- Unchecked.defaultof<_>
+    | 379 -> terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
+    | _ -> FlagSelectorPropHandler.clearProp (terminalElement, propertyId)
 
 type internal OptionSelectorPropHandler<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
@@ -3587,23 +2548,14 @@ type internal OptionSelectorPropHandler<'TEnum
     if props |> Props.exists PKey.OptionSelector'<'TEnum>.ValueChanged then
       terminalElement.TrySetEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged, view.ValueChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    OptionSelectorPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> OptionSelector<'TEnum>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.OptionSelector'<'TEnum>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.OptionSelector'<'TEnum>.Values
-    |> Option.iter (fun _ -> view.Values <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.OptionSelector'<'TEnum>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
+    match propertyId.Value with
+    | 380 -> view.Value <- Unchecked.defaultof<_>
+    | 381 -> view.Values <- Unchecked.defaultof<_>
+    | 382 -> terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
+    | _ -> OptionSelectorPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ShortcutPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3661,62 +2613,24 @@ type internal ShortcutPropHandler =
     if props |> Props.exists PKey.Shortcut.OrientationChanging then
       terminalElement.TrySetEventHandler(PKey.Shortcut.OrientationChanging, view.OrientationChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Shortcut
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Shortcut.Action
-    |> Option.iter (fun _ -> view.Action <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.AlignmentModes
-    |> Option.iter (fun _ -> view.AlignmentModes <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.BindKeyToApplication
-    |> Option.iter (fun _ -> view.BindKeyToApplication <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.Command
-    |> Option.iter (fun _ -> view.Command <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.CommandView
-    |> Option.iter (fun _ -> view.CommandView <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.HelpText
-    |> Option.iter (fun _ -> view.HelpText <- "")
-
-    props
-    |> Props.tryFind PKey.Shortcut.Key
-    |> Option.iter (fun _ -> view.Key <- Terminal.Gui.Input.Key.Empty)
-
-    props
-    |> Props.tryFind PKey.Shortcut.MinimumKeyTextSize
-    |> Option.iter (fun _ -> view.MinimumKeyTextSize <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.TargetView
-    |> Option.iter (fun _ -> view.TargetView <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Shortcut.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    // Events
-    if props |> Props.exists PKey.Shortcut.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
-
-    if props |> Props.exists PKey.Shortcut.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
+    match propertyId.Value with
+    | 383 -> view.Action <- Unchecked.defaultof<_>
+    | 384 -> view.AlignmentModes <- Unchecked.defaultof<_>
+    | 385 -> view.BindKeyToApplication <- Unchecked.defaultof<_>
+    | 386 -> view.Command <- Unchecked.defaultof<_>
+    | 387 -> view.CommandView <- Unchecked.defaultof<_>
+    | 389 -> view.HelpText <- ""
+    | 390 -> view.Key <- Terminal.Gui.Input.Key.Empty
+    | 391 -> view.MinimumKeyTextSize <- Unchecked.defaultof<_>
+    | 392 -> view.Orientation <- Unchecked.defaultof<_>
+    | 393 -> view.TargetView <- Unchecked.defaultof<_>
+    | 395 -> view.Text <- ""
+    | 396 -> terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
+    | 397 -> terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuItemPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3729,16 +2643,12 @@ type internal MenuItemPropHandler =
     |> Props.tryFind PKey.MenuItem.SubMenu
     |> Option.iter (fun v -> view.SubMenu <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ShortcutPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MenuItem
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MenuItem.SubMenu
-    |> Option.iter (fun _ -> view.SubMenu <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 398 -> view.SubMenu <- Unchecked.defaultof<_>
+    | _ -> ShortcutPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuBarItemPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3762,26 +2672,15 @@ type internal MenuBarItemPropHandler =
     if props |> Props.exists PKey.MenuBarItem.PopoverMenuOpenChanged then
       terminalElement.TrySetEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged, view.PopoverMenuOpenChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuItemPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> MenuBarItem
 
-    // Properties
-    props
-    |> Props.tryFind PKey.MenuBarItem.PopoverMenu
-    |> Option.iter (fun _ -> view.PopoverMenu <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.MenuBarItem.PopoverMenuOpen
-    |> Option.iter (fun _ -> view.PopoverMenuOpen <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.MenuBarItem.MenuOpenChanged then
-      terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
-
-    if props |> Props.exists PKey.MenuBarItem.PopoverMenuOpenChanged then
-      terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
+    match propertyId.Value with
+    | 400 -> view.PopoverMenu <- Unchecked.defaultof<_>
+    | 402 -> view.PopoverMenuOpen <- Unchecked.defaultof<_>
+    | 403 -> terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
+    | 404 -> terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
+    | _ -> MenuItemPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SpinnerViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3818,48 +2717,26 @@ type internal SpinnerViewPropHandler =
     |> Props.tryFind PKey.SpinnerView.SyncWithTerminal
     |> Option.iter (fun v -> view.SyncWithTerminal <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> SpinnerView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.SpinnerView.AutoSpin
-    |> Option.iter (fun _ -> view.AutoSpin <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.Sequence
-    |> Option.iter (fun _ -> view.Sequence <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.SpinBounce
-    |> Option.iter (fun _ -> view.SpinBounce <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.SpinDelay
-    |> Option.iter (fun _ -> view.SpinDelay <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.SpinReverse
-    |> Option.iter (fun _ -> view.SpinReverse <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.SpinnerView.SyncWithTerminal
-    |> Option.iter (fun _ -> view.SyncWithTerminal <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 405 -> view.AutoSpin <- Unchecked.defaultof<_>
+    | 406 -> view.Sequence <- Unchecked.defaultof<_>
+    | 407 -> view.SpinBounce <- Unchecked.defaultof<_>
+    | 408 -> view.SpinDelay <- Unchecked.defaultof<_>
+    | 409 -> view.SpinReverse <- Unchecked.defaultof<_>
+    | 410 -> view.Style <- Unchecked.defaultof<_>
+    | 411 -> view.SyncWithTerminal <- Unchecked.defaultof<_>
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal StatusBarPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     BarPropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BarPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> BarPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TableViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -3930,73 +2807,27 @@ type internal TableViewPropHandler =
     if props |> Props.exists PKey.TableView.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.TableView.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TableView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TableView.CollectionNavigator
-    |> Option.iter (fun _ -> view.CollectionNavigator <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.ColumnOffset
-    |> Option.iter (fun _ -> view.ColumnOffset <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.FullRowSelect
-    |> Option.iter (fun _ -> view.FullRowSelect <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.MaxCellWidth
-    |> Option.iter (fun _ -> view.MaxCellWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.MinCellWidth
-    |> Option.iter (fun _ -> view.MinCellWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.MultiSelect
-    |> Option.iter (fun _ -> view.MultiSelect <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.NullSymbol
-    |> Option.iter (fun _ -> view.NullSymbol <- "")
-
-    props
-    |> Props.tryFind PKey.TableView.RowOffset
-    |> Option.iter (fun _ -> view.RowOffset <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.SeparatorSymbol
-    |> Option.iter (fun _ -> view.SeparatorSymbol <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.Table
-    |> Option.iter (fun _ -> view.Table <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.UseAllRowsForContentCalculation
-    |> Option.iter (fun _ -> view.UseAllRowsForContentCalculation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.TableView.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanged)
-
-    if props |> Props.exists PKey.TableView.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.TableView.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanging)
+    match propertyId.Value with
+    | 412 -> view.CollectionNavigator <- Unchecked.defaultof<_>
+    | 413 -> view.ColumnOffset <- Unchecked.defaultof<_>
+    | 414 -> view.FullRowSelect <- Unchecked.defaultof<_>
+    | 415 -> view.MaxCellWidth <- Unchecked.defaultof<_>
+    | 416 -> view.MinCellWidth <- Unchecked.defaultof<_>
+    | 417 -> view.MultiSelect <- Unchecked.defaultof<_>
+    | 418 -> view.NullSymbol <- ""
+    | 419 -> view.RowOffset <- Unchecked.defaultof<_>
+    | 420 -> view.SeparatorSymbol <- Unchecked.defaultof<_>
+    | 421 -> view.Style <- Unchecked.defaultof<_>
+    | 422 -> view.Table <- Unchecked.defaultof<_>
+    | 423 -> view.UseAllRowsForContentCalculation <- Unchecked.defaultof<_>
+    | 424 -> view.Value <- Unchecked.defaultof<_>
+    | 425 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanged)
+    | 426 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChangedUntyped)
+    | 427 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TabsPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4037,45 +2868,20 @@ type internal TabsPropHandler =
     if props |> Props.exists PKey.Tabs.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.Tabs.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Tabs
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Tabs.ScrollOffset
-    |> Option.iter (fun _ -> view.ScrollOffset <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Tabs.TabDepth
-    |> Option.iter (fun _ -> view.TabDepth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Tabs.TabLineStyle
-    |> Option.iter (fun _ -> view.TabLineStyle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Tabs.TabSide
-    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Tabs.TabSpacing
-    |> Option.iter (fun _ -> view.TabSpacing <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Tabs.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Tabs.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanged)
-
-    if props |> Props.exists PKey.Tabs.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.Tabs.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanging)
+    match propertyId.Value with
+    | 428 -> view.ScrollOffset <- Unchecked.defaultof<_>
+    | 429 -> view.TabDepth <- Unchecked.defaultof<_>
+    | 430 -> view.TabLineStyle <- Unchecked.defaultof<_>
+    | 431 -> view.TabSide <- Unchecked.defaultof<_>
+    | 432 -> view.TabSpacing <- Unchecked.defaultof<_>
+    | 433 -> view.Value <- Unchecked.defaultof<_>
+    | 435 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanged)
+    | 436 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChangedUntyped)
+    | 437 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextFieldPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4137,64 +2943,25 @@ type internal TextFieldPropHandler =
     if props |> Props.exists PKey.TextField.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.TextField.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TextField
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TextField.Autocomplete
-    |> Option.iter (fun _ -> view.Autocomplete <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.InsertionPoint
-    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.ReadOnly
-    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.Secret
-    |> Option.iter (fun _ -> view.Secret <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.SelectWordOnlyOnDoubleClick
-    |> Option.iter (fun _ -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.SelectedStart
-    |> Option.iter (fun _ -> view.SelectedStart <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.TextField.UseSameRuneTypeForWords
-    |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.Used
-    |> Option.iter (fun _ -> view.Used <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextField.Value
-    |> Option.iter (fun _ -> view.Value <- "")
-
-    // Events
-    if props |> Props.exists PKey.TextField.TextChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
-
-    if props |> Props.exists PKey.TextField.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
-
-    if props |> Props.exists PKey.TextField.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.TextField.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
+    match propertyId.Value with
+    | 438 -> view.Autocomplete <- Unchecked.defaultof<_>
+    | 439 -> view.InsertionPoint <- Unchecked.defaultof<_>
+    | 440 -> view.ReadOnly <- Unchecked.defaultof<_>
+    | 441 -> view.Secret <- Unchecked.defaultof<_>
+    | 442 -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>
+    | 443 -> view.SelectedStart <- Unchecked.defaultof<_>
+    | 444 -> view.Text <- ""
+    | 445 -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>
+    | 446 -> view.Used <- Unchecked.defaultof<_>
+    | 447 -> view.Value <- ""
+    | 448 -> terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
+    | 449 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
+    | 450 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChangedUntyped)
+    | 451 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DropDownListPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4207,16 +2974,12 @@ type internal DropDownListPropHandler =
     |> Props.tryFind PKey.DropDownList.Source
     |> Option.iter (fun v -> view.Source <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextFieldPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> DropDownList
 
-    // Properties
-    props
-    |> Props.tryFind PKey.DropDownList.Source
-    |> Option.iter (fun _ -> view.Source <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 452 -> view.Source <- Unchecked.defaultof<_>
+    | _ -> TextFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DropDownListPropHandler<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
@@ -4234,19 +2997,13 @@ type internal DropDownListPropHandler<'TEnum
     if props |> Props.exists PKey.DropDownList'<'TEnum>.ValueChanged then
       terminalElement.TrySetEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged, view.ValueChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DropDownListPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> DropDownList<'TEnum>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.DropDownList'<'TEnum>.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.DropDownList'<'TEnum>.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged)
+    match propertyId.Value with
+    | 453 -> view.Value <- Unchecked.defaultof<_>
+    | 454 -> terminalElement.TryRemoveEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged)
+    | _ -> DropDownListPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextValidateFieldPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4277,33 +3034,17 @@ type internal TextValidateFieldPropHandler =
     if props |> Props.exists PKey.TextValidateField.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.TextValidateField.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TextValidateField
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TextValidateField.Provider
-    |> Option.iter (fun _ -> view.Provider <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextValidateField.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.TextValidateField.Value
-    |> Option.iter (fun _ -> view.Value <- "")
-
-    // Events
-    if props |> Props.exists PKey.TextValidateField.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
-
-    if props |> Props.exists PKey.TextValidateField.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.TextValidateField.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
+    match propertyId.Value with
+    | 455 -> view.Provider <- Unchecked.defaultof<_>
+    | 456 -> view.Text <- ""
+    | 457 -> view.Value <- ""
+    | 458 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
+    | 459 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
+    | 460 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DateEditorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4330,29 +3071,16 @@ type internal DateEditorPropHandler =
     if props |> Props.exists PKey.DateEditor.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.DateEditor.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextValidateFieldPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> DateEditor
 
-    // Properties
-    props
-    |> Props.tryFind PKey.DateEditor.Format
-    |> Option.iter (fun _ -> view.Format <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.DateEditor.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.DateEditor.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
-
-    if props |> Props.exists PKey.DateEditor.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.DateEditor.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
+    match propertyId.Value with
+    | 461 -> view.Format <- Unchecked.defaultof<_>
+    | 462 -> view.Value <- Unchecked.defaultof<_>
+    | 463 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
+    | 464 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
+    | 465 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
+    | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4447,94 +3175,33 @@ type internal TextViewPropHandler =
         view.UnwrappedCursorPositionChanged
       )
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TextView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TextView.EnterKeyAddsLine
-    |> Option.iter (fun _ -> view.EnterKeyAddsLine <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.InheritsPreviousAttribute
-    |> Option.iter (fun _ -> view.InheritsPreviousAttribute <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.InsertionPoint
-    |> Option.iter (fun _ -> view.InsertionPoint <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.IsSelecting
-    |> Option.iter (fun _ -> view.IsSelecting <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.Multiline
-    |> Option.iter (fun _ -> view.Multiline <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.ReadOnly
-    |> Option.iter (fun _ -> view.ReadOnly <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.ScrollBars
-    |> Option.iter (fun _ -> view.ScrollBars <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.SelectWordOnlyOnDoubleClick
-    |> Option.iter (fun _ -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.SelectionStartColumn
-    |> Option.iter (fun _ -> view.SelectionStartColumn <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.SelectionStartRow
-    |> Option.iter (fun _ -> view.SelectionStartRow <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.TabKeyAddsTab
-    |> Option.iter (fun _ -> view.TabKeyAddsTab <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.TabWidth
-    |> Option.iter (fun _ -> view.TabWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.TextView.UseSameRuneTypeForWords
-    |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.Used
-    |> Option.iter (fun _ -> view.Used <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextView.WordWrap
-    |> Option.iter (fun _ -> view.WordWrap <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.TextView.ContentsChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
-
-    if props |> Props.exists PKey.TextView.DrawNormalColor then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
-
-    if props |> Props.exists PKey.TextView.DrawReadOnlyColor then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
-
-    if props |> Props.exists PKey.TextView.DrawSelectionColor then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
-
-    if props |> Props.exists PKey.TextView.DrawUsedColor then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
-
-    if props |> Props.exists PKey.TextView.UnwrappedCursorPositionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPositionChanged)
+    match propertyId.Value with
+    | 466 -> view.EnterKeyAddsLine <- Unchecked.defaultof<_>
+    | 467 -> view.InheritsPreviousAttribute <- Unchecked.defaultof<_>
+    | 468 -> view.InsertionPoint <- Unchecked.defaultof<_>
+    | 469 -> view.IsSelecting <- Unchecked.defaultof<_>
+    | 470 -> view.Multiline <- Unchecked.defaultof<_>
+    | 471 -> view.ReadOnly <- Unchecked.defaultof<_>
+    | 472 -> view.ScrollBars <- Unchecked.defaultof<_>
+    | 473 -> view.SelectWordOnlyOnDoubleClick <- Unchecked.defaultof<_>
+    | 474 -> view.SelectionStartColumn <- Unchecked.defaultof<_>
+    | 475 -> view.SelectionStartRow <- Unchecked.defaultof<_>
+    | 476 -> view.TabKeyAddsTab <- Unchecked.defaultof<_>
+    | 477 -> view.TabWidth <- Unchecked.defaultof<_>
+    | 478 -> view.Text <- ""
+    | 479 -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>
+    | 480 -> view.Used <- Unchecked.defaultof<_>
+    | 481 -> view.WordWrap <- Unchecked.defaultof<_>
+    | 482 -> terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
+    | 483 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
+    | 484 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
+    | 485 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
+    | 486 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
+    | 487 -> terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPositionChanged)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TimeEditorPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4561,29 +3228,16 @@ type internal TimeEditorPropHandler =
     if props |> Props.exists PKey.TimeEditor.ValueChanging then
       terminalElement.TrySetEventHandler(PKey.TimeEditor.ValueChanging, view.ValueChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextValidateFieldPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TimeEditor
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TimeEditor.Format
-    |> Option.iter (fun _ -> view.Format <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TimeEditor.Value
-    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.TimeEditor.ValueChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
-
-    if props |> Props.exists PKey.TimeEditor.ValueChangedUntyped then
-      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
-
-    if props |> Props.exists PKey.TimeEditor.ValueChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
+    match propertyId.Value with
+    | 488 -> view.Format <- Unchecked.defaultof<_>
+    | 489 -> view.Value <- Unchecked.defaultof<_>
+    | 490 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
+    | 491 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
+    | 492 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
+    | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TitleViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4623,42 +3277,19 @@ type internal TitleViewPropHandler =
     if props |> Props.exists PKey.TitleView.OrientationChanging then
       terminalElement.TrySetEventHandler(PKey.TitleView.OrientationChanging, view.OrientationChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TitleView
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TitleView.Direction
-    |> Option.iter (fun _ -> view.Direction <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TitleView.MeasuredTabLength
-    |> Option.iter (fun _ -> view.MeasuredTabLength <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TitleView.Orientation
-    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TitleView.TabDepth
-    |> Option.iter (fun _ -> view.TabDepth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TitleView.TabSide
-    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TitleView.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    // Events
-    if props |> Props.exists PKey.TitleView.OrientationChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanged)
-
-    if props |> Props.exists PKey.TitleView.OrientationChanging then
-      terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanging)
+    match propertyId.Value with
+    | 493 -> view.Direction <- Unchecked.defaultof<_>
+    | 494 -> view.MeasuredTabLength <- Unchecked.defaultof<_>
+    | 495 -> view.Orientation <- Unchecked.defaultof<_>
+    | 496 -> view.TabDepth <- Unchecked.defaultof<_>
+    | 497 -> view.TabSide <- Unchecked.defaultof<_>
+    | 498 -> view.Text <- ""
+    | 499 -> terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanged)
+    | 500 -> terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanging)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
   =
@@ -4672,16 +3303,12 @@ type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) a
     |> Props.tryFind PKey.ToolTipHost<'TView>.ContentView
     |> Option.iter (fun v -> view.ContentView <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverImplPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> ToolTipHost<'TView>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.ToolTipHost<'TView>.ContentView
-    |> Option.iter (fun _ -> view.ContentView <- Unchecked.defaultof<_>)
-
+    match propertyId.Value with
+    | 501 -> view.ContentView <- Unchecked.defaultof<_>
+    | _ -> PopoverImplPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TreeViewPropHandler<'T when 'T: not struct> =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4748,85 +3375,42 @@ type internal TreeViewPropHandler<'T when 'T: not struct> =
     if props |> Props.exists PKey.TreeView<'T>.SelectionChanged then
       terminalElement.TrySetEventHandler(PKey.TreeView<'T>.SelectionChanged, view.SelectionChanged)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> TreeView<'T>
 
-    // Properties
-    props
-    |> Props.tryFind PKey.TreeView<'T>.AllowLetterBasedNavigation
-    |> Option.iter (fun _ -> view.AllowLetterBasedNavigation <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.AspectGetter
-    |> Option.iter (fun _ -> view.AspectGetter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.CheckboxMode
-    |> Option.iter (fun _ -> view.CheckboxMode <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ColorGetter
-    |> Option.iter (fun _ -> view.ColorGetter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.Filter
-    |> Option.iter (fun _ -> view.Filter <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.MaxDepth
-    |> Option.iter (fun _ -> view.MaxDepth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.MultiSelect
-    |> Option.iter (fun _ -> view.MultiSelect <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetHorizontal
-    |> Option.iter (fun _ -> view.ScrollOffsetHorizontal <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetVertical
-    |> Option.iter (fun _ -> view.ScrollOffsetVertical <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.SelectedObject
-    |> Option.iter (fun _ -> view.SelectedObject <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.TreeBuilder
-    |> Option.iter (fun _ -> view.TreeBuilder <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.TreeView<'T>.CheckedChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.CheckedChanged)
-
-    if props |> Props.exists PKey.TreeView<'T>.DrawLine then
-      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
-
-    if props |> Props.exists PKey.TreeView<'T>.SelectionChanged then
-      terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
+    match propertyId.Value with
+    | 503 -> view.AllowLetterBasedNavigation <- Unchecked.defaultof<_>
+    | 504 -> view.AspectGetter <- Unchecked.defaultof<_>
+    | 505 -> view.CheckboxMode <- Unchecked.defaultof<_>
+    | 506 -> view.ColorGetter <- Unchecked.defaultof<_>
+    | 507 -> view.Filter <- Unchecked.defaultof<_>
+    | 508 -> view.MaxDepth <- Unchecked.defaultof<_>
+    | 509 -> view.MultiSelect <- Unchecked.defaultof<_>
+    | 510 -> view.ScrollOffsetHorizontal <- Unchecked.defaultof<_>
+    | 511 -> view.ScrollOffsetVertical <- Unchecked.defaultof<_>
+    | 512 -> view.SelectedObject <- Unchecked.defaultof<_>
+    | 513 -> view.Style <- Unchecked.defaultof<_>
+    | 514 -> view.TreeBuilder <- Unchecked.defaultof<_>
+    | 515 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.CheckedChanged)
+    | 516 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
+    | 517 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TreeViewPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.clearProp (terminalElement, propertyId)
 
 type internal WindowPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     RunnablePropHandler.setProps (terminalElement, props)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
+    match propertyId.Value with
+    | _ -> RunnablePropHandler.clearProp (terminalElement, propertyId)
 
 type internal WizardPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4852,28 +3436,16 @@ type internal WizardPropHandler =
     if props |> Props.exists PKey.Wizard.StepChanging then
       terminalElement.TrySetEventHandler(PKey.Wizard.StepChanging, view.StepChanging)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> Wizard
 
-    // Properties
-    props
-    |> Props.tryFind PKey.Wizard.CurrentStep
-    |> Option.iter (fun _ -> view.CurrentStep <- Unchecked.defaultof<_>)
-
-    // Events
-    if props |> Props.exists PKey.Wizard.MovingBack then
-      terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
-
-    if props |> Props.exists PKey.Wizard.MovingNext then
-      terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
-
-    if props |> Props.exists PKey.Wizard.StepChanged then
-      terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
-
-    if props |> Props.exists PKey.Wizard.StepChanging then
-      terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
+    match propertyId.Value with
+    | 518 -> view.CurrentStep <- Unchecked.defaultof<_>
+    | 520 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
+    | 521 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
+    | 522 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
+    | 523 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
+    | _ -> DialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal WizardStepPropHandler =
   static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
@@ -4894,20 +3466,11 @@ type internal WizardStepPropHandler =
     |> Props.tryFind PKey.WizardStep.NextButtonText
     |> Option.iter (fun v -> view.NextButtonText <- v)
 
-  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
-
+  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     let view = terminalElement.View :?> WizardStep
 
-    // Properties
-    props
-    |> Props.tryFind PKey.WizardStep.BackButtonText
-    |> Option.iter (fun _ -> view.BackButtonText <- "")
-
-    props
-    |> Props.tryFind PKey.WizardStep.HelpText
-    |> Option.iter (fun _ -> view.HelpText <- "")
-
-    props
-    |> Props.tryFind PKey.WizardStep.NextButtonText
-    |> Option.iter (fun _ -> view.NextButtonText <- "")
+    match propertyId.Value with
+    | 524 -> view.BackButtonText <- ""
+    | 525 -> view.HelpText <- ""
+    | 526 -> view.NextButtonText <- ""
+    | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)

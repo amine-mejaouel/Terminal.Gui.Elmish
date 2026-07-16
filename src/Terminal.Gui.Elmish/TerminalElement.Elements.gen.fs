@@ -22,8 +22,8 @@ type internal ViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ViewPropHandler.clearProp (this, propertyId)
 
 type internal AdornmentViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -37,8 +37,8 @@ type internal AdornmentViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     AdornmentViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    AdornmentViewPropHandler.clearProp (this, propertyId)
 
 type internal AttributePickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -52,8 +52,8 @@ type internal AttributePickerTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     AttributePickerPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AttributePickerPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    AttributePickerPropHandler.clearProp (this, propertyId)
 
 type internal BarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -67,8 +67,8 @@ type internal BarTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     BarPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BarPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    BarPropHandler.clearProp (this, propertyId)
 
 type internal BorderViewTerminalElement(props: Props) =
   inherit AdornmentViewTerminalElement(props)
@@ -82,8 +82,8 @@ type internal BorderViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     BorderViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BorderViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    BorderViewPropHandler.clearProp (this, propertyId)
 
 type internal ButtonTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -97,8 +97,8 @@ type internal ButtonTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ButtonPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ButtonPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ButtonPropHandler.clearProp (this, propertyId)
 
 type internal CharMapTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -112,8 +112,8 @@ type internal CharMapTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     CharMapPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    CharMapPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    CharMapPropHandler.clearProp (this, propertyId)
 
 type internal CheckBoxTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -127,8 +127,8 @@ type internal CheckBoxTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     CheckBoxPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    CheckBoxPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    CheckBoxPropHandler.clearProp (this, propertyId)
 
 type internal CodeTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -142,8 +142,8 @@ type internal CodeTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     CodePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    CodePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    CodePropHandler.clearProp (this, propertyId)
 
 type internal ColorPickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -157,8 +157,8 @@ type internal ColorPickerTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ColorPickerPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ColorPickerPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ColorPickerPropHandler.clearProp (this, propertyId)
 
 type internal ColorPicker16TerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -172,8 +172,8 @@ type internal ColorPicker16TerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ColorPicker16PropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ColorPicker16PropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ColorPicker16PropHandler.clearProp (this, propertyId)
 
 type internal DatePickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -187,8 +187,8 @@ type internal DatePickerTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DatePickerPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DatePickerPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DatePickerPropHandler.clearProp (this, propertyId)
 
 type internal FrameViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -202,8 +202,8 @@ type internal FrameViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FrameViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FrameViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    FrameViewPropHandler.clearProp (this, propertyId)
 
 type internal GraphViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -217,8 +217,8 @@ type internal GraphViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     GraphViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    GraphViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    GraphViewPropHandler.clearProp (this, propertyId)
 
 type internal HexViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -232,8 +232,8 @@ type internal HexViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     HexViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    HexViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    HexViewPropHandler.clearProp (this, propertyId)
 
 type internal ImageViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -247,8 +247,8 @@ type internal ImageViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ImageViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ImageViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ImageViewPropHandler.clearProp (this, propertyId)
 
 type internal LabelTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -262,8 +262,8 @@ type internal LabelTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LabelPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LabelPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LabelPropHandler.clearProp (this, propertyId)
 
 type internal LegendAnnotationTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -277,8 +277,8 @@ type internal LegendAnnotationTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LegendAnnotationPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LegendAnnotationPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LegendAnnotationPropHandler.clearProp (this, propertyId)
 
 type internal LineTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -292,8 +292,8 @@ type internal LineTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinePropHandler.clearProp (this, propertyId)
 
 [<AbstractClass>]
 type internal LinearRangeViewBaseTerminalElement<'TOption, 'TValue>(props: Props) =
@@ -309,8 +309,8 @@ type internal LinearRangeViewBaseTerminalElement<'TOption, 'TValue>(props: Props
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearRangeViewBasePropHandler<'TOption, 'TValue>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'TOption, 'TValue>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearRangeViewBasePropHandler<'TOption, 'TValue>.clearProp (this, propertyId)
 
 type internal LinearMultiSelectorTerminalElement<'T>(props: Props) =
   inherit LinearRangeViewBaseTerminalElement<'T, IReadOnlyList<'T>>(props)
@@ -324,8 +324,8 @@ type internal LinearMultiSelectorTerminalElement<'T>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearMultiSelectorPropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearMultiSelectorPropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearMultiSelectorPropHandler<'T>.clearProp (this, propertyId)
 
 type internal LinearMultiSelectorTerminalElement(props: Props) =
   inherit LinearMultiSelectorTerminalElement<string>(props)
@@ -339,8 +339,8 @@ type internal LinearMultiSelectorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearMultiSelectorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearMultiSelectorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearMultiSelectorPropHandler.clearProp (this, propertyId)
 
 type internal LinearRangeTerminalElement<'T>(props: Props) =
   inherit LinearRangeViewBaseTerminalElement<'T, LinearRangeSpan<'T>>(props)
@@ -354,8 +354,8 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearRangePropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangePropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearRangePropHandler<'T>.clearProp (this, propertyId)
 
 type internal LinearRangeTerminalElement(props: Props) =
   inherit LinearRangeTerminalElement<string>(props)
@@ -369,8 +369,8 @@ type internal LinearRangeTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearRangePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearRangePropHandler.clearProp (this, propertyId)
 
 type internal LinearSelectorTerminalElement<'T>(props: Props) =
   inherit LinearRangeViewBaseTerminalElement<'T, 'T>(props)
@@ -384,8 +384,8 @@ type internal LinearSelectorTerminalElement<'T>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearSelectorPropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearSelectorPropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearSelectorPropHandler<'T>.clearProp (this, propertyId)
 
 type internal LinearSelectorTerminalElement(props: Props) =
   inherit LinearSelectorTerminalElement<string>(props)
@@ -399,8 +399,8 @@ type internal LinearSelectorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinearSelectorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearSelectorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinearSelectorPropHandler.clearProp (this, propertyId)
 
 type internal LinkTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -414,8 +414,8 @@ type internal LinkTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     LinkPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinkPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    LinkPropHandler.clearProp (this, propertyId)
 
 type internal ListViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -429,8 +429,8 @@ type internal ListViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ListViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ListViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ListViewPropHandler.clearProp (this, propertyId)
 
 type internal ListViewTerminalElement<'T>(props: Props) =
   inherit ListViewTerminalElement(props)
@@ -444,8 +444,8 @@ type internal ListViewTerminalElement<'T>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ListViewPropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ListViewPropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ListViewPropHandler<'T>.clearProp (this, propertyId)
 
 type internal MarginViewTerminalElement(props: Props) =
   inherit AdornmentViewTerminalElement(props)
@@ -459,8 +459,8 @@ type internal MarginViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MarginViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MarginViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MarginViewPropHandler.clearProp (this, propertyId)
 
 type internal MarkdownTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -474,8 +474,8 @@ type internal MarkdownTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MarkdownPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MarkdownPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MarkdownPropHandler.clearProp (this, propertyId)
 
 type internal MarkdownCodeBlockTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -489,8 +489,8 @@ type internal MarkdownCodeBlockTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MarkdownCodeBlockPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MarkdownCodeBlockPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MarkdownCodeBlockPropHandler.clearProp (this, propertyId)
 
 type internal MarkdownTableTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -504,8 +504,8 @@ type internal MarkdownTableTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MarkdownTablePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MarkdownTablePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MarkdownTablePropHandler.clearProp (this, propertyId)
 
 type internal MenuTerminalElement(props: Props) =
   inherit BarTerminalElement(props)
@@ -523,8 +523,8 @@ type internal MenuTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MenuPropHandler.clearProp (this, propertyId)
 
 type internal MenuBarTerminalElement(props: Props) =
   inherit MenuTerminalElement(props)
@@ -538,8 +538,8 @@ type internal MenuBarTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuBarPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuBarPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MenuBarPropHandler.clearProp (this, propertyId)
 
 type internal NumericUpDownTerminalElement<'T>(props: Props) =
   inherit ViewTerminalElement(props)
@@ -553,8 +553,8 @@ type internal NumericUpDownTerminalElement<'T>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     NumericUpDownPropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    NumericUpDownPropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    NumericUpDownPropHandler<'T>.clearProp (this, propertyId)
 
 type internal NumericUpDownTerminalElement(props: Props) =
   inherit NumericUpDownTerminalElement<int>(props)
@@ -568,8 +568,8 @@ type internal NumericUpDownTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     NumericUpDownPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    NumericUpDownPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    NumericUpDownPropHandler.clearProp (this, propertyId)
 
 type internal PaddingViewTerminalElement(props: Props) =
   inherit AdornmentViewTerminalElement(props)
@@ -583,8 +583,8 @@ type internal PaddingViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PaddingViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PaddingViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    PaddingViewPropHandler.clearProp (this, propertyId)
 
 [<AbstractClass>]
 type internal PopoverImplTerminalElement(props: Props) =
@@ -600,8 +600,8 @@ type internal PopoverImplTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PopoverImplPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverImplPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    PopoverImplPropHandler.clearProp (this, propertyId)
 
 type internal PopoverTerminalElement<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
@@ -620,8 +620,8 @@ type internal PopoverTerminalElement<'TView, 'TResult
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PopoverPropHandler<'TView, 'TResult>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverPropHandler<'TView, 'TResult>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    PopoverPropHandler<'TView, 'TResult>.clearProp (this, propertyId)
 
 type internal PopoverMenuTerminalElement(props: Props) =
   inherit PopoverTerminalElement<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>(props)
@@ -639,8 +639,8 @@ type internal PopoverMenuTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PopoverMenuPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverMenuPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    PopoverMenuPropHandler.clearProp (this, propertyId)
 
 type internal ProgressBarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -654,8 +654,8 @@ type internal ProgressBarTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ProgressBarPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ProgressBarPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ProgressBarPropHandler.clearProp (this, propertyId)
 
 type internal RunnableTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -669,8 +669,8 @@ type internal RunnableTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     RunnablePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    RunnablePropHandler.clearProp (this, propertyId)
 
 type internal RunnableTerminalElement<'TResult>(props: Props) =
   inherit RunnableTerminalElement(props)
@@ -684,8 +684,8 @@ type internal RunnableTerminalElement<'TResult>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     RunnablePropHandler<'TResult>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler<'TResult>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    RunnablePropHandler<'TResult>.clearProp (this, propertyId)
 
 type internal DialogTerminalElement<'TResult>(props: Props) =
   inherit RunnableTerminalElement<'TResult>(props)
@@ -699,8 +699,8 @@ type internal DialogTerminalElement<'TResult>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DialogPropHandler<'TResult>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<'TResult>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DialogPropHandler<'TResult>.clearProp (this, propertyId)
 
 type internal RunnableWrapperTerminalElement<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
@@ -715,8 +715,8 @@ type internal RunnableWrapperTerminalElement<'TView, 'TResult
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     RunnableWrapperPropHandler<'TView, 'TResult>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnableWrapperPropHandler<'TView, 'TResult>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    RunnableWrapperPropHandler<'TView, 'TResult>.clearProp (this, propertyId)
 
 type internal DialogTerminalElement(props: Props) =
   inherit DialogTerminalElement<int>(props)
@@ -730,8 +730,8 @@ type internal DialogTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DialogPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DialogPropHandler.clearProp (this, propertyId)
 
 type internal FileDialogTerminalElement(props: Props) =
   inherit DialogTerminalElement<IReadOnlyList<string>>(props)
@@ -745,8 +745,8 @@ type internal FileDialogTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FileDialogPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FileDialogPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    FileDialogPropHandler.clearProp (this, propertyId)
 
 type internal PromptTerminalElement<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
@@ -761,8 +761,8 @@ type internal PromptTerminalElement<'TView, 'TResult
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     PromptPropHandler<'TView, 'TResult>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PromptPropHandler<'TView, 'TResult>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    PromptPropHandler<'TView, 'TResult>.clearProp (this, propertyId)
 
 type internal OpenDialogTerminalElement(props: Props) =
   inherit FileDialogTerminalElement(props)
@@ -776,8 +776,8 @@ type internal OpenDialogTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     OpenDialogPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    OpenDialogPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    OpenDialogPropHandler.clearProp (this, propertyId)
 
 type internal SaveDialogTerminalElement(props: Props) =
   inherit FileDialogTerminalElement(props)
@@ -791,8 +791,8 @@ type internal SaveDialogTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     SaveDialogPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SaveDialogPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    SaveDialogPropHandler.clearProp (this, propertyId)
 
 type internal ScrollBarTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -806,8 +806,8 @@ type internal ScrollBarTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ScrollBarPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ScrollBarPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ScrollBarPropHandler.clearProp (this, propertyId)
 
 type internal ScrollButtonTerminalElement(props: Props) =
   inherit ButtonTerminalElement(props)
@@ -821,8 +821,8 @@ type internal ScrollButtonTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ScrollButtonPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ScrollButtonPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ScrollButtonPropHandler.clearProp (this, propertyId)
 
 type internal ScrollSliderTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -836,8 +836,8 @@ type internal ScrollSliderTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ScrollSliderPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ScrollSliderPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ScrollSliderPropHandler.clearProp (this, propertyId)
 
 [<AbstractClass>]
 type internal SelectorBaseTerminalElement(props: Props) =
@@ -853,8 +853,8 @@ type internal SelectorBaseTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     SelectorBasePropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SelectorBasePropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    SelectorBasePropHandler.clearProp (this, propertyId)
 
 type internal FlagSelectorTerminalElement(props: Props) =
   inherit SelectorBaseTerminalElement(props)
@@ -868,8 +868,8 @@ type internal FlagSelectorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FlagSelectorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FlagSelectorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    FlagSelectorPropHandler.clearProp (this, propertyId)
 
 type internal OptionSelectorTerminalElement(props: Props) =
   inherit SelectorBaseTerminalElement(props)
@@ -883,8 +883,8 @@ type internal OptionSelectorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     OptionSelectorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    OptionSelectorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    OptionSelectorPropHandler.clearProp (this, propertyId)
 
 type internal FlagSelectorTerminalElement<'TFlagsEnum
   when 'TFlagsEnum: struct
@@ -902,8 +902,8 @@ type internal FlagSelectorTerminalElement<'TFlagsEnum
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     FlagSelectorPropHandler<'TFlagsEnum>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FlagSelectorPropHandler<'TFlagsEnum>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    FlagSelectorPropHandler<'TFlagsEnum>.clearProp (this, propertyId)
 
 type internal OptionSelectorTerminalElement<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
@@ -919,8 +919,8 @@ type internal OptionSelectorTerminalElement<'TEnum
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     OptionSelectorPropHandler<'TEnum>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    OptionSelectorPropHandler<'TEnum>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    OptionSelectorPropHandler<'TEnum>.clearProp (this, propertyId)
 
 type internal ShortcutTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -939,8 +939,8 @@ type internal ShortcutTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ShortcutPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ShortcutPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ShortcutPropHandler.clearProp (this, propertyId)
 
 type internal MenuItemTerminalElement(props: Props) =
   inherit ShortcutTerminalElement(props)
@@ -958,8 +958,8 @@ type internal MenuItemTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuItemPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuItemPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MenuItemPropHandler.clearProp (this, propertyId)
 
 type internal MenuBarItemTerminalElement(props: Props) =
   inherit MenuItemTerminalElement(props)
@@ -977,8 +977,8 @@ type internal MenuBarItemTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     MenuBarItemPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuBarItemPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    MenuBarItemPropHandler.clearProp (this, propertyId)
 
 type internal SpinnerViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -992,8 +992,8 @@ type internal SpinnerViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     SpinnerViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SpinnerViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    SpinnerViewPropHandler.clearProp (this, propertyId)
 
 type internal StatusBarTerminalElement(props: Props) =
   inherit BarTerminalElement(props)
@@ -1007,8 +1007,8 @@ type internal StatusBarTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     StatusBarPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    StatusBarPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    StatusBarPropHandler.clearProp (this, propertyId)
 
 type internal TableViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1022,8 +1022,8 @@ type internal TableViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TableViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TableViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TableViewPropHandler.clearProp (this, propertyId)
 
 type internal TabsTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1040,8 +1040,8 @@ type internal TabsTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TabsPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TabsPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TabsPropHandler.clearProp (this, propertyId)
 
 type internal TextFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1055,8 +1055,8 @@ type internal TextFieldTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TextFieldPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextFieldPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TextFieldPropHandler.clearProp (this, propertyId)
 
 type internal DropDownListTerminalElement(props: Props) =
   inherit TextFieldTerminalElement(props)
@@ -1070,8 +1070,8 @@ type internal DropDownListTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DropDownListPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DropDownListPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DropDownListPropHandler.clearProp (this, propertyId)
 
 type internal DropDownListTerminalElement<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
@@ -1087,8 +1087,8 @@ type internal DropDownListTerminalElement<'TEnum
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DropDownListPropHandler<'TEnum>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DropDownListPropHandler<'TEnum>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DropDownListPropHandler<'TEnum>.clearProp (this, propertyId)
 
 type internal TextValidateFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1102,8 +1102,8 @@ type internal TextValidateFieldTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TextValidateFieldPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextValidateFieldPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TextValidateFieldPropHandler.clearProp (this, propertyId)
 
 type internal DateEditorTerminalElement(props: Props) =
   inherit TextValidateFieldTerminalElement(props)
@@ -1117,8 +1117,8 @@ type internal DateEditorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     DateEditorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DateEditorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    DateEditorPropHandler.clearProp (this, propertyId)
 
 type internal TextViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1132,8 +1132,8 @@ type internal TextViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TextViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TextViewPropHandler.clearProp (this, propertyId)
 
 type internal TimeEditorTerminalElement(props: Props) =
   inherit TextValidateFieldTerminalElement(props)
@@ -1147,8 +1147,8 @@ type internal TimeEditorTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TimeEditorPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TimeEditorPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TimeEditorPropHandler.clearProp (this, propertyId)
 
 type internal TitleViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1162,8 +1162,8 @@ type internal TitleViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TitleViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TitleViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TitleViewPropHandler.clearProp (this, propertyId)
 
 type internal ToolTipHostTerminalElement<'TView
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
@@ -1182,8 +1182,8 @@ type internal ToolTipHostTerminalElement<'TView
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     ToolTipHostPropHandler<'TView>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ToolTipHostPropHandler<'TView>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    ToolTipHostPropHandler<'TView>.clearProp (this, propertyId)
 
 type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1197,8 +1197,8 @@ type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TreeViewPropHandler<'T>.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TreeViewPropHandler<'T>.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TreeViewPropHandler<'T>.clearProp (this, propertyId)
 
 type internal TreeViewTerminalElement(props: Props) =
   inherit TreeViewTerminalElement<Terminal.Gui.Views.ITreeNode>(props)
@@ -1212,8 +1212,8 @@ type internal TreeViewTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     TreeViewPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TreeViewPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    TreeViewPropHandler.clearProp (this, propertyId)
 
 type internal WindowTerminalElement(props: Props) =
   inherit RunnableTerminalElement(props)
@@ -1227,8 +1227,8 @@ type internal WindowTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     WindowPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    WindowPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    WindowPropHandler.clearProp (this, propertyId)
 
 type internal WizardTerminalElement(props: Props) =
   inherit DialogTerminalElement(props)
@@ -1246,8 +1246,8 @@ type internal WizardTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     WizardPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    WizardPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    WizardPropHandler.clearProp (this, propertyId)
 
 type internal WizardStepTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1261,5 +1261,5 @@ type internal WizardStepTerminalElement(props: Props) =
   override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) =
     WizardStepPropHandler.setProps (terminalElement, props)
 
-  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    WizardStepPropHandler.removeProps (terminalElement, props)
+  override this.ClearProp(propertyId: PropertyId) =
+    WizardStepPropHandler.clearProp (this, propertyId)

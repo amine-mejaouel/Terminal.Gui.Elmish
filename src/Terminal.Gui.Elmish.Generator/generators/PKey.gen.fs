@@ -3,13 +3,6 @@ module Terminal.Gui.Elmish.Generator.PKey
 open System
 open Terminal.Gui.Elmish.Generator.TypeExtensions
 
-let mutable private nextPropertyId = 0
-
-let private allocatePropertyId () =
-  let value = nextPropertyId
-  nextPropertyId <- nextPropertyId + 1
-  value
-
 let private propertyIdExpression value = $"PropertyId.Create({value})"
 
 let genPKeyClassDefinition (viewType: Type) =
@@ -35,8 +28,8 @@ let genPKeyClassDefinition (viewType: Type) =
 
         // Check if this is a delayed pos property
         if prop.IsViewProperty then
-          let viewId = allocatePropertyId ()
-          let viewSpecId = allocatePropertyId ()
+          let viewId = Registry.PropertyIds.ViewProperty(viewType, prop.PKey)
+          let viewSpecId = Registry.PropertyIds.ViewSpecProperty(viewType, prop.PKey)
           let viewPropertyId = propertyIdExpression viewId
           let viewSpecPropertyId = propertyIdExpression viewSpecId
 
@@ -49,7 +42,7 @@ let genPKeyClassDefinition (viewType: Type) =
           yield
             $"    member val {prop.PKey}_viewSpec: PropKey<{interfaceName}> = PropKey.Create.subElement({viewPropertyId}, {viewSpecPropertyId}, \"{keyName}_viewSpec\")"
         else
-          let propertyId = allocatePropertyId ()
+          let propertyId = Registry.PropertyIds.Property(viewType, prop.PKey)
           let propertyId = propertyIdExpression propertyId
 
           yield
@@ -64,7 +57,7 @@ let genPKeyClassDefinition (viewType: Type) =
       for event in view.Events do
         let keyName = $"{className}.{event.PKey}_event"
         let handlerType = eventHandlerType event.EventInfo
-        let propertyId = allocatePropertyId ()
+        let propertyId = Registry.PropertyIds.Event(viewType, event.PKey)
         let propertyId = propertyIdExpression propertyId
 
         yield $"    member val {event.PKey}: PropKey<{handlerType}> = PropKey.Create.event({propertyId}, \"{keyName}\")"
@@ -106,7 +99,7 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
         yield "    // Properties"
 
         for prop, interfaceType in allProps do
-          let propertyId = allocatePropertyId ()
+          let propertyId = Registry.PropertyIds.Property(interfaceType, prop.PKey)
           let propertyId = propertyIdExpression propertyId
 
           yield
@@ -119,7 +112,7 @@ let genInterfaceGroupKeys moduleName (interfaceTypes: Type array) =
 
         for event, interfaceType in allEvents do
           let handlerType = eventHandlerType event.EventInfo
-          let propertyId = allocatePropertyId ()
+          let propertyId = Registry.PropertyIds.Event(interfaceType, event.PKey)
           let propertyId = propertyIdExpression propertyId
 
           yield
@@ -135,9 +128,6 @@ let opens =
     "open Terminal.Gui.Views" ]
 
 let gen () =
-
-  nextPropertyId <- 0
-
   // Get all interfaces from Terminal.Gui that we need to handle
   let interfaces =
     typeof<Terminal.Gui.ViewBase.View>.Assembly.GetTypes()

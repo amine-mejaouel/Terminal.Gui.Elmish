@@ -59,23 +59,22 @@ let setPropsCode (view: ViewMetadata) =
       yield ""
   }
 
-let removePropsCode (view: ViewMetadata) =
+let clearPropCode (view: ViewMetadata) =
   seq {
-    yield $"  static member removeProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
+    yield $"  static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) ="
 
-    if view.Type <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    {propHandlerTypeName view.Type.ParentViewType}.removeProps(terminalElement, props)"
-
-    yield $""
-
-    if not view.HasNoEventsOrProperties then
+    if view.Properties.Length > 0 then
       yield! terminalElementAndViewDeclaration view.Type
       yield $""
 
-    if view.Properties.Length > 0 then
-      yield "    // Properties"
+    yield "    match propertyId.Value with"
 
-    for prop in view.Properties |> Seq.filter (fun p -> p.PKey <> "X" && p.PKey <> "Y") do
+    for prop in view.Properties do
+      let propertyId =
+        if prop.IsViewProperty then
+          Registry.PropertyIds.ViewProperty(view.Type, prop.PKey)
+        else
+          Registry.PropertyIds.Property(view.Type, prop.PKey)
 
       let defaultValue =
         if prop.PropertyInfo.PropertyType = typeof<string> then
@@ -85,18 +84,17 @@ let removePropsCode (view: ViewMetadata) =
         else
           "Unchecked.defaultof<_>"
 
-      yield $"    props"
-      yield $"    |> Props.tryFind {PKey.getAccessor view.Type}.{prop.PKey}"
-      yield $"    |> Option.iter (fun _ ->"
-      yield $"        view.{prop.PKey} <- {defaultValue})"
-      yield ""
-
-    if view.Events.Length > 0 then
-      yield "    // Events"
+      yield $"    | {propertyId} -> view.{prop.PKey} <- {defaultValue}"
 
     for event in view.Events do
-      yield $"    if props |> Props.exists {PKey.getAccessor view.Type}.{event.PKey} then"
-      yield $"      terminalElement.TryRemoveEventHandler ({PKey.getAccessor view.Type}.{event.PKey})"
+      let propertyId = Registry.PropertyIds.Event(view.Type, event.PKey)
+
+      yield $"    | {propertyId} -> terminalElement.TryRemoveEventHandler({PKey.getAccessor view.Type}.{event.PKey})"
+
+    if view.Type = typeof<Terminal.Gui.ViewBase.View> then
+      yield "    | _ -> invalidOp $\"Property ID {propertyId} cannot be cleared on '{terminalElement.Name}'.\""
+    else
+      yield $"    | _ -> {propHandlerTypeName view.Type.ParentViewType}.clearProp(terminalElement, propertyId)"
   }
 
 let setAsChildOfParentView (viewType: Type) =
@@ -143,7 +141,7 @@ let gen () =
       //   yield ""
 
       yield! setPropsCode viewMetadata
-      yield! removePropsCode viewMetadata
+      yield! clearPropCode viewMetadata
       yield ""
 
   }

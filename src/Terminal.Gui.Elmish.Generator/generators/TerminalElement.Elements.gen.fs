@@ -24,10 +24,10 @@ let setPropsCode (view: ViewMetadata) =
     yield $"    {propHandlerTypeName view.Type}.setProps(terminalElement, props)"
   }
 
-let removePropsCode (view: ViewMetadata) =
+let clearPropCode (view: ViewMetadata) =
   seq {
-    yield $"  override _.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
-    yield $"    {propHandlerTypeName view.Type}.removeProps(terminalElement, props)"
+    yield $"  override this.ClearProp(propertyId: PropertyId) ="
+    yield $"    {propHandlerTypeName view.Type}.clearProp(this, propertyId)"
   }
 
 let setAsChildOfParentView (viewType: Type) =
@@ -93,7 +93,7 @@ let gen () =
         yield ""
 
       yield! setPropsCode viewMetadata
-      yield! removePropsCode viewMetadata
+      yield! clearPropCode viewMetadata
       yield ""
 
   // for i in Registry.TEInterfaces.GetAllPreviouslyCreatedInterfaces viewType do

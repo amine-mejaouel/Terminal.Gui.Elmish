@@ -1,22 +1,8 @@
 ﻿// Learn more about F# at http://fsharp.org
 
-open System
-
-open System.Diagnostics
-open System.Drawing
-open System.Text
-open System.Threading.Tasks
-open Terminal.Gui.App
 open Terminal.Gui.Configuration
-open Terminal.Gui.Drawing
 open Elmish
 open Terminal.Gui.Elmish
-open System.IO
-open Terminal.Gui
-open Terminal.Gui.Input
-open Terminal.Gui.ViewBase
-open Terminal.Gui.Views
-
 
 type Model = unit
 

@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open Terminal.Gui.App
 open Terminal.Gui.Elmish
-open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
 
 type ViewProps() =

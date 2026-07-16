@@ -2,7 +2,6 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
-open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
@@ -251,7 +250,7 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin * application: IApplication -> unit
+  abstract InitializeTree: origin: Origin * runtime: TerminalRuntime -> unit
 
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
@@ -267,7 +266,7 @@ and internal IElmishComponentTE =
   inherit ITerminalElementBase
   inherit IComponentViewSpec
   abstract Child: IViewTE with get
-  abstract StartElmishLoop: application: IApplication -> unit
+  abstract StartElmishLoop: runtime: TerminalRuntime -> unit
   abstract UpdateProps: ComponentProps -> unit
 
 and internal TerminalElement =

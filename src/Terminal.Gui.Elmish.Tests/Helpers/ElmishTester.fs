@@ -39,7 +39,7 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
           task {
             while not cancellationToken.Token.IsCancellationRequested do
               let! msg, msgHook = msgQueue.Reader.ReadAsync()
-              let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
+              let nextViewTeTask = model.RenderCoordinator.GetNextTEAsync() // Capture the task before dispatching the msg
               dispatch msg
               let! nextViewTe = nextViewTeTask
               msgHook.SetResult(nextViewTe)
@@ -72,6 +72,7 @@ let internal run
 
   let waitForStart = TaskCompletionSource()
   let mutable curTE = Unchecked.defaultof<_>
+  let mutable terminalModel: ElmishTerminal.TerminalModel<'model> option = None
   let triggerTerminationTcs = TaskCompletionSource()
 
   let application = Application.Create()
@@ -79,7 +80,8 @@ let internal run
   let waitForProgramStartSub (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
+        terminalModel <- Some model
+        let! currentTE = model.RenderCoordinator.GetCurrentTEAsync()
         curTE <- currentTE
 
         waitForStart.SetResult()
@@ -135,15 +137,26 @@ let internal run
       member _.View = curTE.View
 
       member this.Dispose() =
-        triggerTerminationTcs.SetResult()
-        curTE.Dispose() }
+        triggerTerminationTcs.TrySetResult() |> ignore
+
+        terminalModel
+        |> Option.iter (fun model ->
+          model.Dispose()
+          model.Runtime.RenderDispatcher.Dispose()
+          model.Application.Dispose())
+
+        application.Dispose() }
+
+let internal runSimple init update view =
+  ElmishTerminal.mkSimpleWithRuntime TerminalRuntime.createImmediate init update view
+  |> run
 
 let internal render view : TestableElmishProgram<'msg> =
   let init _ = (), Cmd.none
   let update _ _ = (), Cmd.none
   let view _ _ = view
 
-  ElmishTerminal.mkSimple init update view |> run
+  runSimple init update view
 
 type internal ITestableElmishComponentTE<'model, 'msg, 'view when 'view :> IView> =
   inherit IElmishComponentTE

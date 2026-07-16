@@ -182,13 +182,13 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView(application: Terminal.Gui.App.IApplication) =
+  member this.InitializeView(runtime: TerminalRuntime) =
 #if DEBUG
     Diagnostics.Trace.WriteLine $"{this.Name} created!"
 #endif
     this.View <- this.NewView()
 
-    this.InitializeSubElements(application)
+    this.InitializeSubElements(runtime)
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
 
     PositionService.Current.ApplyPos this
@@ -196,7 +196,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   abstract Name: string
 
-  member this.InitializeTree(origin: Origin, application: Terminal.Gui.App.IApplication) : unit =
+  member this.InitializeTree(origin: Origin, runtime: TerminalRuntime) : unit =
     this.Origin <- origin
 
     let traverse (node: TreeNode) =
@@ -204,10 +204,10 @@ type internal ViewBackedTerminalElement(props: Props) =
       match node.TerminalElement with
       | ViewTE te ->
         te.Origin <- node.Origin
-        (te :?> ViewBackedTerminalElement).InitializeView(application)
+        (te :?> ViewBackedTerminalElement).InitializeView(runtime)
       | ElmishComponentTE ce ->
         ce.Origin <- node.Origin
-        ce.StartElmishLoop(application)
+        ce.StartElmishLoop(runtime)
 
 #if DEBUG
       Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
@@ -238,7 +238,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       traverse
 
   /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.InitializeSubElements(application: Terminal.Gui.App.IApplication) : (PropKey * obj) seq =
+  member this.InitializeSubElements(runtime: TerminalRuntime) : (PropKey * obj) seq =
     seq {
       for x in this.SubElements_PropKeys do
         match this.Props |> Props.tryFind x with
@@ -248,7 +248,7 @@ type internal ViewBackedTerminalElement(props: Props) =
         | Some value ->
           match TerminalElement.from (value :?> IView) with
           | ViewTE viewTe ->
-            viewTe.InitializeTree(Origin.SubElement(this, None, x.Key), application)
+            viewTe.InitializeTree(Origin.SubElement(this, None, x.Key), runtime)
 
             let viewKey = PropKey.viewKeyOfSubElement x
 
@@ -326,8 +326,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       this.View.Dispose()
 
   interface IViewTE with
-    member this.InitializeTree(origin, application) =
-      this.InitializeTree(origin, application)
+    member this.InitializeTree(origin, runtime) = this.InitializeTree(origin, runtime)
 
     member this.GetPath() =
       this.Origin |> Origin.getPath (this.Name)

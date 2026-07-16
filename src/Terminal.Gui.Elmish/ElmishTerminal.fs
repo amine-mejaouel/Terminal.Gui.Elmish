@@ -2,9 +2,9 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Threading
+open System.Threading.Channels
 open System.Threading.Tasks
 open Elmish
-open Terminal.Gui.App
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
@@ -26,141 +26,228 @@ module TerminalMsg =
 [<RequireQualifiedAccess>]
 module ElmishTerminal =
 
-  type internal TerminalElementState(application: IApplication) =
+  type private RenderRequest =
+    { ViewSpec: ISimpleViewSpec
+      Origin: Origin }
+
+  [<RequireQualifiedAccess>]
+  type private RenderLifecycle =
+    | AwaitingInitialRender
+    | MountingInitialRender
+    | Running
+    | Faulted of exn
+    | Disposed
+
+  type internal TerminalRenderCoordinator(runtime: TerminalRuntime) =
+
     let mutable _currentTe: IViewTE option = None
-    let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
-    let rootViewTcs: TaskCompletionSource<View> = TaskCompletionSource<View>()
-    let renderer = new VirtualTree.Renderer(application)
-    let renderGate = obj ()
+    let resultGate = obj ()
+
+    let newNextTeTcs () =
+      TaskCompletionSource<IViewTE>(TaskCreationOptions.RunContinuationsAsynchronously)
+
+    let mutable nextTeTcs = newNextTeTcs ()
+
+    let rootViewTcs =
+      TaskCompletionSource<View>(TaskCreationOptions.RunContinuationsAsynchronously)
+
+    let renderer = new VirtualTree.Renderer(runtime)
+    let lifecycleGate = obj ()
     let renderCommitGate = obj ()
-    let mutable pendingRender: (ISimpleViewSpec * Origin) option = None
-    let mutable renderScheduled = false
-    let mutable disposed = false
+    let lifetimeCts = new CancellationTokenSource()
 
-    let setCurrentTe te =
-      _currentTe <- Some te
+    let renderRequests =
+      Channel.CreateBounded<RenderRequest>(
+        BoundedChannelOptions(
+          1,
+          SingleReader = true,
+          SingleWriter = false,
+          AllowSynchronousContinuations = false,
+          FullMode = BoundedChannelFullMode.DropOldest
+        )
+      )
 
-      if rootViewTcs.Task.IsCompletedSuccessfully |> not then
-        rootViewTcs.SetResult te.View
+    let mutable lifecycle = RenderLifecycle.AwaitingInitialRender
+    let mutable pumpTask: Task = Task.CompletedTask
 
-      nextTeTcs.SetResult(te)
-      nextTeTcs <- TaskCompletionSource<_>()
+    let failResultWaiters (ex: exn) =
+      let waitingForNext = lock resultGate (fun () -> nextTeTcs)
+      rootViewTcs.TrySetException(ex) |> ignore
+      waitingForNext.TrySetException(ex) |> ignore
 
-    let commit (viewSpec, origin) =
+    let enterFaulted ex =
+      let transitioned =
+        lock lifecycleGate (fun () ->
+          match lifecycle with
+          | RenderLifecycle.Disposed
+          | RenderLifecycle.Faulted _ -> false
+          | _ ->
+            lifecycle <- RenderLifecycle.Faulted ex
+            true)
+
+      if transitioned then
+        renderRequests.Writer.TryComplete(ex) |> ignore
+        failResultWaiters ex
+
+    let commit request =
+
+      let canCommit () =
+        lock lifecycleGate (fun () ->
+          match lifecycle with
+          | RenderLifecycle.MountingInitialRender
+          | RenderLifecycle.Running -> true
+          | _ -> false)
+
+      let setCurrentTe te =
+        let currentTeTcs =
+          lock resultGate (fun () ->
+            _currentTe <- Some te
+            rootViewTcs.TrySetResult(te.View) |> ignore
+
+            let waiting = nextTeTcs
+            nextTeTcs <- newNextTeTcs ()
+            waiting)
+
+        currentTeTcs.TrySetResult(te) |> ignore
+
       lock renderCommitGate (fun () ->
-        if not disposed then
-          renderer.Render(viewSpec, origin) |> setCurrentTe)
+        if canCommit () then
+          let te = renderer.Render(request.ViewSpec, request.Origin)
+          te |> setCurrentTe)
 
-    let rec drainPendingRenders () =
-      let pending =
-        lock renderGate (fun () ->
-          match disposed, pendingRender with
-          | true, _ ->
-            pendingRender <- None
-            renderScheduled <- false
-            None
-          | false, Some render ->
-            pendingRender <- None
-            Some render
-          | false, None ->
-            renderScheduled <- false
-            None)
+    let runPump () : Task =
 
-      match pending with
-      | Some render ->
-        commit render
+      let readLatestRequest initial =
+        let mutable latest = initial
+        let mutable candidate = Unchecked.defaultof<RenderRequest>
 
-        let needsAnotherIteration =
-          lock renderGate (fun () ->
-            if disposed || pendingRender.IsNone then
-              renderScheduled <- false
-              false
+        while renderRequests.Reader.TryRead(&candidate) do
+          latest <- candidate
+
+        latest
+
+      task {
+        try
+          let mutable keepRunning = true
+
+          while keepRunning do
+            let! canRead = renderRequests.Reader.WaitToReadAsync(lifetimeCts.Token).AsTask()
+
+            if not canRead then
+              keepRunning <- false
             else
-              true)
+              let mutable request = Unchecked.defaultof<RenderRequest>
 
-        // A render requested during commit is applied on the next main-loop iteration,
-        // preserving the one-commit-per-iteration invariant.
-        if needsAnotherIteration then
-          application.AddTimeout(
-            TimeSpan.Zero,
-            Func<bool>(fun () ->
-              drainPendingRenders ()
-              false)
-          )
-          |> ignore
-      | None -> ()
+              if renderRequests.Reader.TryRead(&request) then
+                let mutable latest = readLatestRequest request
 
-    member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
+                do!
+                  runtime.RenderDispatcher.InvokeAsync(
+                    Action(fun () ->
+                      latest <- readLatestRequest latest
+                      commit latest),
+                    lifetimeCts.Token
+                  )
+        with
+        | :? OperationCanceledException when lifetimeCts.IsCancellationRequested -> ()
+        | ex ->
+          enterFaulted ex
+          return raise ex
+      }
 
     member this.WaitTillRootViewIsSetAsync() = rootViewTcs.Task
 
-    member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
+    member _.GetNextTEAsync() =
+      lock resultGate (fun () -> nextTeTcs.Task)
 
     member this.GetCurrentTEAsync() : Task<IViewTE> =
       task {
-        let waitForNextTeTask = this.WaitForNextTerminalElementAsync()
+        let current, waitForNextTeTask =
+          lock resultGate (fun () -> _currentTe, nextTeTcs.Task)
 
-        if _currentTe.IsSome then
-          return _currentTe.Value
+        if current.IsSome then
+          return current.Value
         else
           return! waitForNextTeTask
       }
 
-    member _.QueueRender(viewSpec: ISimpleViewSpec, origin: Origin) =
-      if disposed then
-        raise (ObjectDisposedException(nameof TerminalElementState))
-      elif not application.Initialized then
-        // The initial tree is required before IApplication.Run can begin. Tests also
-        // intentionally use an uninitialized application, where synchronous commits
-        // provide deterministic behavior.
-        commit (viewSpec, origin)
-      else
-        let shouldSchedule =
-          lock renderGate (fun () ->
-            if disposed then
-              raise (ObjectDisposedException(nameof TerminalElementState))
+    member _.RequestRender(viewSpec: ISimpleViewSpec, origin: Origin) =
+      let request = { ViewSpec = viewSpec; Origin = origin }
 
-            pendingRender <- Some(viewSpec, origin)
+      let mountInitial =
+        lock lifecycleGate (fun () ->
+          match lifecycle with
+          | RenderLifecycle.AwaitingInitialRender ->
+            lifecycle <- RenderLifecycle.MountingInitialRender
+            true
+          | RenderLifecycle.MountingInitialRender
+          | RenderLifecycle.Running -> false
+          | RenderLifecycle.Faulted ex -> raise (InvalidOperationException("The terminal renderer is faulted.", ex))
+          | RenderLifecycle.Disposed -> raise (ObjectDisposedException(nameof TerminalRenderCoordinator)))
 
-            if renderScheduled then
-              false
-            else
-              renderScheduled <- true
-              true)
+      if mountInitial then
+        try
+          commit request
 
-        if shouldSchedule then
-          application.Invoke(Action drainPendingRenders)
+          let shouldStartPump =
+            lock lifecycleGate (fun () ->
+              match lifecycle with
+              | RenderLifecycle.MountingInitialRender ->
+                lifecycle <- RenderLifecycle.Running
+                true
+              | RenderLifecycle.Disposed
+              | RenderLifecycle.Faulted _ -> false
+              | _ -> invalidOp "The initial render completed from an invalid lifecycle state.")
+
+          if shouldStartPump then
+            pumpTask <- runPump ()
+        with ex ->
+          enterFaulted ex
+          raise ex
+      elif not (renderRequests.Writer.TryWrite request) then
+        lock lifecycleGate (fun () ->
+          match lifecycle with
+          | RenderLifecycle.Faulted ex -> raise (InvalidOperationException("The terminal renderer is faulted.", ex))
+          | _ -> raise (ObjectDisposedException(nameof TerminalRenderCoordinator)))
 
     member _.Dispose() =
       let shouldDispose =
-        lock renderGate (fun () ->
-          let wasActive = not disposed
-
-          if wasActive then
-            disposed <- true
-            pendingRender <- None
-            renderScheduled <- false
-
-          wasActive)
+        lock lifecycleGate (fun () ->
+          match lifecycle with
+          | RenderLifecycle.Disposed -> false
+          | _ ->
+            lifecycle <- RenderLifecycle.Disposed
+            true)
 
       if shouldDispose then
+        renderRequests.Writer.TryComplete() |> ignore
+        lifetimeCts.Cancel()
+
+        try
+          pumpTask.GetAwaiter().GetResult()
+        with
+        | :? OperationCanceledException -> ()
+        | _ -> ()
+
+        failResultWaiters (ObjectDisposedException(nameof TerminalRenderCoordinator))
         lock renderCommitGate (fun () -> renderer.Dispose())
+        lifetimeCts.Dispose()
 
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
   /// <p>It is used internally to manage the state of the terminal elements and the application.</p>
   /// <param name="ClientModel">Elmish model provided to the Program by the library caller.</param>
   /// </summary>
-  type internal TerminalModel<'model>(application: IApplication, kind: ProgramKind, clientModel: 'model) =
-    let terminalElementState = TerminalElementState(application)
+  type internal TerminalModel<'model>(runtime: TerminalRuntime, kind: ProgramKind, clientModel: 'model) =
+    let renderCoordinator = TerminalRenderCoordinator(runtime)
 
     member val ClientModel = clientModel with get, set
-    member this.Application = application
+    member _.Runtime = runtime
+    member _.Application = runtime.Application
     member this.Kind = kind
-    member this.RootViewSet = terminalElementState.RootViewSet
-    member this.TerminalElementState = terminalElementState
+    member this.RenderCoordinator = renderCoordinator
 
-    member this.Dispose() = terminalElementState.Dispose()
+    member this.Dispose() = renderCoordinator.Dispose()
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()
@@ -168,13 +255,14 @@ module ElmishTerminal =
 
   module internal OuterModel =
     let internal wrapInit
+      runtimeFactory
       origin
       (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
       : 'arg -> TerminalModel<'model> * Cmd<TerminalMsg<'msg>> =
       fun (arg: 'arg) ->
         let innerModel, cmd = init arg
 
-        let terminalModel = new TerminalModel<_>(Application.Create(), origin, innerModel)
+        let terminalModel = new TerminalModel<_>(runtimeFactory (), origin, innerModel)
 
         terminalModel, cmd
 
@@ -195,12 +283,11 @@ module ElmishTerminal =
       : TerminalModel<'model> -> Dispatch<TerminalMsg<'msg>> -> IView =
       fun (model: TerminalModel<'model>) (dispatch: Dispatch<TerminalMsg<'msg>>) -> view model.ClientModel dispatch
 
-    let internal wrapSimpleInit programKind (init: 'arg -> 'model) =
+    let internal wrapSimpleInit runtimeFactory programKind (init: 'arg -> 'model) =
       fun (arg: 'arg) ->
         let innerModel = init arg
 
-        let terminalModel =
-          new TerminalModel<_>(Application.Create(), programKind, innerModel)
+        let terminalModel = new TerminalModel<_>(runtimeFactory (), programKind, innerModel)
 
         terminalModel
 
@@ -234,7 +321,7 @@ module ElmishTerminal =
         | ProgramKind.ElmishComponent te -> Origin.ElmishComponent te
 
       let nextSpec = view model dispatch :?> ISimpleViewSpec
-      model.TerminalElementState.QueueRender(nextSpec, origin)
+      model.RenderCoordinator.RequestRender(nextSpec, origin)
 
       ()
     }
@@ -282,7 +369,7 @@ module ElmishTerminal =
 
     static member mkSimpleComponent<'arg, 'model, 'msg, 'view when 'view :> IView>
       (terminalElement: IElmishComponentTE)
-      (application: IApplication)
+      (runtime: TerminalRuntime)
       (init: 'arg -> 'model)
       (update: 'cmd -> 'model -> 'model)
       (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> 'view)
@@ -290,7 +377,7 @@ module ElmishTerminal =
       let wrapComponentInit arg =
         let innerModel = init arg
 
-        new TerminalModel<_>(application, ProgramKind.ElmishComponent terminalElement, innerModel)
+        new TerminalModel<_>(runtime, ProgramKind.ElmishComponent terminalElement, innerModel)
 
       Program.mkSimple wrapComponentInit (OuterModel.wrapSimpleUpdate update) (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
@@ -303,11 +390,11 @@ module ElmishTerminal =
       let runComponent (model: TerminalModel<_>) =
         let start dispatch =
           task {
-            let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
+            let! rootView = model.RenderCoordinator.WaitTillRootViewIsSetAsync()
 
             viewSetEvent.Trigger rootView
 
-            let! currentTe = model.TerminalElementState.GetCurrentTEAsync()
+            let! currentTe = model.RenderCoordinator.GetCurrentTEAsync()
             initialTeTcs.SetResult(currentTe)
           }
           |> Task.wait
@@ -391,9 +478,9 @@ module ElmishTerminal =
         | None -> ()
 
     interface IElmishComponentTE with
-      member this.StartElmishLoop(application) =
+      member this.StartElmishLoop(runtime) =
         if Interlocked.Exchange(&started, 1) = 0 then
-          ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this application init update view
+          ElmishComponentTE<'model, 'msg, 'view>.mkSimpleComponent this runtime init update view
           |> this.RunComponent
 
       member this.Child = this.Child
@@ -434,14 +521,35 @@ module ElmishTerminal =
     =
     new ElmishComponentTE<'model, 'msg, 'view>(props, init, update, view) :> IView
 
-  let mkProgram<'arg, 'model, 'msg, 'view when 'view :> IView>
+  let internal mkProgramWithRuntime<'arg, 'model, 'msg, 'view when 'view :> IView>
+    runtimeFactory
     (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
     (update: 'msg -> 'model -> 'model * Cmd<TerminalMsg<'msg>>)
     (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
     =
     Program.mkProgram
-      (OuterModel.wrapInit ProgramKind.Root init)
+      (OuterModel.wrapInit runtimeFactory ProgramKind.Root init)
       (OuterModel.wrapUpdate update)
+      (OuterModel.wrapView view)
+    |> Program.withSetState (setState (OuterModel.wrapView view))
+    |> ElmishTerminalProgram
+
+  let mkProgram<'arg, 'model, 'msg, 'view when 'view :> IView>
+    (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)
+    (update: 'msg -> 'model -> 'model * Cmd<TerminalMsg<'msg>>)
+    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> 'view)
+    =
+    mkProgramWithRuntime TerminalRuntime.createProduction init update view
+
+  let internal mkSimpleWithRuntime
+    runtimeFactory
+    (init: 'arg -> 'model)
+    (update: 'cmd -> 'model -> 'model)
+    (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> IView)
+    =
+    Program.mkSimple
+      (OuterModel.wrapSimpleInit runtimeFactory ProgramKind.Root init)
+      (OuterModel.wrapSimpleUpdate update)
       (OuterModel.wrapView view)
     |> Program.withSetState (setState (OuterModel.wrapView view))
     |> ElmishTerminalProgram
@@ -451,12 +559,7 @@ module ElmishTerminal =
     (update: 'cmd -> 'model -> 'model)
     (view: 'model -> Dispatch<TerminalMsg<'cmd>> -> IView)
     =
-    Program.mkSimple
-      (OuterModel.wrapSimpleInit ProgramKind.Root init)
-      (OuterModel.wrapSimpleUpdate update)
-      (OuterModel.wrapView view)
-    |> Program.withSetState (setState (OuterModel.wrapView view))
-    |> ElmishTerminalProgram
+    mkSimpleWithRuntime TerminalRuntime.createProduction init update view
 
   let withSubscription (subscribe: 'model -> Sub<'msg>) (ElmishTerminalProgram program) =
     program
@@ -472,7 +575,7 @@ module ElmishTerminal =
     let runTerminal (model: TerminalModel<_>) =
       let start dispatch =
         task {
-          let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
+          let! rootView = model.RenderCoordinator.WaitTillRootViewIsSetAsync()
 
           if model.Kind.IsElmishComponent then
             failwith (
@@ -484,10 +587,12 @@ module ElmishTerminal =
               (try
                 try
                   model.Application.Init() |> ignore
+                  model.Runtime.RenderDispatcher.Activate()
                   // Run return after Application.RequestStop is called in terminate.
                   model.Application.Run(rootView :?> Runnable) |> ignore
                 finally
                   model.Dispose()
+                  model.Runtime.RenderDispatcher.Dispose()
                   // 2. Dispose the IApplication (restores terminal, cleans up driver)
                   model.Application.Dispose()
 

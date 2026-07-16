@@ -1,4 +1,3 @@
-open Elmish
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 

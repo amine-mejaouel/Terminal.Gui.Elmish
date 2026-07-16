@@ -377,7 +377,7 @@ let ``Component state and view identity follow the key across a parent reorder``
     let view keys _ : IView =
       keys |> List.map createComponent |> keyedRoot
 
-    use program = ElmishTerminal.mkSimple init update view |> ElmishTester.run
+    use program = ElmishTester.runSimple init update view
     do! incrementA.Value()
 
     let before = program.View.SubViews |> Seq.toArray

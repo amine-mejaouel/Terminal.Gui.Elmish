@@ -3,7 +3,6 @@ namespace Terminal.Gui.Elmish
 open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
-open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 
 type private ReferenceComparer<'T when 'T: not struct>() =
@@ -100,14 +99,14 @@ module internal VirtualTree =
     | Origin.SubElement _ -> invalidOp "Elmish components are not supported in view-valued property slots."
     | Origin.ElmishComponent _ -> ()
 
-  let private mount (application: IApplication) origin spec =
+  let private mount (runtime: TerminalRuntime) origin spec =
     let element = terminalElementOf spec
 
     match element with
-    | TerminalElement.ViewTE viewTe -> viewTe.InitializeTree(origin, application)
+    | TerminalElement.ViewTE viewTe -> viewTe.InitializeTree(origin, runtime)
     | TerminalElement.ElmishComponentTE componentTe ->
       componentTe.Origin <- origin
-      componentTe.StartElmishLoop(application)
+      componentTe.StartElmishLoop(runtime)
       addComponentToParent componentTe
 
     captureMountedTree spec element
@@ -324,7 +323,7 @@ module internal VirtualTree =
         if not (obj.ReferenceEquals(actual[index], desired[index].View)) then
           invalidOp $"Failed to establish the requested child order for '{parent.Name}'."
 
-  let rec private reconcileNode (application: IApplication) (mounted: MountedNode) (nextSpec: ViewSpec) =
+  let rec private reconcileNode (runtime: TerminalRuntime) (mounted: MountedNode) (nextSpec: ViewSpec) =
     if not (sameIdentity mounted.Spec nextSpec) then
       invalidArg (nameof nextSpec) "reconcileNode requires compatible node identities."
 
@@ -332,8 +331,8 @@ module internal VirtualTree =
 
     match mounted.Spec, nextSpec, mounted.Element with
     | ViewSpec.SimpleViewSpec previous, ViewSpec.SimpleViewSpec next, TerminalElement.ViewTE viewTe ->
-      reconcileSlots application mounted next
-      reconcileChildren application mounted next
+      reconcileSlots runtime mounted next
+      reconcileChildren runtime mounted next
 
       let previousProps = previous.Props
       let nextProps = next.Props
@@ -364,7 +363,7 @@ module internal VirtualTree =
 
     | _ -> invalidOp "The retained node kind changed during reconciliation."
 
-  and private reconcileSlots (application: IApplication) (mounted: MountedNode) (next: ISimpleViewSpec) =
+  and private reconcileSlots (runtime: TerminalRuntime) (mounted: MountedNode) (next: ISimpleViewSpec) =
     let viewTe =
       match mounted.Element with
       | TerminalElement.ViewTE value -> value
@@ -393,15 +392,15 @@ module internal VirtualTree =
         match previousSlot, nextSlotSpec with
         | Some previous, Some nextSpec when sameIdentity previous.Spec nextSpec ->
           ViewSpec.bind nextSpec previous.Element
-          reconcileNode application previous nextSpec
+          reconcileNode runtime previous nextSpec
         | Some previous, Some nextSpec ->
           clearSlotProperty key
           unmount previous
-          let slot = mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount runtime (Origin.SubElement(viewTe, None, key.Key)) nextSpec
           mounted.Slots[key.Id] <- slot
           setSlotProperty key slot
         | None, Some nextSpec ->
-          let slot = mount application (Origin.SubElement(viewTe, None, key.Key)) nextSpec
+          let slot = mount runtime (Origin.SubElement(viewTe, None, key.Key)) nextSpec
           mounted.Slots[key.Id] <- slot
           setSlotProperty key slot
         | Some previous, None ->
@@ -414,7 +413,7 @@ module internal VirtualTree =
         | true, slot -> next.Props |> Props.add (PropKey.viewKeyOfSubElement key, slot.View)
         | false, _ -> ()
 
-  and private reconcileChildren (application: IApplication) (mounted: MountedNode) (next: ISimpleViewSpec) =
+  and private reconcileChildren (runtime: TerminalRuntime) (mounted: MountedNode) (next: ISimpleViewSpec) =
     let parent =
       match mounted.Element with
       | TerminalElement.ViewTE value -> value
@@ -461,7 +460,7 @@ module internal VirtualTree =
 
         if oldIndex >= 0 then
           let child = oldChildren[oldIndex]
-          reconcileNode application child nextSpecs[index]
+          reconcileNode runtime child nextSpecs[index]
           result[index] <- Some child
 
       for index = 0 to oldChildren.Length - 1 do
@@ -470,7 +469,7 @@ module internal VirtualTree =
 
       for index = 0 to nextSpecs.Length - 1 do
         if result[index].IsNone then
-          result[index] <- Some(mount application (Origin.Child(parent, index)) nextSpecs[index])
+          result[index] <- Some(mount runtime (Origin.Child(parent, index)) nextSpecs[index])
 
       let nextChildren = ResizeArray<MountedNode>(result |> Array.map _.Value)
       reorderChildren parent oldChildren nextChildren
@@ -495,12 +494,12 @@ module internal VirtualTree =
         if entry.Key.IsSubViewSpec then
           entry.Value |> specFromView |> validateSpecTree
 
-  type Renderer private (application: IApplication, ownsApplication: bool) =
+  type Renderer private (runtime: TerminalRuntime, ownsRuntime: bool) =
     let syncRoot = obj ()
     let mutable current: MountedNode option = None
 
-    new(application: IApplication) = new Renderer(application, false)
-    new() = new Renderer(Application.Create(), true)
+    new(runtime: TerminalRuntime) = new Renderer(runtime, false)
+    new() = new Renderer(TerminalRuntime.createImmediate (), true)
 
     member _.Current = current
 
@@ -511,9 +510,9 @@ module internal VirtualTree =
 
         let next =
           match current with
-          | None -> mount application origin nextSpec
+          | None -> mount runtime origin nextSpec
           | Some mounted when sameIdentity mounted.Spec nextSpec ->
-            reconcileNode application mounted nextSpec
+            reconcileNode runtime mounted nextSpec
             mounted
           | Some mounted ->
             invalidOp
@@ -531,8 +530,9 @@ module internal VirtualTree =
         current |> Option.iter unmount
         current <- None
 
-        if ownsApplication then
-          application.Dispose())
+        if ownsRuntime then
+          runtime.RenderDispatcher.Dispose()
+          runtime.Application.Dispose())
 
     interface IDisposable with
       member this.Dispose() = this.Dispose()

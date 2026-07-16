@@ -30,4 +30,4 @@ Event properties use a stable subscription. Re-rendering replaces the callback b
 
 ## Scheduling
 
-The first tree is mounted synchronously so Terminal.Gui has a root `Runnable`. Once the application is initialized, later renders are queued through `IApplication.Invoke`. Multiple pending renders collapse to the latest requested tree before reconciliation.
+The first tree is mounted synchronously so Terminal.Gui has a root `Runnable`. Later desired trees enter a bounded capacity-one `Channel<RenderRequest>` read by a single render pump. Multiple pending renders therefore collapse to the latest tree. After `IApplication.Init`, the production dispatcher posts each pump commit to the Terminal.Gui application thread; the callback drains the channel again immediately before reconciliation so it applies the freshest available tree.

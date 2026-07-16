@@ -264,6 +264,20 @@ let ``Ordinary property diff excludes declarative and native view-slot entries``
     Assert.That(changedOnDelete.IsNone, Is.True))
 
 [<Test>]
+let ``Ordinary property diff returns exact removed value and event keys`` () =
+  let previous = Props()
+  previous |> Props.add (PKey.View.Title, "removed")
+  previous |> Props.add (PKey.View.Accepting, ignore)
+
+  let removed, changed = Props.diff (previous, Props())
+
+  Assert.Multiple(fun () ->
+    Assert.That(removed, Has.Length.EqualTo(2))
+    Assert.That(removed, Does.Contain(PKey.View.Title.Untyped))
+    Assert.That(removed, Does.Contain(PKey.View.Accepting.Untyped))
+    Assert.That(changed.IsNone, Is.True))
+
+[<Test>]
 let ``Event properties use one stable subscription with the latest callback`` () =
   use renderer = new VirtualTree.Renderer()
   let calls = ResizeArray<int>()

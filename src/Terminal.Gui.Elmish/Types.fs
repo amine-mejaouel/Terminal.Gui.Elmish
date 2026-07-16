@@ -107,6 +107,11 @@ module internal PropKey =
       | PropKeyIdentity.SubView _ -> true
       | _ -> false
 
+    member this.IsEvent =
+      match this.Identity with
+      | PropKeyIdentity.Event _ -> true
+      | _ -> false
+
     member this.viewKey =
       match this.Identity with
       | PropKeyIdentity.SubViewSpec ids ->
@@ -403,7 +408,7 @@ type Props with
   /// Returns only ordinary properties and events that need to be cleared or applied.
   /// Declarative and native view-slot properties are owned by slot reconciliation.
   static member internal diff(prevProps: Props, curProps: Props) =
-    let mutable removed: ResizeArray<PropertyId> = null
+    let mutable removed: ResizeArray<PropKey> = null
     let mutable changed: Props option = None
 
     let addChangedEntry current (entry: KeyValuePair<PropKey, obj>) =
@@ -411,18 +416,18 @@ type Props with
       target |> Props.add (entry.Key, entry.Value)
       Some target
 
-    let addRemovedId propertyId =
+    let addRemovedKey propertyKey =
       if isNull removed then
-        removed <- ResizeArray<PropertyId>()
+        removed <- ResizeArray<PropKey>(prevProps.Props.Count)
 
-      removed.Add propertyId
+      removed.Add propertyKey
 
     let isOrdinaryProp (key: PropKey) =
       not key.IsSubViewSpec && not key.IsSubView
 
     for kv in Props.toEntries prevProps do
       if isOrdinaryProp kv.Key && not (curProps |> Props.rawKeyExists kv.Key) then
-        addRemovedId kv.Key.Id
+        addRemovedKey kv.Key
 
     for kv in Props.toEntries curProps do
       if isOrdinaryProp kv.Key then

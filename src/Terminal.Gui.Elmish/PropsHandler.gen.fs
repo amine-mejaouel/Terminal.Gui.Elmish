@@ -378,69 +378,6 @@ type internal ViewPropHandler =
     | 35 -> view.ViewportSettings <- Unchecked.defaultof<_>
     | 36 -> view.Visible <- Unchecked.defaultof<_>
     | 37 -> view.Width <- Unchecked.defaultof<_>
-    | 38 -> terminalElement.TryRemoveEventHandler(PKey.View.Accepted)
-    | 39 -> terminalElement.TryRemoveEventHandler(PKey.View.Accepting)
-    | 40 -> terminalElement.TryRemoveEventHandler(PKey.View.Activated)
-    | 41 -> terminalElement.TryRemoveEventHandler(PKey.View.Activating)
-    | 42 -> terminalElement.TryRemoveEventHandler(PKey.View.AdvancingFocus)
-    | 43 -> terminalElement.TryRemoveEventHandler(PKey.View.BorderStyleChanged)
-    | 44 -> terminalElement.TryRemoveEventHandler(PKey.View.CanFocusChanged)
-    | 45 -> terminalElement.TryRemoveEventHandler(PKey.View.ClearedViewport)
-    | 46 -> terminalElement.TryRemoveEventHandler(PKey.View.ClearingViewport)
-    | 47 -> terminalElement.TryRemoveEventHandler(PKey.View.CommandNotBound)
-    | 48 -> terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanged)
-    | 49 -> terminalElement.TryRemoveEventHandler(PKey.View.ContentSizeChanging)
-    | 50 -> terminalElement.TryRemoveEventHandler(PKey.View.Disposing)
-    | 51 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawComplete)
-    | 52 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingContent)
-    | 53 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingSubViews)
-    | 54 -> terminalElement.TryRemoveEventHandler(PKey.View.DrawingText)
-    | 55 -> terminalElement.TryRemoveEventHandler(PKey.View.DrewText)
-    | 56 -> terminalElement.TryRemoveEventHandler(PKey.View.EnabledChanged)
-    | 57 -> terminalElement.TryRemoveEventHandler(PKey.View.FocusedChanged)
-    | 58 -> terminalElement.TryRemoveEventHandler(PKey.View.FrameChanged)
-    | 59 -> terminalElement.TryRemoveEventHandler(PKey.View.GettingAttributeForRole)
-    | 60 -> terminalElement.TryRemoveEventHandler(PKey.View.GettingScheme)
-    | 61 -> terminalElement.TryRemoveEventHandler(PKey.View.HandlingHotKey)
-    | 62 -> terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanged)
-    | 63 -> terminalElement.TryRemoveEventHandler(PKey.View.HasFocusChanging)
-    | 64 -> terminalElement.TryRemoveEventHandler(PKey.View.HeightChanged)
-    | 65 -> terminalElement.TryRemoveEventHandler(PKey.View.HeightChanging)
-    | 66 -> terminalElement.TryRemoveEventHandler(PKey.View.HotKeyChanged)
-    | 67 -> terminalElement.TryRemoveEventHandler(PKey.View.HotKeyCommand)
-    | 68 -> terminalElement.TryRemoveEventHandler(PKey.View.Initialized)
-    | 69 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyDown)
-    | 70 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyDownNotHandled)
-    | 71 -> terminalElement.TryRemoveEventHandler(PKey.View.KeyUp)
-    | 72 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseEnter)
-    | 73 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseEvent)
-    | 74 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanged)
-    | 75 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseHoldRepeatChanging)
-    | 76 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseLeave)
-    | 77 -> terminalElement.TryRemoveEventHandler(PKey.View.MouseStateChanged)
-    | 78 -> terminalElement.TryRemoveEventHandler(PKey.View.Pasted)
-    | 79 -> terminalElement.TryRemoveEventHandler(PKey.View.Pasting)
-    | 80 -> terminalElement.TryRemoveEventHandler(PKey.View.Removed)
-    | 81 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanged)
-    | 82 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeChanging)
-    | 83 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanged)
-    | 84 -> terminalElement.TryRemoveEventHandler(PKey.View.SchemeNameChanging)
-    | 85 -> terminalElement.TryRemoveEventHandler(PKey.View.ShadowStyleChanged)
-    | 86 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdded)
-    | 87 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewAdding)
-    | 88 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewLayout)
-    | 89 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewRemoved)
-    | 90 -> terminalElement.TryRemoveEventHandler(PKey.View.SubViewsLaidOut)
-    | 91 -> terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanged)
-    | 92 -> terminalElement.TryRemoveEventHandler(PKey.View.SuperViewChanging)
-    | 93 -> terminalElement.TryRemoveEventHandler(PKey.View.TextChanged)
-    | 94 -> terminalElement.TryRemoveEventHandler(PKey.View.TitleChanged)
-    | 95 -> terminalElement.TryRemoveEventHandler(PKey.View.TitleChanging)
-    | 96 -> terminalElement.TryRemoveEventHandler(PKey.View.ViewportChanged)
-    | 97 -> terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanged)
-    | 98 -> terminalElement.TryRemoveEventHandler(PKey.View.VisibleChanging)
-    | 99 -> terminalElement.TryRemoveEventHandler(PKey.View.WidthChanged)
-    | 100 -> terminalElement.TryRemoveEventHandler(PKey.View.WidthChanging)
     | _ -> invalidOp $"Property ID {propertyId} cannot be cleared on '{terminalElement.Name}'."
 
 type internal AdornmentViewPropHandler =
@@ -507,9 +444,6 @@ type internal AttributePickerPropHandler =
     match propertyId.Value with
     | 105 -> view.SampleText <- ""
     | 106 -> view.Value <- Unchecked.defaultof<_>
-    | 107 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanged)
-    | 108 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChangedUntyped)
-    | 109 -> terminalElement.TryRemoveEventHandler(PKey.AttributePicker.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BarPropHandler =
@@ -540,8 +474,6 @@ type internal BarPropHandler =
     match propertyId.Value with
     | 110 -> view.AlignmentModes <- Unchecked.defaultof<_>
     | 111 -> view.Orientation <- Unchecked.defaultof<_>
-    | 112 -> terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanged)
-    | 113 -> terminalElement.TryRemoveEventHandler(PKey.Bar.OrientationChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BorderViewPropHandler =
@@ -610,7 +542,6 @@ type internal ButtonPropHandler =
     | 119 -> view.NoDecorations <- Unchecked.defaultof<_>
     | 120 -> view.NoPadding <- Unchecked.defaultof<_>
     | 121 -> view.Text <- ""
-    | 122 -> terminalElement.TryRemoveEventHandler(PKey.Button.InitializingShadowStyle)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CharMapPropHandler =
@@ -659,9 +590,6 @@ type internal CharMapPropHandler =
     | 125 -> view.ShowUnicodeCategory <- Unchecked.defaultof<_>
     | 126 -> view.StartCodePoint <- Unchecked.defaultof<_>
     | 127 -> view.Value <- Unchecked.defaultof<_>
-    | 128 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanged)
-    | 129 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChangedUntyped)
-    | 130 -> terminalElement.TryRemoveEventHandler(PKey.CharMap.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CheckBoxPropHandler =
@@ -710,9 +638,6 @@ type internal CheckBoxPropHandler =
     | 133 -> view.RadioStyle <- Unchecked.defaultof<_>
     | 134 -> view.Text <- ""
     | 135 -> view.Value <- Unchecked.defaultof<_>
-    | 136 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanged)
-    | 137 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChangedUntyped)
-    | 138 -> terminalElement.TryRemoveEventHandler(PKey.CheckBox.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CodePropHandler =
@@ -782,9 +707,6 @@ type internal ColorPickerPropHandler =
     | 143 -> view.Style <- Unchecked.defaultof<_>
     | 144 -> view.Text <- ""
     | 145 -> view.Value <- Unchecked.defaultof<_>
-    | 146 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanged)
-    | 147 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChangedUntyped)
-    | 148 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ColorPicker16PropHandler =
@@ -833,9 +755,6 @@ type internal ColorPicker16PropHandler =
     | 151 -> view.Caret <- Unchecked.defaultof<_>
     | 152 -> view.SelectedColor <- Unchecked.defaultof<_>
     | 153 -> view.Value <- Unchecked.defaultof<_>
-    | 154 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanged)
-    | 155 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChangedUntyped)
-    | 156 -> terminalElement.TryRemoveEventHandler(PKey.ColorPicker16.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DatePickerPropHandler =
@@ -874,9 +793,6 @@ type internal DatePickerPropHandler =
     | 157 -> view.Culture <- Unchecked.defaultof<_>
     | 158 -> view.Text <- ""
     | 159 -> view.Value <- Unchecked.defaultof<_>
-    | 160 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanged)
-    | 161 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChangedUntyped)
-    | 162 -> terminalElement.TryRemoveEventHandler(PKey.DatePicker.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FrameViewPropHandler =
@@ -978,8 +894,6 @@ type internal HexViewPropHandler =
     | 172 -> view.BytesPerLine <- Unchecked.defaultof<_>
     | 173 -> view.ReadOnly <- Unchecked.defaultof<_>
     | 174 -> view.Source <- Unchecked.defaultof<_>
-    | 175 -> terminalElement.TryRemoveEventHandler(PKey.HexView.Edited)
-    | 176 -> terminalElement.TryRemoveEventHandler(PKey.HexView.PositionChanged)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ImageViewPropHandler =
@@ -1037,7 +951,6 @@ type internal ImageViewPropHandler =
     | 182 -> view.UseRasterGraphics <- Unchecked.defaultof<_>
     | 183 -> view.UseSixel <- Unchecked.defaultof<_>
     | 184 -> view.ZoomLevel <- Unchecked.defaultof<_>
-    | 185 -> terminalElement.TryRemoveEventHandler(PKey.ImageView.ZoomLevelChanged)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LabelPropHandler =
@@ -1105,8 +1018,6 @@ type internal LinePropHandler =
     | 189 -> view.LineAttribute <- Unchecked.defaultof<_>
     | 190 -> view.Orientation <- Unchecked.defaultof<_>
     | 191 -> view.Style <- Unchecked.defaultof<_>
-    | 192 -> terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanged)
-    | 193 -> terminalElement.TryRemoveEventHandler(PKey.Line.OrientationChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
@@ -1307,26 +1218,6 @@ type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
     | 203 -> view.Text <- ""
     | 204 -> view.UseMinimumSize <- Unchecked.defaultof<_>
     | 205 -> view.Value <- Unchecked.defaultof<_>
-    | 206 ->
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged)
-    | 207 ->
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging)
-    | 208 ->
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged)
-    | 209 ->
-      terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging)
-    | 210 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused)
-    | 211 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged)
-    | 212 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging)
-    | 213 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged)
-    | 214 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging)
-    | 215 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged)
-    | 216 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging)
-    | 217 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged)
-    | 218 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging)
-    | 219 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged)
-    | 220 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped)
-    | 221 -> terminalElement.TryRemoveEventHandler(PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearMultiSelectorPropHandler<'T> =
@@ -1443,8 +1334,6 @@ type internal LinkPropHandler =
 
     match propertyId.Value with
     | 228 -> view.Url <- ""
-    | 229 -> terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanged)
-    | 230 -> terminalElement.TryRemoveEventHandler(PKey.Link.UrlChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler =
@@ -1507,12 +1396,6 @@ type internal ListViewPropHandler =
     | 234 -> view.ShowMarks <- Unchecked.defaultof<_>
     | 235 -> view.Source <- Unchecked.defaultof<_>
     | 236 -> view.Value <- Unchecked.defaultof<_>
-    | 237 -> terminalElement.TryRemoveEventHandler(PKey.ListView.CollectionChanged)
-    | 238 -> terminalElement.TryRemoveEventHandler(PKey.ListView.RowRender)
-    | 239 -> terminalElement.TryRemoveEventHandler(PKey.ListView.SourceChanged)
-    | 240 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanged)
-    | 241 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChangedUntyped)
-    | 242 -> terminalElement.TryRemoveEventHandler(PKey.ListView.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler<'T> =
@@ -1551,9 +1434,6 @@ type internal ListViewPropHandler<'T> =
     | 243 -> view.Index <- Unchecked.defaultof<_>
     | 244 -> view.SelectedItem <- Unchecked.defaultof<_>
     | 245 -> view.Value <- Unchecked.defaultof<_>
-    | 246 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanged)
-    | 247 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChangedUntyped)
-    | 248 -> terminalElement.TryRemoveEventHandler(PKey.ListView'<'T>.ValueChanging)
     | _ -> ListViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarginViewPropHandler =
@@ -1642,8 +1522,6 @@ type internal MarkdownPropHandler =
     | 257 -> view.SyntaxHighlighter <- Unchecked.defaultof<_>
     | 258 -> view.Text <- ""
     | 259 -> view.UseThemeBackground <- Unchecked.defaultof<_>
-    | 260 -> terminalElement.TryRemoveEventHandler(PKey.Markdown.LinkClicked)
-    | 261 -> terminalElement.TryRemoveEventHandler(PKey.Markdown.MarkdownChanged)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownCodeBlockPropHandler =
@@ -1724,7 +1602,6 @@ type internal MarkdownTablePropHandler =
     | 269 -> view.TableData <- Unchecked.defaultof<_>
     | 270 -> view.Text <- ""
     | 271 -> view.UseThemeBackground <- Unchecked.defaultof<_>
-    | 272 -> terminalElement.TryRemoveEventHandler(PKey.MarkdownTable.LinkClicked)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuPropHandler =
@@ -1759,10 +1636,6 @@ type internal MenuPropHandler =
     match propertyId.Value with
     | 273 -> view.SuperMenuItem <- Unchecked.defaultof<_>
     | 275 -> view.Value <- Unchecked.defaultof<_>
-    | 277 -> terminalElement.TryRemoveEventHandler(PKey.Menu.SelectedMenuItemChanged)
-    | 278 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanged)
-    | 279 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChangedUntyped)
-    | 280 -> terminalElement.TryRemoveEventHandler(PKey.Menu.ValueChanging)
     | _ -> BarPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuBarPropHandler =
@@ -1783,7 +1656,6 @@ type internal MenuBarPropHandler =
 
     match propertyId.Value with
     | 281 -> view.Key <- Terminal.Gui.Input.Key.Empty
-    | 282 -> terminalElement.TryRemoveEventHandler(PKey.MenuBar.KeyChanged)
     | _ -> MenuPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler<'T> =
@@ -1828,11 +1700,6 @@ type internal NumericUpDownPropHandler<'T> =
     | 283 -> view.Format <- ""
     | 284 -> view.Increment <- Unchecked.defaultof<_>
     | 285 -> view.Value <- Unchecked.defaultof<_>
-    | 286 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.FormatChanged)
-    | 287 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.IncrementChanged)
-    | 288 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanged)
-    | 289 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChangedUntyped)
-    | 290 -> terminalElement.TryRemoveEventHandler(PKey.NumericUpDown<'T>.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler =
@@ -1905,7 +1772,6 @@ type internal PopoverPropHandler<'TView, 'TResult
     match propertyId.Value with
     | 294 -> view.ContentView <- Unchecked.defaultof<_>
     | 296 -> view.ResultExtractor <- Unchecked.defaultof<_>
-    | 297 -> terminalElement.TryRemoveEventHandler(PKey.Popover<'TView, 'TResult>.ResultChanged)
     | _ -> PopoverImplPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverMenuPropHandler =
@@ -1938,7 +1804,6 @@ type internal PopoverMenuPropHandler =
     | 298 -> view.Key <- Terminal.Gui.Input.Key.Empty
     | 299 -> view.MouseFlags <- Unchecked.defaultof<_>
     | 300 -> view.Root <- Unchecked.defaultof<_>
-    | 302 -> terminalElement.TryRemoveEventHandler(PKey.PopoverMenu.KeyChanged)
     | _ ->
       PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.clearProp (terminalElement, propertyId)
 
@@ -2021,9 +1886,6 @@ type internal RunnablePropHandler =
     match propertyId.Value with
     | 310 -> view.Result <- Unchecked.defaultof<_>
     | 311 -> view.StopRequested <- Unchecked.defaultof<_>
-    | 312 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsModalChanged)
-    | 313 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanged)
-    | 314 -> terminalElement.TryRemoveEventHandler(PKey.Runnable.IsRunningChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal RunnablePropHandler<'TResult> =
@@ -2159,7 +2021,6 @@ type internal FileDialogPropHandler =
     | 325 -> view.OpenMode <- Unchecked.defaultof<_>
     | 326 -> view.Path <- ""
     | 327 -> view.SearchMatcher <- Unchecked.defaultof<_>
-    | 328 -> terminalElement.TryRemoveEventHandler(PKey.FileDialog.FilesSelected)
     | _ -> DialogPropHandler<IReadOnlyList<string>>.clearProp (terminalElement, propertyId)
 
 type internal PromptPropHandler<'TView, 'TResult
@@ -2273,14 +2134,6 @@ type internal ScrollBarPropHandler =
     | 334 -> view.Value <- Unchecked.defaultof<_>
     | 335 -> view.VisibilityMode <- Unchecked.defaultof<_>
     | 336 -> view.VisibleContentSize <- Unchecked.defaultof<_>
-    | 337 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanged)
-    | 338 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.OrientationChanging)
-    | 339 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ScrollableContentSizeChanged)
-    | 340 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.Scrolled)
-    | 341 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.SliderPositionChanged)
-    | 342 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanged)
-    | 343 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChangedUntyped)
-    | 344 -> terminalElement.TryRemoveEventHandler(PKey.ScrollBar.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollButtonPropHandler =
@@ -2311,8 +2164,6 @@ type internal ScrollButtonPropHandler =
     match propertyId.Value with
     | 345 -> view.Direction <- Unchecked.defaultof<_>
     | 346 -> view.Orientation <- Unchecked.defaultof<_>
-    | 347 -> terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanged)
-    | 348 -> terminalElement.TryRemoveEventHandler(PKey.ScrollButton.OrientationChanging)
     | _ -> ButtonPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollSliderPropHandler =
@@ -2381,14 +2232,6 @@ type internal ScrollSliderPropHandler =
     | 352 -> view.SliderPadding <- Unchecked.defaultof<_>
     | 353 -> view.Value <- Unchecked.defaultof<_>
     | 354 -> view.VisibleContentSize <- Unchecked.defaultof<_>
-    | 355 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanged)
-    | 356 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.OrientationChanging)
-    | 357 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanged)
-    | 358 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.PositionChanging)
-    | 359 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.Scrolled)
-    | 360 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanged)
-    | 361 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChangedUntyped)
-    | 362 -> terminalElement.TryRemoveEventHandler(PKey.ScrollSlider.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SelectorBasePropHandler =
@@ -2458,11 +2301,6 @@ type internal SelectorBasePropHandler =
     | 368 -> view.TabBehavior <- Unchecked.defaultof<_>
     | 369 -> view.Value <- Unchecked.defaultof<_>
     | 370 -> view.Values <- Unchecked.defaultof<_>
-    | 371 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanged)
-    | 372 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.OrientationChanging)
-    | 373 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanged)
-    | 374 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChangedUntyped)
-    | 375 -> terminalElement.TryRemoveEventHandler(PKey.SelectorBase.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FlagSelectorPropHandler =
@@ -2525,7 +2363,6 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
 
     match propertyId.Value with
     | 378 -> view.Value <- Unchecked.defaultof<_>
-    | 379 -> terminalElement.TryRemoveEventHandler(PKey.FlagSelector'<'TFlagsEnum>.ValueChanged)
     | _ -> FlagSelectorPropHandler.clearProp (terminalElement, propertyId)
 
 type internal OptionSelectorPropHandler<'TEnum
@@ -2554,7 +2391,6 @@ type internal OptionSelectorPropHandler<'TEnum
     match propertyId.Value with
     | 380 -> view.Value <- Unchecked.defaultof<_>
     | 381 -> view.Values <- Unchecked.defaultof<_>
-    | 382 -> terminalElement.TryRemoveEventHandler(PKey.OptionSelector'<'TEnum>.ValueChanged)
     | _ -> OptionSelectorPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ShortcutPropHandler =
@@ -2628,8 +2464,6 @@ type internal ShortcutPropHandler =
     | 392 -> view.Orientation <- Unchecked.defaultof<_>
     | 393 -> view.TargetView <- Unchecked.defaultof<_>
     | 395 -> view.Text <- ""
-    | 396 -> terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanged)
-    | 397 -> terminalElement.TryRemoveEventHandler(PKey.Shortcut.OrientationChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuItemPropHandler =
@@ -2678,8 +2512,6 @@ type internal MenuBarItemPropHandler =
     match propertyId.Value with
     | 400 -> view.PopoverMenu <- Unchecked.defaultof<_>
     | 402 -> view.PopoverMenuOpen <- Unchecked.defaultof<_>
-    | 403 -> terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.MenuOpenChanged)
-    | 404 -> terminalElement.TryRemoveEventHandler(PKey.MenuBarItem.PopoverMenuOpenChanged)
     | _ -> MenuItemPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SpinnerViewPropHandler =
@@ -2824,9 +2656,6 @@ type internal TableViewPropHandler =
     | 422 -> view.Table <- Unchecked.defaultof<_>
     | 423 -> view.UseAllRowsForContentCalculation <- Unchecked.defaultof<_>
     | 424 -> view.Value <- Unchecked.defaultof<_>
-    | 425 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanged)
-    | 426 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChangedUntyped)
-    | 427 -> terminalElement.TryRemoveEventHandler(PKey.TableView.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TabsPropHandler =
@@ -2878,9 +2707,6 @@ type internal TabsPropHandler =
     | 431 -> view.TabSide <- Unchecked.defaultof<_>
     | 432 -> view.TabSpacing <- Unchecked.defaultof<_>
     | 433 -> view.Value <- Unchecked.defaultof<_>
-    | 435 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanged)
-    | 436 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChangedUntyped)
-    | 437 -> terminalElement.TryRemoveEventHandler(PKey.Tabs.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextFieldPropHandler =
@@ -2957,10 +2783,6 @@ type internal TextFieldPropHandler =
     | 445 -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>
     | 446 -> view.Used <- Unchecked.defaultof<_>
     | 447 -> view.Value <- ""
-    | 448 -> terminalElement.TryRemoveEventHandler(PKey.TextField.TextChanging)
-    | 449 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanged)
-    | 450 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChangedUntyped)
-    | 451 -> terminalElement.TryRemoveEventHandler(PKey.TextField.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DropDownListPropHandler =
@@ -3002,7 +2824,6 @@ type internal DropDownListPropHandler<'TEnum
 
     match propertyId.Value with
     | 453 -> view.Value <- Unchecked.defaultof<_>
-    | 454 -> terminalElement.TryRemoveEventHandler(PKey.DropDownList'<'TEnum>.ValueChanged)
     | _ -> DropDownListPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextValidateFieldPropHandler =
@@ -3041,9 +2862,6 @@ type internal TextValidateFieldPropHandler =
     | 455 -> view.Provider <- Unchecked.defaultof<_>
     | 456 -> view.Text <- ""
     | 457 -> view.Value <- ""
-    | 458 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanged)
-    | 459 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChangedUntyped)
-    | 460 -> terminalElement.TryRemoveEventHandler(PKey.TextValidateField.ValueChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DateEditorPropHandler =
@@ -3077,9 +2895,6 @@ type internal DateEditorPropHandler =
     match propertyId.Value with
     | 461 -> view.Format <- Unchecked.defaultof<_>
     | 462 -> view.Value <- Unchecked.defaultof<_>
-    | 463 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanged)
-    | 464 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChangedUntyped)
-    | 465 -> terminalElement.TryRemoveEventHandler(PKey.DateEditor.ValueChanging)
     | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextViewPropHandler =
@@ -3195,12 +3010,6 @@ type internal TextViewPropHandler =
     | 479 -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>
     | 480 -> view.Used <- Unchecked.defaultof<_>
     | 481 -> view.WordWrap <- Unchecked.defaultof<_>
-    | 482 -> terminalElement.TryRemoveEventHandler(PKey.TextView.ContentsChanged)
-    | 483 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawNormalColor)
-    | 484 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawReadOnlyColor)
-    | 485 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawSelectionColor)
-    | 486 -> terminalElement.TryRemoveEventHandler(PKey.TextView.DrawUsedColor)
-    | 487 -> terminalElement.TryRemoveEventHandler(PKey.TextView.UnwrappedCursorPositionChanged)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TimeEditorPropHandler =
@@ -3234,9 +3043,6 @@ type internal TimeEditorPropHandler =
     match propertyId.Value with
     | 488 -> view.Format <- Unchecked.defaultof<_>
     | 489 -> view.Value <- Unchecked.defaultof<_>
-    | 490 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanged)
-    | 491 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChangedUntyped)
-    | 492 -> terminalElement.TryRemoveEventHandler(PKey.TimeEditor.ValueChanging)
     | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TitleViewPropHandler =
@@ -3287,8 +3093,6 @@ type internal TitleViewPropHandler =
     | 496 -> view.TabDepth <- Unchecked.defaultof<_>
     | 497 -> view.TabSide <- Unchecked.defaultof<_>
     | 498 -> view.Text <- ""
-    | 499 -> terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanged)
-    | 500 -> terminalElement.TryRemoveEventHandler(PKey.TitleView.OrientationChanging)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
@@ -3391,9 +3195,6 @@ type internal TreeViewPropHandler<'T when 'T: not struct> =
     | 512 -> view.SelectedObject <- Unchecked.defaultof<_>
     | 513 -> view.Style <- Unchecked.defaultof<_>
     | 514 -> view.TreeBuilder <- Unchecked.defaultof<_>
-    | 515 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.CheckedChanged)
-    | 516 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.DrawLine)
-    | 517 -> terminalElement.TryRemoveEventHandler(PKey.TreeView<'T>.SelectionChanged)
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TreeViewPropHandler =
@@ -3441,10 +3242,6 @@ type internal WizardPropHandler =
 
     match propertyId.Value with
     | 518 -> view.CurrentStep <- Unchecked.defaultof<_>
-    | 520 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingBack)
-    | 521 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.MovingNext)
-    | 522 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanged)
-    | 523 -> terminalElement.TryRemoveEventHandler(PKey.Wizard.StepChanging)
     | _ -> DialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal WizardStepPropHandler =

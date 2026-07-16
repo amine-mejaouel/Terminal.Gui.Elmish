@@ -11,3 +11,10 @@ nuget Microsoft.NET.Test.Sdk
     nuget NUnit
 nuget NUnit.Analyzers
     nuget NUnit3TestAdapter
+
+group benchmark
+framework net10.0
+    source https://api.nuget.org/v3/index.json
+nuget FSharp.Core
+nuget BenchmarkDotNet 0.15.8
+nuget Pragmastat 3.2.4

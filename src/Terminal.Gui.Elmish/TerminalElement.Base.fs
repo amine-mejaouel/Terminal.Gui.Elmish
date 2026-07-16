@@ -277,11 +277,6 @@ type internal ViewBackedTerminalElement(props: Props) =
     |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  member this.TryRemoveEventHandler(k: PropKey<_>) =
-    this.EventRegistrar.RemoveHandler k.Untyped
-
-  member private this.TryRemoveEventHandler(k: PropKey) = this.EventRegistrar.RemoveHandler k
-
   abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
   default this.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
@@ -289,6 +284,14 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract ClearProp: propertyId: PropertyId -> unit
 
   default this.ClearProp(propertyId: PropertyId) = ()
+
+  /// Clears a removed declarative property without requiring its previous value. Event keys bypass
+  /// generated property dispatch because the registrar already owns their native subscriptions.
+  member this.ClearProp(propertyKey: PropKey) =
+    if propertyKey.IsEvent then
+      this.EventRegistrar.RemoveHandler propertyKey
+    else
+      this.ClearProp propertyKey.Id
 
   member this.Dispose() =
     if Interlocked.Exchange(&disposing, true) then
@@ -299,7 +302,7 @@ type internal ViewBackedTerminalElement(props: Props) =
       // specifications are not native properties and are disposed separately below.
       for entry in Props.toEntries this.Props do
         if not entry.Key.IsSubViewSpec then
-          this.ClearProp entry.Key.Id
+          this.ClearProp entry.Key
 
       match this.Origin with
       | Origin.Root

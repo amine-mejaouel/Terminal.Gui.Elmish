@@ -86,11 +86,6 @@ let clearPropCode (view: ViewMetadata) =
 
       yield $"    | {propertyId} -> view.{prop.PKey} <- {defaultValue}"
 
-    for event in view.Events do
-      let propertyId = Registry.PropertyIds.Event(view.Type, event.PKey)
-
-      yield $"    | {propertyId} -> terminalElement.TryRemoveEventHandler({PKey.getAccessor view.Type}.{event.PKey})"
-
     if view.Type = typeof<Terminal.Gui.ViewBase.View> then
       yield "    | _ -> invalidOp $\"Property ID {propertyId} cannot be cleared on '{terminalElement.Name}'.\""
     else

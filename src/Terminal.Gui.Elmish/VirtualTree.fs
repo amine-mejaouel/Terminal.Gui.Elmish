@@ -343,7 +343,7 @@ module internal VirtualTree =
         not (samePosition previousProps.X nextProps.X)
         || not (samePosition previousProps.Y nextProps.Y)
 
-      let removedPropertyIds, changedProps = Props.diff (previousProps, nextProps)
+      let removedPropertyKeys, changedProps = Props.diff (previousProps, nextProps)
 
       backed.Props <- nextProps
 
@@ -351,8 +351,8 @@ module internal VirtualTree =
         PositionService.Current.ExecuteCleanups viewTe
         PositionService.Current.ApplyPos viewTe
 
-      for propertyId in removedPropertyIds do
-        next.ClearProp(viewTe, propertyId)
+      for propertyKey in removedPropertyKeys do
+        backed.ClearProp propertyKey
 
       changedProps |> Option.iter (fun props -> next.SetProps(viewTe, props))
       mounted.Spec <- nextSpec

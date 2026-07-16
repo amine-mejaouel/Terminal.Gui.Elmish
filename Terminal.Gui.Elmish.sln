@@ -51,6 +51,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MacrosSample", "examples\Ma
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DynamicListSample", "examples\DynamicListSample\DynamicListSample.fsproj", "{3A36E989-ECC9-459F-9DC7-B363D8D58382}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{5D04A4D9-15F0-407B-9199-CB53D1C581D7}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Terminal.Gui.Elmish.Benchmarks", "benchmarks\Terminal.Gui.Elmish.Benchmarks\Terminal.Gui.Elmish.Benchmarks.fsproj", "{51E5D9FC-D725-4180-BA61-9E17D76FD485}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{948761AA-68F5-433D-9019-E8CCD79A9910}"
 	ProjectSection(SolutionItems) = preProject
 		.github\copilot-instructions.md = .github\copilot-instructions.md
@@ -126,6 +130,10 @@ Global
 		{3A36E989-ECC9-459F-9DC7-B363D8D58382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A36E989-ECC9-459F-9DC7-B363D8D58382}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A36E989-ECC9-459F-9DC7-B363D8D58382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E5D9FC-D725-4180-BA61-9E17D76FD485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E5D9FC-D725-4180-BA61-9E17D76FD485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E5D9FC-D725-4180-BA61-9E17D76FD485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E5D9FC-D725-4180-BA61-9E17D76FD485}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +155,7 @@ Global
 		{078A9C52-DDC1-46F4-9235-9E6C89C87AFD} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
 		{D8B74F07-0FB1-4975-9E2D-C012FAEFF0F5} = {078A9C52-DDC1-46F4-9235-9E6C89C87AFD}
 		{0857FE80-8B56-47EF-8615-F9504E1F0B91} = {63297B98-5CED-492C-A5B7-A5B4F73CF142}
+		{51E5D9FC-D725-4180-BA61-9E17D76FD485} = {5D04A4D9-15F0-407B-9199-CB53D1C581D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC3C897C-7452-47F0-86EF-345D01CA45C1}

@@ -1,0 +1,4 @@
+group benchmark
+FSharp.Core
+BenchmarkDotNet
+Pragmastat

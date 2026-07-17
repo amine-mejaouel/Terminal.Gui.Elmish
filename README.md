@@ -37,9 +37,20 @@ I mapped the event to return both.
 
 
 
-# Example
+# Examples
 
-In the examples you find the old project, which I converted to the new DSL
+The repository includes several runnable examples of the properties and macros APIs:
+
+- [`TodoApp`](examples/TodoApp/) — a polished, keyboard-first Todo application with editing, filtering, progress, and theme-aware styling.
+- [`DynamicListSample`](examples/DynamicListSample/) — keyed virtual-tree reconciliation with add, remove, update, and reorder operations.
+- [`PropertiesSample`](examples/PropertiesSample/) — the properties-style DSL.
+- [`MacrosSample`](examples/MacrosSample/) — the macros-style DSL and nested Elmish components.
+
+Run an example from the repository root, for example:
+
+```bash
+dotnet run --project examples/TodoApp/TodoApp.fsproj
+```
 
 
 # Usage:

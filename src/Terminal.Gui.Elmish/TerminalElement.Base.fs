@@ -225,7 +225,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     PositionService.Current.ApplyPos this
     this.ApplyReconciledProps(ReconciledPropPhase.BeforeNative, this.Props.ReconciledProps.Values)
-    this.SetProps(this, this.Props)
+    this.ApplyNativeProps(this, this.Props)
     this.ApplyReconciledProps(ReconciledPropPhase.AfterNative, this.Props.ReconciledProps.Values)
 
   abstract Name: string
@@ -311,9 +311,9 @@ type internal ViewBackedTerminalElement(props: Props) =
     |> Props.tryFind k
     |> Option.iter (fun action -> this.EventRegistrar.SetEventHandler(k, event, action))
 
-  abstract SetProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
+  abstract ApplyNativeProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
-  default this.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
+  default this.ApplyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
 
   member this.ApplyReconciledProps(phase: ReconciledPropPhase, specs: seq<ReconciledPropSpec>) =
     let context =

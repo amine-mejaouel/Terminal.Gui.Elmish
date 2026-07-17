@@ -16,8 +16,8 @@ type AdornmentView(props: AdornmentViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      AdornmentViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      AdornmentViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       AdornmentViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -40,8 +40,8 @@ type AttributePicker(props: AttributePickerProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      AttributePickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      AttributePickerPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       AttributePickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -64,8 +64,8 @@ type Bar(props: BarProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      BarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      BarPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       BarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -88,8 +88,8 @@ type BorderView(props: BorderViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      BorderViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      BorderViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       BorderViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -112,8 +112,8 @@ type Button(props: ButtonProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ButtonPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ButtonPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ButtonPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -136,8 +136,8 @@ type CharMap(props: CharMapProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      CharMapPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      CharMapPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       CharMapPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -160,8 +160,8 @@ type CheckBox(props: CheckBoxProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      CheckBoxPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      CheckBoxPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       CheckBoxPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -184,8 +184,8 @@ type Code(props: CodeProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      CodePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      CodePropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       CodePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -208,8 +208,8 @@ type ColorPicker(props: ColorPickerProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ColorPickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ColorPickerPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ColorPickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -232,8 +232,8 @@ type ColorPicker16(props: ColorPicker16Props) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ColorPicker16PropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ColorPicker16PropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ColorPicker16PropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -256,8 +256,8 @@ type DatePicker(props: DatePickerProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DatePickerPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DatePickerPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DatePickerPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -280,8 +280,8 @@ type FrameView(props: FrameViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      FrameViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      FrameViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       FrameViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -304,8 +304,8 @@ type GraphView(props: GraphViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      GraphViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      GraphViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       GraphViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -328,8 +328,8 @@ type HexView(props: HexViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      HexViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      HexViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       HexViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -352,8 +352,8 @@ type ImageView(props: ImageViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ImageViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ImageViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ImageViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -376,8 +376,8 @@ type Label(props: LabelProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LabelPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LabelPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LabelPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -400,8 +400,8 @@ type LegendAnnotation(props: LegendAnnotationProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LegendAnnotationPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LegendAnnotationPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LegendAnnotationPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -424,8 +424,8 @@ type Line(props: LineProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinePropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -448,8 +448,8 @@ type LinearMultiSelector<'T>(props: LinearMultiSelectorProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearMultiSelectorPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearMultiSelectorPropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearMultiSelectorPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -472,8 +472,8 @@ type LinearMultiSelector(props: LinearMultiSelectorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearMultiSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearMultiSelectorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearMultiSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -496,8 +496,8 @@ type LinearRange<'T>(props: LinearRangeProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearRangePropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearRangePropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearRangePropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -520,8 +520,8 @@ type LinearRange(props: LinearRangeProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearRangePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearRangePropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearRangePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -544,8 +544,8 @@ type LinearSelector<'T>(props: LinearSelectorProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearSelectorPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearSelectorPropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearSelectorPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -568,8 +568,8 @@ type LinearSelector(props: LinearSelectorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinearSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinearSelectorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinearSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -592,8 +592,8 @@ type Link(props: LinkProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      LinkPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      LinkPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       LinkPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -616,8 +616,8 @@ type ListView(props: ListViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ListViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ListViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ListViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -640,8 +640,8 @@ type ListView<'T>(props: ListViewProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ListViewPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ListViewPropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ListViewPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -664,8 +664,8 @@ type MarginView(props: MarginViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MarginViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MarginViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MarginViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -688,8 +688,8 @@ type Markdown(props: MarkdownProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MarkdownPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MarkdownPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MarkdownPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -712,8 +712,8 @@ type MarkdownCodeBlock(props: MarkdownCodeBlockProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MarkdownCodeBlockPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MarkdownCodeBlockPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MarkdownCodeBlockPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -736,8 +736,8 @@ type MarkdownTable(props: MarkdownTableProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MarkdownTablePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MarkdownTablePropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MarkdownTablePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -760,8 +760,8 @@ type Menu(props: MenuProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MenuPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MenuPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MenuPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -786,8 +786,8 @@ type MenuBar(props: MenuBarProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MenuBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MenuBarPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MenuBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -812,8 +812,8 @@ type NumericUpDown<'T>(props: NumericUpDownProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      NumericUpDownPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      NumericUpDownPropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       NumericUpDownPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -836,8 +836,8 @@ type NumericUpDown(props: NumericUpDownProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      NumericUpDownPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      NumericUpDownPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       NumericUpDownPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -860,8 +860,8 @@ type PaddingView(props: PaddingViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      PaddingViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      PaddingViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       PaddingViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -885,8 +885,8 @@ type Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> T
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      PopoverPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      PopoverPropHandler<'TView, 'TResult>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       PopoverPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -909,8 +909,8 @@ type PopoverMenu(props: PopoverMenuProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      PopoverMenuPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      PopoverMenuPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       PopoverMenuPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -935,8 +935,8 @@ type ProgressBar(props: ProgressBarProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ProgressBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ProgressBarPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ProgressBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -959,8 +959,8 @@ type Runnable(props: RunnableProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      RunnablePropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      RunnablePropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       RunnablePropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -983,8 +983,8 @@ type Runnable<'TResult>(props: RunnableProps<'TResult>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      RunnablePropHandler<'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      RunnablePropHandler<'TResult>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       RunnablePropHandler<'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1007,8 +1007,8 @@ type Dialog<'TResult>(props: DialogProps<'TResult>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DialogPropHandler<'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DialogPropHandler<'TResult>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DialogPropHandler<'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1034,8 +1034,8 @@ type RunnableWrapper<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TV
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      RunnableWrapperPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      RunnableWrapperPropHandler<'TView, 'TResult>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       RunnableWrapperPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1058,8 +1058,8 @@ type Dialog(props: DialogProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DialogPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1082,8 +1082,8 @@ type FileDialog(props: FileDialogProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      FileDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      FileDialogPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       FileDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1107,8 +1107,8 @@ type Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Te
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      PromptPropHandler<'TView, 'TResult>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      PromptPropHandler<'TView, 'TResult>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       PromptPropHandler<'TView, 'TResult>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1131,8 +1131,8 @@ type OpenDialog(props: OpenDialogProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      OpenDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      OpenDialogPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       OpenDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1155,8 +1155,8 @@ type SaveDialog(props: SaveDialogProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      SaveDialogPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      SaveDialogPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       SaveDialogPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1179,8 +1179,8 @@ type ScrollBar(props: ScrollBarProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ScrollBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ScrollBarPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ScrollBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1203,8 +1203,8 @@ type ScrollButton(props: ScrollButtonProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ScrollButtonPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ScrollButtonPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ScrollButtonPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1227,8 +1227,8 @@ type ScrollSlider(props: ScrollSliderProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ScrollSliderPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ScrollSliderPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ScrollSliderPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1251,8 +1251,8 @@ type FlagSelector(props: FlagSelectorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      FlagSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      FlagSelectorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       FlagSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1275,8 +1275,8 @@ type OptionSelector(props: OptionSelectorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      OptionSelectorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      OptionSelectorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       OptionSelectorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1303,8 +1303,8 @@ type FlagSelector<'TFlagsEnum
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      FlagSelectorPropHandler<'TFlagsEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      FlagSelectorPropHandler<'TFlagsEnum>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       FlagSelectorPropHandler<'TFlagsEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1329,8 +1329,8 @@ type OptionSelector<'TEnum
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      OptionSelectorPropHandler<'TEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      OptionSelectorPropHandler<'TEnum>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       OptionSelectorPropHandler<'TEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1353,8 +1353,8 @@ type Shortcut(props: ShortcutProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ShortcutPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ShortcutPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ShortcutPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1377,8 +1377,8 @@ type MenuItem(props: MenuItemProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MenuItemPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MenuItemPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MenuItemPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1403,8 +1403,8 @@ type MenuBarItem(props: MenuBarItemProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      MenuBarItemPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      MenuBarItemPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       MenuBarItemPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1429,8 +1429,8 @@ type SpinnerView(props: SpinnerViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      SpinnerViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      SpinnerViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       SpinnerViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1453,8 +1453,8 @@ type StatusBar(props: StatusBarProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      StatusBarPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      StatusBarPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       StatusBarPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1477,8 +1477,8 @@ type TableView(props: TableViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TableViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TableViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TableViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1501,8 +1501,8 @@ type Tabs(props: TabsProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TabsPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TabsPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TabsPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1525,8 +1525,8 @@ type TextField(props: TextFieldProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TextFieldPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TextFieldPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TextFieldPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1549,8 +1549,8 @@ type DropDownList(props: DropDownListProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DropDownListPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DropDownListPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DropDownListPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1575,8 +1575,8 @@ type DropDownList<'TEnum
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DropDownListPropHandler<'TEnum>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DropDownListPropHandler<'TEnum>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DropDownListPropHandler<'TEnum>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1599,8 +1599,8 @@ type TextValidateField(props: TextValidateFieldProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TextValidateFieldPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TextValidateFieldPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TextValidateFieldPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1623,8 +1623,8 @@ type DateEditor(props: DateEditorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      DateEditorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      DateEditorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       DateEditorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1647,8 +1647,8 @@ type TextView(props: TextViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TextViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TextViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TextViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1671,8 +1671,8 @@ type TimeEditor(props: TimeEditorProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TimeEditorPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TimeEditorPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TimeEditorPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1695,8 +1695,8 @@ type TitleView(props: TitleViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TitleViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TitleViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TitleViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1720,8 +1720,8 @@ type ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Termina
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      ToolTipHostPropHandler<'TView>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      ToolTipHostPropHandler<'TView>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       ToolTipHostPropHandler<'TView>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1744,8 +1744,8 @@ type TreeView<'T when 'T: not struct>(props: TreeViewProps<'T>) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TreeViewPropHandler<'T>.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TreeViewPropHandler<'T>.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TreeViewPropHandler<'T>.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1768,8 +1768,8 @@ type TreeView(props: TreeViewProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      TreeViewPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      TreeViewPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       TreeViewPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1792,8 +1792,8 @@ type Window(props: WindowProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      WindowPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      WindowPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       WindowPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1816,8 +1816,8 @@ type Wizard(props: WizardProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      WizardPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      WizardPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       WizardPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)
@@ -1840,8 +1840,8 @@ type WizardStep(props: WizardStepProps) =
     member _.BindViewTE(value) = viewTe <- ValueSome value
     member _.Props = props.props
 
-    member _.SetProps(target, changedProps) =
-      WizardStepPropHandler.setProps (target :?> ViewBackedTerminalElement, changedProps)
+    member _.ApplyNativeProps(target, changedProps) =
+      WizardStepPropHandler.applyNativeProps (target :?> ViewBackedTerminalElement, changedProps)
 
     member _.ClearProp(target, propertyId) =
       WizardStepPropHandler.clearProp (target :?> ViewBackedTerminalElement, propertyId)

@@ -8,7 +8,7 @@ open Terminal.Gui.Views
 
 
 type internal ViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
 
     let view = terminalElement.View
 
@@ -381,8 +381,8 @@ type internal ViewPropHandler =
     | _ -> invalidOp $"Property ID {propertyId} cannot be cleared on '{terminalElement.Name}'."
 
 type internal AdornmentViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> AdornmentView
 
@@ -414,8 +414,8 @@ type internal AdornmentViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal AttributePickerPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> AttributePicker
 
@@ -447,8 +447,8 @@ type internal AttributePickerPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BarPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Bar
 
@@ -477,8 +477,8 @@ type internal BarPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal BorderViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    AdornmentViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> BorderView
 
@@ -505,8 +505,8 @@ type internal BorderViewPropHandler =
     | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ButtonPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Button
 
@@ -545,8 +545,8 @@ type internal ButtonPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CharMapPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> CharMap
 
@@ -593,8 +593,8 @@ type internal CharMapPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CheckBoxPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> CheckBox
 
@@ -641,8 +641,8 @@ type internal CheckBoxPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal CodePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Code
 
@@ -667,8 +667,8 @@ type internal CodePropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ColorPickerPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ColorPicker
 
@@ -710,8 +710,8 @@ type internal ColorPickerPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ColorPicker16PropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ColorPicker16
 
@@ -758,8 +758,8 @@ type internal ColorPicker16PropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DatePickerPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> DatePicker
 
@@ -796,16 +796,16 @@ type internal DatePickerPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FrameViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal GraphViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> GraphView
 
@@ -852,8 +852,8 @@ type internal GraphViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal HexViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> HexView
 
@@ -897,8 +897,8 @@ type internal HexViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ImageViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ImageView
 
@@ -954,8 +954,8 @@ type internal ImageViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LabelPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Label
 
@@ -975,16 +975,16 @@ type internal LabelPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LegendAnnotationPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Line
 
@@ -1021,8 +1021,8 @@ type internal LinePropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> LinearRangeViewBase<'TOption, 'TValue>
 
@@ -1221,8 +1221,8 @@ type internal LinearRangeViewBasePropHandler<'TOption, 'TValue> =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal LinearMultiSelectorPropHandler<'T> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, IReadOnlyList<'T>>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearRangeViewBasePropHandler<'T, IReadOnlyList<'T>>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> LinearMultiSelector<'T>
 
@@ -1239,16 +1239,16 @@ type internal LinearMultiSelectorPropHandler<'T> =
     | _ -> LinearRangeViewBasePropHandler<'T, IReadOnlyList<'T>>.clearProp (terminalElement, propertyId)
 
 type internal LinearMultiSelectorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearMultiSelectorPropHandler<string>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearMultiSelectorPropHandler<string>.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> LinearMultiSelectorPropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinearRangePropHandler<'T> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, LinearRangeSpan<'T>>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearRangeViewBasePropHandler<'T, LinearRangeSpan<'T>>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> LinearRange<'T>
 
@@ -1275,16 +1275,16 @@ type internal LinearRangePropHandler<'T> =
     | _ -> LinearRangeViewBasePropHandler<'T, LinearRangeSpan<'T>>.clearProp (terminalElement, propertyId)
 
 type internal LinearRangePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangePropHandler<string>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearRangePropHandler<string>.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> LinearRangePropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinearSelectorPropHandler<'T> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearRangeViewBasePropHandler<'T, 'T>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearRangeViewBasePropHandler<'T, 'T>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> LinearSelector<'T>
 
@@ -1306,16 +1306,16 @@ type internal LinearSelectorPropHandler<'T> =
     | _ -> LinearRangeViewBasePropHandler<'T, 'T>.clearProp (terminalElement, propertyId)
 
 type internal LinearSelectorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    LinearSelectorPropHandler<string>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    LinearSelectorPropHandler<string>.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> LinearSelectorPropHandler<string>.clearProp (terminalElement, propertyId)
 
 type internal LinkPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Link
 
@@ -1337,8 +1337,8 @@ type internal LinkPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ListView
 
@@ -1399,8 +1399,8 @@ type internal ListViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ListViewPropHandler<'T> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ListViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ListViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ListView<'T>
 
@@ -1437,8 +1437,8 @@ type internal ListViewPropHandler<'T> =
     | _ -> ListViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarginViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    AdornmentViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MarginView
 
@@ -1460,8 +1460,8 @@ type internal MarginViewPropHandler =
     | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Markdown
 
@@ -1525,8 +1525,8 @@ type internal MarkdownPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownCodeBlockPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MarkdownCodeBlock
 
@@ -1568,8 +1568,8 @@ type internal MarkdownCodeBlockPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MarkdownTablePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MarkdownTable
 
@@ -1605,8 +1605,8 @@ type internal MarkdownTablePropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BarPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    BarPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Menu
 
@@ -1639,8 +1639,8 @@ type internal MenuPropHandler =
     | _ -> BarPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuBarPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    MenuPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MenuBar
 
@@ -1659,8 +1659,8 @@ type internal MenuBarPropHandler =
     | _ -> MenuPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler<'T> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> NumericUpDown<'T>
 
@@ -1703,24 +1703,24 @@ type internal NumericUpDownPropHandler<'T> =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal NumericUpDownPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    NumericUpDownPropHandler<int>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    NumericUpDownPropHandler<int>.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> NumericUpDownPropHandler<int>.clearProp (terminalElement, propertyId)
 
 type internal PaddingViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    AdornmentViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    AdornmentViewPropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> AdornmentViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverImplPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> PopoverImpl
 
@@ -1748,8 +1748,8 @@ type internal PopoverImplPropHandler =
 
 type internal PopoverPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverImplPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    PopoverImplPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Popover<'TView, 'TResult>
 
@@ -1775,8 +1775,8 @@ type internal PopoverPropHandler<'TView, 'TResult
     | _ -> PopoverImplPropHandler.clearProp (terminalElement, propertyId)
 
 type internal PopoverMenuPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> PopoverMenu
 
@@ -1808,8 +1808,8 @@ type internal PopoverMenuPropHandler =
       PopoverPropHandler<Terminal.Gui.Views.Menu, Terminal.Gui.Views.MenuItem>.clearProp (terminalElement, propertyId)
 
 type internal ProgressBarPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ProgressBar
 
@@ -1856,8 +1856,8 @@ type internal ProgressBarPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal RunnablePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Runnable
 
@@ -1889,8 +1889,8 @@ type internal RunnablePropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal RunnablePropHandler<'TResult> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    RunnablePropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Runnable<'TResult>
 
@@ -1907,8 +1907,8 @@ type internal RunnablePropHandler<'TResult> =
     | _ -> RunnablePropHandler.clearProp (terminalElement, propertyId)
 
 type internal DialogPropHandler<'TResult> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler<'TResult>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    RunnablePropHandler<'TResult>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Dialog<'TResult>
 
@@ -1936,8 +1936,8 @@ type internal DialogPropHandler<'TResult> =
 
 type internal RunnableWrapperPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler<'TResult>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    RunnablePropHandler<'TResult>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> RunnableWrapper<'TView, 'TResult>
 
@@ -1954,8 +1954,8 @@ type internal RunnableWrapperPropHandler<'TView, 'TResult
     | _ -> RunnablePropHandler<'TResult>.clearProp (terminalElement, propertyId)
 
 type internal DialogPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<int>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    DialogPropHandler<int>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Dialog
 
@@ -1972,8 +1972,8 @@ type internal DialogPropHandler =
     | _ -> DialogPropHandler<int>.clearProp (terminalElement, propertyId)
 
 type internal FileDialogPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<IReadOnlyList<string>>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    DialogPropHandler<IReadOnlyList<string>>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> FileDialog
 
@@ -2025,8 +2025,8 @@ type internal FileDialogPropHandler =
 
 type internal PromptPropHandler<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler<'TResult>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    DialogPropHandler<'TResult>.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Prompt<'TView, 'TResult>
 
@@ -2043,8 +2043,8 @@ type internal PromptPropHandler<'TView, 'TResult
     | _ -> DialogPropHandler<'TResult>.clearProp (terminalElement, propertyId)
 
 type internal OpenDialogPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FileDialogPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    FileDialogPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> OpenDialog
 
@@ -2061,16 +2061,16 @@ type internal OpenDialogPropHandler =
     | _ -> FileDialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SaveDialogPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FileDialogPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    FileDialogPropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> FileDialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollBarPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ScrollBar
 
@@ -2137,8 +2137,8 @@ type internal ScrollBarPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollButtonPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ButtonPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ButtonPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ScrollButton
 
@@ -2167,8 +2167,8 @@ type internal ScrollButtonPropHandler =
     | _ -> ButtonPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ScrollSliderPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ScrollSlider
 
@@ -2235,8 +2235,8 @@ type internal ScrollSliderPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SelectorBasePropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> SelectorBase
 
@@ -2304,8 +2304,8 @@ type internal SelectorBasePropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal FlagSelectorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SelectorBasePropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    SelectorBasePropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> FlagSelector
 
@@ -2322,8 +2322,8 @@ type internal FlagSelectorPropHandler =
     | _ -> SelectorBasePropHandler.clearProp (terminalElement, propertyId)
 
 type internal OptionSelectorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    SelectorBasePropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    SelectorBasePropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> OptionSelector
 
@@ -2344,8 +2344,8 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
   and 'TFlagsEnum: (new: unit -> 'TFlagsEnum)
   and 'TFlagsEnum :> System.Enum
   and 'TFlagsEnum :> System.ValueType> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    FlagSelectorPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    FlagSelectorPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> FlagSelector<'TFlagsEnum>
 
@@ -2367,8 +2367,8 @@ type internal FlagSelectorPropHandler<'TFlagsEnum
 
 type internal OptionSelectorPropHandler<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    OptionSelectorPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    OptionSelectorPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> OptionSelector<'TEnum>
 
@@ -2394,8 +2394,8 @@ type internal OptionSelectorPropHandler<'TEnum
     | _ -> OptionSelectorPropHandler.clearProp (terminalElement, propertyId)
 
 type internal ShortcutPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Shortcut
 
@@ -2467,8 +2467,8 @@ type internal ShortcutPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuItemPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ShortcutPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ShortcutPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MenuItem
 
@@ -2485,8 +2485,8 @@ type internal MenuItemPropHandler =
     | _ -> ShortcutPropHandler.clearProp (terminalElement, propertyId)
 
 type internal MenuBarItemPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    MenuItemPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    MenuItemPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> MenuBarItem
 
@@ -2515,8 +2515,8 @@ type internal MenuBarItemPropHandler =
     | _ -> MenuItemPropHandler.clearProp (terminalElement, propertyId)
 
 type internal SpinnerViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> SpinnerView
 
@@ -2563,16 +2563,16 @@ type internal SpinnerViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal StatusBarPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    BarPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    BarPropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> BarPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TableViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TableView
 
@@ -2659,8 +2659,8 @@ type internal TableViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TabsPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Tabs
 
@@ -2710,8 +2710,8 @@ type internal TabsPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextFieldPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TextField
 
@@ -2786,8 +2786,8 @@ type internal TextFieldPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DropDownListPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextFieldPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    TextFieldPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> DropDownList
 
@@ -2805,8 +2805,8 @@ type internal DropDownListPropHandler =
 
 type internal DropDownListPropHandler<'TEnum
   when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DropDownListPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    DropDownListPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> DropDownList<'TEnum>
 
@@ -2827,8 +2827,8 @@ type internal DropDownListPropHandler<'TEnum
     | _ -> DropDownListPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextValidateFieldPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TextValidateField
 
@@ -2865,8 +2865,8 @@ type internal TextValidateFieldPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal DateEditorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextValidateFieldPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    TextValidateFieldPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> DateEditor
 
@@ -2898,8 +2898,8 @@ type internal DateEditorPropHandler =
     | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TextViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TextView
 
@@ -3013,8 +3013,8 @@ type internal TextViewPropHandler =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TimeEditorPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TextValidateFieldPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    TextValidateFieldPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TimeEditor
 
@@ -3046,8 +3046,8 @@ type internal TimeEditorPropHandler =
     | _ -> TextValidateFieldPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TitleViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TitleView
 
@@ -3097,8 +3097,8 @@ type internal TitleViewPropHandler =
 
 type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
   =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    PopoverImplPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    PopoverImplPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> ToolTipHost<'TView>
 
@@ -3115,8 +3115,8 @@ type internal ToolTipHostPropHandler<'TView when 'TView: (new: unit -> 'TView) a
     | _ -> PopoverImplPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TreeViewPropHandler<'T when 'T: not struct> =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> TreeView<'T>
 
@@ -3198,24 +3198,24 @@ type internal TreeViewPropHandler<'T when 'T: not struct> =
     | _ -> ViewPropHandler.clearProp (terminalElement, propertyId)
 
 type internal TreeViewPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> TreeViewPropHandler<Terminal.Gui.Views.ITreeNode>.clearProp (terminalElement, propertyId)
 
 type internal WindowPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    RunnablePropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    RunnablePropHandler.applyNativeProps (terminalElement, props)
 
   static member clearProp(terminalElement: ViewBackedTerminalElement, propertyId: PropertyId) =
     match propertyId.Value with
     | _ -> RunnablePropHandler.clearProp (terminalElement, propertyId)
 
 type internal WizardPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    DialogPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    DialogPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> Wizard
 
@@ -3245,8 +3245,8 @@ type internal WizardPropHandler =
     | _ -> DialogPropHandler.clearProp (terminalElement, propertyId)
 
 type internal WizardStepPropHandler =
-  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) =
-    ViewPropHandler.setProps (terminalElement, props)
+  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) =
+    ViewPropHandler.applyNativeProps (terminalElement, props)
 
     let view = terminalElement.View :?> WizardStep
 

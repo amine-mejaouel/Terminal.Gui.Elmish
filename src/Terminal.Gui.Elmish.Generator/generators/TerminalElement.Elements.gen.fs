@@ -18,10 +18,10 @@ let subElementsPropKeys (view: ViewMetadata) =
     yield $"    |> List.append base.SubElements_PropKeys"
   }
 
-let setPropsCode (view: ViewMetadata) =
+let applyNativePropsCode (view: ViewMetadata) =
   seq {
-    yield $"  override _.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
-    yield $"    {propHandlerTypeName view.Type}.setProps(terminalElement, props)"
+    yield $"  override _.ApplyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
+    yield $"    {propHandlerTypeName view.Type}.applyNativeProps(terminalElement, props)"
   }
 
 let clearPropCode (view: ViewMetadata) =
@@ -92,7 +92,7 @@ let gen () =
         yield! subElementsPropKeys viewMetadata
         yield ""
 
-      yield! setPropsCode viewMetadata
+      yield! applyNativePropsCode viewMetadata
       yield! clearPropCode viewMetadata
       yield ""
 

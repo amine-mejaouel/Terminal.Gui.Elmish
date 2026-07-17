@@ -27,12 +27,12 @@ let subElementsPropKeys (view: ViewMetadata) =
     yield $"    |> List.append base.SubElements_PropKeys"
   }
 
-let setPropsCode (view: ViewMetadata) =
+let applyNativePropsCode (view: ViewMetadata) =
   seq {
-    yield $"  static member setProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
+    yield $"  static member applyNativeProps(terminalElement: ViewBackedTerminalElement, props: Props) ="
 
     if view.Type <> typeof<Terminal.Gui.ViewBase.View> then
-      yield $"    {propHandlerTypeName view.Type.ParentViewType}.setProps(terminalElement, props)"
+      yield $"    {propHandlerTypeName view.Type.ParentViewType}.applyNativeProps(terminalElement, props)"
 
     yield $""
 
@@ -135,7 +135,7 @@ let gen () =
       //   yield! subElementsPropKeys viewMetadata
       //   yield ""
 
-      yield! setPropsCode viewMetadata
+      yield! applyNativePropsCode viewMetadata
       yield! clearPropCode viewMetadata
       yield ""
 

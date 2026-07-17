@@ -230,7 +230,7 @@ For a retained simple view, `Props.diff` returns:
 
 `Props.diffAll` additionally returns removed and changed reconciled properties. Their string key, immutable `Value`, and phase determine whether lifecycle work is required. Changing a string key appears as an ordinary removal plus addition, expressing replacement through the remove-then-apply lifecycle. Keeping this key space separate means handwritten macros do not consume or collide with generated Terminal.Gui property IDs.
 
-Removed event properties are unsubscribed by `EventHandlerRegistrar`. Other removed properties go through the generated integer-ID `ClearProp` dispatch, which restores the generated default for the correct concrete or base Terminal.Gui type. Added and changed values go through the specification's generated `SetProps` dispatch.
+Removed event properties are unsubscribed by `EventHandlerRegistrar`. Other removed properties go through the generated integer-ID `ClearProp` dispatch, which restores the generated default for the correct concrete or base Terminal.Gui type. Added and changed values go through the specification's generated `ApplyNativeProps` dispatch.
 
 Events need special treatment because an F# callback often closes over the model and therefore becomes a new delegate on every render. Each mounted event property installs one stable proxy delegate on the native event. The registrar separately stores the latest Elmish callback. Updating the property replaces that callback; it does not remove and re-add the native subscription. Removing the event property or disposing the element removes the proxy. Scoped suppression temporarily prevents selected proxies from invoking their current callbacks during renderer-owned native mutations without removing subscriptions.
 

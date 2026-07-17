@@ -359,7 +359,7 @@ module internal VirtualTree =
       backed.ApplyReconciledProps(ReconciledPropPhase.BeforeNative, propsDiff.ReconciledChanged)
 
       propsDiff.NativeChanged
-      |> Option.iter (fun props -> next.SetProps(viewTe, props))
+      |> Option.iter (fun props -> next.ApplyNativeProps(viewTe, props))
 
       backed.ApplyReconciledProps(ReconciledPropPhase.AfterNative, propsDiff.ReconciledChanged)
       mounted.Spec <- nextSpec
@@ -386,7 +386,7 @@ module internal VirtualTree =
     let setSlotProperty key (slot: MountedNode) =
       let changed = Props()
       changed |> Props.add (PropKey.viewKeyOfSubElement key, slot.View)
-      next.SetProps(viewTe, changed)
+      next.ApplyNativeProps(viewTe, changed)
 
     if mounted.Slots.Count <> 0 || next.Props.SubViewSpecCount <> 0 then
       for key in backed.SubElements_PropKeys do

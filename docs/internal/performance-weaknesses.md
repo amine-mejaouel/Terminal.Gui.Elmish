@@ -29,7 +29,7 @@ Most improvements can remain internal and preserve the existing Elmish DSL. The 
 
 `Props.diff` correctly creates a delta containing only added or changed ordinary properties and events. It allocates that delta lazily, so an unchanged node does not create a changed-property snapshot. See [`Types.fs`](../../src/Terminal.Gui.Elmish/Types.fs#L407).
 
-The generated setter does not consume the delta directly. `ViewPropHandler.setProps` probes every possible base `View` property and event with `Props.tryFind` or `Props.exists`, after which the derived handler probes its own property set. The current base handler contains approximately 100 such probes. Changing one `Button.Text` value therefore performs all base probes plus the button-specific probes.
+The generated native-property applicator does not consume the delta directly. `ViewPropHandler.applyNativeProps` probes every possible base `View` property and event with `Props.tryFind` or `Props.exists`, after which the derived handler probes its own property set. The current base handler contains approximately 100 such probes. Changing one `Button.Text` value therefore performs all base probes plus the button-specific probes.
 
 The source of this behavior is [`generators/PropsHandler.gen.fs`](../../src/Terminal.Gui.Elmish.Generator/generators/PropsHandler.gen.fs#L27). Generated output such as `PropsHandler.gen.fs` must not be edited directly.
 

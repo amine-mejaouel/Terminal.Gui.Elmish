@@ -294,7 +294,7 @@ and [<Interface>] internal ISimpleViewSpec =
   abstract Props: Props
   abstract CreateViewTE: unit -> IViewTE
   abstract BindViewTE: IViewTE -> unit
-  abstract SetProps: target: IViewTE * props: Props -> unit
+  abstract ApplyNativeProps: target: IViewTE * props: Props -> unit
   abstract ClearProp: target: IViewTE * propertyId: PropertyId -> unit
   abstract ViewType: ViewType
 

@@ -8,6 +8,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="paket.references" />
+    <Compile Include="BenchmarkFixtures.fs" />
+    <Compile Include="ConstructionBenchmarks.fs" />
+    <Compile Include="RendererBenchmarks.fs" />
+    <Compile Include="SchedulingBenchmarks.fs" />
     <Compile Include="Program.fs" />
     <None Include="README.md" />
   </ItemGroup>

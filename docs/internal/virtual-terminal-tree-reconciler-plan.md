@@ -31,7 +31,7 @@ Implemented in July 2026:
 - component-loop/state retention, slot ownership, position cleanup, and deterministic disposal;
 - focused, randomized, lifecycle, and compatibility coverage in `VirtualTreeTests.fs`.
 
-The remaining measurement work is to add a dedicated BenchmarkDotNet project and tune the adjacent-move crossover from recorded results. Collection-valued view properties also remain opt-in: each requires a Terminal.Gui-specific ownership adapter rather than being treated as an ordinary `SubViews` list.
+The dedicated BenchmarkDotNet suite now covers construction, steady reconciliation, structural changes, keyed permutations, slots, disposal, and scheduling at multiple scales. Remaining measurement work is to record optimization baselines, add native-operation counters and Terminal.Gui pipeline measurements, and tune the adjacent-move crossover from recorded results. Collection-valued view properties also remain opt-in: each requires a Terminal.Gui-specific ownership adapter rather than being treated as an ordinary `SubViews` list.
 
 ## Existing implementation and motivation
 
@@ -428,7 +428,7 @@ Update `Terminal.Gui.Elmish.fsproj` in dependency order. The expected high-level
 
 - [ ] Add tests that capture current expected property, event, child, sub-element, focus, and disposal behavior.
 - [ ] Add counters/test doubles for view creation, initialization, addition, removal, event subscription, and disposal.
-- [ ] Add benchmarks for unchanged, property-only, append, prepend, delete, replace, reverse, and random shuffle updates.
+- [x] Add benchmarks for unchanged, property-only, append, prepend, delete, replace, reverse, and random shuffle updates.
 - [ ] Record allocation and elapsed-time baselines for `KeyedDiffer`.
 
 Acceptance criteria:

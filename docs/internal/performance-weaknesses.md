@@ -185,30 +185,29 @@ The main library project currently defines `DEBUG;TRACE` unconditionally. See [`
 
 This does not affect every retained update, but it adds avoidable work during initial mount and makes Release behavior surprising. Remove the unconditional constants and allow the SDK's configuration-specific defaults, or add the tracing constants only in the Debug property group.
 
-## Benchmark gaps
+## Benchmark coverage and remaining gaps
 
-The current BenchmarkDotNet project measures property removal/reapplication, generated clear dispatch, and disposal. It does not measure realistic tree scaling, unchanged renders, keyed operations, scheduling, Terminal.Gui layout, or terminal-driver output.
+The [`Terminal.Gui.Elmish.Benchmarks`](../../benchmarks/Terminal.Gui.Elmish.Benchmarks/README.md) BenchmarkDotNet suite now separates declarative specification construction, retained-tree reconciliation, structural mutations, property dispatch, view-valued slots, disposal, and render-request coalescing.
 
-Before changing property storage or introducing pooling, add benchmarks at several widths and depths for:
+Parameterized coverage includes:
 
-- identical renders;
-- one leaf property change;
-- all leaf properties changed;
-- append, prepend, and middle insertion;
-- remove first, middle, and last;
-- replace one subtree;
-- rotate, reverse, and random keyed shuffle;
-- component parent rerender;
-- view-slot replacement;
-- bursts coalesced to one committed render.
+- flat keyed and unkeyed trees at widths 10, 100, and 1,000;
+- balanced trees of approximately 21, 341, and 1,365 nodes;
+- equivalent renders, one changed leaf, and all changed leaves;
+- append, prepend, middle removal, reinsertion, and type replacement;
+- rotate, reverse, and deterministic keyed shuffle;
+- retained view-slot changes and mounted-tree disposal;
+- scheduling bursts of 1, 10, and 100 requests.
 
-Record elapsed time and managed allocation alongside operation counters for view construction/disposal, property setters, event subscription, `AddAt`, `Remove`, movement, initialization, and—where observable—Terminal.Gui layout passes and driver writes.
+Steady-tree and pure-reorder benchmarks prepare specifications outside the timed operation to isolate reconciliation. Structural insert/remove/replace cycles include fresh specification construction because unmounted specifications cache disposed terminal elements and cannot safely be reused. Separate construction benchmarks expose that cost.
 
-Separating view construction, virtual-tree reconciliation, Terminal.Gui layout/drawing, and terminal output will show which layer dominates each workload and prevent optimizations from being credited to the wrong stage.
+The remaining measurement gaps are operation counters for native construction, setters, subscriptions, and hierarchy calls; component-loop scenarios; and a deterministic Terminal.Gui pipeline harness covering layout, drawing, dirty-cell processing, and driver output. Real-terminal I/O must not be mixed into the core reconciler benchmarks.
+
+The suite should establish baselines before property storage, pooling, or reconciler changes. Before/after runs must use the same machine, runtime, filter, and BenchmarkDotNet job.
 
 ## Recommended implementation order
 
-1. Add realistic scaling benchmarks and operation counters.
+1. Record the implemented scaling-suite baseline and add native operation counters where needed.
 2. Add the unchanged child-list fast path and replace quadratic native-view searches with linear verification.
 3. Replace generated property scanning with direct property-ID dispatch.
 4. Remove repeated key validation and obvious transient arrays.

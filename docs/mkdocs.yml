@@ -1,5 +1,41 @@
 site_name: Terminal.Gui.Elmish
-theme: material
+site_description: Build Terminal.Gui applications in F# with Elmish and a typed declarative view DSL.
+repo_url: https://github.com/Hardt-Coded/Terminal.Gui.Elmish
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
 docs_dir: public
 nav:
   - Home: index.md
+  - Getting started: getting-started.md
+  - Essentials:
+      - Elmish programs: programs.md
+      - Views and layout: views-and-layout.md
+      - State and events: state-and-events.md
+      - Reconciliation and keys: reconciliation.md
+  - Data and structure:
+      - Declarative collections: collections.md
+      - Elmish components: components.md
+  - Build an application:
+      - Practical patterns: recipes.md
+      - Examples tour: examples.md
+      - Testing and shipping: testing-and-shipping.md
+  - Troubleshooting: troubleshooting.md

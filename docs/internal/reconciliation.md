@@ -28,6 +28,20 @@ Slot reconciliation exclusively owns those native properties: it clears a remove
 
 Event properties use a stable subscription. Re-rendering replaces the callback behind that subscription; removing the property unsubscribes it. This avoids duplicate delivery and repeated add/remove work.
 
+## Collection controls
+
+`ListView` and `DropDownList` rows are not normal child views. Their `m.Items` macros create immutable keyed snapshots in a separate reconciled-property key space. The mounted terminal element owns the mutable `ObservableCollection`/`ListWrapper` adapter, retains its identity, and updates rows by stable domain key.
+
+```fsharp
+View.ListView(fun (p: ListViewProps) (m: ListViewMacros) ->
+  p.Value(Nullable model.SelectedIndex)
+  m.Items(model.Items, (fun item -> item.Id), (fun item -> item.Name)))
+```
+
+Synchronization runs before changed native selection properties and scopes suppression around collection-induced events. Removing `m.Items` disposes the adapter. A raw `p.Source` remains supported as an alternative, but declaring both owners on one control is rejected during desired-tree validation.
+
+See [Declarative collection controls](../public/collections.md) for application-facing guidance.
+
 ## Scheduling
 
 The first tree is mounted synchronously so Terminal.Gui has a root `Runnable`. Each Elmish loop has its own `TerminalRenderCoordinator`, bounded capacity-one `Channel<RenderRequest>`, and render pump, so pending renders collapse independently within that loop. All coordinators share the application's single `IRenderDispatcher`. After `IApplication.Init`, it posts their commits to the same Terminal.Gui UI thread; each callback drains its coordinator's channel again immediately before reconciliation so it applies the freshest available tree.

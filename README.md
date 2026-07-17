@@ -1,237 +1,74 @@
 # Terminal.Gui.Elmish
 
-# Docs build & run
-[mkdocs](https://www.mkdocs.org/) is being used along with [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) to generate the docs pages.
-Public pages live in `docs/public` and are included in the generated site. Internal documentation lives in `docs/internal` and remains Markdown-only.
+Terminal.Gui.Elmish is an F# Elmish wrapper around [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) with a typed, Feliz-style view DSL and retained native-view reconciliation.
 
-In order to work on the docs locally follow these commands:
-```bash
-# Only required for initial setup
-pip install mkdocs-material=="9.*"
-
-# Serve the docs
-cd docs
-mkdocs serve
+```fsharp
+View.Button(fun p ->
+  p.Text $"Count: {model.Count}"
+  p.Accepting(fun _ -> dispatch (Increment |> TerminalMsg.ofMsg)))
 ```
 
-[![Build Status](https://travis-ci.org/DieselMeister/Terminal.Gui.Elmish.svg?branch=master)](https://travis-ci.org/DieselMeister/Terminal.Gui.Elmish)
+Application code describes the desired interface from immutable model state. Compatible native Terminal.Gui controls are updated in place so focus, selection, scrolling, event subscriptions, and component-local state can survive Elmish renders.
 
-An elmish wrapper around Miguel de Icaza's 'Gui.cs' https://github.com/migueldeicaza/gui.cs including a Feliz-like like view DSL.
+## Documentation
 
-![20220614_terminal_gui_2](https://user-images.githubusercontent.com/13096516/173627457-eb4d5e71-9819-4c9f-aa13-a037846745a4.gif)
+Start with the [public application-author handbook](docs/public/index.md):
 
-# Major Changes
+- [Build your first application](docs/public/getting-started.md)
+- [Elmish programs and lifecycle](docs/public/programs.md)
+- [Views, layout, and styling](docs/public/views-and-layout.md)
+- [State and events](docs/public/state-and-events.md)
+- [Reconciliation and keys](docs/public/reconciliation.md)
+- [Declarative collection controls](docs/public/collections.md)
+- [Elmish components](docs/public/components.md)
+- [Troubleshooting](docs/public/troubleshooting.md)
 
-I decided to rework the DSL to a Feliz-style. Thank you Zaid Ajaj (https://github.com/Zaid-Ajaj/Feliz) for that awesome idea! You can leverage now more the Intellisense of your IDE.
-I also introduced a diffing mechanism, so that the elements are not recreated on every cycle. I try actually to update the current elements.
+Internal renderer and reconciliation notes live under [`docs/internal`](docs/internal/).
 
-This can be end up sometimes in some weird behavior or exceptions. I try to find all the quirks, but help me out and open an issue if you find something.
+## Version status
 
+The current repository source targets **.NET 10** and **Terminal.Gui 2.4.17**.
 
-# Documentation
+> The latest `Terminal.Gui.Elmish` package currently published on NuGet targets an older .NET/Terminal.Gui development stack and does not contain every API documented for this branch. Use a project reference to the current source until a newly versioned matching package is published.
 
-It's missing again!
+## Build the current source
 
-Almost all properties from the View-Elements should be available. Some events I extended. For example the Toggled-Event from a checkbox returns the old value in the event.
-I mapped the event to return both.
+Prerequisites: .NET SDK 10 or newer.
 
+```bash
+dotnet tool restore
+dotnet paket restore
+dotnet build Terminal.Gui.Elmish.sln
+dotnet test --project src/Terminal.Gui.Elmish.Tests/Terminal.Gui.Elmish.Tests.fsproj --no-build
+```
 
+See the [quickstart](docs/public/getting-started.md) for creating an application against this checkout.
 
-# Examples
+## Examples
 
-The repository includes several runnable examples of the properties and macros APIs:
+- [`TodoApp`](examples/TodoApp/) — polished forms, filtering, controlled text, retained list navigation, shortcuts, and theme-aware styling.
+- [`DynamicListSample`](examples/DynamicListSample/) — keyed child insertion, removal, updates, and reordering.
+- [`MacrosSample`](examples/MacrosSample/) — menu/collection macros and nested Elmish components.
+- [`PropertiesSample`](examples/PropertiesSample/) — direct generated-property syntax.
 
-- [`TodoApp`](examples/TodoApp/) — a polished, keyboard-first Todo application with editing, filtering, progress, and theme-aware styling.
-- [`DynamicListSample`](examples/DynamicListSample/) — keyed virtual-tree reconciliation with add, remove, update, and reorder operations.
-- [`PropertiesSample`](examples/PropertiesSample/) — the properties-style DSL.
-- [`MacrosSample`](examples/MacrosSample/) — the macros-style DSL and nested Elmish components.
-
-Run an example from the repository root, for example:
+Run an example from the repository root:
 
 ```bash
 dotnet run --project examples/TodoApp/TodoApp.fsproj
 ```
 
+## Documentation development
 
-# Usage:
+The public site uses MkDocs Material:
 
-
-
-```fs
-Program.mkProgram init update view
-|> Program.run
-
+```bash
+pip install 'mkdocs-material==9.*'
+cd docs
+mkdocs serve
 ```
 
-Some fable-elmish DSL:
-```fs
+Public pages live in `docs/public`; internal design notes are not included in the generated site.
 
-module Counter
+## License
 
-open Terminal.Gui
-open Terminal.Gui.Elmish
-open System
-
-type Model = {
-    Counter:int
-    IsSpinning: bool
-}
-
-type Msg =
-    | Increment
-    | Decrement
-    | Reset
-    | StartSpin
-    | StopSpin
-    | Spinned
-
-let init () : Model * Cmd<Msg> =
-    let model = {
-        Counter = 0
-        IsSpinning = false
-    }
-    model, Cmd.none
-
-
-module Commands =
-    let startSpinning isSpinning =
-        fun dispatch ->
-            async {
-                do! Async.Sleep 20
-                if isSpinning then
-                    dispatch Increment
-                    dispatch Spinned
-            }
-            |> Async.StartImmediate
-        |> Cmd.ofSub
-
-let update (msg:Msg) (model:Model) =
-    match msg with
-    | Increment ->
-        {model with Counter = model.Counter + 1}, Cmd.none
-    | Decrement ->
-        {model with Counter = model.Counter - 1}, Cmd.none
-    | Reset ->
-        {model with Counter = 0}, Cmd.none
-    | StartSpin ->
-        {model with IsSpinning = true}, Commands.startSpinning true
-    | StopSpin ->
-        {model with IsSpinning = false}, Cmd.none
-    | Spinned ->
-        model, Commands.startSpinning model.IsSpinning
-
-
-
-let view (model:Model) (dispatch:Msg->unit) =
-    View.topLevel [
-        page.menuBar [
-            menubar.menus [
-                menu.menuBarItem [
-                    menu.prop.title "Menu 1"
-                    menu.prop.children [
-                        menu.submenuItem [
-                            menu.prop.title "Sub Menu 1"
-                            menu.prop.children [
-                                menu.menuItem ("Sub Item 1", (fun () -> System.Diagnostics.Trace.WriteLine($"Sub menu 1 triggered")))
-                                menu.menuItem [
-                                    menu.prop.title "Sub Item 2"
-                                    menu.item.action (fun () -> System.Diagnostics.Trace.WriteLine($"Sub menu 2 triggered"))
-                                    menu.item.itemstyle.check
-                                    menu.item.isChecked true
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-        prop.children [
-            View.label [
-                prop.position.x.center
-                prop.position.y.absolute 1
-                prop.alignment.center
-                prop.color (Color.BrightYellow, Color.Green)
-                label.text "'F#ncy' Counter!"
-            ]
-
-            View.button [
-                prop.position.x.center
-                prop.position.y.absolute 5
-                label.text "Up"
-                button.onAccept (fun () -> dispatch Increment)
-            ]
-
-            View.label [
-                let c = (model.Counter |> float) / 100.0
-                let x = (16.0 * Math.Cos(c)) |> int
-                let y = (8.0 * Math.Sin(c)) |> int
-
-                prop.position.x.absolute (x + 20)
-                prop.position.y.absolute (y + 10)
-                prop.alignment.center
-                prop.color (Color.Magenta, Color.BrightYellow)
-                label.text $"The Count of 'Fancyness' is {model.Counter}"
-            ]
-
-
-            View.button [
-                prop.position.x.center
-                prop.position.y.absolute 7
-                label.text "Down"
-                button.onAccept (fun () -> dispatch Decrement)
-            ]
-
-            View.button [
-                prop.position.x.center
-                prop.position.y.absolute 9
-                label.text "Start Spinning"
-                button.onAccept (fun () -> dispatch StartSpin)
-            ]
-
-            View.button [
-                prop.position.x.center
-                prop.position.y.absolute 11
-                label.text "Stop Spinning"
-                button.onAccept (fun () -> dispatch StopSpin)
-            ]
-
-            View.button [
-                prop.position.x.center
-                prop.position.y.absolute 13
-                label.text "Reset"
-                button.onAccept (fun () -> dispatch Reset)
-            ]
-        ]
-    ]
-
-
-
-```
-
-Install via Nuget:
-
-https://www.nuget.org/packages/Terminal.Gui.Elmish
-
-```
-dotnet add package Terminal.Gui.Elmish
-```
-
-# Referencing the underlying Element
-
-You can reference the underlying element. Also use this to influcence further setting when the element is created!
-
-use `prop.ref (fun view -> ...)`
-
-```fs
-View.button [
-    prop.position.x.center
-    prop.position.y.absolute 13
-    label.text "Reset"
-    button.onAccept (fun () -> dispatch Reset)
-    prop.ref (fun view -> myButtonRef <- (view :?> Terminal.Gui.Button).xxxx // do your stuff here)
-]
-
-```
-
-
-A lot of Thanks to Miguel de Icaza. Nice Project!.
+Terminal.Gui.Elmish is distributed under the MIT License.

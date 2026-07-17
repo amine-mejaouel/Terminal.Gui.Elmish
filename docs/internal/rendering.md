@@ -43,7 +43,7 @@ Most rendering bugs become easier to understand once the declarative and retaine
 | Representation | Important types | Lifetime and responsibility |
 | --- | --- | --- |
 | Desired tree | `IView`, `ViewSpec`, `ISimpleViewSpec`, `IComponentViewSpec`, `Props` | Normally rebuilt by the application's `view` function. It describes what should exist now; it does not own the displayed native hierarchy. |
-| Retained renderer state | `MountedNode`, `TerminalElement`, `IViewTE`, `IElmishComponentTE` | Survives compatible renders. It remembers the previous specification, node identity, mounted children and slots, native event subscriptions, origins, and cleanup state. |
+| Retained renderer state | `MountedNode`, `TerminalElement`, `IViewTE`, `IElmishComponentTE` | Survives compatible renders. It remembers the previous specification, node identity, mounted children and slots, native event subscriptions, reconciled-property resources, origins, and cleanup state. |
 | Native UI | `Terminal.Gui.ViewBase.View` and its subclasses | The mutable objects used by Terminal.Gui. Their identity carries focus, selection, scrolling, and other control-local state across renders. Terminal.Gui owns their layout and drawing behavior. |
 
 For example, `View.Label(fun p -> p.Text "Ready")` creates a label specification and its property snapshot. It does **not** immediately create a native `Terminal.Gui.Views.Label`. The native label is created only if the renderer needs to mount that specification. On a compatible later render, the new specification is bound to the existing terminal element and native label.
@@ -116,7 +116,7 @@ This means an Elmish `view` function may run more often than the native hierarch
 1. A simple view specification creates its generated `IViewTE`; a component specification resolves its `IElmishComponentTE`.
 2. `InitializeTree` assigns each terminal element's `Origin` and creates native views through the generated `NewView` implementations.
 3. View-valued property slots are initialized and converted from declarative specifications to native property values.
-4. Positions and initial generated properties are applied. Event properties install their stable native subscriptions.
+4. Positions are applied, followed by reconciled properties in their `BeforeNative` phase, generated native properties, and reconciled properties in their `AfterNative` phase. Event properties install their stable native subscriptions.
 5. Normal child views are inserted into their parent's `SubViews` at their declared index when that view kind participates in the normal hierarchy.
 6. Nested components start their own Elmish loops and expose the native root produced by those loops.
 7. `captureMountedTree` records the initialized terminal elements as a retained `MountedNode` tree and binds each specification to the element it represents.
@@ -132,8 +132,10 @@ For a retained simple view, reconciliation occurs in this order:
 1. reconcile view-valued property slots;
 2. reconcile normal children;
 3. clean up and reapply relative positions if `X` or `Y` changed;
-4. compute ordinary property removals and changes;
-5. clear removed properties, apply changed properties, and store the new specification.
+4. compute native and reconciled-property removals and changes;
+5. clear removed reconciled resources and removed native properties;
+6. apply changed `BeforeNative` reconciled properties, changed native properties, and changed `AfterNative` reconciled properties;
+7. store the new specification.
 
 The new specification is bound to the retained terminal element before its descendants and properties are processed. For a sibling list, all matched specifications are bound before any sibling is reconciled. This is important for `TPos` values that refer to another specification created by the current `view` call: resolving that specification must lead to the already-retained native view.
 
@@ -165,7 +167,7 @@ The reorder step computes a longest increasing subsequence of old indexes. Views
 
 Some Terminal.Gui types, such as menus and popovers, are logically present in the desired child tree but are not attached as ordinary `SubViews`. Generated terminal-element metadata controls this through `SetAsChildOfParentView`; ownership-specific properties or Terminal.Gui services attach those views instead.
 
-## Three ownership domains
+## Four ownership domains
 
 The renderer deliberately does not treat every nested view as an ordinary child.
 
@@ -186,6 +188,29 @@ A property such as `Shortcut.TargetView` owns a view through a named native prop
 
 Ordinary `Props.diff` excludes both halves of a slot. Slot reconciliation is the single owner of their lifecycle and assignment.
 
+### Reconciled properties
+
+Some declarative values require a mutable native resource whose lifetime is longer than one desired `Props` snapshot but shorter than, or equal to, the mounted terminal element. These values live in `Props.ReconciledProps`, separately from generated Terminal.Gui property IDs.
+
+A `ReconciledPropSpec` provides:
+
+- a string key local to the mounted element;
+- an immutable value used for structural diffing;
+- a retained-state type and factory;
+- pre-mutation validation;
+- a `BeforeNative` or `AfterNative` application phase;
+- an apply operation that receives the retained state and a `ReconciledPropApplyContext` containing the native view, complete native-property lookup, and scoped event suppression service.
+
+`ViewBackedTerminalElement` owns the resulting `IReconciledState`. Compatible specifications reuse it across renders. Removing the property or unmounting the element disposes it exactly once. When a specification keeps its key but changes `StateType`, `Props.diffAll` schedules the old state as removed and the new specification as changed; removal runs first, so application creates the replacement only after disposing the incompatible state.
+
+The keyed collection adapter is the first consumer. `ListViewMacros.Items` and `DropDownListMacros.Items` convert immutable values into keyed text snapshots. The retained state owns one `ObservableCollection` and `ListWrapper`, synchronizes rows with minimal insert/move/replace/remove operations, and assigns the source once. This preserves Terminal.Gui selection and navigation without placing a stable source in the Elmish model or at application module scope.
+
+Collection mutations can cause Terminal.Gui to raise selection or source events. `EventHandlerRegistrar.Suppress` uses scoped per-property counters so the adapter suppresses only callbacks induced by reconciliation. Native keyboard and mouse changes outside that scope continue through the stable event proxies normally.
+
+The suppression sets are generated from each registered control's public events, including events declared by behavioral base classes down to, but not including, the general `View` base class. This makes a Terminal.Gui upgrade surface new control-specific events in generated keys and reflection-backed tests instead of relying on handwritten lists. The registry supports validated exclusions for callback-style hooks that must remain active: `ListView.RowRender`, for example, is deliberately excluded because it customizes rendering rather than reporting a state transition. Generation fails if an exclusion no longer names a real upstream event.
+
+Raw `p.Source` remains an alternative native-property path. A specification cannot combine it with `m.Items`; reconciled-property validation rejects competing ownership before any mounted-tree mutation.
+
 ### Elmish components
 
 An Elmish component is one node in its parent's mounted tree, identified by its component type and key. Internally it owns another Elmish model, loop, `TerminalRenderCoordinator`, renderer, render channel, and rendered root view. It receives the parent's shared `TerminalRenderContext`, so its later commits use the same `IRenderDispatcher` and `IApplication` as the root loop.
@@ -196,16 +221,18 @@ This boundary explains why the parent reconciler does not recursively inspect a 
 
 ## Property and event patching
 
-`Props` is the property snapshot attached to a simple view specification. Generated `PropKey` values carry collision-checked integer property IDs and classify entries as ordinary values, events, native view properties, or declarative view specifications.
+`Props` is the property snapshot attached to a simple view specification. Its native dictionary contains generated `PropKey` values with collision-checked integer property IDs and classifies entries as ordinary values, events, native view properties, or declarative view specifications. Its separate reconciled-property dictionary contains declarative values backed by terminal-element-owned resources.
 
 For a retained simple view, `Props.diff` returns:
 
 - property keys that existed previously but are now absent;
 - a lazily allocated `Props` snapshot containing only added or changed ordinary properties and events.
 
+`Props.diffAll` additionally returns removed and changed reconciled properties. Their immutable `Value`, phase, and retained-state type determine whether lifecycle work is required. A retained-state type change appears in both collections, expressing replacement through the ordinary remove-then-apply lifecycle. Keeping this key space separate means handwritten macros do not consume or collide with generated Terminal.Gui property IDs.
+
 Removed event properties are unsubscribed by `EventHandlerRegistrar`. Other removed properties go through the generated integer-ID `ClearProp` dispatch, which restores the generated default for the correct concrete or base Terminal.Gui type. Added and changed values go through the specification's generated `SetProps` dispatch.
 
-Events need special treatment because an F# callback often closes over the model and therefore becomes a new delegate on every render. Each mounted event property installs one stable proxy delegate on the native event. The registrar separately stores the latest Elmish callback. Updating the property replaces that callback; it does not remove and re-add the native subscription. Removing the event property or disposing the element removes the proxy.
+Events need special treatment because an F# callback often closes over the model and therefore becomes a new delegate on every render. Each mounted event property installs one stable proxy delegate on the native event. The registrar separately stores the latest Elmish callback. Updating the property replaces that callback; it does not remove and re-add the native subscription. Removing the event property or disposing the element removes the proxy. Scoped suppression temporarily prevents selected proxies from invoking their current callbacks during renderer-owned native mutations without removing subscriptions.
 
 As a concrete example, changing a retained label from `p.Text "before"` to `p.Text "after"` follows this path:
 
@@ -232,7 +259,7 @@ The renderer itself does not call `Layout`, `Draw`, or manipulate terminal cells
 
 `VirtualTree.unmount` first marks the complete mounted subtree as disposed so cleanup is idempotent, then delegates to the root terminal element's disposal behavior.
 
-A view terminal element clears applied properties and event subscriptions, detaches itself when it is an attached child, disposes owned slot elements and children, removes position registrations, and finally disposes its native `View`. Component disposal requests termination of the component loop and waits for that loop to release its renderer and rendered tree.
+A view terminal element first disposes its retained reconciled-property resources, then clears applied native properties and event subscriptions, detaches itself when it is an attached child, disposes owned slot elements and children, removes position registrations, and finally disposes its native `View`. Component disposal requests termination of the component loop and waits for that loop to release its renderer and rendered tree.
 
 At program shutdown, `TerminalRenderCoordinator.Dispose` prevents new renders, discards pending work, and disposes that loop's renderer under the commit guard. The root program then disposes the shared dispatcher and `IApplication`, allowing Terminal.Gui to restore terminal state and release its driver.
 
@@ -245,11 +272,12 @@ The public DSL is mostly generated, but reconciliation policy is handwritten:
 | Area | Responsibility |
 | --- | --- |
 | `View.gen.fs` and `Props.gen.fs` | Build typed desired view specifications and property snapshots. |
-| `PKey.gen.fs` | Provide typed property keys and generated property IDs. |
+| `PKey.gen.fs` | Provide typed property keys, generated property IDs, and registered reconciliation event sets. |
 | `SimpleViewSpec.gen.fs` | Cache or bind terminal elements and route typed set/clear operations. |
 | `TerminalElement.Elements.gen.fs` | Construct the correct native Terminal.Gui subclass and expose view-specific metadata. |
 | `PropsHandler.gen.fs` | Apply changed native values and clear removed values with inheritance-aware dispatch. |
-| `RenderContext.fs`, `Types.fs`, `VirtualTree.fs`, `ElmishTerminal.fs` | Define the shared application context, per-loop coordination, identity, ownership, reconciliation, scheduling, and program/component integration. |
+| `Macros.fs` and `ReconciledCollections.fs` | Build higher-level declarative operations and their retained native-resource adapters. |
+| `RenderContext.fs`, `Types.fs`, `TerminalElement.Base.fs`, `VirtualTree.fs`, `ElmishTerminal.fs` | Define the shared application context, per-loop coordination, identity, retained resources, event suppression, ownership, reconciliation, scheduling, and program/component integration. |
 
 Generated files are evidence of the render-context bridge, not editing points. Change the corresponding source under `src/Terminal.Gui.Elmish.Generator/generators/` or its metadata/registry, then rebuild to regenerate and format the outputs.
 
@@ -272,6 +300,8 @@ The renderer assumes exclusive ownership of the hierarchy entries and property s
 | Symptom | Start here | Question to ask |
 | --- | --- | --- |
 | Focus, selection, or scroll state unexpectedly resets | `VirtualTree.sameIdentity` and child matching | Did the key, exact type, or unkeyed position change? |
+| List navigation resets after an unrelated render | `ReconciledListItems` and `ViewBackedTerminalElement.ApplyReconciledProps` | Is the control using `m.Items` with stable domain keys, or is application code replacing `p.Source`? |
+| Collection synchronization dispatches model messages | `EventHandlerRegistrar.Suppress` and the adapter's event-key scope | Is every native event induced by the resource mutation included in the scoped suppression set? |
 | Dynamic children display in the wrong order | `reconcileChildren` and `reorderChildren` | Do keys match domain identity, and does final `SubViews` order match the desired list? |
 | A nested property view appears as a normal child | `reconcileSlots` and generated subview keys | Was a view-valued property incorrectly put in `Children` or ordinary property diffing? |
 | A removed native property keeps its old value | `Props.diff` and generated `clearProp` | Does the property have the correct generated ID and default clear case across inheritance? |
@@ -287,9 +317,9 @@ For a top-down trace through the current implementation:
 
 1. Start with `ElmishTerminal.fs`: `setState`, `TerminalRenderCoordinator`, and `runTerminal` show when a desired tree is produced and committed.
 2. Read `RenderContext.fs` to see the application-level `IApplication` and `IRenderDispatcher` shared by the root and component coordinators.
-3. Read the core types in `Types.fs`: `Props`, `ViewSpec`, terminal-element interfaces, `Origin`, and `Props.diff` define the vocabulary used by the renderer.
+3. Read the core types in `Types.fs`: `Props`, `ReconciledPropSpec`, `ViewSpec`, terminal-element interfaces, `Origin`, and property diffing define the vocabulary used by the renderer.
 4. Read `VirtualTree.fs`: mount, identity, child/slot reconciliation, reordering, validation, and renderer disposal are kept together.
-5. Read `TerminalElement.Base.fs`: native view initialization, stable event subscriptions, initial tree traversal, and disposal live here.
+5. Read `TerminalElement.Base.fs`: native view initialization, reconciled-resource state, scoped event suppression, stable event subscriptions, initial tree traversal, and disposal live here.
 6. Read `Services/PositionService.fs` for relative-layout lifetime handling.
 7. Inspect the generator sources for property/view-specific mechanics, using the corresponding `*.gen.fs` outputs to see the emitted code.
 8. Use `RenderSchedulingTests.fs`, `VirtualTreeTests.fs`, `PositionServiceTests.fs`, and the component/Elmish-loop tests as executable statements of scheduling, reference retention, and cleanup behavior.
@@ -306,6 +336,9 @@ The [reconciler implementation plan](virtual-terminal-tree-reconciler-plan.md) r
 - Slots are assigned through native properties and never inserted into `SubViews` by slot reconciliation.
 - Ordinary property diffing does not own slots; generated handlers are the only typed native set/clear layer.
 - A retained event property has one native subscription and a replaceable current callback.
+- Reconciled-property state belongs to the mounted terminal element, is diffed by immutable declarative value, and is disposed on removal or unmount.
+- Renderer-owned native mutations suppress only the event proxies they can induce; user input remains observable.
+- A native property and a reconciled property cannot compete to own the same resource.
 - Commits after application initialization run through the Terminal.Gui application thread.
 - Reconciliation mutates views; Terminal.Gui performs layout and drawing.
 - Unmount and program shutdown release hierarchy links, callbacks, position handlers, component loops, native views, and application resources exactly once.

@@ -74,6 +74,64 @@ let genPKeysAccessors () =
         $"  let {viewName}{genericTypeParamsWithConstraintsBlock viewType} = {getTypeNameWithoutArity viewType}PKeys{genericTypeParamsBlock viewType}()"
   }
 
+let private eventIdentity (declaringType: Type) (event: EventMetadata) =
+  $"{declaringType.FullName}.{event.EventInfo.Name}"
+
+/// Current type & base types
+let private behavioralTypes (viewType: Type) =
+  let rec collect current result =
+    if isNull current || current = typeof<Terminal.Gui.ViewBase.View> then
+      result
+    else
+      collect current.BaseType (current :: result)
+
+  collect viewType []
+
+let genReconciledEventKeys () =
+  seq {
+    yield "  module ReconciledEventKeys ="
+
+    for definition in Registry.ReconciledEventSets.All do
+      let declaredEvents =
+        behavioralTypes definition.ViewType
+        |> List.collect (fun declaringType ->
+          (ViewMetadata.create declaringType).Events
+          |> Array.map (fun event -> declaringType, event)
+          |> List.ofArray)
+
+      let availableIdentities =
+        declaredEvents
+        |> Seq.map (fun (declaringType, event) -> eventIdentity declaringType event)
+        |> Set.ofSeq
+
+      let missingExclusions = Set.difference definition.ExcludedEvents availableIdentities
+
+      if not missingExclusions.IsEmpty then
+        let missing = String.concat ", " missingExclusions
+
+        invalidOp $"Reconciled event set '{definition.Name}' excludes events that do not exist: {missing}."
+
+      let includedEvents =
+        declaredEvents
+        |> List.filter (fun (declaringType, event) ->
+          not (definition.ExcludedEvents.Contains(eventIdentity declaringType event)))
+
+      yield $"    let {definition.Name}: PropKey array ="
+
+      match includedEvents with
+      | [] -> yield "      [||]"
+      | events ->
+        yield "      [|"
+
+        for declaringType, event in events do
+          let accessorName = Registry.ViewTypes.GetUniqueTypeName declaringType
+          yield $"        {accessorName}.{event.PKey}.Untyped"
+
+        yield "      |]"
+
+      yield ""
+  }
+
 let getAccessor (viewType: Type) =
   let viewName = Registry.ViewTypes.GetUniqueTypeName viewType
   $"PKey.{viewName}{genericTypeParamsBlock viewType}"
@@ -162,5 +220,7 @@ let gen () =
     yield ""
 
     yield! genPKeysAccessors ()
+    yield ""
+    yield! genReconciledEventKeys ()
   }
   |> CodeWriter.write "PKey.gen.fs"

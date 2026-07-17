@@ -10,10 +10,7 @@ let genMethods (viewType: Type) =
   let genericBlock = genericTypeParamsWithConstraintsBlock viewType
   let genericParamsBlock = genericTypeParamsBlock viewType
 
-  // Check if this is a special case with macros
-  let hasMacros =
-    [ typeof<Terminal.Gui.Views.MenuBar>; typeof<Terminal.Gui.Views.MenuBarItem> ]
-    |> List.contains viewType
+  let hasMacros = Registry.MacroViews.Contains viewType
 
   let returnInterface = Registry.TEInterfaces.GetAssignableInterface viewType
 

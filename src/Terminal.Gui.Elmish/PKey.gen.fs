@@ -1962,3 +1962,17 @@ module internal PKey =
   let Window = WindowPKeys()
   let Wizard = WizardPKeys()
   let WizardStep = WizardStepPKeys()
+
+  module ReconciledEventKeys =
+    let ListViewItems: PropKey array =
+      [| ListView.CollectionChanged.Untyped
+         ListView.SourceChanged.Untyped
+         ListView.ValueChanged.Untyped
+         ListView.ValueChangedUntyped.Untyped
+         ListView.ValueChanging.Untyped |]
+
+    let DropDownListItems: PropKey array =
+      [| TextField.TextChanging.Untyped
+         TextField.ValueChanged.Untyped
+         TextField.ValueChangedUntyped.Untyped
+         TextField.ValueChanging.Untyped |]

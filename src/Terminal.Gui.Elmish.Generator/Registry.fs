@@ -79,6 +79,35 @@ module Registry =
       }
       |> Seq.toList
 
+  /// Single registration point for generated view overloads that expose a handwritten macro companion.
+  type MacroViews =
+    static let types =
+      HashSet<Type>(
+        [ typeof<Terminal.Gui.Views.MenuBar>
+          typeof<Terminal.Gui.Views.MenuBarItem>
+          typeof<Terminal.Gui.Views.ListView>
+          typeof<Terminal.Gui.Views.DropDownList> ]
+      )
+
+    static member Contains(viewType: Type) = types.Contains viewType
+
+  type ReconciledEventSetDefinition =
+    { Name: string
+      ViewType: Type
+      ExcludedEvents: Set<string> }
+
+  /// Event-key sets used to suppress notifications caused by renderer-owned native mutations.
+  /// Events declared on behavioral base classes are included until View; callback-style events
+  /// that must remain active during reconciliation are excluded by fully qualified identity.
+  type ReconciledEventSets =
+    static member val All: ReconciledEventSetDefinition list =
+      [ { Name = "ListViewItems"
+          ViewType = typeof<Terminal.Gui.Views.ListView>
+          ExcludedEvents = Set.singleton "Terminal.Gui.Views.ListView.RowRender" }
+        { Name = "DropDownListItems"
+          ViewType = typeof<Terminal.Gui.Views.DropDownList>
+          ExcludedEvents = Set.empty } ]
+
   type TEInterfaces =
     static let getTEInterfaceName propertyType =
       if propertyType = typeof<Terminal.Gui.ViewBase.View> then

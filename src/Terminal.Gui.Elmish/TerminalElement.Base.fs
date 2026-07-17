@@ -7,7 +7,6 @@ open System.Threading
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 
-
 /// <p>
 ///   Repository for event handlers associated with property keys.
 ///   It allows setting and removing handlers for events.
@@ -27,6 +26,33 @@ type internal EventHandlerRegistrar() =
   /// Stores functions to be invoked to remove previously added handlers.
   /// Which will call IEvent.RemoveHandler on the event associated with the property key.
   let handlerRemovalActions = Dictionary<PropKey, unit -> unit>()
+
+  /// Scoped counters allow framework-managed native mutations to suppress only the callbacks they can induce.
+  let suppressedHandlers = Dictionary<PropKey, int>()
+
+  member private _.IsSuppressed(pkey: PropKey) =
+    match suppressedHandlers.TryGetValue pkey with
+    | true, count -> count > 0
+    | false, _ -> false
+
+  member this.Suppress(pkeys: PropKey seq) =
+    let keys = pkeys |> Seq.distinct |> Seq.toArray
+
+    for key in keys do
+      let count =
+        match suppressedHandlers.TryGetValue key with
+        | true, value -> value
+        | false, _ -> 0
+
+      suppressedHandlers[key] <- count + 1
+
+    { new IDisposable with
+        member _.Dispose() =
+          for key in keys do
+            match suppressedHandlers.TryGetValue key with
+            | true, count when count > 1 -> suppressedHandlers[key] <- count - 1
+            | true, _ -> suppressedHandlers.Remove key |> ignore
+            | false, _ -> () }
 
   member private this.TryGetHandlerRemovalAction(pkey: PropKey) =
     match handlerRemovalActions.TryGetValue(pkey) with
@@ -66,8 +92,9 @@ type internal EventHandlerRegistrar() =
     if not (trackedHandlers.ContainsKey pkey.Untyped) then
       let handler =
         EventHandler<'TEventArgs>(fun _ args ->
-          this.TryGetAction<'TEventArgs -> unit>(pkey.Untyped)
-          |> Option.iter (fun current -> current args))
+          if not (this.IsSuppressed pkey.Untyped) then
+            this.TryGetAction<'TEventArgs -> unit>(pkey.Untyped)
+            |> Option.iter (fun current -> current args))
 
       event.AddHandler handler
       this.RegisterHandler(pkey.Untyped, handler, event.RemoveHandler)
@@ -80,8 +107,9 @@ type internal EventHandlerRegistrar() =
     if not (trackedHandlers.ContainsKey pkey.Untyped) then
       let handler =
         EventHandler(fun _ _ ->
-          this.TryGetAction<unit -> unit>(pkey.Untyped)
-          |> Option.iter (fun current -> current ()))
+          if not (this.IsSuppressed pkey.Untyped) then
+            this.TryGetAction<unit -> unit>(pkey.Untyped)
+            |> Option.iter (fun current -> current ()))
 
       event.AddHandler handler
       this.RegisterHandler(pkey.Untyped, handler, event.RemoveHandler)
@@ -94,8 +122,9 @@ type internal EventHandlerRegistrar() =
     if not (trackedHandlers.ContainsKey pkey.Untyped) then
       let handler =
         EventHandler(fun _ args ->
-          this.TryGetAction<EventArgs -> unit>(pkey.Untyped)
-          |> Option.iter (fun current -> current args))
+          if not (this.IsSuppressed pkey.Untyped) then
+            this.TryGetAction<EventArgs -> unit>(pkey.Untyped)
+            |> Option.iter (fun current -> current args))
 
       event.AddHandler handler
       this.RegisterHandler(pkey.Untyped, handler, event.RemoveHandler)
@@ -111,8 +140,9 @@ type internal EventHandlerRegistrar() =
     if not (trackedHandlers.ContainsKey pkey.Untyped) then
       let handler =
         NotifyCollectionChangedEventHandler(fun _ args ->
-          this.TryGetAction<NotifyCollectionChangedEventArgs -> unit>(pkey.Untyped)
-          |> Option.iter (fun current -> current args))
+          if not (this.IsSuppressed pkey.Untyped) then
+            this.TryGetAction<NotifyCollectionChangedEventArgs -> unit>(pkey.Untyped)
+            |> Option.iter (fun current -> current args))
 
       event.AddHandler handler
       this.RegisterHandler(pkey.Untyped, handler, event.RemoveHandler)
@@ -154,6 +184,8 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   let viewSetEvent = Event<View>()
 
+  let reconciledStates = Dictionary<string, IReconciledState>(StringComparer.Ordinal)
+
   member this.View
     with get () = view
     and set value =
@@ -192,7 +224,9 @@ type internal ViewBackedTerminalElement(props: Props) =
     |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
 
     PositionService.Current.ApplyPos this
+    this.ApplyReconciledProps(ReconciledPropPhase.BeforeNative, this.Props.ReconciledProps.Values)
     this.SetProps(this, this.Props)
+    this.ApplyReconciledProps(ReconciledPropPhase.AfterNative, this.Props.ReconciledProps.Values)
 
   abstract Name: string
 
@@ -281,6 +315,31 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   default this.SetProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
 
+  member this.ApplyReconciledProps(phase: ReconciledPropPhase, specs: seq<ReconciledPropSpec>) =
+    let context =
+      { NativeView = this.View
+        TryGetProperty = fun key -> this.Props |> Props.tryFindUntyped key
+        SuppressEvents = this.EventRegistrar.Suppress }
+
+    for spec in specs do
+      if spec.Phase = phase then
+        let state: IReconciledState =
+          match reconciledStates.TryGetValue spec.Key with
+          | true, retained -> retained
+          | false, _ ->
+            let created = spec.CreateState()
+            reconciledStates.Add(spec.Key, created)
+            created
+
+        spec.Apply state context
+
+  member _.ClearReconciledProp(key: string) =
+    match reconciledStates.TryGetValue key with
+    | true, retained ->
+      reconciledStates.Remove key |> ignore
+      retained.Dispose()
+    | false, _ -> ()
+
   abstract ClearProp: propertyId: PropertyId -> unit
 
   default this.ClearProp(propertyId: PropertyId) = ()
@@ -297,6 +356,9 @@ type internal ViewBackedTerminalElement(props: Props) =
     if Interlocked.Exchange(&disposing, true) then
       ()
     else
+
+      for key in reconciledStates.Keys |> Seq.toArray do
+        this.ClearReconciledProp key
 
       // Clear applied properties and remove any event subscriptions. Declarative view-slot
       // specifications are not native properties and are disposed separately below.

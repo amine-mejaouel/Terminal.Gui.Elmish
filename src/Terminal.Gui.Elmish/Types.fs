@@ -184,6 +184,59 @@ module internal PropKey =
             { Identity = PropKeyIdentity.SubView { View = viewId; ViewSpec = viewSpecId }
               Key = key }
 
+[<RequireQualifiedAccess>]
+type internal ReconciledPropPhase =
+  | BeforeNative
+  | AfterNative
+
+/// Renderer-owned services available while applying a retained declarative property.
+type internal ReconciledPropApplyContext =
+  {
+    NativeView: View
+    /// Given a `PropKey` returns the current value of the property held by the parent TerminalElement.
+    TryGetProperty: PropKey -> obj option
+    /// Suppress events when called.
+    /// Returns a IDisposable. When disposed of, it resumes the events.
+    SuppressEvents: PropKey seq -> IDisposable
+  }
+
+type internal IReconciledState =
+  interface
+    inherit IDisposable
+  end
+
+/// Typed inputs used to construct an erased reconciled-property specification.
+type internal ReconciledPropSpecConfig<'State when 'State :> IReconciledState> =
+  { Phase: ReconciledPropPhase
+    Value: obj
+    Validate: (PropKey -> obj option) -> unit
+    CreateState: unit -> 'State
+    Apply: 'State -> ReconciledPropApplyContext -> unit }
+
+/// Describes a declarative property whose mutable/native state is retained by the mounted terminal element.
+/// The immutable Value participates in diffing; the typed configuration defines its lifecycle operations.
+type internal ReconciledPropSpec =
+  private
+    { Key: string
+      Phase: ReconciledPropPhase
+      Value: obj
+      Validate: (PropKey -> obj option) -> unit
+      CreateState: unit -> IReconciledState
+      Apply: IReconciledState -> ReconciledPropApplyContext -> unit }
+
+[<RequireQualifiedAccess>]
+module internal ReconciledPropSpec =
+  let create<'State when 'State :> IReconciledState> (key: string) (config: ReconciledPropSpecConfig<'State>) =
+    if String.IsNullOrWhiteSpace key then
+      invalidArg (nameof key) "A reconciled property key must have a non-empty name."
+
+    { Key = key
+      Phase = config.Phase
+      Value = config.Value
+      Validate = config.Validate
+      CreateState = fun () -> config.CreateState() :> IReconciledState
+      Apply = fun state context -> config.Apply (state :?> 'State) context }
+
 type internal Props() =
 
   /// Stable identity used by the virtual terminal tree reconciler among sibling views.
@@ -193,6 +246,8 @@ type internal Props() =
 
   /// Flat generated-property snapshot keyed by a collision-free generated property ID.
   member val Props = Dictionary<PropertyId, KeyValuePair<PropKey, obj>>() with get
+  /// Framework-managed declarative properties with state retained for the lifetime of the mounted view.
+  member val ReconciledProps = Dictionary<string, ReconciledPropSpec>(StringComparer.Ordinal) with get
   member val SubViewSpecCount = 0 with get, set
   member val Children: List<ViewSpec> = List<_>() with get
 
@@ -372,6 +427,12 @@ type Props with
   static member internal add<'a>(k: PropKey<'a>, v: 'a) =
     fun (this: Props) -> this |> Props.add (k.Untyped, v :> obj)
 
+  static member internal addReconciled(spec: ReconciledPropSpec) =
+    fun (this: Props) ->
+      match this.ReconciledProps.TryGetValue spec.Key with
+      | true, _ -> invalidOp $"The reconciled property '{spec.Key}' was declared more than once."
+      | false, _ -> this.ReconciledProps.Add(spec.Key, spec)
+
   static member internal getOrInit<'a> (k: PropKey<'a>) (init: unit -> 'a) (this: Props) : 'a =
     match Props.tryFind k.Untyped this with
     | Some value -> value |> unbox<'a>
@@ -385,6 +446,8 @@ type Props with
       match this.Props.TryGetValue key.Id with
       | true, entry when entry.Key.Equals key -> Some entry.Value
       | _ -> None
+
+  static member internal tryFindUntyped(key: PropKey) = Props.tryFind key
 
   static member internal tryFind(key: PropKey<'a>) =
     fun (this: Props) ->
@@ -404,11 +467,13 @@ type Props with
 
   static member internal exists (k: PropKey<'a>) (p: Props) = Props.rawKeyExists k.Untyped p
 
-  /// Returns only ordinary properties and events that need to be cleared or applied.
+  /// Returns ordinary native properties plus retained declarative properties that need lifecycle work.
   /// Declarative and native view-slot properties are owned by slot reconciliation.
-  static member internal diff(prevProps: Props, curProps: Props) =
+  static member internal diffAll(prevProps: Props, curProps: Props) =
     let mutable removed: ResizeArray<PropKey> = null
     let mutable changed: Props option = None
+    let reconciledRemoved = ResizeArray<string>()
+    let reconciledChanged = ResizeArray<ReconciledPropSpec>()
 
     let addChangedEntry current (entry: KeyValuePair<PropKey, obj>) =
       let target = current |> Option.defaultWith Props
@@ -434,7 +499,24 @@ type Props with
         | Some previous when Object.Equals(previous, kv.Value) -> ()
         | _ -> changed <- addChangedEntry changed kv
 
-    (if isNull removed then Array.empty else removed.ToArray()), changed
+    for KeyValue(key, _) in prevProps.ReconciledProps do
+      if not (curProps.ReconciledProps.ContainsKey key) then
+        reconciledRemoved.Add key
+
+    for KeyValue(key, current) in curProps.ReconciledProps do
+      match prevProps.ReconciledProps.TryGetValue key with
+      | true, previous when previous.Phase = current.Phase && Object.Equals(previous.Value, current.Value) -> ()
+      | _ -> reconciledChanged.Add current
+
+    {| NativeRemoved = if isNull removed then Array.empty else removed.ToArray()
+       NativeChanged = changed
+       ReconciledRemoved = reconciledRemoved.ToArray()
+       ReconciledChanged = reconciledChanged.ToArray() |}
+
+  /// Native-only compatibility surface used by property-diff callers that do not run element lifecycles.
+  static member internal diff(prevProps: Props, curProps: Props) =
+    let result = Props.diffAll (prevProps, curProps)
+    result.NativeRemoved, result.NativeChanged
 
 [<AutoOpen>]
 module Element =

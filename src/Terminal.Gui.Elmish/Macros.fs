@@ -2,7 +2,13 @@ namespace Terminal.Gui.Elmish
 
 [<RequireQualifiedAccess>]
 module private ItemsMacro =
-  let add (props: Props) (items: seq<'T>) (key: 'T -> 'Key) (text: 'T -> string) =
+  [<Literal>]
+  let ListViewKey = "Terminal.Gui.Elmish.ListView.Items"
+
+  [<Literal>]
+  let DropDownListKey = "Terminal.Gui.Elmish.DropDownList.Items"
+
+  let add (reconciledKey: string) (props: Props) (items: seq<'T>) (key: 'T -> 'Key) (text: 'T -> string) =
     let snapshot =
       items
       |> Seq.map (fun item ->
@@ -10,25 +16,27 @@ module private ItemsMacro =
           Text = text item })
       |> List.ofSeq
 
-    props |> Props.addReconciled (ReconciledListItems.create snapshot)
+    props |> Props.addReconciled (ReconciledListItems.create reconciledKey snapshot)
 
-  let addStrings props (items: seq<string>) = add props items id id
+  let addStrings reconciledKey props (items: seq<string>) = add reconciledKey props items id id
 
 type ListViewMacros internal (props: ListViewProps) =
   /// Declares string items whose text is also their stable identity. Duplicate strings require the keyed overload.
-  member _.Items(items: seq<string>) = ItemsMacro.addStrings props.props items
+  member _.Items(items: seq<string>) =
+    ItemsMacro.addStrings ItemsMacro.ListViewKey props.props items
 
   /// Declares immutable items and the stable key/text projections used by the retained native collection adapter.
   member _.Items(items: seq<'T>, key: 'T -> 'Key, text: 'T -> string) =
-    ItemsMacro.add props.props items key text
+    ItemsMacro.add ItemsMacro.ListViewKey props.props items key text
 
 type DropDownListMacros internal (props: DropDownListProps) =
   /// Declares string items whose text is also their stable identity. Duplicate strings require the keyed overload.
-  member _.Items(items: seq<string>) = ItemsMacro.addStrings props.props items
+  member _.Items(items: seq<string>) =
+    ItemsMacro.addStrings ItemsMacro.DropDownListKey props.props items
 
   /// Declares immutable items and the stable key/text projections used by the retained native collection adapter.
   member _.Items(items: seq<'T>, key: 'T -> 'Key, text: 'T -> string) =
-    ItemsMacro.add props.props items key text
+    ItemsMacro.add ItemsMacro.DropDownListKey props.props items key text
 
 type MenuBarItemMacros internal (props: MenuBarItemProps) =
   member _.MenuItems(value: IMenuItemView list) =

@@ -342,7 +342,7 @@ module internal VirtualTree =
         not (samePosition previousProps.X nextProps.X)
         || not (samePosition previousProps.Y nextProps.Y)
 
-      let removedPropertyKeys, changedProps = Props.diff (previousProps, nextProps)
+      let propsDiff = Props.diffAll (previousProps, nextProps)
 
       backed.Props <- nextProps
 
@@ -350,10 +350,18 @@ module internal VirtualTree =
         PositionService.Current.ExecuteCleanups viewTe
         PositionService.Current.ApplyPos viewTe
 
-      for propertyKey in removedPropertyKeys do
+      for key in propsDiff.ReconciledRemoved do
+        backed.ClearReconciledProp key
+
+      for propertyKey in propsDiff.NativeRemoved do
         backed.ClearProp propertyKey
 
-      changedProps |> Option.iter (fun props -> next.SetProps(viewTe, props))
+      backed.ApplyReconciledProps(ReconciledPropPhase.BeforeNative, propsDiff.ReconciledChanged)
+
+      propsDiff.NativeChanged
+      |> Option.iter (fun props -> next.SetProps(viewTe, props))
+
+      backed.ApplyReconciledProps(ReconciledPropPhase.AfterNative, propsDiff.ReconciledChanged)
       mounted.Spec <- nextSpec
 
     | ViewSpec.ComponentViewSpec _, ViewSpec.ComponentViewSpec next, TerminalElement.ElmishComponentTE componentTe ->
@@ -484,6 +492,9 @@ module internal VirtualTree =
     | ViewSpec.SimpleViewSpec simple ->
       let children = simple.Props.Children |> Seq.toArray
       validateKeys (simple.GetType().Name) children |> ignore
+
+      for reconciled in simple.Props.ReconciledProps.Values do
+        reconciled.Validate(fun key -> simple.Props |> Props.tryFindUntyped key)
 
       for child in children do
         validateSpecTree child

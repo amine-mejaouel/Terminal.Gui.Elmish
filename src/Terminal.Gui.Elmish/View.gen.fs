@@ -254,6 +254,12 @@ type View =
     viewProps.Children children
     Link(viewProps)
 
+  static member ListView(set: ListViewProps -> ListViewMacros -> unit) =
+    let props = ListViewProps()
+    let macros = ListViewMacros props
+    set props macros
+    ListView(props)
+
   static member ListView(set: ListViewProps -> unit) =
     let viewProps = ListViewProps()
     set viewProps
@@ -677,6 +683,12 @@ type View =
     let viewProps = TextFieldProps()
     viewProps.Children children
     TextField(viewProps)
+
+  static member DropDownList(set: DropDownListProps -> DropDownListMacros -> unit) =
+    let props = DropDownListProps()
+    let macros = DropDownListMacros props
+    set props macros
+    DropDownList(props)
 
   static member DropDownList(set: DropDownListProps -> unit) =
     let viewProps = DropDownListProps()

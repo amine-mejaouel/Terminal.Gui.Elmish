@@ -194,14 +194,14 @@ Some declarative values require a mutable native resource whose lifetime is long
 
 A `ReconciledPropSpec` provides:
 
-- a string key local to the mounted element;
+- a stable, namespaced string key owned by the macro that declares the resource;
 - an immutable value used for structural diffing;
-- a retained-state type and factory;
 - pre-mutation validation;
 - a `BeforeNative` or `AfterNative` application phase;
+- a retained-state factory;
 - an apply operation that receives the retained state and a `ReconciledPropApplyContext` containing the native view, complete native-property lookup, and scoped event suppression service.
 
-`ViewBackedTerminalElement` owns the resulting `IReconciledState`. Compatible specifications reuse it across renders. Removing the property or unmounting the element disposes it exactly once. When a specification keeps its key but changes `StateType`, `Props.diffAll` schedules the old state as removed and the new specification as changed; removal runs first, so application creates the replacement only after disposing the incompatible state.
+`ViewBackedTerminalElement` owns the resulting `IReconciledState`. `ReconciledPropSpec.create` infers the state type from its generic configuration, ensuring that the factory and apply callback agree without making the key part of that relationship. The macro-owned string is the resource contract: retaining it reuses existing state, while an incompatible implementation must use a new, versioned string. Removing the property, changing its string key, or unmounting the element disposes its state exactly once. Because a changed string appears as one removed property and one added property, removal runs first and application creates the replacement only after disposing the previous state.
 
 The keyed collection adapter is the first consumer. `ListViewMacros.Items` and `DropDownListMacros.Items` convert immutable values into keyed text snapshots. The retained state owns one `ObservableCollection` and `ListWrapper`, synchronizes rows with minimal insert/move/replace/remove operations, and assigns the source once. This preserves Terminal.Gui selection and navigation without placing a stable source in the Elmish model or at application module scope.
 
@@ -228,7 +228,7 @@ For a retained simple view, `Props.diff` returns:
 - property keys that existed previously but are now absent;
 - a lazily allocated `Props` snapshot containing only added or changed ordinary properties and events.
 
-`Props.diffAll` additionally returns removed and changed reconciled properties. Their immutable `Value`, phase, and retained-state type determine whether lifecycle work is required. A retained-state type change appears in both collections, expressing replacement through the ordinary remove-then-apply lifecycle. Keeping this key space separate means handwritten macros do not consume or collide with generated Terminal.Gui property IDs.
+`Props.diffAll` additionally returns removed and changed reconciled properties. Their string key, immutable `Value`, and phase determine whether lifecycle work is required. Changing a string key appears as an ordinary removal plus addition, expressing replacement through the remove-then-apply lifecycle. Keeping this key space separate means handwritten macros do not consume or collide with generated Terminal.Gui property IDs.
 
 Removed event properties are unsubscribed by `EventHandlerRegistrar`. Other removed properties go through the generated integer-ID `ClearProp` dispatch, which restores the generated default for the correct concrete or base Terminal.Gui type. Added and changed values go through the specification's generated `SetProps` dispatch.
 

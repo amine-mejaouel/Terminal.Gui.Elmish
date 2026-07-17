@@ -1,12 +1,10 @@
 ﻿open System.Collections.Immutable
-open System.Collections.ObjectModel
 open Elmish
 open Terminal.Gui.Configuration
 open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
 open Terminal.Gui.Input
 open Terminal.Gui.ViewBase
-open Terminal.Gui.Views
 
 type Model =
   { AvailableThemes: IImmutableList<string>
@@ -80,14 +78,14 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
                 )) ]))
 
   let categoriesListView =
-    View.ListView(fun (p: ListViewProps) ->
+    View.ListView(fun (p: ListViewProps) (m: ListViewMacros) ->
       p.BorderStyle LineStyle.Rounded
       p.X TPos.Default
       p.Y(TPos.Bottom menuBar)
       p.Height(Dim.Fill())
       p.Width(Dim.Auto())
       p.Title "_Categories"
-      p.Source(new ListWrapper<_>(ObservableCollection [ "Hey"; "heylow" ])))
+      m.Items [ "Hey"; "heylow" ])
 
   let scenariosListView =
     View.FrameView(fun p ->

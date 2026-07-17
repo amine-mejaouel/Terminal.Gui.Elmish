@@ -53,6 +53,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
+    <Compile Include="ReconciledCollections.fs" />
     <Compile Include="Services\PositionService.fs" />
     <Compile Include="TerminalElement.Base.fs" />
     <Compile Include="PropsHandler.gen.fs" />

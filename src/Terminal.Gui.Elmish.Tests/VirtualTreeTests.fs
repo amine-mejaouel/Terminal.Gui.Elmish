@@ -30,6 +30,82 @@ let private render (renderer: VirtualTree.Renderer) (root: IView) =
 
 let private subViews (view: View) = view.SubViews |> Seq.toArray
 
+type private RecordingReconciledState(label: string, events: ResizeArray<string>) =
+  interface IReconciledState
+
+  interface IDisposable with
+    member _.Dispose() = events.Add $"dispose:{label}"
+
+let private rootWithReconciledSpec (spec: ReconciledPropSpec) =
+  View.Runnable(fun (p: RunnableProps) -> p.props |> Props.addReconciled spec) :> IView
+
+[<Test>]
+let ``Reconciled string key changes dispose before replacement while same key reuses state`` () =
+  use renderer = new VirtualTree.Renderer()
+  let events = ResizeArray<string>()
+
+  let createSpec key label value =
+    ReconciledPropSpec.create
+      key
+      { Phase = ReconciledPropPhase.BeforeNative
+        Value = box value
+        Validate = ignore
+        CreateState =
+          fun () ->
+            events.Add $"create:{label}"
+            new RecordingReconciledState(label, events)
+        Apply = fun _ _ -> events.Add $"apply:{label}:{value}" }
+
+  let firstKey = "test.reconciled-state.v1"
+  let secondKey = "test.reconciled-state.v2"
+
+  rootWithReconciledSpec (createSpec firstKey "first" 1)
+  |> render renderer
+  |> ignore
+
+  rootWithReconciledSpec (createSpec firstKey "unused-factory" 2)
+  |> render renderer
+  |> ignore
+
+  rootWithReconciledSpec (createSpec secondKey "second" 2)
+  |> render renderer
+  |> ignore
+
+  Assert.That(
+    events,
+    Is.EqualTo(
+      box
+        [| "create:first"
+           "apply:first:1"
+           "apply:unused-factory:2"
+           "dispose:first"
+           "create:second"
+           "apply:second:2" |]
+    )
+  )
+
+[<Test>]
+let ``A reconciled string key cannot be declared twice`` () =
+  let events = ResizeArray<string>()
+  let key = "test.duplicate-reconciled-state"
+
+  let createSpec () =
+    ReconciledPropSpec.create
+      key
+      { Phase = ReconciledPropPhase.BeforeNative
+        Value = box 1
+        Validate = ignore
+        CreateState = fun () -> new RecordingReconciledState("unused", events)
+        Apply = fun _ _ -> () }
+
+  let props = Props()
+  props |> Props.addReconciled (createSpec ())
+
+  let error =
+    Assert.Throws<InvalidOperationException>(fun () -> props |> Props.addReconciled (createSpec ()))
+
+  Assert.That(error.Message, Does.Contain "test.duplicate-reconciled-state")
+
 [<Test>]
 let ``Property-only updates preserve view identity and unset removed properties`` () =
   use renderer = new VirtualTree.Renderer()

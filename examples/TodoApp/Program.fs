@@ -2,7 +2,6 @@ module TodoApp.Program
 
 #nowarn "44"
 
-open System.Collections.ObjectModel
 open Terminal.Gui.Configuration
 open Terminal.Gui.Drawing
 open Terminal.Gui.Elmish
@@ -27,55 +26,6 @@ let private filterLabel filter count selected =
 let private todoLabel todo =
   let marker = if todo.IsCompleted then "✓" else "○"
   $" {marker}   {todo.Title}"
-
-type private TaskRow(todo: Todo) =
-  member _.Todo = todo
-  member _.Id = todo.Id
-  override _.ToString() = todoLabel todo
-
-type private TaskListState() =
-  // Keep the adapter stable: replacing ListView.Source clears its native selection.
-  let rows = ObservableCollection<TaskRow>()
-  let source = new ListWrapper<TaskRow>(rows)
-  let mutable visibleTodos: Todo list = []
-  let mutable isSyncing = false
-
-  let tryFindRow startIndex todoId =
-    seq { startIndex .. rows.Count - 1 }
-    |> Seq.tryFind (fun index -> rows[index].Id = todoId)
-
-  member _.Source = source :> IListDataSource
-  member _.IsSyncing = isSyncing
-
-  member _.TryGetTodoId(index: int) =
-    visibleTodos |> List.tryItem index |> Option.map _.Id
-
-  member _.Sync(todos: Todo list) =
-    if todos <> visibleTodos then
-      isSyncing <- true
-      visibleTodos <- todos
-
-      try
-        todos
-        |> List.iteri (fun index todo ->
-          if index < rows.Count && rows[index].Id = todo.Id then
-            if rows[index].Todo <> todo then
-              rows[index] <- TaskRow(todo)
-          else
-            match tryFindRow index todo.Id with
-            | Some existingIndex ->
-              rows.Move(existingIndex, index)
-
-              if rows[index].Todo <> todo then
-                rows[index] <- TaskRow(todo)
-            | None -> rows.Insert(index, TaskRow(todo)))
-
-        while rows.Count > todos.Length do
-          rows.RemoveAt(rows.Count - 1)
-      finally
-        isSyncing <- false
-
-let private taskListState = TaskListState()
 
 let private composer model dispatch =
   let isEditing =
@@ -179,7 +129,6 @@ let private filterBar model dispatch =
 
 let private taskArea model dispatch =
   let visible = visibleTodos model
-  taskListState.Sync visible
 
   let title = $" TASKS  {visible.Length} "
 
@@ -210,7 +159,7 @@ let private taskArea model dispatch =
       model.SelectedId
       |> Option.bind (fun selectedId -> visible |> List.tryFindIndex (fun todo -> todo.Id = selectedId))
 
-    View.ListView(fun (p: ListViewProps) ->
+    View.ListView(fun (p: ListViewProps) (m: ListViewMacros) ->
       p.Title title
       p.BorderStyle LineStyle.Rounded
       p.SchemeName(schemeName Schemes.Accent)
@@ -218,13 +167,13 @@ let private taskArea model dispatch =
       p.Y(at 12)
       p.Width(Dim.Fill 2)
       p.Height(Dim.Fill 3)
-      p.Source taskListState.Source
       p.Value(selectedIndex |> Option.toNullable)
+      m.Items(visible, (fun todo -> todo.Id), todoLabel)
 
       p.ValueChanged(fun args ->
-        if not taskListState.IsSyncing && args.NewValue.HasValue then
-          match taskListState.TryGetTodoId(args.NewValue.Value) with
-          | Some todoId when model.SelectedId <> Some todoId -> dispatchMsg dispatch (Select(Some todoId))
+        if args.NewValue.HasValue then
+          match visible |> List.tryItem args.NewValue.Value with
+          | Some todo when model.SelectedId <> Some todo.Id -> dispatchMsg dispatch (Select(Some todo.Id))
           | _ -> ())
 
       p.Accepting(fun _ -> dispatchMsg dispatch ToggleSelected)

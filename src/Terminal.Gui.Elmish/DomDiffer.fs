@@ -16,21 +16,6 @@ module internal DomDiffer =
     | ViewDomChild node -> node.Name
     | ElmishComponentDomChild ce -> (ce :> ITerminalElementBase).Name
 
-  /// Applies simple (absolute) positions. Delayed/relative TPos is deferred to
-  /// Phase 5, matching `createFromTE`.
-  let private applyPositions (domNode: DomNode) (props: Props) =
-    match props.X, props.XDelayed with
-    | Some _, Some _ -> failwith "Cannot set both X and XDelayedPos on the same view."
-    | Some xPos, None -> domNode.View.X <- xPos
-    | None, Some _ -> () // TODO: Phase 5
-    | None, None -> domNode.View.X <- 0
-
-    match props.Y, props.YDelayed with
-    | Some _, Some _ -> failwith "Cannot set both Y and YDelayedPos on the same view."
-    | Some yPos, None -> domNode.View.Y <- yPos
-    | None, Some _ -> () // TODO: Phase 5
-    | None, None -> domNode.View.Y <- 0
-
   let private existingSubDoms (parent: DomNode) (subKey: RawPropKey) =
     parent.SubElementDomNodes
     |> Seq.filter (fun dom ->
@@ -63,6 +48,9 @@ module internal DomDiffer =
     if currentDom.Name <> newTE.Name then
       failwith $"DomDiffer.update expects stable node names; got '{currentDom.Name}' vs '{newTE.Name}'."
 
+    // Register the mapping so TPos resolution (DomPositionService) can find this node.
+    teMapping[newTE] <- currentDom
+
     // 1. Sub-elements first, so the `_view` props are present for the generated applicators.
     reconcileSubElements teMapping currentDom newTE
 
@@ -79,13 +67,11 @@ module internal DomDiffer =
     currentDom.RemoveProps diff.removedProps
     currentDom.ApplyProps diff.changedProps
 
-    // 3. Positions.
-    applyPositions currentDom newTE.Props
-
-    // 4. Children.
+    // 3. Children.
     reconcileChildren teMapping currentDom newTE
 
-    // 5. Adopt the new props (with the `_view` props injected above).
+    // 4. Adopt the new props (with the `_view` props injected above).
+    //    Positions are applied by the deferred pass in updateTree (decision A2).
     currentDom.AppliedProps <- newTE.Props
 
   and reconcileSubElements teMapping (parent: DomNode) (newTE: IViewTE) =
@@ -113,10 +99,18 @@ module internal DomDiffer =
           match nv with
           | :? ViewBackedTerminalElement ->
             match doms with
-            | [ dom ] -> cur |> Props.add (viewKey, dom.View :> obj)
+            | [ dom ] ->
+              teMapping[(nv :?> ITerminalElement)] <- dom
+              cur |> Props.add (viewKey, dom.View :> obj)
             | _ -> ()
-          | :? List<IViewTE> ->
+          | :? List<IViewTE> as elements ->
             let views = doms |> List.map (fun d -> d.View)
+
+            elements
+            |> Seq.iteri (fun i e ->
+              if i < doms.Length then
+                teMapping[e] <- doms[i])
+
             cur |> Props.add (viewKey, views :> obj)
           | _ -> failwith "Out of range subElement type"
 
@@ -252,4 +246,13 @@ module internal DomDiffer =
   /// otherwise this throws.
   /// </remarks>
   let updateTree (currentRoot: DomNode) (newRootTE: IViewTE) =
-    update (Dictionary<ITerminalElement, DomNode>()) currentRoot newRootTE
+    let teMapping = Dictionary<ITerminalElement, DomNode>()
+    update teMapping currentRoot newRootTE
+
+    // Deferred position pass (decision A2): the whole tree and mapping now exist.
+    let resolve (te: ITerminalElement) =
+      match teMapping.TryGetValue te with
+      | true, node -> Some node
+      | _ -> None
+
+    DomPositionService.Current.ApplyTree(currentRoot, resolve)

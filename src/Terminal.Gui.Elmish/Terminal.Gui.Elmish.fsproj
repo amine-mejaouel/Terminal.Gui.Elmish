@@ -59,6 +59,7 @@
     <Compile Include="DomNode.Types.fs" />
     <Compile Include="DomNode.Elements.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
+    <Compile Include="Services\DomPositionService.fs" />
     <Compile Include="DomNode.fs" />
     <Compile Include="DomDiffer.fs" />
     <Compile Include="Props.gen.fs" />

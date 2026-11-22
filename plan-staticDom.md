@@ -92,7 +92,7 @@ and internal DomOrigin =
 
 1. **TPos resolution** — When a DomNode's Props contain `XDelayed`/`YDelayed` (TPos values that reference other TEs via `TPos.X(someTE)`), the mapping resolves those TE references to their corresponding DomNodes. The resolved DomNode is then passed to PositionService. PositionService never sees `ITerminalElement`.
 
-**Deferred positioning**: During `initializeTree`, nodes are created in traversal order. If node A's TPos references a sibling B that hasn't been created yet, the position application is deferred. DomNode exposes a `ViewReady` event (analogous to the current `ViewSet` on ViewBackedTerminalElement) that PositionService can subscribe to for deferred cases. Once all nodes are created, deferred positions resolve automatically.
+**Deferred positioning**: During `initializeTree`, nodes are created in traversal order. If node A's TPos references a sibling B that hasn't been created yet, the position application is deferred. ~~DomNode exposes a `ViewReady` event ... PositionService can subscribe to for deferred cases.~~ **Superseded by decision A2 (see Phase 5): positions are resolved in a deferred second pass after the whole tree is built, so no `ViewReady`/`OnViewSet` deferral is needed.**
 
 **Files to modify**:
 - `Terminal.Gui.Elmish.fsproj` — add `DomNode.fs` after `TerminalElement.Elements.gen.fs`
@@ -229,15 +229,37 @@ With DomNode, this transfer pattern is eliminated:
   - First render: `view() → TE → DomNode.initializeTree(DomRoot, te) → store DomNode`
   - Subsequent: `view() → TE → DomDiffer.update(currentDomNode, newTE)` — DomNode mutated in place, no disposal needed
 - `ElmishComponentTE` stores `DomNode` for its child subtree
+- Root element type change is handled here (dispose + re-`initializeTree`), mirroring the
+  child type-change path; `DomDiffer.updateTree` currently throws on an unstable root name
+
+**Elmish component matching — decision B1 (big-bang)**: components are matched by
+**name + positional index**, like views. A matched component keeps the existing
+`ElmishComponentTE` instance and its running loop/state (the new TE's component is *not*
+`StartElmishLoop`-ed); a removed component is disposed; a changed key at a slot disposes the
+old component and starts the new one. Known limitation: reordering or conditionally
+inserting a component loses its state.
+
+**Deferred — decision B2 (future work)**: give components an explicit, stable ID so an
+instance follows its identity across reorders/insertions. See *Future work* below.
 
 **Files to modify**:
 - `src/Terminal.Gui.Elmish/ElmishTerminal.fs`
+- `src/Terminal.Gui.Elmish/DomNode.fs` (component branch of `initializeTree`)
+- `src/Terminal.Gui.Elmish/DomDiffer.fs` (component branches — currently TODO)
 
 ## Phase 5: Refactor PositionService to use DomNode
 
 **Modify**: `src/Terminal.Gui.Elmish/Services/PositionService.fs`
 
 PositionService is refactored to work exclusively with DomNodes. It never sees `ITerminalElement`, `IViewTE`, or `TPos` directly.
+
+**Decision A2 — deferred second pass**: position application is a separate pass that runs
+*after* the whole DomNode tree (and its per-render `teMapping`) is built, instead of inline in
+`createFromTE`. Because a DomNode creates its View eagerly at construction, every node has a
+View by the time the pass runs, so the `ViewReady`/`OnViewSet` deferral is unnecessary.
+`teMapping` is per-render and internal to `initializeTree`/`updateTree` (TE keys are ephemeral,
+so it cannot be retained); only the PositionService DomNode-pair registry persists across
+renders.
 
 - `TePairKey` uses `DomNode` instead of `ITerminalElementBase`
 - `ApplyPos(domNode, axis, targetDomNode, applyFn)` — accepts resolved DomNode references (the caller — `initializeTree` or `DomDiffer` — resolves TPos's `ITerminalElement` to `DomNode` via the TE→DomNode mapping before calling)
@@ -266,6 +288,13 @@ PositionService is refactored to work exclusively with DomNodes. It never sees `
 - `src/Terminal.Gui.Elmish.Tests/Helpers/ElmishTester.fs`
 - `src/Terminal.Gui.Elmish.Tests/Helpers/TerminalElementsExt.fs`
 - All test files that reference `IViewTE`
+
+## Future work
+
+- **Component identity (decision B2)**: explicit component IDs so an `ElmishComponentTE`
+  instance (and its loop/state) follows its identity across reorders and conditional
+  insertion, instead of name + positional index. Requires threading an ID (the `name` passed
+  to `mkSimpleComponent` is a candidate), plus rules for duplicate/missing IDs and view moves.
 
 ## Phase 7: Clean up old path
 

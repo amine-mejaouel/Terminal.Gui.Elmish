@@ -83,20 +83,8 @@ module internal DomNode =
 
         | _ -> failwith "Out of range subElement type"
 
-    // 3. Apply positions — simple cases handled here, TPos deferred to Phase 5
-    match props.X, props.XDelayed with
-    | Some _, Some _ -> failwith "Cannot set both X and XDelayedPos on the same view."
-    | Some xPos, None -> view.X <- xPos
-    | None, Some _ -> () // TODO: Phase 5 — resolve TPos via PositionService + teMapping
-    | None, None -> view.X <- 0
-
-    match props.Y, props.YDelayed with
-    | Some _, Some _ -> failwith "Cannot set both Y and YDelayedPos on the same view."
-    | Some yPos, None -> view.Y <- yPos
-    | None, Some _ -> () // TODO: Phase 5 — resolve TPos via PositionService + teMapping
-    | None, None -> view.Y <- 0
-
-    // 4. Apply props
+    // 3. Apply props. Positions are applied in a deferred pass (decision A2) once the whole
+    //    tree and its TE->DomNode mapping exist — see DomPositionService.ApplyTree.
     domNode.ApplyProps(props)
 
     domNode.TriggerViewReady()
@@ -154,6 +142,17 @@ module internal DomNode =
         ViewDomChild domNode
 
     let rootChild = initNode origin te
+
+    // Deferred position pass (decision A2): the whole tree and mapping now exist.
+    let resolve (te: ITerminalElement) =
+      match teMapping.TryGetValue te with
+      | true, node -> Some node
+      | _ -> None
+
+    match rootChild with
+    | ViewDomChild rootDom -> DomPositionService.Current.ApplyTree(rootDom, resolve)
+    | ElmishComponentDomChild _ -> ()
+
     rootChild, teMapping
 
   /// Recursively disposes a DomNode: removes event handlers, detaches from parent,
@@ -177,7 +176,7 @@ module internal DomNode =
       | ElmishComponentDomChild ec -> (ec :> ITerminalElementBase).Dispose()
 
     // 5. Execute position cleanups
-    // TODO: Phase 5 — PositionService.ExecuteCleanups adapted for DomNode
+    DomPositionService.Current.ExecuteCleanups domNode
 
     // 6. Dispose the View itself
     domNode.View.Dispose()

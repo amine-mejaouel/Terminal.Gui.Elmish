@@ -198,6 +198,7 @@ module ElmishTerminal =
   /// </summary>
   type internal ElmishComponentTE<'model, 'msg, 'view>
     (
+      id,
       name,
       init: unit -> 'model,
       update: 'msg -> 'model -> 'model,
@@ -218,6 +219,9 @@ module ElmishTerminal =
         (OuterModel.wrapView view)
       |> Program.withSetState (setState (OuterModel.wrapView view))
       |> ElmishTerminalProgram
+
+    /// Backwards-compatible constructor: the component's name doubles as its identity.
+    new(name, init, update, view) = ElmishComponentTE(name, name, init, update, view)
 
     abstract Subscriptions: Subscription<'model, 'msg> list
 
@@ -290,6 +294,8 @@ module ElmishTerminal =
         with get () = this.DomOrigin
         and set v = this.DomOrigin <- v
 
+      member this.ComponentId = id
+
     interface ITerminalElementBase with
       member this.Name = name
       member this.Dispose() = this.Dispose()
@@ -301,6 +307,18 @@ module ElmishTerminal =
     (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
     =
     new ElmishComponentTE<_, _, _>(name, init, update, view) :> ITerminalElement
+
+  /// Creates an Elmish component with an explicit identity (decision B2). The id lets the
+  /// same component instance — and its running loop/state — follow the component across
+  /// reorders and conditional insertion, as long as the id is unique among its siblings.
+  let mkSimpleComponentWithId
+    id
+    name
+    (init: unit -> 'model)
+    (update: 'msg -> 'model -> 'model)
+    (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
+    =
+    new ElmishComponentTE<_, _, _>(id, name, init, update, view) :> ITerminalElement
 
   let mkProgram
     (init: 'arg -> 'model * Cmd<TerminalMsg<'msg>>)

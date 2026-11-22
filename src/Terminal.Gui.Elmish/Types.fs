@@ -240,6 +240,9 @@ and internal IElmishComponentTE =
   abstract View: View with get
   /// The component's placement within the surrounding DomNode tree.
   abstract DomOrigin: DomOrigin with get, set
+  /// Stable identity used to match a component instance (and its running loop/state) across
+  /// renders, independent of its position among its siblings (decision B2).
+  abstract ComponentId: string
   abstract StartElmishLoop: unit -> unit
 
 and internal TerminalElement =

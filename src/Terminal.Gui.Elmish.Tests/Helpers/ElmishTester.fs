@@ -145,6 +145,15 @@ let internal render view : TestableElmishProgram<'msg> =
 
   ElmishTerminal.mkSimple init update view |> run
 
+/// Renders a stateful root program so a test can dispatch messages that change the model
+/// (and therefore the child order) and then inspect the patched DomNode tree.
+let internal renderStateful
+  (init: IApplication -> 'model)
+  (update: 'msg -> 'model -> 'model)
+  (view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement)
+  : TestableElmishProgram<'msg> =
+  ElmishTerminal.mkSimple init update view |> run
+
 type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
   inherit IElmishComponentTE
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task

@@ -5,16 +5,12 @@ open Terminal.Gui.ViewBase
 
 /// Phase 3 of plan-staticDom.md: a DomNode-based differ.
 ///
-/// Mirrors the old `Differ.update` child-matching algorithm (type-name grouping +
-/// positional index) but patches a persistent `DomNode` tree in place instead of
-/// stealing Views between TerminalElements. Sub-elements are owned by the DomNode
+/// View children are matched by type-name grouping + positional index (a direct port of the
+/// old `Differ.update` child-matching algorithm). Elmish component children are matched by
+/// `ComponentId` (decision B2) so a component instance and its running loop/state follow the
+/// component across reorders and conditional insertion. Sub-elements are owned by the DomNode
 /// tree, so the `Reuse` `_view` re-injection dance is unnecessary.
 module internal DomDiffer =
-
-  let private nameOf (child: DomChild) =
-    match child with
-    | ViewDomChild node -> node.Name
-    | ElmishComponentDomChild ce -> (ce :> ITerminalElementBase).Name
 
   let private existingSubDoms (parent: DomNode) (subKey: RawPropKey) =
     parent.SubElementDomNodes
@@ -148,97 +144,121 @@ module internal DomDiffer =
     let prevChildren = parent.Children |> Seq.toList
     let newChildren = newTE.Children |> Seq.toList
 
-    let prevNames = prevChildren |> List.map nameOf |> List.sort
-    let newNames = newChildren |> List.map (fun t -> t.Name) |> List.sort
+    // --- Components (decision B2) -------------------------------------------
+    // Match component instances by `ComponentId` so an instance and its running loop /
+    // state survive reorders and conditional insertion, instead of being bound to a
+    // positional slot. Only non-blank ids that are unique within this render are
+    // trackable; anything else falls back to the positional, name-based matching used
+    // for view children.
+    let newComponentIds =
+      newChildren
+      |> List.choose (function
+        | ElmishComponentTE ce -> Some ce.ComponentId
+        | _ -> None)
 
-    if prevNames = newNames then
-      // Same shape: match pairwise after sorting by name (mirrors the old Differ).
-      let sortedPrev = prevChildren |> List.sortBy nameOf
-      let sortedNew = newChildren |> List.sortBy (fun t -> t.Name)
-      List.iter2 (fun pc nc -> updateChild teMapping parent pc nc) sortedPrev sortedNew
-    else
-      // Different shape: group by type name and match positionally within each group.
-      let allNames =
-        seq {
-          yield! prevChildren |> List.map nameOf
-          yield! newChildren |> List.map (fun t -> t.Name)
-        }
-        |> Seq.distinct
-        |> Seq.toList
+    let uniqueNewIds =
+      newComponentIds
+      |> List.filter (fun id -> id <> "")
+      |> List.countBy id
+      |> List.choose (fun (id, count) -> if count = 1 then Some id else None)
 
-      for name in allNames do
-        let prevs = prevChildren |> List.filter (fun c -> nameOf c = name)
-        let news = newChildren |> List.filter (fun t -> t.Name = name)
-        let minCount = min prevs.Length news.Length
+    let prevById =
+      prevChildren
+      |> List.choose (function
+        | ElmishComponentDomChild ce when uniqueNewIds |> List.contains ce.ComponentId -> Some(ce.ComponentId, ce)
+        | _ -> None)
+      |> Map.ofList
 
-        for i in 0 .. minCount - 1 do
-          updateChild teMapping parent prevs[i] news[i]
+    // Pool of previous children still available for positional matching. ID-matched
+    // components (and their previous children) are reserved up front so they cannot be
+    // matched a second time.
+    let available = ResizeArray<DomChild>(prevChildren)
 
-        // Extra new children: create.
-        news
-        |> List.skip minCount
-        |> List.iter (fun te -> createChild teMapping parent te)
+    let takePrev (predicate: DomChild -> bool) =
+      match available |> Seq.tryFindIndex predicate with
+      | Some i ->
+        let child = available[i]
+        available.RemoveAt i
+        Some child
+      | None -> None
 
-        // Extra old children: dispose.
-        prevs
-        |> List.skip minCount
-        |> List.iter (fun child -> disposeChild parent child)
+    let idMatched = Dictionary<string, IElmishComponentTE>()
 
-  and updateChild teMapping (parent: DomNode) (child: DomChild) (te: TerminalElement) =
-    match child, te with
-    | ViewDomChild dom, ViewTE viewTE ->
-      let v = viewTE :?> ViewBackedTerminalElement
+    for id in uniqueNewIds do
+      match prevById.TryFind id with
+      | Some ce ->
+        idMatched[id] <- ce
 
-      if dom.Name <> v.Name then
-        // Type changed at this slot: dispose and re-create.
-        let idx = parent.Children |> Seq.findIndex (fun c -> obj.ReferenceEquals(c, child))
-        DomNode.dispose dom
-        let spec = DomNode.specOf (v :> IViewTE)
-        let newDom = DomNode.createFromTE teMapping v spec
-        newDom.Origin <- DomChild(parent, idx)
+        let i =
+          available
+          |> Seq.findIndex (function
+            | ElmishComponentDomChild c -> obj.ReferenceEquals(c, ce)
+            | _ -> false)
 
-        if newDom.SetAsChildOfParentView then
-          parent.View.Add newDom.View |> ignore
+        available.RemoveAt i
+      | None -> ()
 
-        parent.Children[idx] <- ViewDomChild newDom
-      else
-        update teMapping dom (v :> IViewTE)
-    | ElmishComponentDomChild _, ElmishComponentTE _ ->
-      // Decision B1: match by name + positional index; keep the existing component instance
-      // and its running loop (do NOT StartElmishLoop the new TE). State is preserved while
-      // the component stays at the same slot (see plan-staticDom.md, B2 for the follow-up).
-      ()
-    | _ -> ()
+    // Resolve each new child to a DomChild, in the new order.
+    let resolveChild index (te: TerminalElement) : DomChild =
+      match te with
+      | ElmishComponentTE ce when ce.ComponentId <> "" && idMatched.ContainsKey ce.ComponentId ->
+        // Reuse the instance and its running loop; only its placement changed.
+        let prevCe = idMatched[ce.ComponentId]
+        prevCe.DomOrigin <- DomChild(parent, index)
+        ElmishComponentDomChild prevCe
 
-  and createChild teMapping (parent: DomNode) (te: TerminalElement) =
-    match te with
-    | ViewTE viewTE ->
-      let v = viewTE :?> ViewBackedTerminalElement
-      let spec = DomNode.specOf (v :> IViewTE)
-      let dom = DomNode.createFromTE teMapping v spec
-      let idx = parent.Children.Count
-      dom.Origin <- DomChild(parent, idx)
+      | ElmishComponentTE ce ->
+        // Untrackable (blank or duplicated id): keep the previous same-name instance if
+        // one is free, otherwise start a new loop.
+        match
+          takePrev (function
+            | ElmishComponentDomChild prevCe -> prevCe.ComponentId = ce.ComponentId
+            | _ -> false)
+        with
+        | Some(ElmishComponentDomChild prevCe) ->
+          prevCe.DomOrigin <- DomChild(parent, index)
+          ElmishComponentDomChild prevCe
+        | _ ->
+          ce.DomOrigin <- DomChild(parent, index)
+          ce.StartElmishLoop()
+          ElmishComponentDomChild ce
 
-      if dom.SetAsChildOfParentView then
-        parent.View.Add dom.View |> ignore
+      | ViewTE viewTE ->
+        let v = viewTE :?> ViewBackedTerminalElement
 
-      parent.Children.Add(ViewDomChild dom)
-    | ElmishComponentTE ce ->
-      let idx = parent.Children.Count
-      // The component's own DomOrigin resolves its root view's placement, so starting its
-      // loop wires the view into the parent view; no explicit Add is needed.
-      ce.DomOrigin <- DomChild(parent, idx)
-      ce.StartElmishLoop()
-      parent.Children.Add(ElmishComponentDomChild ce)
+        match
+          takePrev (function
+            | ViewDomChild dom -> dom.Name = v.Name
+            | _ -> false)
+        with
+        | Some(ViewDomChild dom) ->
+          update teMapping dom (v :> IViewTE)
+          dom.Origin <- DomChild(parent, index)
+          ViewDomChild dom
+        | _ ->
+          let spec = DomNode.specOf (v :> IViewTE)
+          let dom = DomNode.createFromTE teMapping v spec
+          dom.Origin <- DomChild(parent, index)
 
-  and disposeChild (parent: DomNode) (child: DomChild) =
+          if dom.SetAsChildOfParentView then
+            parent.View.Add dom.View |> ignore
+
+          ViewDomChild dom
+
+    let resolved = newChildren |> List.mapi resolveChild
+
+    // Dispose previous children that were not reused.
+    for leftover in available do
+      disposeChild leftover
+
+    // Rebuild the child list in the new order.
+    parent.Children.Clear()
+    parent.Children.AddRange resolved
+
+  and disposeChild (child: DomChild) =
     match child with
-    | ViewDomChild dom ->
-      DomNode.dispose dom
-      parent.Children.Remove child |> ignore
-    | ElmishComponentDomChild ce ->
-      (ce :> ITerminalElementBase).Dispose()
-      parent.Children.Remove child |> ignore
+    | ViewDomChild dom -> DomNode.dispose dom
+    | ElmishComponentDomChild ce -> (ce :> ITerminalElementBase).Dispose()
 
   /// <summary>
   /// Patches the persistent <paramref name="currentRoot" /> DomNode tree in place so that it
@@ -254,9 +274,10 @@ module internal DomDiffer =
   /// never given a View, stored, or disposed.
   /// </param>
   /// <remarks>
-  /// Nodes are matched positionally and require a stable <c>Name</c>. A child slot may change
-  /// element type (its DomNode is disposed and re-created), but the root type must be unchanged;
-  /// otherwise this throws.
+  /// View children are matched positionally and require a stable <c>Name</c>. Elmish component
+  /// children are matched by <c>ComponentId</c>, so a component keeps its instance and running
+  /// loop across reorders. A child slot may change element type (its DomNode is disposed and
+  /// re-created), but the root type must be unchanged; otherwise this throws.
   /// </remarks>
   let updateTree (currentRoot: DomNode) (newRootTE: IViewTE) =
     let teMapping = Dictionary<ITerminalElement, DomNode>()

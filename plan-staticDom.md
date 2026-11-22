@@ -300,10 +300,16 @@ renders.
   and `TerminalElement.Interfaces.fs` were deleted. Component paths/IDs are DomNode-native and
   a component's root view is placed through its own `DomOrigin`.
 
-- **Component identity (decision B2)**: explicit component IDs so an `ElmishComponentTE`
-  instance (and its loop/state) follows its identity across reorders and conditional
-  insertion, instead of name + positional index. Requires threading an ID (the `name` passed
-  to `mkSimpleComponent` is a candidate), plus rules for duplicate/missing IDs and view moves.
+- **Component identity (decision B2) — DONE**: `IElmishComponentTE` now exposes a
+  `ComponentId`, and `DomDiffer.reconcileChildren` matches component children by that id so a
+  component instance and its running loop/state follow the component across reorders and
+  conditional insertion. `mkSimpleComponent` keeps using the name as the id (backwards
+  compatible); `mkSimpleComponentWithId` supplies an explicit id. Non-blank ids that are unique
+  within a render are trackable — blank or duplicated ids fall back to the positional,
+  name-based matching used for view children.
+  *Note*: `parent.Children` is rebuilt in the new order and each component's `DomOrigin`
+  index is updated, but `parent.View.SubViews` is not reordered — see
+  "Known bug: incremental view order diverges from a full render" below.
 
 ## Phase 7: Clean up old path
 
@@ -350,3 +356,51 @@ Once all tests pass with DomNode:
 3. **Manual test**: Run the examples (`src/Terminal.Gui.Elmish.Example/`) — UI works, updates work, positioning works
 4. **Memory test**: The existing weak-reference test in `ElmishLoopTests.fs` still passes (disposed views are collected)
 5. **New differ test**: Write a test that creates a DomNode, diffs with a new TE, and verifies the DomNode is patched correctly without creating new Views
+
+---
+
+## Known bug: incremental view order diverges from a full render
+
+**Status**: OPEN — pre-existing (not introduced by the static-DOM work or by decision B2).
+
+**Severity**: correctness. The logical tree (`DomNode.Children`) is correct, but the actual
+`View.SubViews` order is wrong after an incremental update.
+
+**Symptom**: updating `[Label, Button]` to `[Label, CheckBox, Button]` (insert in the middle)
+yields:
+
+```
+DomNode.Children      = Label,CheckBox,Button   (correct)
+View.SubViews         = Label,Button,CheckBox   (wrong)
+fresh build SubViews  = Label,CheckBox,Button   (correct)
+```
+
+So an incremental render ≠ a full render. The same happens for a pure reorder (same set, new
+order).
+
+**Impact**:
+- draw/z-order when views overlap,
+- keyboard focus / tab navigation order,
+- any code enumerating `SubViews` / `GetSubViews()`.
+
+X/Y position and size are **unaffected**: they are applied from props via the DomNode tree
+(`DomPositionService.ApplyTree`), whose order is correct. Initial render and append-at-end are
+also correct; only insert-in-the-middle and reorder are wrong.
+
+**Root cause**: `DomDiffer.reconcileChildren` attaches new children with `parent.View.Add`
+(append) instead of inserting at the logical index, and never reorders reused views. Reused
+views keep their original `SubViews` slot.
+
+**History**: the pre-B2 `DomDiffer` and the old `Differ` were append-only too, so this is not a
+regression. `DomDifferTests.shape` compares the DomNode tree, not `SubViews`, so the suite did
+not catch it.
+
+**Fix (planned)**: Terminal.Gui 2.0.0-beta.81 exposes `View.AddAt(index, view)` and
+`View.MoveSubViewTowardsStart/End` / `View.MoveSubViewToStart/End`; `View.SubViews` is a
+read-only `IReadOnlyCollection<View>`, so these methods are the only route.
+1. Attach new view children with `AddAt` at their subview-relative index.
+2. Reconcile reused children to the target permutation with the `MoveSubViewTowards*` /
+   `MoveSubViewTo*` primitives.
+Skip children with `SetAsChildOfParentView = false` (`Menu`, `PopoverMenu`), which are not
+attached as child views. Add a fresh-vs-incremental test asserting `SubViews` order — the
+assertion type that would have caught this.

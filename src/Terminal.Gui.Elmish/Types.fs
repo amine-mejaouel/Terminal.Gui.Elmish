@@ -133,9 +133,6 @@ and internal IViewTE =
   abstract SetAsChildOfParentView: bool
   abstract Children: List<TerminalElement>
 
-  abstract InitializeTree: origin: Origin -> unit
-  abstract Reuse: prev: IViewTE -> unit
-
 /// <summary>
 /// An Elmish component is a reusable piece of UI that contains its own Elmish loop.
 /// It can be used to create complex, self-contained components that manage their own state and logic.

@@ -43,18 +43,12 @@ let ``initializeTree mirrors the TE tree structure and view types`` () =
   Assert.That(button.View, Is.TypeOf<Button>())
 
 [<Test>]
-let ``initializeTree applies props to the view like the old path`` () =
-  let newTe = View.Button(fun p -> p.Text "Hello") :?> IViewTE
-  let root, _ = initialize newTe
-  let newView = root.View :?> Button
+let ``initializeTree applies props to the created view`` () =
+  let te = View.Button(fun p -> p.Text "Hello") :?> IViewTE
+  let root, _ = initialize te
+  let view = root.View :?> Button
 
-  // Same TE description rendered through the current (old) pipeline.
-  let oldTe = View.Button(fun p -> p.Text "Hello") :?> IViewTE
-  oldTe.InitializeTree Origin.Root
-  let oldView = oldTe.View :?> Button
-
-  Assert.That(newView.Text, Is.EqualTo("Hello"))
-  Assert.That(newView.Text, Is.EqualTo(oldView.Text))
+  Assert.That(view.Text, Is.EqualTo("Hello"))
 
 [<Test>]
 let ``initializeTree adds child views to the parent SubViews in order`` () =

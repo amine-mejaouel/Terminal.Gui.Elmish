@@ -180,11 +180,7 @@ type internal ViewBackedTerminalElement(props: Props) =
 
   let mutable view = null
 
-  let mutable disposing = false
-
   let viewSetEvent = Event<View>()
-
-  member val ViewReusedByAnotherTE = false with get, set
 
   member this.View
     with get () = view
@@ -213,81 +209,7 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract SetAsChildOfParentView: bool
   default _.SetAsChildOfParentView = true
 
-  member this.InitializeView() =
-#if DEBUG
-    Diagnostics.Trace.WriteLine $"{this.Name} created!"
-#endif
-    this.View <- this.NewView()
-
-    this.InitializeSubElements()
-    |> Seq.iter (fun (k, v) -> this.Props |> Props.add (k, v))
-
-    PositionService.Current.ApplyPos this
-    this.SetProps(this, this.Props)
-
-  abstract Reuse: prev: IViewTE -> unit
-
   abstract Name: string
-
-  member this.InitializeTree(origin: Origin) : unit =
-    this.Origin <- origin
-
-    let traverse (node: TreeNode) =
-
-      match node.TerminalElement with
-      | ViewTE te ->
-        te.Origin <- node.Origin
-        (te :?> ViewBackedTerminalElement).InitializeView()
-      | ElmishComponentTE ce ->
-        ce.Origin <- node.Origin
-        // TODO: could accept an origin
-        ce.StartElmishLoop()
-
-#if DEBUG
-      Diagnostics.Trace.WriteLine $"ID: {node.TerminalElement.GetPath()}"
-#endif
-
-      // Here, the "children" views are added to their parent.
-      match node.TerminalElement with
-      | ViewTE te when te.Origin.IsChild ->
-        if te.SetAsChildOfParentView then
-          te.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add te.View |> ignore)
-      | ElmishComponentTE ce when ce.Origin.IsChild ->
-        ce.Origin |> Origin.parentView |> Option.iter (fun v -> v.Add ce.View |> ignore)
-      | _ -> ()
-
-    traverseTree
-      [ { TerminalElement = TerminalElement.from this
-          Origin = origin } ]
-      traverse
-
-  /// For each '*.element' prop, initialize the Tree of the element and then return the sub element: (proPKey * View)
-  member this.InitializeSubElements() : (PropKey * obj) seq =
-    seq {
-      for x in this.SubElements_PropKeys do
-        match this.Props |> Props.tryFind (PropKeyKind.SubElement, x) with
-
-        | None -> ()
-
-        | Some value ->
-          match value with
-          | :? ViewBackedTerminalElement as subElement ->
-            subElement.InitializeTree(Origin.SubElement(this, None, x))
-
-            let viewKey = PropKey.viewKeyOfSubElement x
-
-            yield viewKey, subElement.View
-          | :? List<IViewTE> as elements ->
-            elements
-            |> Seq.iteri (fun i e -> e.InitializeTree(Origin.SubElement(this, Some i, x)))
-
-            let viewKey = PropKey.viewKeyOfSubElement x
-
-            let views = elements |> Seq.map _.View |> Seq.toList
-
-            yield viewKey, views
-          | _ -> failwith "Out of range subElement type"
-    }
 
   member this.TrySetEventHandler<'TEventArgs>
     (k: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler<'TEventArgs>, 'TEventArgs>)
@@ -314,47 +236,6 @@ type internal ViewBackedTerminalElement(props: Props) =
   abstract RemoveProps: terminalElement: ViewBackedTerminalElement * props: Props -> unit
 
   default this.RemoveProps(terminalElement: ViewBackedTerminalElement, props: Props) = ()
-
-  /// Reuses:
-  /// // TODO: outdated documentation
-  /// - Previous `View`, while updating its properties to match the current TerminalElement properties.
-  /// - But also other Views that are sub elements of the previous `ITerminalElement` and made available in the `prevProps`.
-  override this.Reuse prev =
-
-    let prev = prev :?> ViewBackedTerminalElement
-
-    prev.ViewReusedByAnotherTE <- true
-    PositionService.Current.ExecuteCleanups prev
-
-    this.View <- prev.View
-    this.EventRegistrar <- prev.EventRegistrar
-
-    PositionService.Current.ApplyPos this
-
-    // TODO: it seems that comparing x_delayedPos/y_delayedPos is working well
-    // TODO: this should be tested and documented to make sure that it continues to work well in the future.
-
-    // TODO: Should refactor props to be clear that X and Y are treated separately
-    let c = ViewBackedTerminalElement.compare prev.Props this.Props
-
-    // 0 - foreach unchanged _element property, we identify the _view to reinject to `this` TerminalElement
-    let view_PropKeys_ToReinject =
-      c.unchangedProps
-      |> Props.filterSubElementKeys
-      |> Seq.map _.viewKey
-      |> Seq.toArray
-
-    // 1 - then we get these Views missing in `this` TerminalElement.
-    let view_Props_ToReinject, removedProps =
-      c.removedProps
-      |> Props.partition (fun kv -> view_PropKeys_ToReinject |> Array.contains kv.Key)
-
-    // 2 - And we add them.
-    view_Props_ToReinject
-    |> Props.iter (fun kv -> this.Props |> Props.add (kv.Key, kv.Value))
-
-    this.RemoveProps(this, removedProps)
-    this.SetProps(this, c.changedProps)
 
   member this.equivalentTo(other: ViewBackedTerminalElement) =
     let mutable isEquivalent = true
@@ -419,36 +300,11 @@ type internal ViewBackedTerminalElement(props: Props) =
        removedProps = removedProps |}
 
 
-  member this.Dispose() =
-    if Interlocked.Exchange(&disposing, true) then
-      ()
-    elif (not this.ViewReusedByAnotherTE) then
-
-      // Remove any event subscriptions
-      this.RemoveProps(this, this.Props)
-
-      this.Origin
-      |> Origin.parentView
-      |> Option.iter (fun v -> v.Remove this.View |> ignore)
-
-      // Dispose SubElements (Represented as `View` typed properties of the View, that are not children)
-      for key in this.SubElements_PropKeys do
-        this.Props
-        |> Props.tryFind<IDisposable> (PropKeyKind.SubElement, key)
-        |> Option.iter _.Dispose()
-
-      for child in this.Children do
-        child.Dispose()
-
-      PositionService.Current.ExecuteCleanups(this)
-      // Finally, dispose the View itself
-      this.View.Dispose()
+  /// A ViewBackedTerminalElement is now a pure description; it owns no View, so disposal is a no-op.
+  /// (DomNode owns the actual View; see plan-staticDom.md, decision A for the rest of the cleanup.)
+  member this.Dispose() = ()
 
   interface IViewTE with
-    // TODO: rename InitializeAndAttachToParentView
-    member this.InitializeTree origin = this.InitializeTree origin
-    member this.Reuse prevElementData = this.Reuse prevElementData
-
     member this.GetPath() =
       this.Origin |> Origin.getPath (this.Name)
 
@@ -467,4 +323,4 @@ type internal ViewBackedTerminalElement(props: Props) =
 
     member this.OnViewSet = this.ViewSet
 
-    member this.Dispose() = this.Dispose()
+    member this.Dispose() = ()

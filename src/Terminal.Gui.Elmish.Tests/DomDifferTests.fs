@@ -1,6 +1,7 @@
 module Terminal.Gui.Elmish.Tests.DomDifferTests
 
 open System.Collections.Generic
+open Elmish
 open NUnit.Framework
 open Terminal.Gui.Elmish
 open Terminal.Gui.Views
@@ -139,3 +140,82 @@ let ``update keeps an unchanged sub-element`` () =
   Assert.That(root.SubElementDomNodes.Count, Is.EqualTo(1))
   let subAfter = root.SubElementDomNodes[0]
   Assert.That(obj.ReferenceEquals(subBefore.View, subAfter.View), Is.True, "Sub-element view should be reused.")
+
+/// The order of a parent's `View.SubViews` — this is Terminal.Gui's draw/z-order and
+/// focus/tab order, and must match `DomNode.Children`.
+let private subViewTypeNames (dom: DomNode) =
+  dom.View.SubViews |> Seq.map (fun v -> v.GetType().Name) |> String.concat ","
+
+let private childTypeNames (dom: DomNode) =
+  dom.Children
+  |> Seq.choose (function
+    | ViewDomChild child -> Some(child.View.GetType().Name)
+    | ElmishComponentDomChild _ -> None)
+  |> String.concat ","
+
+[<Test>]
+let ``incremental update keeps View.SubViews order in sync when inserting in the middle`` () =
+  task {
+    let view inserted (_: Dispatch<TerminalMsg<bool>>) =
+      let children =
+        if inserted then
+          [ View.Label(fun p -> p.Text "a")
+            View.CheckBox(fun p -> p.Text "b")
+            View.Button(fun p -> p.Text "c") ]
+        else
+          [ View.Label(fun p -> p.Text "a"); View.Button(fun p -> p.Text "c") ]
+
+      View.Runnable children
+
+    use program = ElmishTester.renderStateful (fun _ -> false) (fun _ _ -> true) view
+
+    Assert.That(subViewTypeNames program.ViewDom, Is.EqualTo "Label,Button")
+
+    // Act: insert a CheckBox between the Label and the Button.
+    let! _ = program.ProcessMsg(true |> TerminalMsg.ofMsg)
+
+    let after = program.ViewDom
+    let expected = "Label,CheckBox,Button"
+
+    Assert.Multiple(fun () ->
+      Assert.That(childTypeNames after, Is.EqualTo expected, "DomNode.Children order")
+      Assert.That(subViewTypeNames after, Is.EqualTo expected, "View.SubViews order"))
+
+    // The incremental patch must equal a fresh render.
+    use fresh = ElmishTester.render (view true (fun _ -> ()))
+    Assert.That(subViewTypeNames fresh.ViewDom, Is.EqualTo expected)
+  }
+
+[<Test>]
+let ``incremental update keeps View.SubViews order in sync when reordering children`` () =
+  task {
+    let view reordered (_: Dispatch<TerminalMsg<bool>>) =
+      let children =
+        if reordered then
+          [ View.Button(fun p -> p.Text "b")
+            View.Label(fun p -> p.Text "a")
+            View.CheckBox(fun p -> p.Text "c") ]
+        else
+          [ View.Label(fun p -> p.Text "a")
+            View.CheckBox(fun p -> p.Text "c")
+            View.Button(fun p -> p.Text "b") ]
+
+      View.Runnable children
+
+    use program = ElmishTester.renderStateful (fun _ -> false) (fun _ _ -> true) view
+
+    Assert.That(subViewTypeNames program.ViewDom, Is.EqualTo "Label,CheckBox,Button")
+
+    // Act: move the Button from the end to the front.
+    let! _ = program.ProcessMsg(true |> TerminalMsg.ofMsg)
+
+    let after = program.ViewDom
+    let expected = "Button,Label,CheckBox"
+
+    Assert.Multiple(fun () ->
+      Assert.That(childTypeNames after, Is.EqualTo expected, "DomNode.Children order")
+      Assert.That(subViewTypeNames after, Is.EqualTo expected, "View.SubViews order"))
+
+    use fresh = ElmishTester.render (view true (fun _ -> ()))
+    Assert.That(subViewTypeNames fresh.ViewDom, Is.EqualTo expected)
+  }

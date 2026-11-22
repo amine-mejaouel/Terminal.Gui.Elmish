@@ -307,9 +307,8 @@ renders.
   compatible); `mkSimpleComponentWithId` supplies an explicit id. Non-blank ids that are unique
   within a render are trackable — blank or duplicated ids fall back to the positional,
   name-based matching used for view children.
-  *Note*: `parent.Children` is rebuilt in the new order and each component's `DomOrigin`
-  index is updated, but `parent.View.SubViews` is not reordered — see
-  "Known bug: incremental view order diverges from a full render" below.
+  `parent.Children` is rebuilt in the new order, and `reconcileViewOrder` keeps
+  `parent.View.SubViews` in sync (see "Fixed: incremental view order..." below).
 
 ## Phase 7: Clean up old path
 
@@ -359,15 +358,12 @@ Once all tests pass with DomNode:
 
 ---
 
-## Known bug: incremental view order diverges from a full render
+## Fixed: incremental view order diverges from a full render
 
-**Status**: OPEN — pre-existing (not introduced by the static-DOM work or by decision B2).
+**Status**: FIXED. The fix lives in `DomDiffer.reconcileViewOrder`.
 
-**Severity**: correctness. The logical tree (`DomNode.Children`) is correct, but the actual
-`View.SubViews` order is wrong after an incremental update.
-
-**Symptom**: updating `[Label, Button]` to `[Label, CheckBox, Button]` (insert in the middle)
-yields:
+**Symptom (before the fix)**: updating `[Label, Button]` to `[Label, CheckBox, Button]`
+(insert in the middle) left `DomNode.Children` correct but `View.SubViews` wrong:
 
 ```
 DomNode.Children      = Label,CheckBox,Button   (correct)
@@ -375,32 +371,29 @@ View.SubViews         = Label,Button,CheckBox   (wrong)
 fresh build SubViews  = Label,CheckBox,Button   (correct)
 ```
 
-So an incremental render ≠ a full render. The same happens for a pure reorder (same set, new
-order).
+So an incremental render ≠ a full render. The same happened for a pure reorder. Draw/z-order
+when views overlap, keyboard focus / tab navigation order, and any code enumerating `SubViews`
+/ `GetSubViews()` were affected. X/Y position and size were **unaffected** (applied from props
+via `DomPositionService.ApplyTree`, whose order was already correct).
 
-**Impact**:
-- draw/z-order when views overlap,
-- keyboard focus / tab navigation order,
-- any code enumerating `SubViews` / `GetSubViews()`.
+**Root cause**: `DomDiffer.reconcileChildren` attached new children with `parent.View.Add`
+(append) and never reordered reused views, so reused views kept their original `SubViews` slot.
+This was pre-existing (the old `Differ` was append-only too), and `DomDifferTests.shape`
+compares the DomNode tree rather than `SubViews`, so the suite did not catch it.
 
-X/Y position and size are **unaffected**: they are applied from props via the DomNode tree
-(`DomPositionService.ApplyTree`), whose order is correct. Initial render and append-at-end are
-also correct; only insert-in-the-middle and reorder are wrong.
+**Fix**: after `reconcileChildren` rebuilds `DomNode.Children`, `reconcileViewOrder` reconciles
+`parent.View.SubViews` to the same order using only the move-only Terminal.Gui primitives
+(`View.SubViews` is a read-only `IReadOnlyCollection<View>`):
 
-**Root cause**: `DomDiffer.reconcileChildren` attaches new children with `parent.View.Add`
-(append) instead of inserting at the logical index, and never reorders reused views. Reused
-views keep their original `SubViews` slot.
+1. `View.MoveSubViewToStart` + `View.MoveSubViewTowardsEnd` place a reused view at its target
+   absolute index. These reorder the internal list **without** transferring ownership or
+   resetting focus/hotkeys (unlike `Remove` + `Add`).
+2. New views are already attached by `resolveChild` / `buildNode`, so no `AddAt` is required.
+3. Children flagged `SetAsChildOfParentView = false` (`Menu`, `Popover` / `PopoverMenu`) are not
+   part of `SubViews` and are skipped.
+4. When the order is already correct (append-only / unchanged) the pass is a single O(n)
+   comparison and performs no mutations.
 
-**History**: the pre-B2 `DomDiffer` and the old `Differ` were append-only too, so this is not a
-regression. `DomDifferTests.shape` compares the DomNode tree, not `SubViews`, so the suite did
-not catch it.
-
-**Fix (planned)**: Terminal.Gui 2.0.0-beta.81 exposes `View.AddAt(index, view)` and
-`View.MoveSubViewTowardsStart/End` / `View.MoveSubViewToStart/End`; `View.SubViews` is a
-read-only `IReadOnlyCollection<View>`, so these methods are the only route.
-1. Attach new view children with `AddAt` at their subview-relative index.
-2. Reconcile reused children to the target permutation with the `MoveSubViewTowards*` /
-   `MoveSubViewTo*` primitives.
-Skip children with `SetAsChildOfParentView = false` (`Menu`, `PopoverMenu`), which are not
-attached as child views. Add a fresh-vs-incremental test asserting `SubViews` order — the
-assertion type that would have caught this.
+**Tests**: `DomDifferTests` — "incremental update keeps View.SubViews order in sync when
+inserting in the middle" and "... when reordering children", each asserting both
+`DomNode.Children` and `View.SubViews` order and equality with a fresh render.

@@ -255,6 +255,67 @@ module internal DomDiffer =
     parent.Children.Clear()
     parent.Children.AddRange resolved
 
+    // Keep Terminal.Gui's `View.SubViews` (draw/z-order and focus/tab order) in sync with
+    // `DomNode.Children`. Reused views are moved with the move-only SubView APIs, so no
+    // ownership/focus/hotkey churn; see `reconcileViewOrder`.
+    reconcileViewOrder parent resolved
+
+  /// Reconciles `parent.View.SubViews` so the managed child views appear in the same order as
+  /// `DomNode.Children`.
+  ///
+  /// Only move operations are used (`MoveSubViewToStart` / `MoveSubViewTowardsEnd`): they
+  /// reorder the list without transferring ownership or resetting focus/hotkeys, unlike
+  /// `Remove` + `Add`. New views were already inserted by `resolveChild`, and children flagged
+  /// `SetAsChildOfParentView = false` (Menu, Popover) are not part of `SubViews` and are skipped.
+  /// When the order is already correct this is a single O(n) comparison.
+  and reconcileViewOrder (parent: DomNode) (children: DomChild list) =
+    let view = parent.View
+
+    let current = view.SubViews |> Seq.toList
+    let present = HashSet<View>(current, HashIdentity.Reference)
+
+    let participating =
+      children
+      |> List.choose (function
+        | ViewDomChild dom when dom.SetAsChildOfParentView -> Some dom.View
+        | ElmishComponentDomChild ce -> Some ce.View
+        | _ -> None)
+      |> List.filter present.Contains
+
+    let alreadyInOrder =
+      List.length current = List.length participating
+      && List.forall2 (fun a b -> obj.ReferenceEquals(a, b)) current participating
+
+    if not alreadyInOrder then
+      let indexOf (v: View) =
+        let mutable idx = -1
+        let mutable i = 0
+
+        for s in view.SubViews do
+          if idx < 0 && obj.ReferenceEquals(s, v) then
+            idx <- i
+
+          i <- i + 1
+
+        idx
+
+      // `target` is the absolute index in `SubViews` where the next participating view must
+      // sit. Walking left-to-right keeps the prefix [0 .. target) already correct.
+      let mutable target = 0
+
+      for v in participating do
+        let cur = indexOf v
+
+        if cur >= 0 then
+          if cur <> target then
+            // Jump to the front, then step forward to `target`.
+            view.MoveSubViewToStart v
+
+            for _ in 1..target do
+              view.MoveSubViewTowardsEnd v
+
+          target <- target + 1
+
   and disposeChild (child: DomChild) =
     match child with
     | ViewDomChild dom -> DomNode.dispose dom

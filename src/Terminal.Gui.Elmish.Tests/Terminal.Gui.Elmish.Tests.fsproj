@@ -27,6 +27,7 @@
     <Compile Include="TerminalElementIdTests.fs" />
     <Compile Include="ElmishLoopTests.fs" />
     <Compile Include="PositionServiceTests.fs" />
+    <Compile Include="DomNodeTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Terminal.Gui.Elmish\Terminal.Gui.Elmish.fsproj">

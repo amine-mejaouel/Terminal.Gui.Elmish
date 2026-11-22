@@ -1,6 +1,3 @@
 FSharp.Core
 Elmish
 Terminal.Gui
-group test
-NUnit.Analyzers
-Microsoft.NET.Test.Sdk

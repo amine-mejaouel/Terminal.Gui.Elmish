@@ -13,13 +13,6 @@ open Terminal.Gui.Views
 // TE/Reuse pipeline. That way the innermost building block (turning a TE tree
 // into a persistent DomNode tree) is validated before the big-bang switch.
 
-/// Bridges the generated `IDomSpecProvider` implementations into the spec
-/// resolver that `DomNode.initializeTree` / `createFromTE` expect.
-let private resolveSpec (te: IViewTE) : DomNodeSpec =
-  match te with
-  | :? IDomSpecProvider as provider -> provider.DomSpec
-  | _ -> failwith $"Terminal element '{te.Name}' does not implement IDomSpecProvider."
-
 let private asDomNode (child: DomChild) : DomNode =
   match child with
   | ViewDomChild node -> node
@@ -27,7 +20,7 @@ let private asDomNode (child: DomChild) : DomNode =
 
 /// Build a DomNode tree from a TE tree, exactly the way (future) Phase 4 will.
 let private initialize (te: IViewTE) : DomNode * Dictionary<ITerminalElement, DomNode> =
-  let rootChild, mapping = DomNode.initializeTree resolveSpec DomRoot (ViewTE te)
+  let rootChild, mapping = DomNode.initializeTree DomRoot (ViewTE te)
   asDomNode rootChild, mapping
 
 [<Test>]

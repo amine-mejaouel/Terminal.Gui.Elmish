@@ -60,6 +60,7 @@
     <Compile Include="DomNode.Elements.gen.fs" />
     <Compile Include="TerminalElement.Elements.gen.fs" />
     <Compile Include="DomNode.fs" />
+    <Compile Include="DomDiffer.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />

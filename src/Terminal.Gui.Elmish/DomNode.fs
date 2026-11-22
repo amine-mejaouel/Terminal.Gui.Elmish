@@ -13,6 +13,13 @@ module internal DomNode =
     | DomChild(parent, _) -> Some parent.View
     | DomSubElement(parent, _, _) -> Some parent.View
 
+  /// Resolves the generated DOM applicator spec for a view terminal element.
+  /// Every generated `*TerminalElement` implements `IDomSpecProvider`.
+  let specOf (te: IViewTE) : DomNodeSpec =
+    match te with
+    | :? IDomSpecProvider as provider -> provider.DomSpec
+    | _ -> failwith $"Terminal element '{te.Name}' does not implement IDomSpecProvider."
+
   /// Creates a DomNode from a ViewBackedTerminalElement and its spec.
   ///
   /// Follows the same initialization ordering as ViewBackedTerminalElement.InitializeView():
@@ -21,7 +28,6 @@ module internal DomNode =
   ///   3. Apply positions
   ///   4. Call applyProps
   let rec createFromTE
-    (resolveSpec: IViewTE -> DomNodeSpec)
     (teMapping: Dictionary<ITerminalElement, DomNode>)
     (te: ViewBackedTerminalElement)
     (spec: DomNodeSpec)
@@ -52,8 +58,8 @@ module internal DomNode =
       | Some value ->
         match value with
         | :? ViewBackedTerminalElement as subElement ->
-          let subSpec = resolveSpec (subElement :> IViewTE)
-          let subDomNode = createFromTE resolveSpec teMapping subElement subSpec
+          let subSpec = specOf (subElement :> IViewTE)
+          let subDomNode = createFromTE teMapping subElement subSpec
           subDomNode.Origin <- DomSubElement(domNode, None, subKey)
           domNode.SubElementDomNodes.Add subDomNode
 
@@ -65,8 +71,8 @@ module internal DomNode =
             elements
             |> Seq.mapi (fun i e ->
               let subTe = e :?> ViewBackedTerminalElement
-              let subSpec = resolveSpec e
-              let subDomNode = createFromTE resolveSpec teMapping subTe subSpec
+              let subSpec = specOf e
+              let subDomNode = createFromTE teMapping subTe subSpec
               subDomNode.Origin <- DomSubElement(domNode, Some i, subKey)
               domNode.SubElementDomNodes.Add subDomNode
               subDomNode.View)
@@ -98,11 +104,7 @@ module internal DomNode =
 
   /// Recursively creates a DomNode tree from a TerminalElement tree.
   /// Returns the root DomChild and a mapping from ITerminalElement to DomNode.
-  let initializeTree
-    (resolveSpec: IViewTE -> DomNodeSpec)
-    (origin: DomOrigin)
-    (te: TerminalElement)
-    : DomChild * Dictionary<ITerminalElement, DomNode> =
+  let initializeTree (origin: DomOrigin) (te: TerminalElement) : DomChild * Dictionary<ITerminalElement, DomNode> =
 
     let teMapping = Dictionary<ITerminalElement, DomNode>()
 
@@ -129,8 +131,8 @@ module internal DomNode =
 
       | ViewTE viewTE ->
         let te = viewTE :?> ViewBackedTerminalElement
-        let spec = resolveSpec viewTE
-        let domNode = createFromTE resolveSpec teMapping te spec
+        let spec = specOf viewTE
+        let domNode = createFromTE teMapping te spec
         domNode.Origin <- origin
 
         let isChild =

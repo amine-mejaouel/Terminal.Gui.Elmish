@@ -28,6 +28,7 @@
     <Compile Include="ElmishLoopTests.fs" />
     <Compile Include="PositionServiceTests.fs" />
     <Compile Include="DomNodeTests.fs" />
+    <Compile Include="DomDifferTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Terminal.Gui.Elmish\Terminal.Gui.Elmish.fsproj">

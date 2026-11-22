@@ -380,9 +380,9 @@ type internal ViewBackedTerminalElement(props: Props) =
         else
           let curElement = kv.Value
 
-          let otherElement = other.Props |> Props.tryFind kv.Key
-
-          isEquivalent <- curElement = otherElement)
+          match other.Props |> Props.tryFind kv.Key with
+          | Some otherElement -> isEquivalent <- curElement = otherElement
+          | None -> isEquivalent <- false)
 
     isEquivalent
 

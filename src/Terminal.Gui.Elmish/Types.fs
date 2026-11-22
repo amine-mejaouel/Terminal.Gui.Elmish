@@ -2,6 +2,7 @@ namespace Terminal.Gui.Elmish
 
 open System
 open System.Collections.Generic
+open System.Collections.Specialized
 open Terminal.Gui.ViewBase
 
 type ITerminalElement = interface end
@@ -107,6 +108,99 @@ module internal PropKey =
         else
           PropKey { Kind = PropKeyKind.View; Key = key }
 
+/// <p>
+///   Repository for event handlers associated with property keys.
+///   It allows setting and removing handlers for events.
+/// </p>
+/// <p>
+///   Its main purpose is to ensure the proper removal of events, avoiding memory leaks or unintended behavior due to lingering event handlers.
+/// </p>
+type internal EventHandlerRegistrar() =
+
+  /// Stores the handlers for each property key.
+  let trackedHandlers = Dictionary<PropKey, Delegate>()
+
+  /// Stores functions to be invoked to remove previously added handlers.
+  /// Which will call IEvent.RemoveHandler on the event associated with the property key.
+  let handlerRemovalActions = Dictionary<PropKey, unit -> unit>()
+
+  member private this.TryFindHandler<'THandler when 'THandler :> Delegate>(pkey: PropKey) =
+    match trackedHandlers.TryGetValue(pkey) with
+    | true, existingHandler -> Some(existingHandler :?> 'THandler)
+    | false, _ -> None
+
+  member private this.TryGetHandlerRemovalAction(pkey: PropKey) =
+    match handlerRemovalActions.TryGetValue(pkey) with
+    | true, existingRemover -> Some existingRemover
+    | false, _ -> None
+
+  /// Registers a function to be invoked to remove previously added handlers associated with the specified property key.
+  member private this.RegisterHandlerRemoval<'THandler when 'THandler :> Delegate>
+    (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit)
+    =
+    handlerRemovalActions[pkey] <-
+      fun () ->
+        // This will only remove the handler from the event, not from the repositories
+        removeHandler handler
+  // Note: The actual removal from the repositories is done in `removeHandler` method
+
+  /// Removes the handler associated with the specified property key, if it exists.
+  member this.RemoveHandler(pkey: PropKey) =
+    match this.TryGetHandlerRemovalAction pkey with
+    | Some removeHandler ->
+      removeHandler ()
+      handlerRemovalActions.Remove pkey |> ignore
+      trackedHandlers.Remove pkey |> ignore
+    | None -> ()
+
+  member private this.SetHandler<'THandler when 'THandler :> Delegate>
+    (pkey: PropKey, handler: 'THandler, removeHandler: 'THandler -> unit, addHandler: 'THandler -> unit)
+    =
+    match this.TryFindHandler<'THandler> pkey with
+    | Some previouslySetHandler -> removeHandler previouslySetHandler
+    | None -> ()
+
+    trackedHandlers[pkey] <- handler
+    addHandler handler
+
+  member this.SetEventHandler
+    (
+      pkey: PropKey<'TEventArgs -> unit>,
+      event: IEvent<EventHandler<'TEventArgs>, 'TEventArgs>,
+      action: 'TEventArgs -> unit
+    ) =
+    let handler: EventHandler<'TEventArgs> =
+      EventHandler<'TEventArgs>(fun sender args -> action args)
+
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
+
+  member this.SetEventHandler
+    (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler, EventArgs>, action: unit -> unit)
+    =
+    let handler: EventHandler = EventHandler(fun sender args -> action ())
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
+
+  member this.SetEventHandler
+    (pkey: PropKey<'TEventArgs -> unit>, event: IEvent<EventHandler, EventArgs>, action: EventArgs -> unit)
+    =
+    let handler: EventHandler = EventHandler(fun sender args -> action args)
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
+
+  member this.SetEventHandler
+    (
+      pkey: PropKey<NotifyCollectionChangedEventArgs -> unit>,
+      event: IEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>,
+      action: NotifyCollectionChangedEventArgs -> unit
+    ) =
+    let handler: NotifyCollectionChangedEventHandler =
+      NotifyCollectionChangedEventHandler(fun sender args -> action args)
+
+    this.SetHandler(pkey.Untyped, handler, event.RemoveHandler, event.AddHandler)
+    this.RegisterHandlerRemoval(pkey.Untyped, handler, event.RemoveHandler)
+
 /// Props object that is still under construction
 type internal Props() =
   member val Children: List<TerminalElement> = List<_>() with get
@@ -120,11 +214,7 @@ type internal Props() =
 and internal ITerminalElementBase =
   inherit ITerminalElement
   inherit IDisposable
-  abstract Origin: Origin with get, set
   abstract Name: string
-  abstract View: View with get
-  abstract OnViewSet: IEvent<View>
-  abstract GetPath: unit -> string
 
 and internal IViewTE =
   inherit ITerminalElementBase
@@ -146,10 +236,11 @@ and internal IViewTE =
 and internal IElmishComponentTE =
   inherit ITerminalElementBase
 
-  // The component's child subtree is a DomNode (see ElmishComponentTE.Child). It is not
-  // exposed here because DomNode is defined after this type and would form a cycle.
+  /// The component's root View (owned by the component's own DomNode subtree).
+  abstract View: View with get
+  /// The component's placement within the surrounding DomNode tree.
+  abstract DomOrigin: DomOrigin with get, set
   abstract StartElmishLoop: unit -> unit
-  abstract Reuse: prev: IElmishComponentTE -> unit
 
 and internal TerminalElement =
   | ViewTE of IViewTE
@@ -167,38 +258,89 @@ and internal TerminalElement =
     | ElmishComponentTE elmishComponentTE -> elmishComponentTE :> ITerminalElementBase
 
   member this.Name = this.TerminalElementBase.Name
-  member this.Origin = this.TerminalElementBase.Origin
 
-  member this.Origin
-    with set value = this.TerminalElementBase.Origin <- value
-
-  member this.ViewSet = this.TerminalElementBase.OnViewSet
-  member this.View = this.TerminalElementBase.View
-  member this.GetPath() = this.TerminalElementBase.GetPath()
   member this.Dispose() = this.TerminalElementBase.Dispose()
 
   interface ITerminalElementBase with
-    member this.View = this.View
-    member this.OnViewSet = this.ViewSet
     member this.Name = this.Name
-    member this.Origin = this.Origin
-
-    member this.Origin
-      with set value = this.Origin <- value
-
-    member this.GetPath() = this.GetPath()
     member this.Dispose() = this.Dispose()
 
-// Origin describes how a TerminalElement is related to the root of the tree.
-and internal Origin =
-  /// Root element of the Elmish program.
-  | Root
-  /// Root element of an Elmish component.
-  | ElmishComponent of Parent: IElmishComponentTE
-  /// Child element of a view.
-  | Child of Parent: IViewTE * Index: int
-  /// SubElement of a view, such as a property that is itself a view, or a collection of views.
-  | SubElement of Parent: IViewTE * Index: int option * Property: RawPropKey
+/// Describes the position of a DomNode within the tree.
+and internal DomOrigin =
+  | DomRoot
+  | DomElmishComponent of parent: IElmishComponentTE
+  | DomChild of parent: DomNode * index: int
+  | DomSubElement of parent: DomNode * index: int option * property: RawPropKey
+
+/// A child of a DomNode — either a view-based DomNode or an Elmish component.
+and internal DomChild =
+  | ViewDomChild of DomNode
+  | ElmishComponentDomChild of IElmishComponentTE
+
+/// Persistent DOM node that owns a Terminal.Gui View.
+/// Created from a TerminalElement description and mutated in place during diffs.
+and [<AllowNullLiteral>] internal DomNode
+  (
+    name: string,
+    view: View,
+    appliedProps: Props,
+    applyProps: DomNode * Props -> unit,
+    removeProps: DomNode * Props -> unit,
+    newView: unit -> View,
+    setAsChildOfParentView: bool,
+    subElementsPropKeys: RawPropKey list
+  ) =
+
+  let viewSetEvent = Event<View>()
+
+  member _.Name = name
+  member val View = view with get, set
+  member val Origin: DomOrigin = DomRoot with get, set
+  member val AppliedProps: Props = appliedProps with get, set
+  member val EventRegistrar: EventHandlerRegistrar = EventHandlerRegistrar() with get, set
+  member val Children = ResizeArray<DomChild>() with get
+  member val SubElementDomNodes = ResizeArray<DomNode>() with get
+  member _.SetAsChildOfParentView = setAsChildOfParentView
+  member _.SubElementsPropKeys = subElementsPropKeys
+
+  member this.ApplyProps(props) = applyProps (this, props)
+  member this.RemoveProps(props) = removeProps (this, props)
+  member _.NewView() = newView ()
+
+  /// Stable path for debugging/IDs, derived from the DomOrigin chain.
+  /// Component segments resolve through the component's own DomOrigin, so paths are fully
+  /// DomNode-native.
+  member this.GetPath() =
+    let rec pathOf (name: string) (origin: DomOrigin) : string =
+      match origin with
+      | DomRoot -> $"root:{name}"
+      | DomElmishComponent parent -> $"{pathOf parent.Name parent.DomOrigin}:{name}"
+      | DomChild(parent, index) -> $"{parent.GetPath()}|child[{index}]:{name}"
+      | DomSubElement(parent, index, key) ->
+        let indexStr = index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+        $"{parent.GetPath()}|{key}{indexStr}:{name}"
+
+    pathOf name this.Origin
+
+  /// Fires the ViewReady event, analogous to ViewSet on the old ViewBackedTerminalElement.
+  /// Called by createFromTE after the DomNode is fully initialized.
+  member this.TriggerViewReady() = viewSetEvent.Trigger this.View
+
+  [<CLIEvent>]
+  member _.OnViewSet = viewSetEvent.Publish
+
+/// Bundles the DomNode-compatible applicator functions for a TE type.
+/// Generated per-element by the DomNode.Elements generator.
+and internal DomNodeSpec =
+  { ApplyProps: DomNode * Props -> unit
+    RemoveProps: DomNode * Props -> unit
+    NewView: unit -> View
+    SetAsChildOfParentView: bool
+    SubElementsPropKeys: RawPropKey list }
+
+/// Implemented by each generated TerminalElement class to expose its DomNodeSpec.
+and internal IDomSpecProvider =
+  abstract DomSpec: DomNodeSpec
 
 type PosAxis =
   | X
@@ -313,47 +455,48 @@ type Props with
   static member iter iteration (props: Props) =
     Props.toEntries props |> Seq.iter iteration
 
-[<AutoOpen>]
-module Element =
+/// Standalone event handler helpers that work with any (EventHandlerRegistrar, Props) pair.
+/// Used by the generated DomNode applicators.
+type internal EventHandlerHelpers =
 
-  module internal Origin =
-    let parentTerminalElement this : TerminalElement option =
-      match this with
-      | Root -> None
-      | Child(parent, _) -> Some(TerminalElement.ViewTE parent)
-      | SubElement(parent, _, _) -> Some(TerminalElement.ViewTE parent)
-      | ElmishComponent parent -> Some(TerminalElement.ElmishComponentTE parent)
+  static member TrySetEventHandler<'TEventArgs>
+    (
+      registrar: EventHandlerRegistrar,
+      props: Props,
+      k: PropKey<'TEventArgs -> unit>,
+      event: IEvent<EventHandler<'TEventArgs>, 'TEventArgs>
+    ) =
+    registrar.RemoveHandler k.Untyped
 
-    let rec parentView (this: Origin) =
-      match this |> parentTerminalElement with
-      | Some(ElmishComponentTE parent) -> parent.Origin |> parentView
-      | Some(ViewTE parent) -> Some parent.View
-      | None -> None
+    props
+    |> Props.tryFind k
+    |> Option.iter (fun action -> registrar.SetEventHandler(k, event, action))
 
-    let getPath name (this: Origin) =
-      let parentPath =
-        match this |> parentTerminalElement with
-        | Some parent -> parent.GetPath()
-        | None -> "root"
+  static member TrySetEventHandler
+    (
+      registrar: EventHandlerRegistrar,
+      props: Props,
+      k: PropKey<EventArgs -> unit>,
+      event: IEvent<EventHandler, EventArgs>
+    ) =
+    registrar.RemoveHandler k.Untyped
 
-      let propIdStr =
-        match this with
-        | Origin.Root -> ""
-        | Origin.Child _
-        | Origin.ElmishComponent _ -> "child"
-        | Origin.SubElement(_, _, subElementPropKey) -> $"{subElementPropKey}"
+    props
+    |> Props.tryFind k
+    |> Option.iter (fun action -> registrar.SetEventHandler(k, event, (action: EventArgs -> unit)))
 
-      let indexStr =
-        let rec indexStr origin =
-          match origin with
-          | Origin.Root -> ""
-          | Origin.ElmishComponent parent -> indexStr parent.Origin
-          | Origin.Child(_, index) -> $"[{index}]"
-          | Origin.SubElement(_, index, _) -> index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+  static member TrySetEventHandler
+    (
+      registrar: EventHandlerRegistrar,
+      props: Props,
+      k: PropKey<NotifyCollectionChangedEventArgs -> unit>,
+      event: IEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
+    ) =
+    registrar.RemoveHandler k.Untyped
 
-        indexStr this
+    props
+    |> Props.tryFind k
+    |> Option.iter (fun action -> registrar.SetEventHandler(k, event, action))
 
-      match this with
-      | Origin.Root -> $"root:{name}"
-      | Origin.ElmishComponent parent -> $"{parent.GetPath()}:{name}"
-      | _ -> $"{parentPath}|{propIdStr}{indexStr}:{name}"
+  static member TryRemoveEventHandler(registrar: EventHandlerRegistrar, k: PropKey<_>) =
+    registrar.RemoveHandler k.Untyped

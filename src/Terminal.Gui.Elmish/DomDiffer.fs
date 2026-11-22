@@ -224,9 +224,11 @@ module internal DomDiffer =
 
       parent.Children.Add(ViewDomChild dom)
     | ElmishComponentTE ce ->
-      ce.Origin <- Origin.Root
+      let idx = parent.Children.Count
+      // The component's own DomOrigin resolves its root view's placement, so starting its
+      // loop wires the view into the parent view; no explicit Add is needed.
+      ce.DomOrigin <- DomChild(parent, idx)
       ce.StartElmishLoop()
-      parent.View.Add ce.View |> ignore
       parent.Children.Add(ElmishComponentDomChild ce)
 
   and disposeChild (parent: DomNode) (child: DomChild) =

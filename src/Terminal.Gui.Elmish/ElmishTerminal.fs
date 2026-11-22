@@ -206,8 +206,6 @@ module ElmishTerminal =
 
     let initialDomTcs: TaskCompletionSource<DomNode> = TaskCompletionSource<_>()
 
-    let viewSetEvent = Event<View>()
-
     let mkSimpleComponent
       (terminalElement: IElmishComponentTE)
       (init: 'arg -> 'model)
@@ -228,10 +226,7 @@ module ElmishTerminal =
       let runComponent (model: TerminalModel<_>) =
         let start dispatch =
           task {
-            let! rootView = model.TerminalElementState.WaitTillRootViewIsSetAsync()
-
-            viewSetEvent.Trigger rootView
-
+            let! _ = model.TerminalElementState.WaitTillRootViewIsSetAsync()
             let! currentDom = model.TerminalElementState.GetCurrentDomAsync()
             initialDomTcs.SetResult(currentDom)
           }
@@ -276,16 +271,7 @@ module ElmishTerminal =
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
 
-    member val Origin = Unchecked.defaultof<_> with get, set
-
-    [<CLIEvent>]
-    member this.OnViewSet = viewSetEvent.Publish
-
-    member this.Reuse(prev: IElmishComponentTE) =
-      // An elmish component could have subscriptions
-      // It is better to reuse the same component instance instead of creating a new one and reusing the view.
-      // For that reason, ElmishComponents should have an ID to identify them and reuse the same instance if the ID is the same.
-      ()
+    member val DomOrigin: DomOrigin = DomRoot with get, set
 
     member this.Dispose() =
       task {
@@ -298,19 +284,14 @@ module ElmishTerminal =
       member this.StartElmishLoop() =
         mkSimpleComponent this init update view |> this.RunComponent
 
-      member this.Reuse prev = this.Reuse prev
+      member this.View = this.View
 
+      member this.DomOrigin
+        with get () = this.DomOrigin
+        and set v = this.DomOrigin <- v
 
     interface ITerminalElementBase with
-      member this.View = this.View
       member this.Name = name
-      member this.OnViewSet = this.OnViewSet
-
-      member this.Origin
-        with get () = this.Origin
-        and set v = this.Origin <- v
-
-      member this.GetPath() = this.Origin |> Origin.getPath name
       member this.Dispose() = this.Dispose()
 
   let mkSimpleComponent

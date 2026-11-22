@@ -6,10 +6,10 @@ open Terminal.Gui.ViewBase
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module internal DomNode =
 
-  let parentView (origin: DomOrigin) : View option =
+  let rec parentView (origin: DomOrigin) : View option =
     match origin with
     | DomRoot -> None
-    | DomElmishComponent parent -> parent.Origin |> Origin.parentView
+    | DomElmishComponent parent -> parentView parent.DomOrigin
     | DomChild(parent, _) -> Some parent.View
     | DomSubElement(parent, _, _) -> Some parent.View
 
@@ -104,22 +104,10 @@ module internal DomNode =
     : DomChild =
     match te with
     | ElmishComponentTE elmishComponent ->
-      let originForComponent =
-        match origin with
-        | DomRoot -> Origin.Root
-        | DomElmishComponent parent -> Origin.ElmishComponent parent
-        // DomChild/DomSubElement → Origin.Child/SubElement requires IViewTE.
-        // Full support deferred (see plan-staticDom.md, decision A).
-        | _ -> Origin.Root
-
-      elmishComponent.Origin <- originForComponent
+      // The component's own DomOrigin resolves its root view's placement (see `parentView`),
+      // so starting its loop wires the view into the parent view; no explicit Add is needed.
+      elmishComponent.DomOrigin <- origin
       elmishComponent.StartElmishLoop()
-
-      match origin with
-      | DomChild _
-      | DomElmishComponent _ -> parentView origin |> Option.iter (fun v -> v.Add elmishComponent.View |> ignore)
-      | _ -> ()
-
       ElmishComponentDomChild elmishComponent
 
     | ViewTE viewTE ->

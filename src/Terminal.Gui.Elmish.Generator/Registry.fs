@@ -95,6 +95,7 @@ module Registry =
     static member GetAllPreviouslyCreatedInterfaces() =
       TEInterfaces.TEInterfaces
       |> Seq.map getTEInterfaceName
+      |> Seq.distinct
       |> Seq.toList
       |> List.sort
 
@@ -108,6 +109,7 @@ module Registry =
 
           propertyType <- propertyType.BaseType
       }
+      |> Seq.distinct
 
     static member GetAssignableInterface(propertyType: Type) =
       let mutable propertyType = propertyType

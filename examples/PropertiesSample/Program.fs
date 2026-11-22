@@ -78,28 +78,28 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
                               )
                             ))
                           View.MenuItem(fun p -> p.TargetView(View.Line []))
-                          if ConfigurationManager.IsEnabled then
-                            View.MenuItem(fun p ->
-                              // p.HelpText "Cycle Through Themes"
-                              // p.Key Key.T.WithCtrl
 
-                              p.TargetView(
-                                View.OptionSelector(fun p -> ()
-                                // p.HighlightStates MouseState.None
-                                // p.Options (ThemeManager.GetThemeNames())
+                          View.MenuItem(fun p ->
+                            // p.HelpText "Cycle Through Themes"
+                            // p.Key Key.T.WithCtrl
 
-                                // p.SelectedItemChanged (fun args ->
-                                // if args.SelectedItem.HasValue then
-                                // ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
-                                // )
+                            p.TargetView(
+                              View.OptionSelector(fun p -> ()
+                              // p.HighlightStates MouseState.None
+                              // p.Options (ThemeManager.GetThemeNames())
 
-                                // p.SelectedItem (
-                                // ThemeManager
-                                // .GetThemeNames()
-                                // .IndexOf(ThemeManager.GetCurrentThemeName())
-                                // )
-                                )
-                              )) ])
+                              // p.SelectedItemChanged (fun args ->
+                              // if args.SelectedItem.HasValue then
+                              // ThemeManager.Theme <- ThemeManager.GetThemeNames().[args.SelectedItem.Value]
+                              // )
+
+                              // p.SelectedItem (
+                              // ThemeManager
+                              // .GetThemeNames()
+                              // .IndexOf(ThemeManager.GetCurrentThemeName())
+                              // )
+                              )
+                            )) ])
                   ))
               )) ])
       :> ITerminalElement ]
@@ -107,8 +107,6 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) : ITerminalElement 
 
 [<EntryPoint>]
 let main argv =
-  ConfigurationManager.Enable(ConfigLocations.All)
-
   let x = ElmishTerminal.mkProgram init update view
   x |> ElmishTerminal.runTerminal
 

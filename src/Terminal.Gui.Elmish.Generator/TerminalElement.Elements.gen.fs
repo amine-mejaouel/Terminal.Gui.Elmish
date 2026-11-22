@@ -15,7 +15,8 @@ let setAsChildOfParentView (viewType: Type) =
   )
 
 let opens =
-  [ "open Terminal.Gui.App"
+  [ "open System.Collections.Generic"
+    "open Terminal.Gui.App"
     "open Terminal.Gui.ViewBase"
     "open Terminal.Gui.Views" ]
 

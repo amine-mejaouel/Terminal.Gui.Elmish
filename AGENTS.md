@@ -8,7 +8,7 @@ Terminal.Gui.Elmish is an **F# Elmish wrapper** around Miguel de Icaza's [Termin
 - Target Framework: .NET 10.0 (all projects target `net10.0`)
 - Package Manager: Paket (not NuGet directly)
 - Testing: NUnit (with Microsoft.Testing.Platform runner)
-- Key Dependencies: Elmish 5.0.2, Terminal.Gui 2.0.0-alpha (prerelease)
+- Key Dependencies: Elmish 5.0.2, Terminal.Gui 2.6.0
 
 ## Build Instructions
 

@@ -8,15 +8,15 @@ open Terminal.Gui.Elmish
 
 type View =
 
-  static member Adornment(set: AdornmentProps -> unit) =
-    let viewProps = AdornmentProps()
+  static member AdornmentView(set: AdornmentViewProps -> unit) =
+    let viewProps = AdornmentViewProps()
     set viewProps
-    new AdornmentTerminalElement(viewProps.props) :> ITerminalElement
+    new AdornmentViewTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Adornment(children: ITerminalElement list) =
-    let viewProps = AdornmentProps()
+  static member AdornmentView(children: ITerminalElement list) =
+    let viewProps = AdornmentViewProps()
     viewProps.Children children
-    new AdornmentTerminalElement(viewProps.props) :> ITerminalElement
+    new AdornmentViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member AttributePicker(set: AttributePickerProps -> unit) =
     let viewProps = AttributePickerProps()
@@ -38,15 +38,15 @@ type View =
     viewProps.Children children
     new BarTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Border(set: BorderProps -> unit) =
-    let viewProps = BorderProps()
+  static member BorderView(set: BorderViewProps -> unit) =
+    let viewProps = BorderViewProps()
     set viewProps
-    new BorderTerminalElement(viewProps.props) :> ITerminalElement
+    new BorderViewTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Border(children: ITerminalElement list) =
-    let viewProps = BorderProps()
+  static member BorderView(children: ITerminalElement list) =
+    let viewProps = BorderViewProps()
     viewProps.Children children
-    new BorderTerminalElement(viewProps.props) :> ITerminalElement
+    new BorderViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member Button(set: ButtonProps -> unit) =
     let viewProps = ButtonProps()
@@ -77,6 +77,16 @@ type View =
     let viewProps = CheckBoxProps()
     viewProps.Children children
     new CheckBoxTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Code(set: CodeProps -> unit) =
+    let viewProps = CodeProps()
+    set viewProps
+    new CodeTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Code(children: ITerminalElement list) =
+    let viewProps = CodeProps()
+    viewProps.Children children
+    new CodeTerminalElement(viewProps.props) :> ITerminalElement
 
   static member ColorPicker(set: ColorPickerProps -> unit) =
     let viewProps = ColorPickerProps()
@@ -138,6 +148,16 @@ type View =
     viewProps.Children children
     new HexViewTerminalElement(viewProps.props) :> ITerminalElement
 
+  static member ImageView(set: ImageViewProps -> unit) =
+    let viewProps = ImageViewProps()
+    set viewProps
+    new ImageViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member ImageView(children: ITerminalElement list) =
+    let viewProps = ImageViewProps()
+    viewProps.Children children
+    new ImageViewTerminalElement(viewProps.props) :> ITerminalElement
+
   static member Label(set: LabelProps -> unit) =
     let viewProps = LabelProps()
     set viewProps
@@ -168,6 +188,26 @@ type View =
     viewProps.Children children
     new LineTerminalElement(viewProps.props) :> ITerminalElement
 
+  static member LinearMultiSelector<'T>(set: LinearMultiSelectorProps<'T> -> unit) =
+    let viewProps = LinearMultiSelectorProps<'T>()
+    set viewProps
+    new LinearMultiSelectorTerminalElement<'T>(viewProps.props) :> ITerminalElement
+
+  static member LinearMultiSelector<'T>(children: ITerminalElement list) =
+    let viewProps = LinearMultiSelectorProps<'T>()
+    viewProps.Children children
+    new LinearMultiSelectorTerminalElement<'T>(viewProps.props) :> ITerminalElement
+
+  static member LinearMultiSelector(set: LinearMultiSelectorProps -> unit) =
+    let viewProps = LinearMultiSelectorProps()
+    set viewProps
+    new LinearMultiSelectorTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member LinearMultiSelector(children: ITerminalElement list) =
+    let viewProps = LinearMultiSelectorProps()
+    viewProps.Children children
+    new LinearMultiSelectorTerminalElement(viewProps.props) :> ITerminalElement
+
   static member LinearRange<'T>(set: LinearRangeProps<'T> -> unit) =
     let viewProps = LinearRangeProps<'T>()
     set viewProps
@@ -187,6 +227,26 @@ type View =
     let viewProps = LinearRangeProps()
     viewProps.Children children
     new LinearRangeTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member LinearSelector<'T>(set: LinearSelectorProps<'T> -> unit) =
+    let viewProps = LinearSelectorProps<'T>()
+    set viewProps
+    new LinearSelectorTerminalElement<'T>(viewProps.props) :> ITerminalElement
+
+  static member LinearSelector<'T>(children: ITerminalElement list) =
+    let viewProps = LinearSelectorProps<'T>()
+    viewProps.Children children
+    new LinearSelectorTerminalElement<'T>(viewProps.props) :> ITerminalElement
+
+  static member LinearSelector(set: LinearSelectorProps -> unit) =
+    let viewProps = LinearSelectorProps()
+    set viewProps
+    new LinearSelectorTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member LinearSelector(children: ITerminalElement list) =
+    let viewProps = LinearSelectorProps()
+    viewProps.Children children
+    new LinearSelectorTerminalElement(viewProps.props) :> ITerminalElement
 
   static member Link(set: LinkProps -> unit) =
     let viewProps = LinkProps()
@@ -208,15 +268,55 @@ type View =
     viewProps.Children children
     new ListViewTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Margin(set: MarginProps -> unit) =
-    let viewProps = MarginProps()
+  static member ListView<'T>(set: ListViewProps<'T> -> unit) =
+    let viewProps = ListViewProps<'T>()
     set viewProps
-    new MarginTerminalElement(viewProps.props) :> ITerminalElement
+    new ListViewTerminalElement<'T>(viewProps.props) :> ITerminalElement
 
-  static member Margin(children: ITerminalElement list) =
-    let viewProps = MarginProps()
+  static member ListView<'T>(children: ITerminalElement list) =
+    let viewProps = ListViewProps<'T>()
     viewProps.Children children
-    new MarginTerminalElement(viewProps.props) :> ITerminalElement
+    new ListViewTerminalElement<'T>(viewProps.props) :> ITerminalElement
+
+  static member MarginView(set: MarginViewProps -> unit) =
+    let viewProps = MarginViewProps()
+    set viewProps
+    new MarginViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member MarginView(children: ITerminalElement list) =
+    let viewProps = MarginViewProps()
+    viewProps.Children children
+    new MarginViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Markdown(set: MarkdownProps -> unit) =
+    let viewProps = MarkdownProps()
+    set viewProps
+    new MarkdownTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Markdown(children: ITerminalElement list) =
+    let viewProps = MarkdownProps()
+    viewProps.Children children
+    new MarkdownTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member MarkdownCodeBlock(set: MarkdownCodeBlockProps -> unit) =
+    let viewProps = MarkdownCodeBlockProps()
+    set viewProps
+    new MarkdownCodeBlockTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member MarkdownCodeBlock(children: ITerminalElement list) =
+    let viewProps = MarkdownCodeBlockProps()
+    viewProps.Children children
+    new MarkdownCodeBlockTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member MarkdownTable(set: MarkdownTableProps -> unit) =
+    let viewProps = MarkdownTableProps()
+    set viewProps
+    new MarkdownTableTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member MarkdownTable(children: ITerminalElement list) =
+    let viewProps = MarkdownTableProps()
+    viewProps.Children children
+    new MarkdownTableTerminalElement(viewProps.props) :> ITerminalElement
 
   static member Menu(set: MenuProps -> unit) =
     let viewProps = MenuProps()
@@ -264,15 +364,15 @@ type View =
     viewProps.Children children
     new NumericUpDownTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Padding(set: PaddingProps -> unit) =
-    let viewProps = PaddingProps()
+  static member PaddingView(set: PaddingViewProps -> unit) =
+    let viewProps = PaddingViewProps()
     set viewProps
-    new PaddingTerminalElement(viewProps.props) :> ITerminalElement
+    new PaddingViewTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Padding(children: ITerminalElement list) =
-    let viewProps = PaddingProps()
+  static member PaddingView(children: ITerminalElement list) =
+    let viewProps = PaddingViewProps()
     viewProps.Children children
-    new PaddingTerminalElement(viewProps.props) :> ITerminalElement
+    new PaddingViewTerminalElement(viewProps.props) :> ITerminalElement
 
   static member Popover<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
     (set: PopoverProps<'TView, 'TResult> -> unit)
@@ -338,6 +438,22 @@ type View =
     viewProps.Children children
     new DialogTerminalElement<'TResult>(viewProps.props) :> ITerminalElement
 
+  static member RunnableWrapper<'TView, 'TResult
+    when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (set: RunnableWrapperProps<'TView, 'TResult> -> unit)
+    =
+    let viewProps = RunnableWrapperProps<'TView, 'TResult>()
+    set viewProps
+    new RunnableWrapperTerminalElement<'TView, 'TResult>(viewProps.props) :> ITerminalElement
+
+  static member RunnableWrapper<'TView, 'TResult
+    when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (children: ITerminalElement list)
+    =
+    let viewProps = RunnableWrapperProps<'TView, 'TResult>()
+    viewProps.Children children
+    new RunnableWrapperTerminalElement<'TView, 'TResult>(viewProps.props) :> ITerminalElement
+
   static member Dialog(set: DialogProps -> unit) =
     let viewProps = DialogProps()
     set viewProps
@@ -347,6 +463,16 @@ type View =
     let viewProps = DialogProps()
     viewProps.Children children
     new DialogTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member FileDialog(set: FileDialogProps -> unit) =
+    let viewProps = FileDialogProps()
+    set viewProps
+    new FileDialogTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member FileDialog(children: ITerminalElement list) =
+    let viewProps = FileDialogProps()
+    viewProps.Children children
+    new FileDialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member Prompt<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
     (set: PromptProps<'TView, 'TResult> -> unit)
@@ -361,16 +487,6 @@ type View =
     let viewProps = PromptProps<'TView, 'TResult>()
     viewProps.Children children
     new PromptTerminalElement<'TView, 'TResult>(viewProps.props) :> ITerminalElement
-
-  static member FileDialog(set: FileDialogProps -> unit) =
-    let viewProps = FileDialogProps()
-    set viewProps
-    new FileDialogTerminalElement(viewProps.props) :> ITerminalElement
-
-  static member FileDialog(children: ITerminalElement list) =
-    let viewProps = FileDialogProps()
-    viewProps.Children children
-    new FileDialogTerminalElement(viewProps.props) :> ITerminalElement
 
   static member OpenDialog(set: OpenDialogProps -> unit) =
     let viewProps = OpenDialogProps()
@@ -401,6 +517,16 @@ type View =
     let viewProps = ScrollBarProps()
     viewProps.Children children
     new ScrollBarTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member ScrollButton(set: ScrollButtonProps -> unit) =
+    let viewProps = ScrollButtonProps()
+    set viewProps
+    new ScrollButtonTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member ScrollButton(children: ITerminalElement list) =
+    let viewProps = ScrollButtonProps()
+    viewProps.Children children
+    new ScrollButtonTerminalElement(viewProps.props) :> ITerminalElement
 
   static member ScrollSlider(set: ScrollSliderProps -> unit) =
     let viewProps = ScrollSliderProps()
@@ -526,26 +652,6 @@ type View =
     viewProps.Children children
     new StatusBarTerminalElement(viewProps.props) :> ITerminalElement
 
-  static member Tab(set: TabProps -> unit) =
-    let viewProps = TabProps()
-    set viewProps
-    new TabTerminalElement(viewProps.props) :> ITabTerminalElement
-
-  static member Tab(children: ITerminalElement list) =
-    let viewProps = TabProps()
-    viewProps.Children children
-    new TabTerminalElement(viewProps.props) :> ITabTerminalElement
-
-  static member TabView(set: TabViewProps -> unit) =
-    let viewProps = TabViewProps()
-    set viewProps
-    new TabViewTerminalElement(viewProps.props) :> ITerminalElement
-
-  static member TabView(children: ITerminalElement list) =
-    let viewProps = TabViewProps()
-    viewProps.Children children
-    new TabViewTerminalElement(viewProps.props) :> ITerminalElement
-
   static member TableView(set: TableViewProps -> unit) =
     let viewProps = TableViewProps()
     set viewProps
@@ -555,6 +661,16 @@ type View =
     let viewProps = TableViewProps()
     viewProps.Children children
     new TableViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Tabs(set: TabsProps -> unit) =
+    let viewProps = TabsProps()
+    set viewProps
+    new TabsTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member Tabs(children: ITerminalElement list) =
+    let viewProps = TabsProps()
+    viewProps.Children children
+    new TabsTerminalElement(viewProps.props) :> ITerminalElement
 
   static member TextField(set: TextFieldProps -> unit) =
     let viewProps = TextFieldProps()
@@ -575,6 +691,22 @@ type View =
     let viewProps = DropDownListProps()
     viewProps.Children children
     new DropDownListTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member DropDownList<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (set: DropDownListProps<'TEnum> -> unit)
+    =
+    let viewProps = DropDownListProps<'TEnum>()
+    set viewProps
+    new DropDownListTerminalElement<'TEnum>(viewProps.props) :> ITerminalElement
+
+  static member DropDownList<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (children: ITerminalElement list)
+    =
+    let viewProps = DropDownListProps<'TEnum>()
+    viewProps.Children children
+    new DropDownListTerminalElement<'TEnum>(viewProps.props) :> ITerminalElement
 
   static member TextValidateField(set: TextValidateFieldProps -> unit) =
     let viewProps = TextValidateFieldProps()
@@ -615,6 +747,30 @@ type View =
     let viewProps = TimeEditorProps()
     viewProps.Children children
     new TimeEditorTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member TitleView(set: TitleViewProps -> unit) =
+    let viewProps = TitleViewProps()
+    set viewProps
+    new TitleViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member TitleView(children: ITerminalElement list) =
+    let viewProps = TitleViewProps()
+    viewProps.Children children
+    new TitleViewTerminalElement(viewProps.props) :> ITerminalElement
+
+  static member ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (set: ToolTipHostProps<'TView> -> unit)
+    =
+    let viewProps = ToolTipHostProps<'TView>()
+    set viewProps
+    new ToolTipHostTerminalElement<'TView>(viewProps.props) :> ITerminalElement
+
+  static member ToolTipHost<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (children: ITerminalElement list)
+    =
+    let viewProps = ToolTipHostProps<'TView>()
+    viewProps.Children children
+    new ToolTipHostTerminalElement<'TView>(viewProps.props) :> ITerminalElement
 
   static member TreeView<'T when 'T: not struct>(set: TreeViewProps<'T> -> unit) =
     let viewProps = TreeViewProps<'T>()

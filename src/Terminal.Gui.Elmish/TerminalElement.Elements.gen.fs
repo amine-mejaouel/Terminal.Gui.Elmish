@@ -3,6 +3,7 @@
 
 namespace Terminal.Gui.Elmish
 
+open System.Collections.Generic
 open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
@@ -27,12 +28,12 @@ type internal ViewTerminalElement(props: Props) =
         SetAsChildOfParentView = ViewDom.setAsChildOfParentView
         SubElementsPropKeys = ViewDom.subElementsPropKeys }
 
-type internal AdornmentTerminalElement(props: Props) =
+type internal AdornmentViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
-  override _.Name = "Adornment"
+  override _.Name = "AdornmentView"
 
-  override _.NewView() = new Adornment()
+  override _.NewView() = new AdornmentView()
 
   override _.SetAsChildOfParentView = true
 
@@ -40,11 +41,11 @@ type internal AdornmentTerminalElement(props: Props) =
 
   interface IDomSpecProvider with
     member _.DomSpec =
-      { ApplyProps = AdornmentDom.applyProps
-        RemoveProps = AdornmentDom.removeProps
-        NewView = AdornmentDom.newView
-        SetAsChildOfParentView = AdornmentDom.setAsChildOfParentView
-        SubElementsPropKeys = AdornmentDom.subElementsPropKeys }
+      { ApplyProps = AdornmentViewDom.applyProps
+        RemoveProps = AdornmentViewDom.removeProps
+        NewView = AdornmentViewDom.newView
+        SetAsChildOfParentView = AdornmentViewDom.setAsChildOfParentView
+        SubElementsPropKeys = AdornmentViewDom.subElementsPropKeys }
 
 type internal AttributePickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -84,12 +85,12 @@ type internal BarTerminalElement(props: Props) =
         SetAsChildOfParentView = BarDom.setAsChildOfParentView
         SubElementsPropKeys = BarDom.subElementsPropKeys }
 
-type internal BorderTerminalElement(props: Props) =
-  inherit AdornmentTerminalElement(props)
+type internal BorderViewTerminalElement(props: Props) =
+  inherit AdornmentViewTerminalElement(props)
 
-  override _.Name = "Border"
+  override _.Name = "BorderView"
 
-  override _.NewView() = new Border()
+  override _.NewView() = new BorderView()
 
   override _.SetAsChildOfParentView = true
 
@@ -97,11 +98,11 @@ type internal BorderTerminalElement(props: Props) =
 
   interface IDomSpecProvider with
     member _.DomSpec =
-      { ApplyProps = BorderDom.applyProps
-        RemoveProps = BorderDom.removeProps
-        NewView = BorderDom.newView
-        SetAsChildOfParentView = BorderDom.setAsChildOfParentView
-        SubElementsPropKeys = BorderDom.subElementsPropKeys }
+      { ApplyProps = BorderViewDom.applyProps
+        RemoveProps = BorderViewDom.removeProps
+        NewView = BorderViewDom.newView
+        SetAsChildOfParentView = BorderViewDom.setAsChildOfParentView
+        SubElementsPropKeys = BorderViewDom.subElementsPropKeys }
 
 type internal ButtonTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -159,6 +160,25 @@ type internal CheckBoxTerminalElement(props: Props) =
         NewView = CheckBoxDom.newView
         SetAsChildOfParentView = CheckBoxDom.setAsChildOfParentView
         SubElementsPropKeys = CheckBoxDom.subElementsPropKeys }
+
+type internal CodeTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "Code"
+
+  override _.NewView() = new Code()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = CodeDom.applyProps
+        RemoveProps = CodeDom.removeProps
+        NewView = CodeDom.newView
+        SetAsChildOfParentView = CodeDom.setAsChildOfParentView
+        SubElementsPropKeys = CodeDom.subElementsPropKeys }
 
 type internal ColorPickerTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -274,6 +294,25 @@ type internal HexViewTerminalElement(props: Props) =
         SetAsChildOfParentView = HexViewDom.setAsChildOfParentView
         SubElementsPropKeys = HexViewDom.subElementsPropKeys }
 
+type internal ImageViewTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "ImageView"
+
+  override _.NewView() = new ImageView()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = ImageViewDom.applyProps
+        RemoveProps = ImageViewDom.removeProps
+        NewView = ImageViewDom.newView
+        SetAsChildOfParentView = ImageViewDom.setAsChildOfParentView
+        SubElementsPropKeys = ImageViewDom.subElementsPropKeys }
+
 type internal LabelTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -331,8 +370,67 @@ type internal LineTerminalElement(props: Props) =
         SetAsChildOfParentView = LineDom.setAsChildOfParentView
         SubElementsPropKeys = LineDom.subElementsPropKeys }
 
-type internal LinearRangeTerminalElement<'T>(props: Props) =
+[<AbstractClass>]
+type internal LinearRangeViewBaseTerminalElement<'TOption, 'TValue>(props: Props) =
   inherit ViewTerminalElement(props)
+
+  override _.Name = "LinearRangeViewBase`2"
+
+  override _.NewView() =
+    failwith "Cannot instantiate abstract view type LinearRangeViewBase"
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = LinearRangeViewBaseDom.applyProps<'TOption, 'TValue>
+        RemoveProps = LinearRangeViewBaseDom.removeProps<'TOption, 'TValue>
+        NewView = LinearRangeViewBaseDom.newView<'TOption, 'TValue>
+        SetAsChildOfParentView = LinearRangeViewBaseDom.setAsChildOfParentView
+        SubElementsPropKeys = LinearRangeViewBaseDom.subElementsPropKeys }
+
+type internal LinearMultiSelectorTerminalElement<'T>(props: Props) =
+  inherit LinearRangeViewBaseTerminalElement<'T, IReadOnlyList<'T>>(props)
+
+  override _.Name = "LinearMultiSelector`1"
+
+  override _.NewView() = new LinearMultiSelector<'T>()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = LinearMultiSelectorDom.applyProps<'T>
+        RemoveProps = LinearMultiSelectorDom.removeProps<'T>
+        NewView = LinearMultiSelectorDom.newView<'T>
+        SetAsChildOfParentView = LinearMultiSelectorDom.setAsChildOfParentView
+        SubElementsPropKeys = LinearMultiSelectorDom.subElementsPropKeys }
+
+type internal LinearMultiSelectorTerminalElement(props: Props) =
+  inherit LinearMultiSelectorTerminalElement<string>(props)
+
+  override _.Name = "LinearMultiSelector"
+
+  override _.NewView() = new LinearMultiSelector()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = LinearMultiSelector'Dom.applyProps
+        RemoveProps = LinearMultiSelector'Dom.removeProps
+        NewView = LinearMultiSelector'Dom.newView
+        SetAsChildOfParentView = LinearMultiSelector'Dom.setAsChildOfParentView
+        SubElementsPropKeys = LinearMultiSelector'Dom.subElementsPropKeys }
+
+type internal LinearRangeTerminalElement<'T>(props: Props) =
+  inherit LinearRangeViewBaseTerminalElement<'T, LinearRangeSpan<'T>>(props)
 
   override _.Name = "LinearRange`1"
 
@@ -351,7 +449,7 @@ type internal LinearRangeTerminalElement<'T>(props: Props) =
         SubElementsPropKeys = LinearRangeDom.subElementsPropKeys }
 
 type internal LinearRangeTerminalElement(props: Props) =
-  inherit LinearRangeTerminalElement<System.Object>(props)
+  inherit LinearRangeTerminalElement<string>(props)
 
   override _.Name = "LinearRange"
 
@@ -368,6 +466,44 @@ type internal LinearRangeTerminalElement(props: Props) =
         NewView = LinearRange'Dom.newView
         SetAsChildOfParentView = LinearRange'Dom.setAsChildOfParentView
         SubElementsPropKeys = LinearRange'Dom.subElementsPropKeys }
+
+type internal LinearSelectorTerminalElement<'T>(props: Props) =
+  inherit LinearRangeViewBaseTerminalElement<'T, 'T>(props)
+
+  override _.Name = "LinearSelector`1"
+
+  override _.NewView() = new LinearSelector<'T>()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = LinearSelectorDom.applyProps<'T>
+        RemoveProps = LinearSelectorDom.removeProps<'T>
+        NewView = LinearSelectorDom.newView<'T>
+        SetAsChildOfParentView = LinearSelectorDom.setAsChildOfParentView
+        SubElementsPropKeys = LinearSelectorDom.subElementsPropKeys }
+
+type internal LinearSelectorTerminalElement(props: Props) =
+  inherit LinearSelectorTerminalElement<string>(props)
+
+  override _.Name = "LinearSelector"
+
+  override _.NewView() = new LinearSelector()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = LinearSelector'Dom.applyProps
+        RemoveProps = LinearSelector'Dom.removeProps
+        NewView = LinearSelector'Dom.newView
+        SetAsChildOfParentView = LinearSelector'Dom.setAsChildOfParentView
+        SubElementsPropKeys = LinearSelector'Dom.subElementsPropKeys }
 
 type internal LinkTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -407,12 +543,12 @@ type internal ListViewTerminalElement(props: Props) =
         SetAsChildOfParentView = ListViewDom.setAsChildOfParentView
         SubElementsPropKeys = ListViewDom.subElementsPropKeys }
 
-type internal MarginTerminalElement(props: Props) =
-  inherit AdornmentTerminalElement(props)
+type internal ListViewTerminalElement<'T>(props: Props) =
+  inherit ListViewTerminalElement(props)
 
-  override _.Name = "Margin"
+  override _.Name = "ListView`1"
 
-  override _.NewView() = new Margin()
+  override _.NewView() = new ListView<'T>()
 
   override _.SetAsChildOfParentView = true
 
@@ -420,11 +556,87 @@ type internal MarginTerminalElement(props: Props) =
 
   interface IDomSpecProvider with
     member _.DomSpec =
-      { ApplyProps = MarginDom.applyProps
-        RemoveProps = MarginDom.removeProps
-        NewView = MarginDom.newView
-        SetAsChildOfParentView = MarginDom.setAsChildOfParentView
-        SubElementsPropKeys = MarginDom.subElementsPropKeys }
+      { ApplyProps = ListView'Dom.applyProps<'T>
+        RemoveProps = ListView'Dom.removeProps<'T>
+        NewView = ListView'Dom.newView<'T>
+        SetAsChildOfParentView = ListView'Dom.setAsChildOfParentView
+        SubElementsPropKeys = ListView'Dom.subElementsPropKeys }
+
+type internal MarginViewTerminalElement(props: Props) =
+  inherit AdornmentViewTerminalElement(props)
+
+  override _.Name = "MarginView"
+
+  override _.NewView() = new MarginView()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = MarginViewDom.applyProps
+        RemoveProps = MarginViewDom.removeProps
+        NewView = MarginViewDom.newView
+        SetAsChildOfParentView = MarginViewDom.setAsChildOfParentView
+        SubElementsPropKeys = MarginViewDom.subElementsPropKeys }
+
+type internal MarkdownTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "Markdown"
+
+  override _.NewView() = new Markdown()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = MarkdownDom.applyProps
+        RemoveProps = MarkdownDom.removeProps
+        NewView = MarkdownDom.newView
+        SetAsChildOfParentView = MarkdownDom.setAsChildOfParentView
+        SubElementsPropKeys = MarkdownDom.subElementsPropKeys }
+
+type internal MarkdownCodeBlockTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "MarkdownCodeBlock"
+
+  override _.NewView() = new MarkdownCodeBlock()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = MarkdownCodeBlockDom.applyProps
+        RemoveProps = MarkdownCodeBlockDom.removeProps
+        NewView = MarkdownCodeBlockDom.newView
+        SetAsChildOfParentView = MarkdownCodeBlockDom.setAsChildOfParentView
+        SubElementsPropKeys = MarkdownCodeBlockDom.subElementsPropKeys }
+
+type internal MarkdownTableTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "MarkdownTable"
+
+  override _.NewView() = new MarkdownTable()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = MarkdownTableDom.applyProps
+        RemoveProps = MarkdownTableDom.removeProps
+        NewView = MarkdownTableDom.newView
+        SetAsChildOfParentView = MarkdownTableDom.setAsChildOfParentView
+        SubElementsPropKeys = MarkdownTableDom.subElementsPropKeys }
 
 type internal MenuTerminalElement(props: Props) =
   inherit BarTerminalElement(props)
@@ -506,12 +718,12 @@ type internal NumericUpDownTerminalElement(props: Props) =
         SetAsChildOfParentView = NumericUpDown'Dom.setAsChildOfParentView
         SubElementsPropKeys = NumericUpDown'Dom.subElementsPropKeys }
 
-type internal PaddingTerminalElement(props: Props) =
-  inherit AdornmentTerminalElement(props)
+type internal PaddingViewTerminalElement(props: Props) =
+  inherit AdornmentViewTerminalElement(props)
 
-  override _.Name = "Padding"
+  override _.Name = "PaddingView"
 
-  override _.NewView() = new Padding()
+  override _.NewView() = new PaddingView()
 
   override _.SetAsChildOfParentView = true
 
@@ -519,11 +731,11 @@ type internal PaddingTerminalElement(props: Props) =
 
   interface IDomSpecProvider with
     member _.DomSpec =
-      { ApplyProps = PaddingDom.applyProps
-        RemoveProps = PaddingDom.removeProps
-        NewView = PaddingDom.newView
-        SetAsChildOfParentView = PaddingDom.setAsChildOfParentView
-        SubElementsPropKeys = PaddingDom.subElementsPropKeys }
+      { ApplyProps = PaddingViewDom.applyProps
+        RemoveProps = PaddingViewDom.removeProps
+        NewView = PaddingViewDom.newView
+        SetAsChildOfParentView = PaddingViewDom.setAsChildOfParentView
+        SubElementsPropKeys = PaddingViewDom.subElementsPropKeys }
 
 [<AbstractClass>]
 type internal PopoverImplTerminalElement(props: Props) =
@@ -663,6 +875,26 @@ type internal DialogTerminalElement<'TResult>(props: Props) =
         SetAsChildOfParentView = DialogDom.setAsChildOfParentView
         SubElementsPropKeys = DialogDom.subElementsPropKeys }
 
+type internal RunnableWrapperTerminalElement<'TView, 'TResult
+  when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
+  inherit RunnableTerminalElement<'TResult>(props)
+
+  override _.Name = "RunnableWrapper`2"
+
+  override _.NewView() = new RunnableWrapper<'TView, 'TResult>()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = RunnableWrapperDom.applyProps<'TView, 'TResult>
+        RemoveProps = RunnableWrapperDom.removeProps<'TView, 'TResult>
+        NewView = RunnableWrapperDom.newView<'TView, 'TResult>
+        SetAsChildOfParentView = RunnableWrapperDom.setAsChildOfParentView
+        SubElementsPropKeys = RunnableWrapperDom.subElementsPropKeys }
+
 type internal DialogTerminalElement(props: Props) =
   inherit DialogTerminalElement<int>(props)
 
@@ -681,6 +913,25 @@ type internal DialogTerminalElement(props: Props) =
         NewView = Dialog'Dom.newView
         SetAsChildOfParentView = Dialog'Dom.setAsChildOfParentView
         SubElementsPropKeys = Dialog'Dom.subElementsPropKeys }
+
+type internal FileDialogTerminalElement(props: Props) =
+  inherit DialogTerminalElement<IReadOnlyList<string>>(props)
+
+  override _.Name = "FileDialog"
+
+  override _.NewView() = new FileDialog()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = FileDialogDom.applyProps
+        RemoveProps = FileDialogDom.removeProps
+        NewView = FileDialogDom.newView
+        SetAsChildOfParentView = FileDialogDom.setAsChildOfParentView
+        SubElementsPropKeys = FileDialogDom.subElementsPropKeys }
 
 type internal PromptTerminalElement<'TView, 'TResult
   when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
@@ -701,25 +952,6 @@ type internal PromptTerminalElement<'TView, 'TResult
         NewView = PromptDom.newView<'TView, 'TResult>
         SetAsChildOfParentView = PromptDom.setAsChildOfParentView
         SubElementsPropKeys = PromptDom.subElementsPropKeys }
-
-type internal FileDialogTerminalElement(props: Props) =
-  inherit DialogTerminalElement(props)
-
-  override _.Name = "FileDialog"
-
-  override _.NewView() = new FileDialog()
-
-  override _.SetAsChildOfParentView = true
-
-  interface ITerminalElement
-
-  interface IDomSpecProvider with
-    member _.DomSpec =
-      { ApplyProps = FileDialogDom.applyProps
-        RemoveProps = FileDialogDom.removeProps
-        NewView = FileDialogDom.newView
-        SetAsChildOfParentView = FileDialogDom.setAsChildOfParentView
-        SubElementsPropKeys = FileDialogDom.subElementsPropKeys }
 
 type internal OpenDialogTerminalElement(props: Props) =
   inherit FileDialogTerminalElement(props)
@@ -777,6 +1009,25 @@ type internal ScrollBarTerminalElement(props: Props) =
         NewView = ScrollBarDom.newView
         SetAsChildOfParentView = ScrollBarDom.setAsChildOfParentView
         SubElementsPropKeys = ScrollBarDom.subElementsPropKeys }
+
+type internal ScrollButtonTerminalElement(props: Props) =
+  inherit ButtonTerminalElement(props)
+
+  override _.Name = "ScrollButton"
+
+  override _.NewView() = new ScrollButton()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = ScrollButtonDom.applyProps
+        RemoveProps = ScrollButtonDom.removeProps
+        NewView = ScrollButtonDom.newView
+        SetAsChildOfParentView = ScrollButtonDom.setAsChildOfParentView
+        SubElementsPropKeys = ScrollButtonDom.subElementsPropKeys }
 
 type internal ScrollSliderTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -999,46 +1250,6 @@ type internal StatusBarTerminalElement(props: Props) =
         SetAsChildOfParentView = StatusBarDom.setAsChildOfParentView
         SubElementsPropKeys = StatusBarDom.subElementsPropKeys }
 
-type internal TabTerminalElement(props: Props) =
-  inherit ViewTerminalElement(props)
-
-  override _.Name = "Tab"
-
-  override _.NewView() = new Tab()
-
-  override _.SetAsChildOfParentView = true
-
-  interface ITabTerminalElement
-
-  interface ITerminalElement
-
-  interface IDomSpecProvider with
-    member _.DomSpec =
-      { ApplyProps = TabDom.applyProps
-        RemoveProps = TabDom.removeProps
-        NewView = TabDom.newView
-        SetAsChildOfParentView = TabDom.setAsChildOfParentView
-        SubElementsPropKeys = TabDom.subElementsPropKeys }
-
-type internal TabViewTerminalElement(props: Props) =
-  inherit ViewTerminalElement(props)
-
-  override _.Name = "TabView"
-
-  override _.NewView() = new TabView()
-
-  override _.SetAsChildOfParentView = true
-
-  interface ITerminalElement
-
-  interface IDomSpecProvider with
-    member _.DomSpec =
-      { ApplyProps = TabViewDom.applyProps
-        RemoveProps = TabViewDom.removeProps
-        NewView = TabViewDom.newView
-        SetAsChildOfParentView = TabViewDom.setAsChildOfParentView
-        SubElementsPropKeys = TabViewDom.subElementsPropKeys }
-
 type internal TableViewTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
 
@@ -1057,6 +1268,25 @@ type internal TableViewTerminalElement(props: Props) =
         NewView = TableViewDom.newView
         SetAsChildOfParentView = TableViewDom.setAsChildOfParentView
         SubElementsPropKeys = TableViewDom.subElementsPropKeys }
+
+type internal TabsTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "Tabs"
+
+  override _.NewView() = new Tabs()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = TabsDom.applyProps
+        RemoveProps = TabsDom.removeProps
+        NewView = TabsDom.newView
+        SetAsChildOfParentView = TabsDom.setAsChildOfParentView
+        SubElementsPropKeys = TabsDom.subElementsPropKeys }
 
 type internal TextFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1095,6 +1325,27 @@ type internal DropDownListTerminalElement(props: Props) =
         NewView = DropDownListDom.newView
         SetAsChildOfParentView = DropDownListDom.setAsChildOfParentView
         SubElementsPropKeys = DropDownListDom.subElementsPropKeys }
+
+type internal DropDownListTerminalElement<'TEnum
+  when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+  (props: Props) =
+  inherit DropDownListTerminalElement(props)
+
+  override _.Name = "DropDownList`1"
+
+  override _.NewView() = new DropDownList<'TEnum>()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = DropDownList'Dom.applyProps<'TEnum>
+        RemoveProps = DropDownList'Dom.removeProps<'TEnum>
+        NewView = DropDownList'Dom.newView<'TEnum>
+        SetAsChildOfParentView = DropDownList'Dom.setAsChildOfParentView
+        SubElementsPropKeys = DropDownList'Dom.subElementsPropKeys }
 
 type internal TextValidateFieldTerminalElement(props: Props) =
   inherit ViewTerminalElement(props)
@@ -1171,6 +1422,45 @@ type internal TimeEditorTerminalElement(props: Props) =
         NewView = TimeEditorDom.newView
         SetAsChildOfParentView = TimeEditorDom.setAsChildOfParentView
         SubElementsPropKeys = TimeEditorDom.subElementsPropKeys }
+
+type internal TitleViewTerminalElement(props: Props) =
+  inherit ViewTerminalElement(props)
+
+  override _.Name = "TitleView"
+
+  override _.NewView() = new TitleView()
+
+  override _.SetAsChildOfParentView = true
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = TitleViewDom.applyProps
+        RemoveProps = TitleViewDom.removeProps
+        NewView = TitleViewDom.newView
+        SetAsChildOfParentView = TitleViewDom.setAsChildOfParentView
+        SubElementsPropKeys = TitleViewDom.subElementsPropKeys }
+
+type internal ToolTipHostTerminalElement<'TView
+  when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>(props: Props) =
+  inherit PopoverImplTerminalElement(props)
+
+  override _.Name = "ToolTipHost`1"
+
+  override _.NewView() = new ToolTipHost<'TView>()
+
+  override _.SetAsChildOfParentView = false
+
+  interface ITerminalElement
+
+  interface IDomSpecProvider with
+    member _.DomSpec =
+      { ApplyProps = ToolTipHostDom.applyProps<'TView>
+        RemoveProps = ToolTipHostDom.removeProps<'TView>
+        NewView = ToolTipHostDom.newView<'TView>
+        SetAsChildOfParentView = ToolTipHostDom.setAsChildOfParentView
+        SubElementsPropKeys = ToolTipHostDom.subElementsPropKeys }
 
 type internal TreeViewTerminalElement<'T when 'T: not struct>(props: Props) =
   inherit ViewTerminalElement(props)

@@ -57,7 +57,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
 
         m.MenuItems
           [ View.MenuItem(fun p -> p.TargetView(View.Line []))
-            if ConfigurationManager.IsEnabled then
+            if true then
               View.MenuItem(fun p ->
                 p.Text "Cycle Through Themes"
                 // p.Key Key.T.WithCtrl
@@ -80,7 +80,7 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
                 )) ]))
 
   let categoriesListView =
-    View.ListView(fun p ->
+    View.ListView(fun (p: ListViewProps) ->
       p.BorderStyle LineStyle.Rounded
       p.X 0
       p.Y(TPos.Bottom menuBar)
@@ -124,8 +124,6 @@ let view (state: Model) (dispatch: TerminalMsg<Msg> -> unit) =
 
 [<EntryPoint>]
 let main argv =
-  ConfigurationManager.Enable(ConfigLocations.All)
-
   ElmishTerminal.mkProgram init update view |> ElmishTerminal.runTerminal
 
   0

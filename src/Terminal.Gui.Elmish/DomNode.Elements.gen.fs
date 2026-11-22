@@ -3,6 +3,7 @@
 
 namespace Terminal.Gui.Elmish
 
+open System.Collections.Generic
 open Terminal.Gui.App
 open Terminal.Gui.ViewBase
 open Terminal.Gui.Views
@@ -14,6 +15,8 @@ module internal ViewDom =
     let view = domNode.View
 
     // Properties
+    props |> Props.tryFind PKey.View.App |> Option.iter (fun v -> view.App <- v)
+
     props
     |> Props.tryFind PKey.View.Arrangement
     |> Option.iter (fun v -> view.Arrangement <- v)
@@ -302,6 +305,10 @@ module internal ViewDom =
       view.MouseStateChanged
     )
 
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.Pasted, view.Pasted)
+
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.Pasting, view.Pasting)
+
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.Removed, view.Removed)
 
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.SchemeChanged, view.SchemeChanged)
@@ -322,7 +329,16 @@ module internal ViewDom =
       view.SchemeNameChanging
     )
 
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.View.ShadowStyleChanged,
+      view.ShadowStyleChanged
+    )
+
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.SubViewAdded, view.SubViewAdded)
+
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.SubViewAdding, view.SubViewAdding)
 
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.SubViewLayout, view.SubViewLayout)
 
@@ -350,6 +366,8 @@ module internal ViewDom =
     )
 
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.TextChanged, view.TextChanged)
+
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.TextChanging, view.TextChanging)
 
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.View.TitleChanged, view.TitleChanged)
 
@@ -380,6 +398,10 @@ module internal ViewDom =
     let view = domNode.View
 
     // Properties
+    props
+    |> Props.tryFind PKey.View.App
+    |> Option.iter (fun _ -> view.App <- Unchecked.defaultof<_>)
+
     props
     |> Props.tryFind PKey.View.Arrangement
     |> Option.iter (fun _ -> view.Arrangement <- Unchecked.defaultof<_>)
@@ -561,18 +583,23 @@ module internal ViewDom =
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.MouseHoldRepeatChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.MouseLeave)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.MouseStateChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.Pasted)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.Pasting)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.Removed)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SchemeChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SchemeChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SchemeNameChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SchemeNameChanging)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.ShadowStyleChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SubViewAdded)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SubViewAdding)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SubViewLayout)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SubViewRemoved)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SubViewsLaidOut)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SuperViewChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.SuperViewChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.TextChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.TextChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.TitleChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.TitleChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.View.ViewportChanged)
@@ -589,76 +616,57 @@ module internal ViewDom =
     [ PKey.View.DefaultAcceptView_element.key ]
 
 
-module internal AdornmentDom =
+module internal AdornmentViewDom =
 
   let applyProps (domNode: DomNode, props: Props) =
     ViewDom.applyProps (domNode, props)
-    let view = domNode.View :?> Adornment
+    let view = domNode.View :?> AdornmentView
 
     // Properties
     props
-    |> Props.tryFind PKey.Adornment.Diagnostics
+    |> Props.tryFind PKey.AdornmentView.Adornment
+    |> Option.iter (fun v -> view.Adornment <- v)
+
+    props
+    |> Props.tryFind PKey.AdornmentView.Diagnostics
     |> Option.iter (fun v -> view.Diagnostics <- v)
 
     props
-    |> Props.tryFind PKey.Adornment.Parent
-    |> Option.iter (fun v -> view.Parent <- v)
-
-    props
-    |> Props.tryFind PKey.Adornment.SuperViewRendersLineCanvas
+    |> Props.tryFind PKey.AdornmentView.SuperViewRendersLineCanvas
     |> Option.iter (fun v -> view.SuperViewRendersLineCanvas <- v)
 
     props
-    |> Props.tryFind PKey.Adornment.Thickness
-    |> Option.iter (fun v -> view.Thickness <- v)
-
-    props
-    |> Props.tryFind PKey.Adornment.Viewport
+    |> Props.tryFind PKey.AdornmentView.Viewport
     |> Option.iter (fun v -> view.Viewport <- v)
-
-    // Events
-    EventHandlerHelpers.TrySetEventHandler(
-      domNode.EventRegistrar,
-      props,
-      PKey.Adornment.ThicknessChanged,
-      view.ThicknessChanged
-    )
 
 
   let removeProps (domNode: DomNode, props: Props) =
     ViewDom.removeProps (domNode, props)
-    let view = domNode.View :?> Adornment
+    let view = domNode.View :?> AdornmentView
 
     // Properties
     props
-    |> Props.tryFind PKey.Adornment.Diagnostics
+    |> Props.tryFind PKey.AdornmentView.Adornment
+    |> Option.iter (fun _ -> view.Adornment <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.AdornmentView.Diagnostics
     |> Option.iter (fun _ -> view.Diagnostics <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.Adornment.Parent
-    |> Option.iter (fun _ -> view.Parent <- new View())
-
-    props
-    |> Props.tryFind PKey.Adornment.SuperViewRendersLineCanvas
+    |> Props.tryFind PKey.AdornmentView.SuperViewRendersLineCanvas
     |> Option.iter (fun _ -> view.SuperViewRendersLineCanvas <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.Adornment.Thickness
-    |> Option.iter (fun _ -> view.Thickness <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.Adornment.Viewport
+    |> Props.tryFind PKey.AdornmentView.Viewport
     |> Option.iter (fun _ -> view.Viewport <- Unchecked.defaultof<_>)
 
-    // Events
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Adornment.ThicknessChanged)
 
-  let newView () : View = new Adornment()
+  let newView () : View = new AdornmentView()
 
   let setAsChildOfParentView: bool = true
 
-  let subElementsPropKeys: RawPropKey list =
-    ViewDom.subElementsPropKeys @ [ PKey.Adornment.Parent_element.key ]
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
 module internal AttributePickerDom =
@@ -779,41 +787,49 @@ module internal BarDom =
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
-module internal BorderDom =
+module internal BorderViewDom =
 
   let applyProps (domNode: DomNode, props: Props) =
-    AdornmentDom.applyProps (domNode, props)
-    let view = domNode.View :?> Border
+    AdornmentViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> BorderView
 
     // Properties
     props
-    |> Props.tryFind PKey.Border.LineStyle
-    |> Option.iter (fun v -> view.LineStyle <- v)
+    |> Props.tryFind PKey.BorderView.TabLength
+    |> Option.iter (fun v -> view.TabLength <- v)
 
     props
-    |> Props.tryFind PKey.Border.Settings
-    |> Option.iter (fun v -> view.Settings <- v)
+    |> Props.tryFind PKey.BorderView.TabOffset
+    |> Option.iter (fun v -> view.TabOffset <- v)
+
+    props
+    |> Props.tryFind PKey.BorderView.TabSide
+    |> Option.iter (fun v -> view.TabSide <- v)
 
 
   let removeProps (domNode: DomNode, props: Props) =
-    AdornmentDom.removeProps (domNode, props)
-    let view = domNode.View :?> Border
+    AdornmentViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> BorderView
 
     // Properties
     props
-    |> Props.tryFind PKey.Border.LineStyle
-    |> Option.iter (fun _ -> view.LineStyle <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.BorderView.TabLength
+    |> Option.iter (fun _ -> view.TabLength <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.Border.Settings
-    |> Option.iter (fun _ -> view.Settings <- Unchecked.defaultof<_>)
+    |> Props.tryFind PKey.BorderView.TabOffset
+    |> Option.iter (fun _ -> view.TabOffset <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.BorderView.TabSide
+    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
 
 
-  let newView () : View = new Border()
+  let newView () : View = new BorderView()
 
   let setAsChildOfParentView: bool = true
 
-  let subElementsPropKeys: RawPropKey list = AdornmentDom.subElementsPropKeys
+  let subElementsPropKeys: RawPropKey list = AdornmentViewDom.subElementsPropKeys
 
 
 module internal ButtonDom =
@@ -839,7 +855,13 @@ module internal ButtonDom =
     |> Props.tryFind PKey.Button.NoPadding
     |> Option.iter (fun v -> view.NoPadding <- v)
 
-    props |> Props.tryFind PKey.Button.Text |> Option.iter (fun v -> view.Text <- v)
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.Button.InitializingShadowStyle,
+      view.InitializingShadowStyle
+    )
 
 
   let removeProps (domNode: DomNode, props: Props) =
@@ -863,10 +885,8 @@ module internal ButtonDom =
     |> Props.tryFind PKey.Button.NoPadding
     |> Option.iter (fun _ -> view.NoPadding <- Unchecked.defaultof<_>)
 
-    props
-    |> Props.tryFind PKey.Button.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Button.InitializingShadowStyle)
 
   let newView () : View = new Button()
 
@@ -977,10 +997,6 @@ module internal CheckBoxDom =
     |> Option.iter (fun v -> view.RadioStyle <- v)
 
     props
-    |> Props.tryFind PKey.CheckBox.Text
-    |> Option.iter (fun v -> view.Text <- v)
-
-    props
     |> Props.tryFind PKey.CheckBox.Value
     |> Option.iter (fun v -> view.Value <- v)
 
@@ -1020,10 +1036,6 @@ module internal CheckBoxDom =
     |> Option.iter (fun _ -> view.RadioStyle <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.CheckBox.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
     |> Props.tryFind PKey.CheckBox.Value
     |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
@@ -1033,6 +1045,43 @@ module internal CheckBoxDom =
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.CheckBox.ValueChanging)
 
   let newView () : View = new CheckBox()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
+module internal CodeDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> Code
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Code.Language
+    |> Option.iter (fun v -> view.Language <- v)
+
+    props
+    |> Props.tryFind PKey.Code.SyntaxHighlighter
+    |> Option.iter (fun v -> view.SyntaxHighlighter <- v)
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> Code
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Code.Language
+    |> Option.iter (fun _ -> view.Language <- "")
+
+    props
+    |> Props.tryFind PKey.Code.SyntaxHighlighter
+    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
+
+
+  let newView () : View = new Code()
 
   let setAsChildOfParentView: bool = true
 
@@ -1053,10 +1102,6 @@ module internal ColorPickerDom =
     props
     |> Props.tryFind PKey.ColorPicker.Style
     |> Option.iter (fun v -> view.Style <- v)
-
-    props
-    |> Props.tryFind PKey.ColorPicker.Text
-    |> Option.iter (fun v -> view.Text <- v)
 
     props
     |> Props.tryFind PKey.ColorPicker.Value
@@ -1097,10 +1142,6 @@ module internal ColorPickerDom =
     props
     |> Props.tryFind PKey.ColorPicker.Style
     |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.ColorPicker.Text
-    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.ColorPicker.Value
@@ -1217,10 +1258,6 @@ module internal DatePickerDom =
     |> Option.iter (fun v -> view.Culture <- v)
 
     props
-    |> Props.tryFind PKey.DatePicker.Text
-    |> Option.iter (fun v -> view.Text <- v)
-
-    props
     |> Props.tryFind PKey.DatePicker.Value
     |> Option.iter (fun v -> view.Value <- v)
 
@@ -1255,10 +1292,6 @@ module internal DatePickerDom =
     props
     |> Props.tryFind PKey.DatePicker.Culture
     |> Option.iter (fun _ -> view.Culture <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.DatePicker.Text
-    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.DatePicker.Value
@@ -1440,6 +1473,101 @@ module internal HexViewDom =
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
+module internal ImageViewDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> ImageView
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ImageView.AllowSixelUpscaling
+    |> Option.iter (fun v -> view.AllowSixelUpscaling <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.Image
+    |> Option.iter (fun v -> view.Image <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.MaxSixelPaletteColors
+    |> Option.iter (fun v -> view.MaxSixelPaletteColors <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.SixelEncoder
+    |> Option.iter (fun v -> view.SixelEncoder <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseBackgroundRendering
+    |> Option.iter (fun v -> view.UseBackgroundRendering <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseRasterGraphics
+    |> Option.iter (fun v -> view.UseRasterGraphics <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseSixel
+    |> Option.iter (fun v -> view.UseSixel <- v)
+
+    props
+    |> Props.tryFind PKey.ImageView.ZoomLevel
+    |> Option.iter (fun v -> view.ZoomLevel <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ImageView.ZoomLevelChanged,
+      view.ZoomLevelChanged
+    )
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> ImageView
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ImageView.AllowSixelUpscaling
+    |> Option.iter (fun _ -> view.AllowSixelUpscaling <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.Image
+    |> Option.iter (fun _ -> view.Image <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.MaxSixelPaletteColors
+    |> Option.iter (fun _ -> view.MaxSixelPaletteColors <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.SixelEncoder
+    |> Option.iter (fun _ -> view.SixelEncoder <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseBackgroundRendering
+    |> Option.iter (fun _ -> view.UseBackgroundRendering <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseRasterGraphics
+    |> Option.iter (fun _ -> view.UseRasterGraphics <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.UseSixel
+    |> Option.iter (fun _ -> view.UseSixel <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ImageView.ZoomLevel
+    |> Option.iter (fun _ -> view.ZoomLevel <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ImageView.ZoomLevelChanged)
+
+  let newView () : View = new ImageView()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
 module internal LabelDom =
 
   let applyProps (domNode: DomNode, props: Props) =
@@ -1451,8 +1579,6 @@ module internal LabelDom =
     |> Props.tryFind PKey.Label.HotKeySpecifier
     |> Option.iter (fun v -> view.HotKeySpecifier <- v)
 
-    props |> Props.tryFind PKey.Label.Text |> Option.iter (fun v -> view.Text <- v)
-
 
   let removeProps (domNode: DomNode, props: Props) =
     ViewDom.removeProps (domNode, props)
@@ -1462,8 +1588,6 @@ module internal LabelDom =
     props
     |> Props.tryFind PKey.Label.HotKeySpecifier
     |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
-
-    props |> Props.tryFind PKey.Label.Text |> Option.iter (fun _ -> view.Text <- "")
 
 
   let newView () : View = new Label()
@@ -1498,6 +1622,10 @@ module internal LineDom =
     |> Option.iter (fun v -> view.Length <- v)
 
     props
+    |> Props.tryFind PKey.Line.LineAttribute
+    |> Option.iter (fun v -> view.LineAttribute <- v)
+
+    props
     |> Props.tryFind PKey.Line.Orientation
     |> Option.iter (fun v -> view.Orientation <- v)
 
@@ -1529,6 +1657,10 @@ module internal LineDom =
     |> Option.iter (fun _ -> view.Length <- Unchecked.defaultof<_>)
 
     props
+    |> Props.tryFind PKey.Line.LineAttribute
+    |> Option.iter (fun _ -> view.LineAttribute <- Unchecked.defaultof<_>)
+
+    props
     |> Props.tryFind PKey.Line.Orientation
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
@@ -1547,274 +1679,467 @@ module internal LineDom =
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
-module internal LinearRangeDom =
+module internal LinearRangeViewBaseDom =
 
-  let applyProps<'T> (domNode: DomNode, props: Props) =
+  let applyProps<'TOption, 'TValue> (domNode: DomNode, props: Props) =
     ViewDom.applyProps (domNode, props)
-    let view = domNode.View :?> LinearRange<'T>
+    let view = domNode.View :?> LinearRangeViewBase<'TOption, 'TValue>
 
     // Properties
     props
-    |> Props.tryFind PKey.LinearRange<'T>.AllowEmpty
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.AllowEmpty
     |> Option.iter (fun v -> view.AllowEmpty <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.FocusedOption
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.FocusedOption
     |> Option.iter (fun v -> view.FocusedOption <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.LegendsOrientation
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientation
     |> Option.iter (fun v -> view.LegendsOrientation <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.MinimumInnerSpacing
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacing
     |> Option.iter (fun v -> view.MinimumInnerSpacing <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Options
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Options
     |> Option.iter (fun v -> view.Options <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Orientation
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Orientation
     |> Option.iter (fun v -> view.Orientation <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
-    |> Option.iter (fun v -> view.RangeAllowSingle <- v)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.ShowEndSpacing
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacing
     |> Option.iter (fun v -> view.ShowEndSpacing <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.ShowLegends
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegends
     |> Option.iter (fun v -> view.ShowLegends <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Style
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Style
     |> Option.iter (fun v -> view.Style <- v)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Text
-    |> Option.iter (fun v -> view.Text <- v)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.Type
-    |> Option.iter (fun v -> view.Type <- v)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.UseMinimumSize
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSize
     |> Option.iter (fun v -> view.UseMinimumSize <- v)
+
+    props
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Value
+    |> Option.iter (fun v -> view.Value <- v)
 
     // Events
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.LegendsOrientationChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged,
       view.LegendsOrientationChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.LegendsOrientationChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging,
       view.LegendsOrientationChanging
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.MinimumInnerSpacingChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged,
       view.MinimumInnerSpacingChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.MinimumInnerSpacingChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging,
       view.MinimumInnerSpacingChanging
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.OptionFocused,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused,
       view.OptionFocused
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.OptionsChanged,
-      view.OptionsChanged
-    )
-
-    EventHandlerHelpers.TrySetEventHandler(
-      domNode.EventRegistrar,
-      props,
-      PKey.LinearRange<'T>.OrientationChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged,
       view.OrientationChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.OrientationChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging,
       view.OrientationChanging
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.ShowEndSpacingChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged,
       view.ShowEndSpacingChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.ShowEndSpacingChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging,
       view.ShowEndSpacingChanging
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.ShowLegendsChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged,
       view.ShowLegendsChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.ShowLegendsChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging,
       view.ShowLegendsChanging
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.TypeChanged,
-      view.TypeChanged
-    )
-
-    EventHandlerHelpers.TrySetEventHandler(
-      domNode.EventRegistrar,
-      props,
-      PKey.LinearRange<'T>.TypeChanging,
-      view.TypeChanging
-    )
-
-    EventHandlerHelpers.TrySetEventHandler(
-      domNode.EventRegistrar,
-      props,
-      PKey.LinearRange<'T>.UseMinimumSizeChanged,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged,
       view.UseMinimumSizeChanged
     )
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.LinearRange<'T>.UseMinimumSizeChanging,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging,
       view.UseMinimumSizeChanging
     )
 
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged,
+      view.ValueChanged
+    )
 
-  let removeProps<'T> (domNode: DomNode, props: Props) =
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped,
+      view.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging,
+      view.ValueChanging
+    )
+
+
+  let removeProps<'TOption, 'TValue> (domNode: DomNode, props: Props) =
     ViewDom.removeProps (domNode, props)
-    let view = domNode.View :?> LinearRange<'T>
+    let view = domNode.View :?> LinearRangeViewBase<'TOption, 'TValue>
 
     // Properties
     props
-    |> Props.tryFind PKey.LinearRange<'T>.AllowEmpty
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.AllowEmpty
     |> Option.iter (fun _ -> view.AllowEmpty <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.FocusedOption
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.FocusedOption
     |> Option.iter (fun _ -> view.FocusedOption <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.LegendsOrientation
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientation
     |> Option.iter (fun _ -> view.LegendsOrientation <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.MinimumInnerSpacing
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacing
     |> Option.iter (fun _ -> view.MinimumInnerSpacing <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Options
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Options
     |> Option.iter (fun _ -> view.Options <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Orientation
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Orientation
     |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
-    |> Option.iter (fun _ -> view.RangeAllowSingle <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.ShowEndSpacing
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacing
     |> Option.iter (fun _ -> view.ShowEndSpacing <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.ShowLegends
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegends
     |> Option.iter (fun _ -> view.ShowLegends <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Style
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Style
     |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.LinearRange<'T>.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.Type
-    |> Option.iter (fun _ -> view.Type <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.LinearRange<'T>.UseMinimumSize
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSize
     |> Option.iter (fun _ -> view.UseMinimumSize <- Unchecked.defaultof<_>)
 
-    // Events
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.LegendsOrientationChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.LegendsOrientationChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.MinimumInnerSpacingChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.MinimumInnerSpacingChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.OptionFocused)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.OptionsChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.OrientationChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.OrientationChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.ShowEndSpacingChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.ShowEndSpacingChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.ShowLegendsChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.ShowLegendsChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.TypeChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.TypeChanging)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.UseMinimumSizeChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.LinearRange<'T>.UseMinimumSizeChanging)
+    props
+    |> Props.tryFind PKey.LinearRangeViewBase<'TOption, 'TValue>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
 
-  let newView<'T> () : View = new LinearRange<'T>()
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.LegendsOrientationChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.MinimumInnerSpacingChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OptionFocused
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.OrientationChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowEndSpacingChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ShowLegendsChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.UseMinimumSizeChanging
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanged
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TryRemoveEventHandler(
+      domNode.EventRegistrar,
+      PKey.LinearRangeViewBase<'TOption, 'TValue>.ValueChanging
+    )
+
+  let newView<'TOption, 'TValue> () : View =
+    failwith "Cannot instantiate abstract view type LinearRangeViewBase"
 
   let setAsChildOfParentView: bool = true
 
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
+module internal LinearMultiSelectorDom =
+
+  let applyProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.applyProps<'T, IReadOnlyList<'T>> (domNode, props)
+    let view = domNode.View :?> LinearMultiSelector<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearMultiSelector<'T>.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+
+  let removeProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.removeProps<'T, IReadOnlyList<'T>> (domNode, props)
+    let view = domNode.View :?> LinearMultiSelector<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearMultiSelector<'T>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+
+  let newView<'T> () : View = new LinearMultiSelector<'T>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list =
+    LinearRangeViewBaseDom.subElementsPropKeys
+
+
+module internal LinearMultiSelector'Dom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    LinearMultiSelectorDom.applyProps<string> (domNode, props)
+
+  let removeProps (domNode: DomNode, props: Props) =
+    LinearMultiSelectorDom.removeProps<string> (domNode, props)
+
+  let newView () : View = new LinearMultiSelector()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list =
+    LinearMultiSelectorDom.subElementsPropKeys
+
+
+module internal LinearRangeDom =
+
+  let applyProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.applyProps<'T, LinearRangeSpan<'T>> (domNode, props)
+    let view = domNode.View :?> LinearRange<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
+    |> Option.iter (fun v -> view.RangeAllowSingle <- v)
+
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.RangeKind
+    |> Option.iter (fun v -> view.RangeKind <- v)
+
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+
+  let removeProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.removeProps<'T, LinearRangeSpan<'T>> (domNode, props)
+    let view = domNode.View :?> LinearRange<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.RangeAllowSingle
+    |> Option.iter (fun _ -> view.RangeAllowSingle <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.RangeKind
+    |> Option.iter (fun _ -> view.RangeKind <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.LinearRange<'T>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+
+  let newView<'T> () : View = new LinearRange<'T>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list =
+    LinearRangeViewBaseDom.subElementsPropKeys
+
+
 module internal LinearRange'Dom =
 
   let applyProps (domNode: DomNode, props: Props) =
-    LinearRangeDom.applyProps<System.Object> (domNode, props)
+    LinearRangeDom.applyProps<string> (domNode, props)
 
   let removeProps (domNode: DomNode, props: Props) =
-    LinearRangeDom.removeProps<System.Object> (domNode, props)
+    LinearRangeDom.removeProps<string> (domNode, props)
 
   let newView () : View = new LinearRange()
 
   let setAsChildOfParentView: bool = true
 
   let subElementsPropKeys: RawPropKey list = LinearRangeDom.subElementsPropKeys
+
+
+module internal LinearSelectorDom =
+
+  let applyProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.applyProps<'T, 'T> (domNode, props)
+    let view = domNode.View :?> LinearSelector<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearSelector<'T>.SelectedIndex
+    |> Option.iter (fun v -> view.SelectedIndex <- v)
+
+    props
+    |> Props.tryFind PKey.LinearSelector<'T>.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+
+  let removeProps<'T> (domNode: DomNode, props: Props) =
+    LinearRangeViewBaseDom.removeProps<'T, 'T> (domNode, props)
+    let view = domNode.View :?> LinearSelector<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.LinearSelector<'T>.SelectedIndex
+    |> Option.iter (fun _ -> view.SelectedIndex <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.LinearSelector<'T>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+
+  let newView<'T> () : View = new LinearSelector<'T>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list =
+    LinearRangeViewBaseDom.subElementsPropKeys
+
+
+module internal LinearSelector'Dom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    LinearSelectorDom.applyProps<string> (domNode, props)
+
+  let removeProps (domNode: DomNode, props: Props) =
+    LinearSelectorDom.removeProps<string> (domNode, props)
+
+  let newView () : View = new LinearSelector()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = LinearSelectorDom.subElementsPropKeys
 
 
 module internal LinkDom =
@@ -1857,6 +2182,10 @@ module internal ListViewDom =
     let view = domNode.View :?> ListView
 
     // Properties
+    props
+    |> Props.tryFind PKey.ListView.KeystrokeNavigator
+    |> Option.iter (fun v -> view.KeystrokeNavigator <- v)
+
     props
     |> Props.tryFind PKey.ListView.MarkMultiple
     |> Option.iter (fun v -> view.MarkMultiple <- v)
@@ -1917,6 +2246,10 @@ module internal ListViewDom =
 
     // Properties
     props
+    |> Props.tryFind PKey.ListView.KeystrokeNavigator
+    |> Option.iter (fun _ -> view.KeystrokeNavigator <- Unchecked.defaultof<_>)
+
+    props
     |> Props.tryFind PKey.ListView.MarkMultiple
     |> Option.iter (fun _ -> view.MarkMultiple <- Unchecked.defaultof<_>)
 
@@ -1951,41 +2284,326 @@ module internal ListViewDom =
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
-module internal MarginDom =
+module internal ListView'Dom =
 
-  let applyProps (domNode: DomNode, props: Props) =
-    AdornmentDom.applyProps (domNode, props)
-    let view = domNode.View :?> Margin
+  let applyProps<'T> (domNode: DomNode, props: Props) =
+    ListViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> ListView<'T>
 
     // Properties
     props
-    |> Props.tryFind PKey.Margin.ShadowSize
+    |> Props.tryFind PKey.ListView'<'T>.Index
+    |> Option.iter (fun v -> view.Index <- v)
+
+    props
+    |> Props.tryFind PKey.ListView'<'T>.SelectedItem
+    |> Option.iter (fun v -> view.SelectedItem <- v)
+
+    props
+    |> Props.tryFind PKey.ListView'<'T>.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ListView'<'T>.ValueChanged,
+      view.ValueChanged
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ListView'<'T>.ValueChangedUntyped,
+      view.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ListView'<'T>.ValueChanging,
+      view.ValueChanging
+    )
+
+
+  let removeProps<'T> (domNode: DomNode, props: Props) =
+    ListViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> ListView<'T>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ListView'<'T>.Index
+    |> Option.iter (fun _ -> view.Index <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ListView'<'T>.SelectedItem
+    |> Option.iter (fun _ -> view.SelectedItem <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ListView'<'T>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ListView'<'T>.ValueChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ListView'<'T>.ValueChangedUntyped)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ListView'<'T>.ValueChanging)
+
+  let newView<'T> () : View = new ListView<'T>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ListViewDom.subElementsPropKeys
+
+
+module internal MarginViewDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    AdornmentViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> MarginView
+
+    // Properties
+    props
+    |> Props.tryFind PKey.MarginView.ShadowSize
     |> Option.iter (fun v -> view.ShadowSize <- v)
 
     props
-    |> Props.tryFind PKey.Margin.ShadowStyle
+    |> Props.tryFind PKey.MarginView.ShadowStyle
     |> Option.iter (fun v -> view.ShadowStyle <- v)
 
 
   let removeProps (domNode: DomNode, props: Props) =
-    AdornmentDom.removeProps (domNode, props)
-    let view = domNode.View :?> Margin
+    AdornmentViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> MarginView
 
     // Properties
     props
-    |> Props.tryFind PKey.Margin.ShadowSize
+    |> Props.tryFind PKey.MarginView.ShadowSize
     |> Option.iter (fun _ -> view.ShadowSize <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.Margin.ShadowStyle
+    |> Props.tryFind PKey.MarginView.ShadowStyle
     |> Option.iter (fun _ -> view.ShadowStyle <- Unchecked.defaultof<_>)
 
 
-  let newView () : View = new Margin()
+  let newView () : View = new MarginView()
 
   let setAsChildOfParentView: bool = true
 
-  let subElementsPropKeys: RawPropKey list = AdornmentDom.subElementsPropKeys
+  let subElementsPropKeys: RawPropKey list = AdornmentViewDom.subElementsPropKeys
+
+
+module internal MarkdownDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> Markdown
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Markdown.EnableSixelImages
+    |> Option.iter (fun v -> view.EnableSixelImages <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.HotKeySpecifier
+    |> Option.iter (fun v -> view.HotKeySpecifier <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.ImageLoader
+    |> Option.iter (fun v -> view.ImageLoader <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.MarkdownPipeline
+    |> Option.iter (fun v -> view.MarkdownPipeline <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.ShowCopyButtons
+    |> Option.iter (fun v -> view.ShowCopyButtons <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.ShowHeadingPrefix
+    |> Option.iter (fun v -> view.ShowHeadingPrefix <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.SyntaxHighlighter
+    |> Option.iter (fun v -> view.SyntaxHighlighter <- v)
+
+    props
+    |> Props.tryFind PKey.Markdown.UseThemeBackground
+    |> Option.iter (fun v -> view.UseThemeBackground <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.Markdown.LinkClicked, view.LinkClicked)
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.Markdown.MarkdownChanged,
+      view.MarkdownChanged
+    )
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> Markdown
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Markdown.EnableSixelImages
+    |> Option.iter (fun _ -> view.EnableSixelImages <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.HotKeySpecifier
+    |> Option.iter (fun _ -> view.HotKeySpecifier <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.ImageLoader
+    |> Option.iter (fun _ -> view.ImageLoader <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.MarkdownPipeline
+    |> Option.iter (fun _ -> view.MarkdownPipeline <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.ShowCopyButtons
+    |> Option.iter (fun _ -> view.ShowCopyButtons <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.ShowHeadingPrefix
+    |> Option.iter (fun _ -> view.ShowHeadingPrefix <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.SyntaxHighlighter
+    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Markdown.UseThemeBackground
+    |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Markdown.LinkClicked)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Markdown.MarkdownChanged)
+
+  let newView () : View = new Markdown()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
+module internal MarkdownCodeBlockDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> MarkdownCodeBlock
+
+    // Properties
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.CodeLines
+    |> Option.iter (fun v -> view.CodeLines <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.Language
+    |> Option.iter (fun v -> view.Language <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.ShowCopyButton
+    |> Option.iter (fun v -> view.ShowCopyButton <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.SyntaxHighlighter
+    |> Option.iter (fun v -> view.SyntaxHighlighter <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.ThemeBackground
+    |> Option.iter (fun v -> view.ThemeBackground <- v)
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> MarkdownCodeBlock
+
+    // Properties
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.CodeLines
+    |> Option.iter (fun _ -> view.CodeLines <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.Language
+    |> Option.iter (fun _ -> view.Language <- "")
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.ShowCopyButton
+    |> Option.iter (fun _ -> view.ShowCopyButton <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.SyntaxHighlighter
+    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.MarkdownCodeBlock.ThemeBackground
+    |> Option.iter (fun _ -> view.ThemeBackground <- Unchecked.defaultof<_>)
+
+
+  let newView () : View = new MarkdownCodeBlock()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
+module internal MarkdownTableDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> MarkdownTable
+
+    // Properties
+    props
+    |> Props.tryFind PKey.MarkdownTable.SyntaxHighlighter
+    |> Option.iter (fun v -> view.SyntaxHighlighter <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownTable.TableData
+    |> Option.iter (fun v -> view.TableData <- v)
+
+    props
+    |> Props.tryFind PKey.MarkdownTable.UseThemeBackground
+    |> Option.iter (fun v -> view.UseThemeBackground <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.MarkdownTable.LinkClicked,
+      view.LinkClicked
+    )
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> MarkdownTable
+
+    // Properties
+    props
+    |> Props.tryFind PKey.MarkdownTable.SyntaxHighlighter
+    |> Option.iter (fun _ -> view.SyntaxHighlighter <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.MarkdownTable.TableData
+    |> Option.iter (fun _ -> view.TableData <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.MarkdownTable.UseThemeBackground
+    |> Option.iter (fun _ -> view.UseThemeBackground <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.MarkdownTable.LinkClicked)
+
+  let newView () : View = new MarkdownTable()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
 module internal MenuDom =
@@ -2089,6 +2707,10 @@ module internal NumericUpDownDom =
 
     // Properties
     props
+    |> Props.tryFind PKey.NumericUpDown<'T>.CanEdit
+    |> Option.iter (fun v -> view.CanEdit <- v)
+
+    props
     |> Props.tryFind PKey.NumericUpDown<'T>.Format
     |> Option.iter (fun v -> view.Format <- v)
 
@@ -2143,6 +2765,10 @@ module internal NumericUpDownDom =
 
     // Properties
     props
+    |> Props.tryFind PKey.NumericUpDown<'T>.CanEdit
+    |> Option.iter (fun _ -> view.CanEdit <- Unchecked.defaultof<_>)
+
+    props
     |> Props.tryFind PKey.NumericUpDown<'T>.Format
     |> Option.iter (fun _ -> view.Format <- "")
 
@@ -2183,19 +2809,19 @@ module internal NumericUpDown'Dom =
   let subElementsPropKeys: RawPropKey list = NumericUpDownDom.subElementsPropKeys
 
 
-module internal PaddingDom =
+module internal PaddingViewDom =
 
   let applyProps (domNode: DomNode, props: Props) =
-    AdornmentDom.applyProps (domNode, props)
+    AdornmentViewDom.applyProps (domNode, props)
 
   let removeProps (domNode: DomNode, props: Props) =
-    AdornmentDom.removeProps (domNode, props)
+    AdornmentViewDom.removeProps (domNode, props)
 
-  let newView () : View = new Padding()
+  let newView () : View = new PaddingView()
 
   let setAsChildOfParentView: bool = true
 
-  let subElementsPropKeys: RawPropKey list = AdornmentDom.subElementsPropKeys
+  let subElementsPropKeys: RawPropKey list = AdornmentViewDom.subElementsPropKeys
 
 
 module internal PopoverImplDom =
@@ -2377,8 +3003,8 @@ module internal ProgressBarDom =
     |> Option.iter (fun v -> view.SegmentCharacter <- v)
 
     props
-    |> Props.tryFind PKey.ProgressBar.Text
-    |> Option.iter (fun v -> view.Text <- v)
+    |> Props.tryFind PKey.ProgressBar.SyncWithTerminal
+    |> Option.iter (fun v -> view.SyncWithTerminal <- v)
 
 
   let removeProps (domNode: DomNode, props: Props) =
@@ -2407,8 +3033,8 @@ module internal ProgressBarDom =
     |> Option.iter (fun _ -> view.SegmentCharacter <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.ProgressBar.Text
-    |> Option.iter (fun _ -> view.Text <- "")
+    |> Props.tryFind PKey.ProgressBar.SyncWithTerminal
+    |> Option.iter (fun _ -> view.SyncWithTerminal <- Unchecked.defaultof<_>)
 
 
   let newView () : View = new ProgressBar()
@@ -2555,6 +3181,40 @@ module internal DialogDom =
   let subElementsPropKeys: RawPropKey list = Runnable'Dom.subElementsPropKeys
 
 
+module internal RunnableWrapperDom =
+
+  let applyProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    Runnable'Dom.applyProps<'TResult> (domNode, props)
+    let view = domNode.View :?> RunnableWrapper<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.RunnableWrapper<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun v -> view.ResultExtractor <- v)
+
+
+  let removeProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    Runnable'Dom.removeProps<'TResult> (domNode, props)
+    let view = domNode.View :?> RunnableWrapper<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.RunnableWrapper<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
+
+
+  let newView<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> () : View =
+    new RunnableWrapper<'TView, 'TResult>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = Runnable'Dom.subElementsPropKeys
+
+
 module internal Dialog'Dom =
 
   let applyProps (domNode: DomNode, props: Props) =
@@ -2584,44 +3244,10 @@ module internal Dialog'Dom =
   let subElementsPropKeys: RawPropKey list = DialogDom.subElementsPropKeys
 
 
-module internal PromptDom =
-
-  let applyProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
-    (domNode: DomNode, props: Props)
-    =
-    DialogDom.applyProps<'TResult> (domNode, props)
-    let view = domNode.View :?> Prompt<'TView, 'TResult>
-
-    // Properties
-    props
-    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun v -> view.ResultExtractor <- v)
-
-
-  let removeProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
-    (domNode: DomNode, props: Props)
-    =
-    DialogDom.removeProps<'TResult> (domNode, props)
-    let view = domNode.View :?> Prompt<'TView, 'TResult>
-
-    // Properties
-    props
-    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
-    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
-
-
-  let newView<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> () : View =
-    new Prompt<'TView, 'TResult>()
-
-  let setAsChildOfParentView: bool = true
-
-  let subElementsPropKeys: RawPropKey list = DialogDom.subElementsPropKeys
-
-
 module internal FileDialogDom =
 
   let applyProps (domNode: DomNode, props: Props) =
-    Dialog'Dom.applyProps (domNode, props)
+    DialogDom.applyProps<IReadOnlyList<string>> (domNode, props)
     let view = domNode.View :?> FileDialog
 
     // Properties
@@ -2663,7 +3289,7 @@ module internal FileDialogDom =
 
 
   let removeProps (domNode: DomNode, props: Props) =
-    Dialog'Dom.removeProps (domNode, props)
+    DialogDom.removeProps<IReadOnlyList<string>> (domNode, props)
     let view = domNode.View :?> FileDialog
 
     // Properties
@@ -2702,7 +3328,41 @@ module internal FileDialogDom =
 
   let setAsChildOfParentView: bool = true
 
-  let subElementsPropKeys: RawPropKey list = Dialog'Dom.subElementsPropKeys
+  let subElementsPropKeys: RawPropKey list = DialogDom.subElementsPropKeys
+
+
+module internal PromptDom =
+
+  let applyProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    DialogDom.applyProps<'TResult> (domNode, props)
+    let view = domNode.View :?> Prompt<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun v -> view.ResultExtractor <- v)
+
+
+  let removeProps<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    DialogDom.removeProps<'TResult> (domNode, props)
+    let view = domNode.View :?> Prompt<'TView, 'TResult>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Prompt<'TView, 'TResult>.ResultExtractor
+    |> Option.iter (fun _ -> view.ResultExtractor <- Unchecked.defaultof<_>)
+
+
+  let newView<'TView, 'TResult when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> () : View =
+    new Prompt<'TView, 'TResult>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = DialogDom.subElementsPropKeys
 
 
 module internal OpenDialogDom =
@@ -2879,6 +3539,61 @@ module internal ScrollBarDom =
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
 
 
+module internal ScrollButtonDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ButtonDom.applyProps (domNode, props)
+    let view = domNode.View :?> ScrollButton
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ScrollButton.Direction
+    |> Option.iter (fun v -> view.Direction <- v)
+
+    props
+    |> Props.tryFind PKey.ScrollButton.Orientation
+    |> Option.iter (fun v -> view.Orientation <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ScrollButton.OrientationChanged,
+      view.OrientationChanged
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ScrollButton.OrientationChanging,
+      view.OrientationChanging
+    )
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ButtonDom.removeProps (domNode, props)
+    let view = domNode.View :?> ScrollButton
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ScrollButton.Direction
+    |> Option.iter (fun _ -> view.Direction <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.ScrollButton.Orientation
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollButton.OrientationChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollButton.OrientationChanging)
+
+  let newView () : View = new ScrollButton()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ButtonDom.subElementsPropKeys
+
+
 module internal ScrollSliderDom =
 
   let applyProps (domNode: DomNode, props: Props) =
@@ -2901,6 +3616,10 @@ module internal ScrollSliderDom =
     props
     |> Props.tryFind PKey.ScrollSlider.SliderPadding
     |> Option.iter (fun v -> view.SliderPadding <- v)
+
+    props
+    |> Props.tryFind PKey.ScrollSlider.Value
+    |> Option.iter (fun v -> view.Value <- v)
 
     props
     |> Props.tryFind PKey.ScrollSlider.VisibleContentSize
@@ -2937,6 +3656,27 @@ module internal ScrollSliderDom =
 
     EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.ScrollSlider.Scrolled, view.Scrolled)
 
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ScrollSlider.ValueChanged,
+      view.ValueChanged
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ScrollSlider.ValueChangedUntyped,
+      view.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.ScrollSlider.ValueChanging,
+      view.ValueChanging
+    )
+
 
   let removeProps (domNode: DomNode, props: Props) =
     ViewDom.removeProps (domNode, props)
@@ -2960,6 +3700,10 @@ module internal ScrollSliderDom =
     |> Option.iter (fun _ -> view.SliderPadding <- Unchecked.defaultof<_>)
 
     props
+    |> Props.tryFind PKey.ScrollSlider.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+    props
     |> Props.tryFind PKey.ScrollSlider.VisibleContentSize
     |> Option.iter (fun _ -> view.VisibleContentSize <- Unchecked.defaultof<_>)
 
@@ -2969,6 +3713,9 @@ module internal ScrollSliderDom =
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.PositionChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.PositionChanging)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.Scrolled)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.ValueChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.ValueChangedUntyped)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.ScrollSlider.ValueChanging)
 
   let newView () : View = new ScrollSlider()
 
@@ -3323,10 +4070,6 @@ module internal ShortcutDom =
     |> Props.tryFind PKey.Shortcut.TargetView
     |> Option.iter (fun v -> view.TargetView <- v)
 
-    props
-    |> Props.tryFind PKey.Shortcut.Text
-    |> Option.iter (fun v -> view.Text <- v)
-
     // Events
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
@@ -3387,10 +4130,6 @@ module internal ShortcutDom =
     props
     |> Props.tryFind PKey.Shortcut.TargetView
     |> Option.iter (fun _ -> view.TargetView <- new View())
-
-    props
-    |> Props.tryFind PKey.Shortcut.Text
-    |> Option.iter (fun _ -> view.Text <- "")
 
     // Events
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Shortcut.OrientationChanged)
@@ -3522,6 +4261,10 @@ module internal SpinnerViewDom =
     |> Props.tryFind PKey.SpinnerView.Style
     |> Option.iter (fun v -> view.Style <- v)
 
+    props
+    |> Props.tryFind PKey.SpinnerView.SyncWithTerminal
+    |> Option.iter (fun v -> view.SyncWithTerminal <- v)
+
 
   let removeProps (domNode: DomNode, props: Props) =
     ViewDom.removeProps (domNode, props)
@@ -3552,6 +4295,10 @@ module internal SpinnerViewDom =
     |> Props.tryFind PKey.SpinnerView.Style
     |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
 
+    props
+    |> Props.tryFind PKey.SpinnerView.SyncWithTerminal
+    |> Option.iter (fun _ -> view.SyncWithTerminal <- Unchecked.defaultof<_>)
+
 
   let newView () : View = new SpinnerView()
 
@@ -3573,109 +4320,6 @@ module internal StatusBarDom =
   let subElementsPropKeys: RawPropKey list = BarDom.subElementsPropKeys
 
 
-module internal TabDom =
-
-  let applyProps (domNode: DomNode, props: Props) =
-    ViewDom.applyProps (domNode, props)
-    let view = domNode.View :?> Tab
-
-    // Properties
-    props
-    |> Props.tryFind PKey.Tab.DisplayText
-    |> Option.iter (fun v -> view.DisplayText <- v)
-
-    props |> Props.tryFind PKey.Tab.View |> Option.iter (fun v -> view.View <- v)
-
-
-  let removeProps (domNode: DomNode, props: Props) =
-    ViewDom.removeProps (domNode, props)
-    let view = domNode.View :?> Tab
-
-    // Properties
-    props
-    |> Props.tryFind PKey.Tab.DisplayText
-    |> Option.iter (fun _ -> view.DisplayText <- "")
-
-    props
-    |> Props.tryFind PKey.Tab.View
-    |> Option.iter (fun _ -> view.View <- new View())
-
-
-  let newView () : View = new Tab()
-
-  let setAsChildOfParentView: bool = true
-
-  let subElementsPropKeys: RawPropKey list =
-    ViewDom.subElementsPropKeys @ [ PKey.Tab.View_element.key ]
-
-
-module internal TabViewDom =
-
-  let applyProps (domNode: DomNode, props: Props) =
-    ViewDom.applyProps (domNode, props)
-    let view = domNode.View :?> TabView
-
-    // Properties
-    props
-    |> Props.tryFind PKey.TabView.MaxTabTextWidth
-    |> Option.iter (fun v -> view.MaxTabTextWidth <- v)
-
-    props
-    |> Props.tryFind PKey.TabView.SelectedTab
-    |> Option.iter (fun v -> view.SelectedTab <- v)
-
-    props
-    |> Props.tryFind PKey.TabView.Style
-    |> Option.iter (fun v -> view.Style <- v)
-
-    props
-    |> Props.tryFind PKey.TabView.TabScrollOffset
-    |> Option.iter (fun v -> view.TabScrollOffset <- v)
-
-    // Events
-    EventHandlerHelpers.TrySetEventHandler(
-      domNode.EventRegistrar,
-      props,
-      PKey.TabView.SelectedTabChanged,
-      view.SelectedTabChanged
-    )
-
-    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.TabView.TabClicked, view.TabClicked)
-
-
-  let removeProps (domNode: DomNode, props: Props) =
-    ViewDom.removeProps (domNode, props)
-    let view = domNode.View :?> TabView
-
-    // Properties
-    props
-    |> Props.tryFind PKey.TabView.MaxTabTextWidth
-    |> Option.iter (fun _ -> view.MaxTabTextWidth <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TabView.SelectedTab
-    |> Option.iter (fun _ -> view.SelectedTab <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TabView.Style
-    |> Option.iter (fun _ -> view.Style <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TabView.TabScrollOffset
-    |> Option.iter (fun _ -> view.TabScrollOffset <- Unchecked.defaultof<_>)
-
-    // Events
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TabView.SelectedTabChanged)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TabView.TabClicked)
-
-  let newView () : View = new TabView()
-
-  let setAsChildOfParentView: bool = true
-
-  let subElementsPropKeys: RawPropKey list =
-    ViewDom.subElementsPropKeys @ [ PKey.TabView.SelectedTab_element.key ]
-
-
 module internal TableViewDom =
 
   let applyProps (domNode: DomNode, props: Props) =
@@ -3683,10 +4327,6 @@ module internal TableViewDom =
     let view = domNode.View :?> TableView
 
     // Properties
-    props
-    |> Props.tryFind PKey.TableView.CellActivationKey
-    |> Option.iter (fun v -> view.CellActivationKey <- v)
-
     props
     |> Props.tryFind PKey.TableView.CollectionNavigator
     |> Option.iter (fun v -> view.CollectionNavigator <- v)
@@ -3720,14 +4360,6 @@ module internal TableViewDom =
     |> Option.iter (fun v -> view.RowOffset <- v)
 
     props
-    |> Props.tryFind PKey.TableView.SelectedColumn
-    |> Option.iter (fun v -> view.SelectedColumn <- v)
-
-    props
-    |> Props.tryFind PKey.TableView.SelectedRow
-    |> Option.iter (fun v -> view.SelectedRow <- v)
-
-    props
     |> Props.tryFind PKey.TableView.SeparatorSymbol
     |> Option.iter (fun v -> view.SeparatorSymbol <- v)
 
@@ -3743,21 +4375,30 @@ module internal TableViewDom =
     |> Props.tryFind PKey.TableView.UseAllRowsForContentCalculation
     |> Option.iter (fun v -> view.UseAllRowsForContentCalculation <- v)
 
+    props
+    |> Props.tryFind PKey.TableView.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
     // Events
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.TableView.CellActivated,
-      view.CellActivated
+      PKey.TableView.ValueChanged,
+      view.ValueChanged
     )
-
-    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.TableView.CellToggled, view.CellToggled)
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.TableView.SelectedCellChanged,
-      view.SelectedCellChanged
+      PKey.TableView.ValueChangedUntyped,
+      view.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.TableView.ValueChanging,
+      view.ValueChanging
     )
 
 
@@ -3766,10 +4407,6 @@ module internal TableViewDom =
     let view = domNode.View :?> TableView
 
     // Properties
-    props
-    |> Props.tryFind PKey.TableView.CellActivationKey
-    |> Option.iter (fun _ -> view.CellActivationKey <- Unchecked.defaultof<_>)
-
     props
     |> Props.tryFind PKey.TableView.CollectionNavigator
     |> Option.iter (fun _ -> view.CollectionNavigator <- Unchecked.defaultof<_>)
@@ -3803,14 +4440,6 @@ module internal TableViewDom =
     |> Option.iter (fun _ -> view.RowOffset <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.TableView.SelectedColumn
-    |> Option.iter (fun _ -> view.SelectedColumn <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TableView.SelectedRow
-    |> Option.iter (fun _ -> view.SelectedRow <- Unchecked.defaultof<_>)
-
-    props
     |> Props.tryFind PKey.TableView.SeparatorSymbol
     |> Option.iter (fun _ -> view.SeparatorSymbol <- Unchecked.defaultof<_>)
 
@@ -3826,16 +4455,104 @@ module internal TableViewDom =
     |> Props.tryFind PKey.TableView.UseAllRowsForContentCalculation
     |> Option.iter (fun _ -> view.UseAllRowsForContentCalculation <- Unchecked.defaultof<_>)
 
+    props
+    |> Props.tryFind PKey.TableView.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
     // Events
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.CellActivated)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.CellToggled)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.SelectedCellChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.ValueChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.ValueChangedUntyped)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TableView.ValueChanging)
 
   let newView () : View = new TableView()
 
   let setAsChildOfParentView: bool = true
 
   let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
+module internal TabsDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> Tabs
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Tabs.ScrollOffset
+    |> Option.iter (fun v -> view.ScrollOffset <- v)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabDepth
+    |> Option.iter (fun v -> view.TabDepth <- v)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabLineStyle
+    |> Option.iter (fun v -> view.TabLineStyle <- v)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabSide
+    |> Option.iter (fun v -> view.TabSide <- v)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabSpacing
+    |> Option.iter (fun v -> view.TabSpacing <- v)
+
+    props |> Props.tryFind PKey.Tabs.Value |> Option.iter (fun v -> view.Value <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.Tabs.ValueChanged, view.ValueChanged)
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.Tabs.ValueChangedUntyped,
+      view.ValueChangedUntyped
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.Tabs.ValueChanging, view.ValueChanging)
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> Tabs
+
+    // Properties
+    props
+    |> Props.tryFind PKey.Tabs.ScrollOffset
+    |> Option.iter (fun _ -> view.ScrollOffset <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabDepth
+    |> Option.iter (fun _ -> view.TabDepth <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabLineStyle
+    |> Option.iter (fun _ -> view.TabLineStyle <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabSide
+    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Tabs.TabSpacing
+    |> Option.iter (fun _ -> view.TabSpacing <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.Tabs.Value
+    |> Option.iter (fun _ -> view.Value <- new View())
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Tabs.ValueChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Tabs.ValueChangedUntyped)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.Tabs.ValueChanging)
+
+  let newView () : View = new Tabs()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list =
+    ViewDom.subElementsPropKeys @ [ PKey.Tabs.Value_element.key ]
 
 
 module internal TextFieldDom =
@@ -3868,10 +4585,6 @@ module internal TextFieldDom =
     props
     |> Props.tryFind PKey.TextField.SelectedStart
     |> Option.iter (fun v -> view.SelectedStart <- v)
-
-    props
-    |> Props.tryFind PKey.TextField.Text
-    |> Option.iter (fun v -> view.Text <- v)
 
     props
     |> Props.tryFind PKey.TextField.UseSameRuneTypeForWords
@@ -3945,10 +4658,6 @@ module internal TextFieldDom =
     |> Option.iter (fun _ -> view.SelectedStart <- Unchecked.defaultof<_>)
 
     props
-    |> Props.tryFind PKey.TextField.Text
-    |> Option.iter (fun _ -> view.Text <- "")
-
-    props
     |> Props.tryFind PKey.TextField.UseSameRuneTypeForWords
     |> Option.iter (fun _ -> view.UseSameRuneTypeForWords <- Unchecked.defaultof<_>)
 
@@ -4002,6 +4711,55 @@ module internal DropDownListDom =
   let subElementsPropKeys: RawPropKey list = TextFieldDom.subElementsPropKeys
 
 
+module internal DropDownList'Dom =
+
+  let applyProps<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (domNode: DomNode, props: Props)
+    =
+    DropDownListDom.applyProps (domNode, props)
+    let view = domNode.View :?> DropDownList<'TEnum>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.DropDownList'<'TEnum>.Value
+    |> Option.iter (fun v -> view.Value <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.DropDownList'<'TEnum>.ValueChanged,
+      view.ValueChanged
+    )
+
+
+  let removeProps<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    (domNode: DomNode, props: Props)
+    =
+    DropDownListDom.removeProps (domNode, props)
+    let view = domNode.View :?> DropDownList<'TEnum>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.DropDownList'<'TEnum>.Value
+    |> Option.iter (fun _ -> view.Value <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.DropDownList'<'TEnum>.ValueChanged)
+
+  let newView<'TEnum
+    when 'TEnum: struct and 'TEnum: (new: unit -> 'TEnum) and 'TEnum :> System.Enum and 'TEnum :> System.ValueType>
+    ()
+    : View =
+    new DropDownList<'TEnum>()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = DropDownListDom.subElementsPropKeys
+
+
 module internal TextValidateFieldDom =
 
   let applyProps (domNode: DomNode, props: Props) =
@@ -4012,10 +4770,6 @@ module internal TextValidateFieldDom =
     props
     |> Props.tryFind PKey.TextValidateField.Provider
     |> Option.iter (fun v -> view.Provider <- v)
-
-    props
-    |> Props.tryFind PKey.TextValidateField.Text
-    |> Option.iter (fun v -> view.Text <- v)
 
     props
     |> Props.tryFind PKey.TextValidateField.Value
@@ -4052,10 +4806,6 @@ module internal TextValidateFieldDom =
     props
     |> Props.tryFind PKey.TextValidateField.Provider
     |> Option.iter (fun _ -> view.Provider <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TextValidateField.Text
-    |> Option.iter (fun _ -> view.Text <- "")
 
     props
     |> Props.tryFind PKey.TextValidateField.Value
@@ -4398,6 +5148,121 @@ module internal TimeEditorDom =
   let subElementsPropKeys: RawPropKey list = TextValidateFieldDom.subElementsPropKeys
 
 
+module internal TitleViewDom =
+
+  let applyProps (domNode: DomNode, props: Props) =
+    ViewDom.applyProps (domNode, props)
+    let view = domNode.View :?> TitleView
+
+    // Properties
+    props
+    |> Props.tryFind PKey.TitleView.Direction
+    |> Option.iter (fun v -> view.Direction <- v)
+
+    props
+    |> Props.tryFind PKey.TitleView.MeasuredTabLength
+    |> Option.iter (fun v -> view.MeasuredTabLength <- v)
+
+    props
+    |> Props.tryFind PKey.TitleView.Orientation
+    |> Option.iter (fun v -> view.Orientation <- v)
+
+    props
+    |> Props.tryFind PKey.TitleView.TabDepth
+    |> Option.iter (fun v -> view.TabDepth <- v)
+
+    props
+    |> Props.tryFind PKey.TitleView.TabSide
+    |> Option.iter (fun v -> view.TabSide <- v)
+
+    // Events
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.TitleView.OrientationChanged,
+      view.OrientationChanged
+    )
+
+    EventHandlerHelpers.TrySetEventHandler(
+      domNode.EventRegistrar,
+      props,
+      PKey.TitleView.OrientationChanging,
+      view.OrientationChanging
+    )
+
+
+  let removeProps (domNode: DomNode, props: Props) =
+    ViewDom.removeProps (domNode, props)
+    let view = domNode.View :?> TitleView
+
+    // Properties
+    props
+    |> Props.tryFind PKey.TitleView.Direction
+    |> Option.iter (fun _ -> view.Direction <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.TitleView.MeasuredTabLength
+    |> Option.iter (fun _ -> view.MeasuredTabLength <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.TitleView.Orientation
+    |> Option.iter (fun _ -> view.Orientation <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.TitleView.TabDepth
+    |> Option.iter (fun _ -> view.TabDepth <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.TitleView.TabSide
+    |> Option.iter (fun _ -> view.TabSide <- Unchecked.defaultof<_>)
+
+    // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TitleView.OrientationChanged)
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TitleView.OrientationChanging)
+
+  let newView () : View = new TitleView()
+
+  let setAsChildOfParentView: bool = true
+
+  let subElementsPropKeys: RawPropKey list = ViewDom.subElementsPropKeys
+
+
+module internal ToolTipHostDom =
+
+  let applyProps<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    PopoverImplDom.applyProps (domNode, props)
+    let view = domNode.View :?> ToolTipHost<'TView>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ToolTipHost<'TView>.ContentView
+    |> Option.iter (fun v -> view.ContentView <- v)
+
+
+  let removeProps<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View>
+    (domNode: DomNode, props: Props)
+    =
+    PopoverImplDom.removeProps (domNode, props)
+    let view = domNode.View :?> ToolTipHost<'TView>
+
+    // Properties
+    props
+    |> Props.tryFind PKey.ToolTipHost<'TView>.ContentView
+    |> Option.iter (fun _ -> view.ContentView <- Unchecked.defaultof<_>)
+
+
+  let newView<'TView when 'TView: (new: unit -> 'TView) and 'TView :> Terminal.Gui.ViewBase.View> () : View =
+    new ToolTipHost<'TView>()
+
+  let setAsChildOfParentView: bool = false
+
+  let subElementsPropKeys: RawPropKey list =
+    PopoverImplDom.subElementsPropKeys
+    @ [ PKey.ToolTipHost<'TView>.ContentView_element.key ]
+
+
 module internal TreeViewDom =
 
   let applyProps<'T when 'T: not struct> (domNode: DomNode, props: Props) =
@@ -4414,8 +5279,16 @@ module internal TreeViewDom =
     |> Option.iter (fun v -> view.AspectGetter <- v)
 
     props
+    |> Props.tryFind PKey.TreeView<'T>.CheckboxMode
+    |> Option.iter (fun v -> view.CheckboxMode <- v)
+
+    props
     |> Props.tryFind PKey.TreeView<'T>.ColorGetter
     |> Option.iter (fun v -> view.ColorGetter <- v)
+
+    props
+    |> Props.tryFind PKey.TreeView<'T>.Filter
+    |> Option.iter (fun v -> view.Filter <- v)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.MaxDepth
@@ -4424,14 +5297,6 @@ module internal TreeViewDom =
     props
     |> Props.tryFind PKey.TreeView<'T>.MultiSelect
     |> Option.iter (fun v -> view.MultiSelect <- v)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ObjectActivationButton
-    |> Option.iter (fun v -> view.ObjectActivationButton <- v)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ObjectActivationKey
-    |> Option.iter (fun v -> view.ObjectActivationKey <- v)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetHorizontal
@@ -4454,14 +5319,14 @@ module internal TreeViewDom =
     |> Option.iter (fun v -> view.TreeBuilder <- v)
 
     // Events
-    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.TreeView<'T>.DrawLine, view.DrawLine)
-
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
       props,
-      PKey.TreeView<'T>.ObjectActivated,
-      view.ObjectActivated
+      PKey.TreeView<'T>.CheckedChanged,
+      view.CheckedChanged
     )
+
+    EventHandlerHelpers.TrySetEventHandler(domNode.EventRegistrar, props, PKey.TreeView<'T>.DrawLine, view.DrawLine)
 
     EventHandlerHelpers.TrySetEventHandler(
       domNode.EventRegistrar,
@@ -4485,8 +5350,16 @@ module internal TreeViewDom =
     |> Option.iter (fun _ -> view.AspectGetter <- Unchecked.defaultof<_>)
 
     props
+    |> Props.tryFind PKey.TreeView<'T>.CheckboxMode
+    |> Option.iter (fun _ -> view.CheckboxMode <- Unchecked.defaultof<_>)
+
+    props
     |> Props.tryFind PKey.TreeView<'T>.ColorGetter
     |> Option.iter (fun _ -> view.ColorGetter <- Unchecked.defaultof<_>)
+
+    props
+    |> Props.tryFind PKey.TreeView<'T>.Filter
+    |> Option.iter (fun _ -> view.Filter <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.MaxDepth
@@ -4495,14 +5368,6 @@ module internal TreeViewDom =
     props
     |> Props.tryFind PKey.TreeView<'T>.MultiSelect
     |> Option.iter (fun _ -> view.MultiSelect <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ObjectActivationButton
-    |> Option.iter (fun _ -> view.ObjectActivationButton <- Unchecked.defaultof<_>)
-
-    props
-    |> Props.tryFind PKey.TreeView<'T>.ObjectActivationKey
-    |> Option.iter (fun _ -> view.ObjectActivationKey <- Unchecked.defaultof<_>)
 
     props
     |> Props.tryFind PKey.TreeView<'T>.ScrollOffsetHorizontal
@@ -4525,8 +5390,8 @@ module internal TreeViewDom =
     |> Option.iter (fun _ -> view.TreeBuilder <- Unchecked.defaultof<_>)
 
     // Events
+    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TreeView<'T>.CheckedChanged)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TreeView<'T>.DrawLine)
-    EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TreeView<'T>.ObjectActivated)
     EventHandlerHelpers.TryRemoveEventHandler(domNode.EventRegistrar, PKey.TreeView<'T>.SelectionChanged)
 
   let newView<'T when 'T: not struct> () : View = new TreeView<'T>()

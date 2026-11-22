@@ -23,15 +23,24 @@ let ``Should include all elements in Elements module`` () =
     |> Array.map (fun t -> t.Name)
 
   // TODO: Should generate these components automatically
+  // Generic view types: the generator names their TerminalElements without arity
+  // (e.g. `ListViewTerminalElement<'T>`), so the name-based completeness check can't match them.
   let ignoredElements =
     [ "Dialog`1"
+      "DropDownList`1"
+      "LinearMultiSelector`1"
       "LinearRange`1"
+      "LinearRangeViewBase`2"
+      "LinearSelector`1"
+      "ListView`1"
       "NumericUpDown`1"
       "Prompt`2"
       "Popover`2"
       "Runnable`1"
+      "RunnableWrapper`2"
       "FlagSelector`1"
       "OptionSelector`1"
+      "ToolTipHost`1"
       "TreeView`1" ]
 
   let missingElements =

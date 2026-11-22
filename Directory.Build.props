@@ -1,5 +1,22 @@
 <Project>
   <PropertyGroup>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+
+    <!--
+      This repository enables git's `extensions.relativeWorktrees` (git 2.48+),
+      which stores relative paths in the .git files of linked worktrees. The
+      SDK's Microsoft.Build.Tasks.Git (SourceLink) only understands the
+      noop/preciousObjects/partialclone/worktreeConfig extensions and otherwise
+      fails with:
+
+        error : Error reading git repository information:
+          Unsupported repository extension 'relativeworktrees'.
+
+      Skipping the source-control-manager queries keeps builds working inside
+      linked worktrees. Override on the command line (or in CI) with
+      -p:EnableSourceControlManagerQueries=true when SourceLink metadata is
+      required and the checkout is not a linked worktree.
+    -->
+    <EnableSourceControlManagerQueries Condition="'$(EnableSourceControlManagerQueries)' == ''">false</EnableSourceControlManagerQueries>
   </PropertyGroup>
 </Project>

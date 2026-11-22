@@ -28,6 +28,13 @@
     <PackageReleaseNotes>Alpha of Terminal.Gui v2 (develop.2329)</PackageReleaseNotes>
     <Version>3.0.0-v2-develop.2329-v1</Version>
     <TargetFramework>net10.0</TargetFramework>
+    <!--
+      Declare Native AOT / trim compatibility for the library and enable the trim + AOT
+      analyzers. Consumers publishing with PublishAot should get no warnings from this
+      library. AOT behaviour is exercised end to end by examples/AotSample
+      (see scripts/aot-smoke.sh).
+    -->
+    <IsAotCompatible>true</IsAotCompatible>
     <DefineConstants>DEBUG;TRACE;</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
@@ -40,6 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    <InternalsVisibleTo Include="AotSample" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Scripts\**" />

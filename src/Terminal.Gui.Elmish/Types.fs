@@ -320,7 +320,7 @@ and [<AllowNullLiteral>] internal DomNode
       | DomElmishComponent parent -> $"{pathOf parent.Name parent.DomOrigin}:{name}"
       | DomChild(parent, index) -> $"{parent.GetPath()}|child[{index}]:{name}"
       | DomSubElement(parent, index, key) ->
-        let indexStr = index |> Option.map (sprintf "[%i]") |> Option.defaultValue ""
+        let indexStr = index |> Option.map (fun i -> $"[{i}]") |> Option.defaultValue ""
         $"{parent.GetPath()}|{key}{indexStr}:{name}"
 
     pathOf name this.Origin

@@ -30,3 +30,18 @@ jobs:
         
       - name: Fantomas check
         run: ./fantomas-check.sh
+
+  native-aot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initial setup
+        uses: ./.github/actions/initial-setup
+
+      - name: Native AOT smoke test
+        run: ./scripts/aot-smoke.sh

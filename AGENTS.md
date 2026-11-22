@@ -78,7 +78,10 @@ Terminal.Gui.Elmish/
 │   └── Terminal.Gui.Elmish.Generator/ # Code generator (runs at build time)
 ├── examples/
 │   ├── PropertiesSample/             # Properties API example
-│   └── MacrosSample/                 # Macros API example
+│   ├── MacrosSample/                 # Macros API example
+│   └── AotSample/                    # Native AOT smoke app (scripts/aot-smoke.sh)
+├── scripts/
+│   └── aot-smoke.sh                  # Publishes + runs the AOT smoke app
 ├── docs/                             # MkDocs documentation
 ├── global.json                       # .NET SDK version pinning
 ├── Directory.Build.props             # Shared MSBuild properties
@@ -112,6 +115,36 @@ Tests use the **Microsoft.Testing.Platform** runner (NUnit's native integration)
 - `"runner": "Microsoft.Testing.Platform"` in `global.json`
 
 The test project references `Microsoft.NET.Test.Sdk`, `NUnit`, `NUnit.Analyzers`, and `NUnit3TestAdapter` via its `paket.references` (in the `test` Paket group).
+
+## Native AOT / Trimming
+
+The library is Native AOT compatible and declares `<IsAotCompatible>true</IsAotCompatible>`.
+It performs **no runtime reflection or dynamic code generation**, and it avoids F# `sprintf` /
+`printf` (which specialize at runtime via `MethodInfo.MakeGenericMethod` and throw
+`NotSupportedException` under Native AOT). Use F# string interpolation (`$"..."`) or
+`System.String.Format` instead.
+
+The code generator is a build-time tool and may use reflection freely — reflection only matters
+in code that ships in the library and runs at runtime.
+
+`examples/AotSample` is a smoke app with two modes: `AotSample --headless` exercises the
+internal DomNode/DomDiffer pipeline directly (view creation, prop application, deferred
+positions, patch + reorder, dispose — no terminal required), and the default mode drives a real
+Elmish terminal loop and self-terminates. The project is a friend assembly
+(`InternalsVisibleTo AotSample`) so the headless mode can reach the internal API.
+`scripts/aot-smoke.sh` publishes it with `PublishAot` for the host runtime identifier, runs the
+headless smoke, and additionally runs the interactive mode under a pseudo-terminal when
+`script` is available; CI runs it in the `native-aot` job. The script fails if the publish
+produces any trim/AOT (`IL2xxx`/`IL3xxx`) warning whose source location points at a file in
+this repository. Warnings originating from FSharp.Core are ignored: F# records/unions emit
+reflection-based `ToString()`/printing that FSharp.Core itself relies on and the F# toolchain
+cannot currently suppress them.
+
+Rules for keeping AOT working:
+
+1. **Never use `sprintf` / `printfn` / `printf`** in library or example code — use `$"..."`.
+2. Do not add runtime reflection (`System.Reflection`, `Activator`, `Type.GetType`, ...).
+3. Keep generated code reflection-free.
 
 ## Terminal.Gui Upstream Reference
 

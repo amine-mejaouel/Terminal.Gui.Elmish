@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <!--
+      Native AOT smoke app: publishing this project with `PublishAot` proves that
+      Terminal.Gui.Elmish (plus its generated code and Terminal.Gui) survives trimming and
+      native compilation, and that the resulting native binary starts and runs a real Elmish
+      terminal loop.
+
+      Run `./scripts/aot-smoke.sh` (or `dotnet publish examples/AotSample/AotSample.fsproj -r <rid>`).
+    -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+    <Content Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Terminal.Gui.Elmish\Terminal.Gui.Elmish.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

@@ -25,36 +25,37 @@ module TerminalMsg =
 module ElmishTerminal =
 
   type internal TerminalElementState() =
-    let mutable _currentTe: IViewTE option = None
-    let mutable nextTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
+    let mutable _currentDom: DomNode option = None
+    let mutable nextDomTcs: TaskCompletionSource<DomNode> = TaskCompletionSource<_>()
     let rootViewTcs: TaskCompletionSource<View> = TaskCompletionSource<View>()
 
     member this.RootViewSet = rootViewTcs.Task.IsCompletedSuccessfully
 
     member this.WaitTillRootViewIsSetAsync() = rootViewTcs.Task
 
-    member this.WaitForNextTerminalElementAsync() = nextTeTcs.Task
+    member this.WaitForNextDomAsync() = nextDomTcs.Task
 
-    member this.GetCurrentTEAsync() : Task<IViewTE> =
+    member this.GetCurrentDomAsync() : Task<DomNode> =
       task {
-        let waitForNextTeTask = this.WaitForNextTerminalElementAsync()
+        let waitForNextDomTask = this.WaitForNextDomAsync()
 
-        if _currentTe.IsSome then
-          return _currentTe.Value
+        if _currentDom.IsSome then
+          return _currentDom.Value
         else
-          return! waitForNextTeTask
+          return! waitForNextDomTask
       }
 
-    member this.SetCurrentTE(te: IViewTE) =
-      _currentTe <- Some te
+    member this.SetCurrentDom(dom: DomNode) =
+      _currentDom <- Some dom
 
       if rootViewTcs.Task.IsCompletedSuccessfully |> not then
-        rootViewTcs.SetResult te.View
+        rootViewTcs.SetResult dom.View
 
-      nextTeTcs.SetResult(te)
-      nextTeTcs <- TaskCompletionSource<_>()
+      nextDomTcs.SetResult(dom)
+      nextDomTcs <- TaskCompletionSource<_>()
 
-    member this.Dispose() = _currentTe |> Option.iter _.Dispose()
+    member this.Dispose() =
+      _currentDom |> Option.iter DomNode.dispose
 
   /// <summary>
   /// <p>Internal model of the Elmish loop. This model is not exposed to the library caller.</p>
@@ -137,35 +138,39 @@ module ElmishTerminal =
     (model: TerminalModel<'model>)
     dispatch
     =
+    let domOrigin (model: TerminalModel<'model>) =
+      match model.Kind with
+      | ProgramKind.Root -> DomRoot
+      | ProgramKind.ElmishComponent te -> DomElmishComponent te
+
+    let buildRoot (te: IViewTE) origin =
+      let rootChild, _ = DomNode.initializeTree origin (ViewTE te)
+
+      match rootChild with
+      | ViewDomChild dom -> dom
+      | ElmishComponentDomChild _ -> failwith "The root terminal element cannot be an Elmish component."
+
     task {
-      let nextTe =
+      let nextDom =
         task {
+          let nextTe = view model dispatch :?> IViewTE
+
           if not model.RootViewSet then
-
-            let initialTe = view model dispatch :?> IViewTE
-
-            let origin =
-              match model.Kind with
-              | ProgramKind.Root -> Origin.Root
-              | ProgramKind.ElmishComponent te -> Origin.ElmishComponent te
-
-            initialTe.InitializeTree origin
-
-            return initialTe
-
+            return buildRoot nextTe (domOrigin model)
           else
-            let! (currentTe: IViewTE) = model.TerminalElementState.GetCurrentTEAsync()
+            let! currentDom = model.TerminalElementState.GetCurrentDomAsync()
 
-            let nextTe = view model dispatch :?> IViewTE
-
-            Differ.update (TerminalElement.ViewTE currentTe) (TerminalElement.ViewTE nextTe)
-
-            currentTe.Dispose()
-            return nextTe
+            if currentDom.Name = nextTe.Name then
+              DomDiffer.updateTree currentDom nextTe
+              return currentDom
+            else
+              // Root element type changed: rebuild the tree.
+              DomNode.dispose currentDom
+              return buildRoot nextTe (domOrigin model)
         }
 
-      let! nextTe = nextTe
-      model.TerminalElementState.SetCurrentTE nextTe
+      let! nextDom = nextDom
+      model.TerminalElementState.SetCurrentDom nextDom
 
       ()
     }
@@ -199,7 +204,7 @@ module ElmishTerminal =
       view: 'model -> Dispatch<TerminalMsg<'msg>> -> ITerminalElement
     ) =
 
-    let initialTeTcs: TaskCompletionSource<IViewTE> = TaskCompletionSource<_>()
+    let initialDomTcs: TaskCompletionSource<DomNode> = TaskCompletionSource<_>()
 
     let viewSetEvent = Event<View>()
 
@@ -227,8 +232,8 @@ module ElmishTerminal =
 
             viewSetEvent.Trigger rootView
 
-            let! currentTe = model.TerminalElementState.GetCurrentTEAsync()
-            initialTeTcs.SetResult(currentTe)
+            let! currentDom = model.TerminalElementState.GetCurrentDomAsync()
+            initialDomTcs.SetResult(currentDom)
           }
           |> Task.wait
 
@@ -249,25 +254,25 @@ module ElmishTerminal =
 
       program |> Program.withSubscription subscribe |> Program.run
 
-      initialTeTcs.Task |> Task.wait |> ignore
+      initialDomTcs.Task |> Task.wait |> ignore
 
       ()
 
     member this.GetViewAsync() =
       task {
-        let! te = initialTeTcs.Task
-        return te.View
+        let! dom = initialDomTcs.Task
+        return dom.View
       }
 
     member this.View =
-      if initialTeTcs.Task.IsCompleted then
-        initialTeTcs.Task.Result.View
+      if initialDomTcs.Task.IsCompleted then
+        initialDomTcs.Task.Result.View
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the View property."
 
     member this.Child =
-      if initialTeTcs.Task.IsCompleted then
-        initialTeTcs.Task.Result
+      if initialDomTcs.Task.IsCompleted then
+        initialDomTcs.Task.Result
       else
         failwith "Elmish loop has not been started yet. Call StartElmishLoop before accessing the Child property."
 
@@ -284,8 +289,8 @@ module ElmishTerminal =
 
     member this.Dispose() =
       task {
-        let! te = initialTeTcs.Task
-        te.Dispose()
+        let! dom = initialDomTcs.Task
+        DomNode.dispose dom
       }
       |> Task.wait
 
@@ -294,8 +299,6 @@ module ElmishTerminal =
         mkSimpleComponent this init update view |> this.RunComponent
 
       member this.Reuse prev = this.Reuse prev
-
-      member this.Child = this.Child
 
 
     interface ITerminalElementBase with

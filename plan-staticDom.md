@@ -291,6 +291,15 @@ renders.
 
 ## Future work
 
+- **Co-locate the DomNode type cluster (decision A, surfaced in Phase 4/6)**: after Phase 4
+  a component's parent is a `DomNode`, but components still carry the old `Origin` (which
+  references `IViewTE`), so `initializeTree` can only set `Origin.Root` for them and their
+  identity / `GetPath` are not DomNode-native. Fix by moving `EventHandlerRegistrar` plus
+  `DomNode` / `DomOrigin` / `DomChild` / `DomNodeSpec` / `IDomSpecProvider` into `Types.fs` as
+  one mutually recursive group and giving `IElmishComponentTE` a `DomOrigin` (dropping the old
+  `Origin`). This makes component paths/IDs DomNode-native and is the natural Phase 7 end
+  state. Until then, component path/ID assertions are asserted structurally in tests.
+
 - **Component identity (decision B2)**: explicit component IDs so an `ElmishComponentTE`
   instance (and its loop/state) follows its identity across reorders and conditional
   insertion, instead of name + positional index. Requires threading an ID (the `name` passed

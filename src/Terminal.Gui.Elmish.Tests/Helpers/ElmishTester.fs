@@ -12,14 +12,14 @@ open Terminal.Gui.Elmish
 [<Interface>]
 type internal TestableElmishProgram<'msg> =
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task
-  abstract member ViewTE: IViewTE
+  abstract member ViewDom: DomNode
   abstract member View: Terminal.Gui.ViewBase.View
   inherit IDisposable
 
 type internal MsgDispatcherSubscription<'model, 'msg>() =
 
   let msgQueue =
-    Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<IViewTE>>()
+    Channel.CreateUnbounded<TerminalMsg<'msg> * TaskCompletionSource<DomNode>>()
 
   /// Msg dispatcher:
   /// - listens to the msgQueue (which is written to by the ProcessMsg method)
@@ -39,10 +39,10 @@ type internal MsgDispatcherSubscription<'model, 'msg>() =
           task {
             while not cancellationToken.Token.IsCancellationRequested do
               let! msg, msgHook = msgQueue.Reader.ReadAsync()
-              let nextViewTeTask = model.TerminalElementState.WaitForNextTerminalElementAsync() // Capture the task before dispatching the msg
+              let nextDomTask = model.TerminalElementState.WaitForNextDomAsync() // Capture the task before dispatching the msg
               dispatch msg
-              let! nextViewTe = nextViewTeTask
-              msgHook.SetResult(nextViewTe)
+              let! nextDom = nextDomTask
+              msgHook.SetResult(nextDom)
           }),
         TaskCreationOptions.LongRunning
       )
@@ -71,7 +71,7 @@ let internal run
   let msgDispatcherSub = MsgDispatcherSubscription()
 
   let waitForStart = TaskCompletionSource()
-  let mutable curTE = Unchecked.defaultof<_>
+  let mutable curDom = Unchecked.defaultof<_>
   let triggerTerminationTcs = TaskCompletionSource()
 
   let application = Application.Create()
@@ -79,8 +79,8 @@ let internal run
   let waitForProgramStartSub (model: ElmishTerminal.TerminalModel<_>) =
     let start dispatch =
       task {
-        let! currentTE = model.TerminalElementState.GetCurrentTEAsync()
-        curTE <- currentTE
+        let! currentDom = model.TerminalElementState.GetCurrentDomAsync()
+        curDom <- currentDom
 
         waitForStart.SetResult()
       }
@@ -126,17 +126,17 @@ let internal run
   { new TestableElmishProgram<'msg> with
       member _.ProcessMsg msg =
         task {
-          let! newTE = msgDispatcherSub.ProcessMsg msg
-          curTE <- newTE
+          let! newDom = msgDispatcherSub.ProcessMsg msg
+          curDom <- newDom
         }
 
-      member _.ViewTE = curTE
+      member _.ViewDom = curDom
 
-      member _.View = curTE.View
+      member _.View = curDom.View
 
       member this.Dispose() =
         triggerTerminationTcs.SetResult()
-        curTE.Dispose() }
+        DomNode.dispose curDom }
 
 let internal render view : TestableElmishProgram<'msg> =
   let init _ = (), Cmd.none
@@ -148,6 +148,8 @@ let internal render view : TestableElmishProgram<'msg> =
 type internal ITestableElmishComponentTE<'model, 'msg, 'view> =
   inherit IElmishComponentTE
   abstract member ProcessMsg: TerminalMsg<'msg> -> Task
+  /// The component's child subtree root, exposed for tests (see plan-staticDom.md, decision A).
+  abstract member Child: DomNode
 
 type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view) =
   inherit ElmishTerminal.ElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)
@@ -166,6 +168,7 @@ type internal TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update,
 
   interface ITestableElmishComponentTE<'model, 'msg, 'view> with
     member this.ProcessMsg msg = this.ProcessMsg msg
+    member this.Child = base.Child
 
 let internal mkTestableComponent<'model, 'msg, 'view> name init update view =
   new TestableElmishComponentTE<'model, 'msg, 'view>(name, init, update, view)

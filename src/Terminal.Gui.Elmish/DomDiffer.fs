@@ -203,7 +203,12 @@ module internal DomDiffer =
         parent.Children[idx] <- ViewDomChild newDom
       else
         update teMapping dom (v :> IViewTE)
-    | _ -> () // Elmish components: TODO
+    | ElmishComponentDomChild _, ElmishComponentTE _ ->
+      // Decision B1: match by name + positional index; keep the existing component instance
+      // and its running loop (do NOT StartElmishLoop the new TE). State is preserved while
+      // the component stays at the same slot (see plan-staticDom.md, B2 for the follow-up).
+      ()
+    | _ -> ()
 
   and createChild teMapping (parent: DomNode) (te: TerminalElement) =
     match te with
@@ -218,14 +223,20 @@ module internal DomDiffer =
         parent.View.Add dom.View |> ignore
 
       parent.Children.Add(ViewDomChild dom)
-    | ElmishComponentTE _ -> () // Elmish components: TODO
+    | ElmishComponentTE ce ->
+      ce.Origin <- Origin.Root
+      ce.StartElmishLoop()
+      parent.View.Add ce.View |> ignore
+      parent.Children.Add(ElmishComponentDomChild ce)
 
   and disposeChild (parent: DomNode) (child: DomChild) =
     match child with
     | ViewDomChild dom ->
       DomNode.dispose dom
       parent.Children.Remove child |> ignore
-    | ElmishComponentDomChild _ -> () // Elmish components: TODO
+    | ElmishComponentDomChild ce ->
+      (ce :> ITerminalElementBase).Dispose()
+      parent.Children.Remove child |> ignore
 
   /// <summary>
   /// Patches the persistent <paramref name="currentRoot" /> DomNode tree in place so that it

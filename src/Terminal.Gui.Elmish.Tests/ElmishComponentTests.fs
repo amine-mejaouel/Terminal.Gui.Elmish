@@ -6,7 +6,7 @@ open Terminal.Gui.Elmish
 open Elmish
 
 [<Test>]
-let ``ElmishComponent.Parent is set`` () =
+let ``ElmishComponent is placed as a child DomNode`` () =
 
   let init _ = (), Cmd.none
   let update _ _ = (), Cmd.none
@@ -19,16 +19,25 @@ let ``ElmishComponent.Parent is set`` () =
   let parent = View.Runnable [ elmishComponent ]
 
   // Act
-  use _ = ElmishTester.render parent
+  use program = ElmishTester.render parent
 
-  let elmishComponent = elmishComponent :?> ITerminalElementBase
-  let parent = parent :?> ITerminalElementBase
+  let rootDom = program.ViewDom
 
-  Assert.That(elmishComponent.Origin |> Origin.parentTerminalElement, Is.Not.Null)
-  Assert.That((elmishComponent.Origin |> Origin.parentTerminalElement).Value.GetPath(), Is.EqualTo(parent.GetPath()))
+  Assert.That(rootDom.Children.Count, Is.EqualTo 1)
+
+  match rootDom.Children[0] with
+  | ElmishComponentDomChild ce ->
+    Assert.That(ce.Name, Is.EqualTo "ElmishComponent")
+
+    Assert.That(
+      rootDom.View.SubViews |> Seq.exists (fun v -> obj.ReferenceEquals(v, ce.View)),
+      Is.True,
+      "The component's view should be a SubView of its parent."
+    )
+  | ViewDomChild _ -> Assert.Fail("Expected an Elmish component child.")
 
 [<Test>]
-let ``ElmishComponent.Origin should keep correct value between elmish loops`` () =
+let ``ElmishComponent keeps its instance and view between elmish loops`` () =
   task {
 
     // Arrange
@@ -38,29 +47,39 @@ let ``ElmishComponent.Origin should keep correct value between elmish loops`` ()
 
     use program = ElmishTester.render view
 
-    // Get initial state
-    let initialPath = testComponentTE.GetPath()
+    let componentBefore =
+      match program.ViewDom.Children[0] with
+      | ElmishComponentDomChild ce -> ce
+      | ViewDomChild _ -> failwith "expected a component child"
+
+    let childWindowView = testComponentTE.Child.View
 
     // Act - trigger a re-render by dispatching a message
     let! _ = testComponentTE.ProcessMsg(TestComponent.Increment |> TerminalMsg.ofMsg)
 
-    // Assert - Origin should be preserved
-    let afterUpdateComponent = program.ViewTE.Children.First()
-    let afterUpdateOrigin = afterUpdateComponent.Origin
-    let afterUpdatePath = afterUpdateComponent.GetPath()
+    // Assert - decision B1 keeps the same component instance and its child view
+    let componentAfter =
+      match program.ViewDom.Children[0] with
+      | ElmishComponentDomChild ce -> ce
+      | ViewDomChild _ -> failwith "expected a component child"
 
     Assert.Multiple(fun () ->
-      // Path should remain consistent
       Assert.That(
-        afterUpdatePath,
-        Is.EqualTo(initialPath),
-        $"Component path should be consistent: expected %s{initialPath}, got %s{afterUpdatePath}"
+        obj.ReferenceEquals(componentBefore, componentAfter),
+        Is.True,
+        "Component instance should be preserved (B1)."
       )
 
-      // Origin should point to the correct parent
       Assert.That(
-        (afterUpdateOrigin |> Origin.parentTerminalElement).Value.GetPath(),
-        Is.EqualTo(program.ViewTE.GetPath()),
-        "Origin.ParentTerminalElement should point to root"
+        obj.ReferenceEquals(childWindowView, testComponentTE.Child.View),
+        Is.True,
+        "Component child view should be preserved."
+      )
+
+      Assert.That(
+        program.ViewDom.View.SubViews
+        |> Seq.exists (fun v -> obj.ReferenceEquals(v, childWindowView)),
+        Is.True,
+        "The component's view should remain a SubView of the parent."
       ))
   }

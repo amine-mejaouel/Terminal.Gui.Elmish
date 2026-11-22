@@ -48,7 +48,10 @@ let ``Button instance, used as relative position, should be collected after it's
 
     let program = ElmishTerminal.mkSimple init update view |> ElmishTester.run
 
-    let buttonRef = System.WeakReference(program.ViewTE.Children.First().View)
+    let buttonRef =
+      match program.ViewDom.Children[0] with
+      | ViewDomChild dom -> System.WeakReference(dom.View)
+      | _ -> failwith "expected a view child"
 
     do! program.ProcessMsg(ChangeView Label |> TerminalMsg.ofMsg)
 

@@ -3,6 +3,11 @@ module Terminal.Gui.Elmish.Tests.TerminalElementIdTests
 open NUnit.Framework
 open Terminal.Gui.Elmish
 
+let private asViewDomNode (child: DomChild) : DomNode =
+  match child with
+  | ViewDomChild node -> node
+  | ElmishComponentDomChild _ -> failwith "expected a view DomNode"
+
 [<Test>]
 let ``Simple ID test`` () =
   // Arrange
@@ -10,14 +15,14 @@ let ``Simple ID test`` () =
   let view = View.Runnable [ label ]
 
   // Act
-  use _ = ElmishTester.render view
+  use program = ElmishTester.render view
 
-  let label = label :?> IViewTE
-  let view = view :?> IViewTE
+  let rootDom = program.ViewDom
+  let labelDom = rootDom.Children[0] |> asViewDomNode
 
   Assert.Multiple(fun () ->
-    Assert.That(view.GetPath(), Is.EqualTo("root:Runnable"))
-    Assert.That(label.GetPath(), Is.EqualTo("root:Runnable|child[0]:Label")))
+    Assert.That(rootDom.GetPath(), Is.EqualTo("root:Runnable"))
+    Assert.That(labelDom.GetPath(), Is.EqualTo("root:Runnable|child[0]:Label")))
 
 [<Test>]
 let ``Component ID test`` () =
@@ -26,18 +31,19 @@ let ``Component ID test`` () =
   let view = View.Runnable [ testComp :> ITerminalElement ]
 
   // Act
-  use _ = ElmishTester.render view
+  use program = ElmishTester.render view
 
-  let testComp = testComp :> IElmishComponentTE
-  let view = view :?> IViewTE
+  let rootDom = program.ViewDom
 
-  // Get the children from the component
-  let children = testComp.Child.Children
-  let label = children.[0]
-  let button = children.[1]
+  // The component's child subtree is a DomNode tree (Window -> Label, Button).
+  // Full DomNode-native component paths are a Phase 7 item (see plan-staticDom.md,
+  // decision A), so this asserts structure.
+  let windowDom = testComp.Child
+  let labelDom = windowDom.Children[0] |> asViewDomNode
+  let buttonDom = windowDom.Children[1] |> asViewDomNode
 
   Assert.Multiple(fun () ->
-    Assert.That(view.GetPath(), Is.EqualTo("root:Runnable"))
-    Assert.That(testComp.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent"))
-    Assert.That(label.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent:Window|child[0]:Label"))
-    Assert.That(button.GetPath(), Is.EqualTo("root:Runnable|child[0]:TestComponent:Window|child[1]:Button")))
+    Assert.That(rootDom.GetPath(), Is.EqualTo("root:Runnable"))
+    Assert.That(windowDom.Name, Is.EqualTo("Window"))
+    Assert.That(labelDom.Name, Is.EqualTo("Label"))
+    Assert.That(buttonDom.Name, Is.EqualTo("Button")))

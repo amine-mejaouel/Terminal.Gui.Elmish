@@ -4,316 +4,210 @@ open NUnit.Framework
 open Terminal.Gui.Elmish
 open Terminal.Gui.ViewBase
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// Phase 6: these tests target the DomNode-keyed DomPositionService (decision A2).
+// A fresh service instance is used per test so the singleton is not mutated.
 
-/// Creates a fresh, independent PositionService instance for each test so
-/// that the singleton `PositionService.Current` is not mutated.
-let private mkService () = PositionService()
+let private mkService () = DomPositionService()
 
-/// Quickly build a rendered Label IViewTE with the ElmishTester helper.
-let private renderLabel () =
-  let label = View.Label(fun p -> p.Text "test")
-  let root = View.Runnable [ label ]
-  let tester = ElmishTester.render root
-  let labelTE = label :?> IViewTE
-  tester, labelTE
+let private asViewDomNode (child: DomChild) : DomNode =
+  match child with
+  | ViewDomChild node -> node
+  | ElmishComponentDomChild _ -> failwith "expected a view DomNode"
 
-/// Render two labels next to each other and return both IViewTE handles.
-let private renderTwoLabels () =
-  let first = View.Label(fun p -> p.Text "first")
-  let second = View.Label(fun p -> p.Text "second")
-  let root = View.Runnable [ first; second ]
-  let tester = ElmishTester.render root
-  first :?> IViewTE, second :?> IViewTE, tester
+let private build (children: ITerminalElement list) =
+  let rootTe = View.Runnable children :?> IViewTE
+  let rootChild, _ = DomNode.initializeTree DomRoot (ViewTE rootTe)
+  let rootDom = asViewDomNode rootChild
+  rootDom, rootDom.Children |> Seq.map asViewDomNode |> Seq.toList
+
+let private buildLabel () =
+  let rootDom, doms = build [ View.Label(fun p -> p.Text "test") ]
+  rootDom, doms[0]
+
+let private resolveTo (te: ITerminalElement) (dom: DomNode) =
+  fun (candidate: ITerminalElement) ->
+    if obj.ReferenceEquals(candidate, te) then
+      Some dom
+    else
+      None
 
 // ---------------------------------------------------------------------------
 // Absolute / self-contained positions
 // ---------------------------------------------------------------------------
 
 [<Test>]
-let ``ApplyPos - TPos.Absolute sets X immediately`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - TPos.Absolute sets X immediately`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
-  svc.ApplyPos(labelTE, X, TPos.Absolute 42)
-  Assert.That(labelTE.View.X, Is.EqualTo(Pos.Absolute 42))
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.Absolute 42, fun _ -> None)
+  Assert.That(labelDom.View.X, Is.EqualTo(Pos.Absolute 42))
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``ApplyPos - TPos.Center sets X immediately`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - TPos.Center sets X immediately`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
-  svc.ApplyPos(labelTE, X, TPos.Center)
-  Assert.That(labelTE.View.X, Is.EqualTo(Pos.Center()))
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.Center, fun _ -> None)
+  Assert.That(labelDom.View.X, Is.EqualTo(Pos.Center()))
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``ApplyPos - TPos.Percent sets X immediately`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - TPos.Percent sets X immediately`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
-  svc.ApplyPos(labelTE, X, TPos.Percent 50)
-  Assert.That(labelTE.View.X, Is.EqualTo(Pos.Percent 50))
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.Percent 50, fun _ -> None)
+  Assert.That(labelDom.View.X, Is.EqualTo(Pos.Percent 50))
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``ApplyPos - TPos.AnchorEnd with Some offset sets X immediately`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - TPos.AnchorEnd with Some offset sets X immediately`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
-  svc.ApplyPos(labelTE, X, TPos.AnchorEnd(Some 5))
-  Assert.That(labelTE.View.X, Is.EqualTo(Pos.AnchorEnd 5))
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.AnchorEnd(Some 5), fun _ -> None)
+  Assert.That(labelDom.View.X, Is.EqualTo(Pos.AnchorEnd 5))
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``ApplyPos - TPos.AnchorEnd with None uses offset 0`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - TPos.AnchorEnd with None uses offset 0`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
-  svc.ApplyPos(labelTE, X, TPos.AnchorEnd None)
-  Assert.That(labelTE.View.X, Is.EqualTo(Pos.AnchorEnd 0))
-
-// ---------------------------------------------------------------------------
-// Absolute positions do NOT register any handlers
-// ---------------------------------------------------------------------------
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.AnchorEnd None, fun _ -> None)
+  Assert.That(labelDom.View.X, Is.EqualTo(Pos.AnchorEnd 0))
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``ApplyPos - Absolute positions do not add entries to RemoveHandlerRepository`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
+let ``ApplyDelayedPos - absolute positions do not register handlers`` () =
+  let rootDom, labelDom = buildLabel ()
   let svc = mkService ()
 
-  svc.ApplyPos(labelTE, X, TPos.Absolute 10)
-  svc.ApplyPos(labelTE, Y, TPos.Center)
-  svc.ApplyPos(labelTE, X, TPos.Percent 25)
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.Absolute 10, fun _ -> None)
+  svc.ApplyDelayedPos(labelDom, PosAxis.Y, TPos.Center, fun _ -> None)
+  svc.ApplyDelayedPos(labelDom, PosAxis.X, TPos.Percent 25, fun _ -> None)
 
   Assert.That(svc.Cleanups.Count, Is.EqualTo 0)
-  Assert.That(svc.TerminalElementPairs.Count, Is.EqualTo 0)
+  Assert.That(svc.NodePairs.Count, Is.EqualTo 0)
+  DomNode.dispose rootDom
 
 // ---------------------------------------------------------------------------
-// Relative positions
-// ---------------------------------------------------------------------------
-
-[<Test>]
-let ``ApplyPos - TPos.Bottom registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.X relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, X, TPos.X firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.Y relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Y firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.Top relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Top firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.Left relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, X, TPos.Left firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.Right relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-[<Test>]
-let ``ApplyPos - TPos.Func relative registers handlers in the repository`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-  let func = fun (v: View) -> v.Frame.X + 10
-
-  svc.ApplyPos(secondTE, X, TPos.Func(func, firstTE))
-
-  Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1)
-
-// ---------------------------------------------------------------------------
-// Index repository tracks both elements of a relative pair
+// Relative positions register handlers
 // ---------------------------------------------------------------------------
 
 [<Test>]
-let ``ApplyPos - Both elements are indexed after a relative position is registered`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
+let ``ApplyDelayedPos - relative targets register handlers in the repository`` () =
+  let first = View.Label(fun p -> p.Text "first")
+  let second = View.Label(fun p -> p.Text "second")
+  let rootDom, doms = build [ first; second ]
+  let firstDom, secondDom = doms[0], doms[1]
+
+  let cases =
+    [ PosAxis.Y, TPos.Bottom first
+      PosAxis.X, TPos.X first
+      PosAxis.Y, TPos.Y first
+      PosAxis.Y, TPos.Top first
+      PosAxis.X, TPos.Left first
+      PosAxis.X, TPos.Right first
+      PosAxis.X, TPos.Func((fun (v: View) -> v.Frame.X + 10), first) ]
+
+  for axis, target in cases do
+    let svc = mkService ()
+    svc.ApplyDelayedPos(secondDom, axis, target, resolveTo first firstDom)
+    Assert.That(svc.Cleanups.Count, Is.GreaterThanOrEqualTo 1, $"Expected a handler for {target}")
+
+  DomNode.dispose rootDom
+
+// ---------------------------------------------------------------------------
+// Index tracks both elements of a relative pair
+// ---------------------------------------------------------------------------
+
+[<Test>]
+let ``ApplyDelayedPos - both elements are indexed after a relative position is registered`` () =
+  let first = View.Label(fun p -> p.Text "first")
+  let second = View.Label(fun p -> p.Text "second")
+  let rootDom, doms = build [ first; second ]
+  let firstDom, secondDom = doms[0], doms[1]
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
+  svc.ApplyDelayedPos(secondDom, PosAxis.Y, TPos.Bottom first, resolveTo first firstDom)
 
   Assert.Multiple(fun () ->
-    Assert.That(
-      svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase),
-      Is.True,
-      "secondTE should be indexed"
-    )
+    Assert.That(svc.NodePairs.ContainsKey secondDom, Is.True, "second should be indexed")
+    Assert.That(svc.NodePairs.ContainsKey firstDom, Is.True, "first should be indexed"))
+
+  DomNode.dispose rootDom
+
+// ---------------------------------------------------------------------------
+// ExecuteCleanups clears handlers for the target
+// ---------------------------------------------------------------------------
+
+[<Test>]
+let ``ExecuteCleanups - removes handler entries for the target`` () =
+  let first = View.Label(fun p -> p.Text "first")
+  let second = View.Label(fun p -> p.Text "second")
+  let rootDom, doms = build [ first; second ]
+  let firstDom, secondDom = doms[0], doms[1]
+  let svc = mkService ()
+
+  svc.ApplyDelayedPos(secondDom, PosAxis.Y, TPos.Bottom first, resolveTo first firstDom)
+
+  Assert.That(svc.Cleanups.Count, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
+
+  svc.ExecuteCleanups secondDom
+
+  Assert.Multiple(fun () ->
+    Assert.That(svc.NodePairs.ContainsKey secondDom, Is.False, "Index entry for second should be removed")
 
     Assert.That(
-      svc.TerminalElementPairs.ContainsKey(firstTE :> ITerminalElementBase),
-      Is.True,
-      "firstTE should be indexed"
+      DomPairKey(secondDom, firstDom) |> svc.Cleanups.ContainsKey,
+      Is.False,
+      "Handler pair should be removed"
     ))
 
-// ---------------------------------------------------------------------------
-// SignalReuse clears handlers for the reused element
-// ---------------------------------------------------------------------------
+  DomNode.dispose rootDom
 
 [<Test>]
-let ``SignalReuse - removes handler entries for the reused element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
+let ``ExecuteCleanups - calling on a node without handlers is a no-op`` () =
+  let rootDom, labelDom = buildLabel ()
+  let svc = mkService ()
+  Assert.DoesNotThrow(fun () -> svc.ExecuteCleanups labelDom)
+  DomNode.dispose rootDom
+
+[<Test>]
+let ``ExecuteCleanups - no orphan entries remain after cleaning both elements`` () =
+  let first = View.Label(fun p -> p.Text "first")
+  let second = View.Label(fun p -> p.Text "second")
+  let rootDom, doms = build [ first; second ]
+  let firstDom, secondDom = doms[0], doms[1]
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-
-  let countBefore = svc.Cleanups.Count
-  Assert.That(countBefore, Is.GreaterThan 0, "Pre-condition: handlers should be registered")
-
-  svc.ExecuteCleanups secondTE
+  svc.ApplyDelayedPos(secondDom, PosAxis.Y, TPos.Bottom first, resolveTo first firstDom)
+  svc.ExecuteCleanups secondDom
+  svc.ExecuteCleanups firstDom
 
   Assert.Multiple(fun () ->
-    Assert.That(
-      svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase),
-      Is.False,
-      "Index entry for secondTE should be removed after SignalReuse"
-    )
+    Assert.That(svc.Cleanups.Count, Is.EqualTo 0, "Cleanups should be empty")
+    Assert.That(svc.NodePairs.Count, Is.EqualTo 0, "NodePairs should be empty"))
 
-    let pairRemoved = not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
-    Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository"))
-
-[<Test>]
-let ``SignalReuse - calling on element without handlers is a no-op`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
-  let svc = mkService ()
-
-  Assert.DoesNotThrow(fun () -> svc.ExecuteCleanups labelTE)
-
-// ---------------------------------------------------------------------------
-// SignalDispose clears handlers for the disposed element
-// ---------------------------------------------------------------------------
-
-[<Test>]
-let ``SignalDispose - removes handler entries for the disposed element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-
-  svc.ExecuteCleanups secondTE
-
-  Assert.Multiple(fun () ->
-    Assert.That(
-      svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase),
-      Is.False,
-      "Index entry for secondTE should be removed after SignalDispose"
-    )
-
-    let pairRemoved = not (svc.Cleanups.ContainsKey(TePairKey(secondTE, firstTE)))
-    Assert.That(pairRemoved, Is.True, "Handler pair should be removed from repository")
-
-    Assert.That(
-      svc.TerminalElementPairs.Count,
-      Is.EqualTo 0,
-      "No other index entries should remain after SignalDispose"
-    )
-
-    Assert.That(svc.Cleanups.Count, Is.EqualTo 0, "No other handler entries should remain after SignalDispose"))
-
-[<Test>]
-let ``SignalDispose - calling on element without handlers is a no-op`` () =
-  let tester, labelTE = renderLabel ()
-  use _ = tester
-  let svc = mkService ()
-
-  Assert.DoesNotThrow(fun () -> svc.ExecuteCleanups labelTE)
+  DomNode.dispose rootDom
 
 // ---------------------------------------------------------------------------
 // Multiple relative positions on the same element
 // ---------------------------------------------------------------------------
 
 [<Test>]
-let ``ApplyPos - multiple relative positions accumulate handlers for the same element`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
+let ``ApplyDelayedPos - multiple relative positions accumulate for the same element`` () =
+  let first = View.Label(fun p -> p.Text "first")
+  let second = View.Label(fun p -> p.Text "second")
+  let rootDom, doms = build [ first; second ]
+  let firstDom, secondDom = doms[0], doms[1]
   let svc = mkService ()
 
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
+  svc.ApplyDelayedPos(secondDom, PosAxis.Y, TPos.Bottom first, resolveTo first firstDom)
+  svc.ApplyDelayedPos(secondDom, PosAxis.X, TPos.Right first, resolveTo first firstDom)
 
-  Assert.That(svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase), Is.True)
+  Assert.That(svc.NodePairs.ContainsKey secondDom, Is.True)
+  Assert.That(svc.NodePairs[secondDom].Count, Is.EqualTo 1, "One pair key shared by both positions")
 
-  let indexSet = svc.TerminalElementPairs[secondTE :> ITerminalElementBase]
-  Assert.That(indexSet.Count, Is.EqualTo 1, "Index should track both (secondTE,firstTE) pairs for both positions")
+  svc.ExecuteCleanups secondDom
+  Assert.That(svc.NodePairs.ContainsKey secondDom, Is.False, "All entries for second should be cleared")
 
-[<Test>]
-let ``SignalReuse - clears ALL handlers registered for element with multiple relative positions`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-  svc.ApplyPos(secondTE, X, TPos.Right firstTE)
-
-  svc.ExecuteCleanups secondTE
-
-  Assert.That(
-    svc.TerminalElementPairs.ContainsKey(secondTE :> ITerminalElementBase),
-    Is.False,
-    "All index entries for secondTE should be cleared"
-  )
-
-// ---------------------------------------------------------------------------
-// Repository stays clean after a full render+dispose cycle
-// ---------------------------------------------------------------------------
-
-[<Test>]
-let ``After SignalDispose on both elements no orphan entries remain`` () =
-  let firstTE, secondTE, tester = renderTwoLabels ()
-  use _ = tester
-  let svc = mkService ()
-
-  svc.ApplyPos(secondTE, Y, TPos.Bottom firstTE)
-
-  svc.ExecuteCleanups secondTE
-  svc.ExecuteCleanups firstTE
-
-  Assert.Multiple(fun () ->
-    Assert.That(svc.Cleanups.Count, Is.EqualTo 0, "RemoveHandlerRepository should be empty")
-    Assert.That(svc.TerminalElementPairs.Count, Is.EqualTo 0, "IndexedRemoveHandler should be empty"))
+  DomNode.dispose rootDom

@@ -149,8 +149,8 @@ and internal IViewTE =
 and internal IElmishComponentTE =
   inherit ITerminalElementBase
 
-  abstract Child: IViewTE with get
-
+  // The component's child subtree is a DomNode (see ElmishComponentTE.Child). It is not
+  // exposed here because DomNode is defined after this type and would form a cycle.
   abstract StartElmishLoop: unit -> unit
   abstract Reuse: prev: IElmishComponentTE -> unit
 

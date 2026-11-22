@@ -87,61 +87,64 @@ module internal DomNode =
     //    tree and its TE->DomNode mapping exist — see DomPositionService.ApplyTree.
     domNode.ApplyProps(props)
 
+    // 4. Initialize children recursively (via buildNode). This is also required for
+    //    sub-element subtrees: e.g. a Menu inside a PopoverMenu must get its MenuItems.
+    te.Children
+    |> Seq.iteri (fun i child -> domNode.Children.Add(buildNode teMapping (DomChild(domNode, i)) child))
+
     domNode.TriggerViewReady()
     domNode
+
+  /// Builds a DomChild for a TerminalElement at the given origin: creates the node, wires
+  /// its view into the parent view (for view children), and recurses into the subtree.
+  and buildNode
+    (teMapping: Dictionary<ITerminalElement, DomNode>)
+    (origin: DomOrigin)
+    (te: TerminalElement)
+    : DomChild =
+    match te with
+    | ElmishComponentTE elmishComponent ->
+      let originForComponent =
+        match origin with
+        | DomRoot -> Origin.Root
+        | DomElmishComponent parent -> Origin.ElmishComponent parent
+        // DomChild/DomSubElement → Origin.Child/SubElement requires IViewTE.
+        // Full support deferred (see plan-staticDom.md, decision A).
+        | _ -> Origin.Root
+
+      elmishComponent.Origin <- originForComponent
+      elmishComponent.StartElmishLoop()
+
+      match origin with
+      | DomChild _
+      | DomElmishComponent _ -> parentView origin |> Option.iter (fun v -> v.Add elmishComponent.View |> ignore)
+      | _ -> ()
+
+      ElmishComponentDomChild elmishComponent
+
+    | ViewTE viewTE ->
+      let vte = viewTE :?> ViewBackedTerminalElement
+      let spec = specOf viewTE
+      let domNode = createFromTE teMapping vte spec
+      domNode.Origin <- origin
+
+      let isChild =
+        match origin with
+        | DomChild _
+        | DomElmishComponent _ -> true
+        | _ -> false
+
+      if isChild && domNode.SetAsChildOfParentView then
+        parentView origin |> Option.iter (fun v -> v.Add domNode.View |> ignore)
+
+      ViewDomChild domNode
 
   /// Recursively creates a DomNode tree from a TerminalElement tree.
   /// Returns the root DomChild and a mapping from ITerminalElement to DomNode.
   let initializeTree (origin: DomOrigin) (te: TerminalElement) : DomChild * Dictionary<ITerminalElement, DomNode> =
 
     let teMapping = Dictionary<ITerminalElement, DomNode>()
-
-    let rec initNode (origin: DomOrigin) (te: TerminalElement) : DomChild =
-      match te with
-      | ElmishComponentTE elmishComponent ->
-        let originForComponent =
-          match origin with
-          | DomRoot -> Origin.Root
-          | DomElmishComponent parent -> Origin.ElmishComponent parent
-          // DomChild/DomSubElement → Origin.Child/SubElement requires IViewTE.
-          // Full support deferred to Phase 4.
-          | _ -> Origin.Root
-
-        elmishComponent.Origin <- originForComponent
-        elmishComponent.StartElmishLoop()
-
-        match origin with
-        | DomChild _
-        | DomElmishComponent _ -> parentView origin |> Option.iter (fun v -> v.Add elmishComponent.View |> ignore)
-        | _ -> ()
-
-        ElmishComponentDomChild elmishComponent
-
-      | ViewTE viewTE ->
-        let te = viewTE :?> ViewBackedTerminalElement
-        let spec = specOf viewTE
-        let domNode = createFromTE teMapping te spec
-        domNode.Origin <- origin
-
-        let isChild =
-          match origin with
-          | DomChild _
-          | DomElmishComponent _ -> true
-          | _ -> false
-
-        if isChild && domNode.SetAsChildOfParentView then
-          parentView origin |> Option.iter (fun v -> v.Add domNode.View |> ignore)
-
-        // Recursively initialize children
-        te.Children
-        |> Seq.iteri (fun i child ->
-          let childOrigin = DomChild(domNode, i)
-          let childDom = initNode childOrigin child
-          domNode.Children.Add childDom)
-
-        ViewDomChild domNode
-
-    let rootChild = initNode origin te
+    let rootChild = buildNode teMapping origin te
 
     // Deferred position pass (decision A2): the whole tree and mapping now exist.
     let resolve (te: ITerminalElement) =

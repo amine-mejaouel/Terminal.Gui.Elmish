@@ -50,7 +50,6 @@
     <Compile Include="Types.fs" />
     <Compile Include="Differ.fs" />
     <Compile Include="TwoEndedScanDiffer.fs" />
-    <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Types.gen.fs" />
     <Compile Include="PKey.gen.fs" />
     <Compile Include="Services\PositionService.fs" />
@@ -62,6 +61,7 @@
     <Compile Include="Services\DomPositionService.fs" />
     <Compile Include="DomNode.fs" />
     <Compile Include="DomDiffer.fs" />
+    <Compile Include="ElmishTerminal.fs" />
     <Compile Include="Props.gen.fs" />
     <Compile Include="Macros.fs" />
     <Compile Include="View.gen.fs" />

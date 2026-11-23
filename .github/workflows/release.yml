@@ -1,0 +1,71 @@
+name: Release
+
+# Publishes a prerelease NuGet package and creates a GitHub pre-release.
+#
+# Trigger: push a tag whose name starts with `v`, e.g.
+#   git tag v3.0.0-v2-develop.2329-v1-aibox
+#   git push origin v3.0.0-v2-develop.2329-v1-aibox
+#
+# The tag (minus the leading `v`) is used as the package version, overriding the
+# <Version> in the project file. The package is pushed to GitHub Packages and the
+# .nupkg is attached to a GitHub release marked as a pre-release.
+#
+# Optional: set a repository secret NUGET_API_KEY to also publish to nuget.org.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # create the GitHub release
+  packages: write # publish to GitHub Packages
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initial setup
+        uses: ./.github/actions/initial-setup
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Pack
+        run: >
+          dotnet pack src/Terminal.Gui.Elmish/Terminal.Gui.Elmish.fsproj
+          -c Release
+          -o artifacts
+          -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Publish to GitHub Packages
+        run: >
+          dotnet nuget push "artifacts/*.nupkg"
+          --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          --api-key "${{ secrets.GITHUB_TOKEN }}"
+          --skip-duplicate
+
+      - name: Publish to NuGet.org (optional)
+        if: ${{ env.NUGET_API_KEY != '' }}
+        run: >
+          dotnet nuget push "artifacts/*.nupkg"
+          --source "https://api.nuget.org/v3/index.json"
+          --api-key "${{ env.NUGET_API_KEY }}"
+          --skip-duplicate
+
+      - name: Create GitHub pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create "${GITHUB_REF_NAME}"
+          artifacts/*.nupkg
+          --prerelease
+          --generate-notes
+          --title "${{ steps.ver.outputs.version }}"

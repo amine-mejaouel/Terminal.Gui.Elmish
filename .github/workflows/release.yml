@@ -1,14 +1,26 @@
 name: Release
 
-# Publishes a prerelease NuGet package and creates a GitHub pre-release.
+# Publishes a NuGet package and creates the GitHub release (and tag).
 #
-# Trigger: push a tag whose name starts with `v`, e.g.
-#   git tag v3.0.0-v2-develop.2329-v1-aibox
-#   git push origin v3.0.0-v2-develop.2329-v1-aibox
+# "Pre-release" has two independent aspects:
+#   * NuGet prerelease: determined purely by the version string — any `-suffix`
+#     marks the package as a prerelease (consumers need `dotnet add package --prerelease`).
+#   * GitHub release badge: the `--prerelease` flag. On manual dispatch it follows the
+#     `prerelease` input; on a tag push it is inferred from the version suffix.
 #
-# The tag (minus the leading `v`) is used as the package version, overriding the
-# <Version> in the project file. The package is pushed to GitHub Packages and the
-# .nupkg is attached to a GitHub release marked as a pre-release.
+# Two ways to trigger it — no local tagging required:
+#
+#   1. GitHub UI: Actions -> Release -> "Run workflow", pick the branch, enter the
+#      version (e.g. 3.0.0-v2-develop.2329-v1-aibox). The workflow creates the
+#      `v<version>` tag, the GitHub pre-release, and publishes the package.
+#      For the button to appear the workflow must exist on the repository's default
+#      branch; the run itself can use any branch you select in the dropdown.
+#
+#   2. Pushing a `v*` tag (e.g. from an external tool/API). The tag name (minus the
+#      leading `v`) is the version.
+#
+# The package is pushed to GitHub Packages and the .nupkg is attached to the GitHub
+# release marked as a pre-release.
 #
 # Optional: set a repository secret NUGET_API_KEY to also publish to nuget.org.
 
@@ -16,9 +28,20 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version, e.g. 3.0.0-v2-develop.2329-v1-aibox (use a -suffix for a NuGet prerelease)"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark the GitHub release as a pre-release (the NuGet prerelease is set by the version suffix)"
+        required: false
+        default: true
+        type: boolean
 
 permissions:
-  contents: write # create the GitHub release
+  contents: write # create the tag + GitHub release
   packages: write # publish to GitHub Packages
 
 jobs:
@@ -30,13 +53,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Initial setup
         uses: ./.github/actions/initial-setup
 
-      - name: Resolve version from tag
+      - name: Resolve version and tag
         id: ver
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            version="${{ inputs.version }}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
 
       - name: Pack
         run: >
@@ -60,12 +92,44 @@ jobs:
           --api-key "${{ env.NUGET_API_KEY }}"
           --skip-duplicate
 
-      - name: Create GitHub pre-release
+      - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
-          gh release create "${GITHUB_REF_NAME}"
-          artifacts/*.nupkg
-          --prerelease
-          --generate-notes
-          --title "${{ steps.ver.outputs.version }}"
+          VERSION: ${{ steps.ver.outputs.version }}
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          # `--prerelease` sets the GitHub release badge. On manual dispatch it comes
+          # from the input; on a tag push it is inferred from the version suffix
+          # (a `-suffix` is what makes the NuGet package a prerelease).
+          flag=""
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.prerelease }}" = "true" ]; then flag="--prerelease"; fi
+          else
+            case "${VERSION}" in
+              *-*) flag="--prerelease" ;;
+              *) flag="" ;;
+            esac
+          fi
+
+          # On manual dispatch the tag does not exist yet: create it at the selected
+          # commit. On a tag push the tag already exists, so no --target.
+          target=""
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            target="--target ${GITHUB_SHA}"
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists; uploading assets."
+            gh release upload "${TAG}" artifacts/*.nupkg --clobber
+            if [ -n "${flag}" ]; then
+              gh release edit "${TAG}" --prerelease --title "${VERSION}"
+            else
+              gh release edit "${TAG}" --prerelease=false --title "${VERSION}"
+            fi
+          else
+            echo "Creating GitHub release ${TAG}."
+            gh release create "${TAG}" artifacts/*.nupkg ${target} ${flag} \
+              --generate-notes --title "${VERSION}"
+          fi

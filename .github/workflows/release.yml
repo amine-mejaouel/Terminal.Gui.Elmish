@@ -70,12 +70,21 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=v${version}" >> "$GITHUB_OUTPUT"
 
+      - name: Build
+        run: >
+          dotnet build src/Terminal.Gui.Elmish/Terminal.Gui.Elmish.fsproj
+          -c Release
+          -p:Version=${{ steps.ver.outputs.version }}
+          -p:GeneratePackageOnBuild=false
+
       - name: Pack
         run: >
           dotnet pack src/Terminal.Gui.Elmish/Terminal.Gui.Elmish.fsproj
           -c Release
           -o artifacts
+          --no-build
           -p:Version=${{ steps.ver.outputs.version }}
+          -p:GeneratePackageOnBuild=false
 
       - name: Publish to GitHub Packages
         run: >
